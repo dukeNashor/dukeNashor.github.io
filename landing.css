@@ -55,18 +55,6 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
-.chip {
-  margin: 0 0 14px;
-  width: fit-content;
-  padding: 8px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background: rgba(255, 255, 255, 0.72);
-}
-
 h1 {
   margin: 0;
   font-size: clamp(34px, 7vw, 58px);
