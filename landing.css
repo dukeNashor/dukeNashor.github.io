@@ -1,0 +1,121 @@
+:root {
+  --bg-1: #f4ff9d;
+  --bg-2: #6efff5;
+  --bg-3: #3aa8ff;
+  --ink: #0b1635;
+  --panel: rgba(255, 255, 255, 0.78);
+  --line: rgba(11, 22, 53, 0.14);
+  --cta: #00df94;
+  --cta-hover: #00f7a3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  color: var(--ink);
+}
+
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 18% 24%, var(--bg-1), transparent 42%),
+    radial-gradient(circle at 82% 18%, var(--bg-2), transparent 44%),
+    linear-gradient(135deg, #e8f6ff, #ddf9ff 52%, #c8ecff);
+}
+
+.bg-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.4;
+}
+
+.landing {
+  width: min(760px, 100%);
+  padding: 40px 32px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--panel);
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 18px 36px rgba(19, 53, 92, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.chip {
+  margin: 0 0 14px;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(34px, 7vw, 58px);
+  line-height: 0.98;
+}
+
+.lead {
+  margin: 16px 0 0;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.lead.zh {
+  margin-top: 10px;
+}
+
+.cta {
+  display: inline-block;
+  margin-top: 26px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  background: var(--cta);
+  color: #002419;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 140ms ease, background-color 140ms ease;
+}
+
+.cta:hover {
+  background: var(--cta-hover);
+  transform: translateY(-1px);
+}
+
+.sub {
+  margin: 20px 0 0;
+  font-size: 14px;
+}
+
+a {
+  color: inherit;
+}
+
+@media (max-width: 640px) {
+  .landing {
+    padding: 28px 20px;
+    border-radius: 20px;
+  }
+
+  .lead {
+    font-size: 16px;
+  }
+}
