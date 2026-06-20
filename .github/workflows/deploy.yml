@@ -45,6 +45,8 @@ jobs:
           cp index.html _site/index.html
           cp landing.css _site/landing.css
           cp google446cdd6e451ec880.html _site/google446cdd6e451ec880.html
+          mkdir -p _site/bili-atelier
+          cp -r bili-atelier/* _site/bili-atelier/
           cp -r extensions/chatgpt-history-manager/dist/* _site/extensions/chatgpt-history-manager/
           touch _site/.nojekyll
 
