@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.2.1
+// @version      0.2.2
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -10986,7 +10986,7 @@
 .atelier-control:focus-visible{outline:1px dotted var(--atelier-ink)!important;outline-offset:-4px}
 .atelier-control:disabled{opacity:.55;cursor:default}
 .atelier-control[data-confirm-block=true]{color:var(--atelier-danger)!important;border-color:var(--atelier-danger)!important}
-.btnView.atelier-control{width:auto!important;min-width:40px;height:auto!important;min-height:22px;padding:2px 5px!important;display:inline-flex;align-items:center;justify-content:center;line-height:1.2!important}
+.btnView.atelier-control,.bili-blocker-inline-action.atelier-control{width:auto!important;min-width:40px;height:auto!important;min-height:22px;padding:2px 5px!important;display:inline-flex;align-items:center;justify-content:center;line-height:1.2!important}
 `;
   var started3 = false;
   function ensureAppearance() {
@@ -11057,7 +11057,9 @@ ${id},${id} *{box-sizing:border-box}${id} [hidden]{display:none!important}
 ${id} :is(h1,h2,h3,p){margin:0;padding:0;color:inherit;font:inherit}${id} h2,${id} h3{font-weight:bold}
 ${id} :is(button,input,textarea,select){font:inherit;color:inherit;letter-spacing:normal}${id} button{cursor:pointer}
 ${id} img{display:block;object-fit:contain;image-rendering:pixelated;flex-shrink:0}
-${id} .luna-caption{flex-shrink:0;min-height:34px;padding:3px 5px 3px 8px;display:flex;align-items:center;gap:8px;background:linear-gradient(#0003,#0003),url("${luna.caption}") center/100% 100%;color:#fff;user-select:none}
+${id} .luna-caption{position:relative;isolation:isolate;flex-shrink:0;min-height:34px;padding:3px 5px 3px 8px;display:flex;align-items:center;gap:8px;color:#fff;user-select:none}
+/* Native caption slices: left 28px, center 3px, right 35px. Only the center stretches horizontally. */
+${id} .luna-caption::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;border-style:solid;border-width:0 35px 0 28px;border-image:url("${luna.caption}") 0 35 0 28 fill / 0 35px 0 28px / 0 stretch;filter:brightness(.8)}
 ${id} .luna-caption h1{font:bold 12px Tahoma,SimSun,serif;flex:1}
 ${id} .luna-caption-actions{display:flex;gap:3px}
 ${id} .luna-caption-button{width:24px;height:24px;padding:0;border:0;border-radius:0;background:var(--normal) center/100% 100% no-repeat;image-rendering:pixelated}
@@ -11107,6 +11109,7 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
 #atelier-launcher [hidden]{display:none!important}#atelier-launcher .atelier-launcher-button{width:44px;height:44px;padding:4px;border:1px solid var(--atelier-edge);border-radius:3px;background:var(--atelier-button);box-shadow:inset 1px 1px var(--atelier-highlight),1px 2px 4px #0004;cursor:pointer;touch-action:none}
 #atelier-launcher img{width:24px;height:24px;image-rendering:pixelated;object-fit:contain}#atelier-launcher .atelier-launcher-button img{width:32px;height:32px}
 #atelier-launcher button:focus-visible{outline:2px dotted var(--atelier-accent);outline-offset:-4px}
+#atelier-launcher .atelier-menu-check{width:24px;height:24px;flex-shrink:0;display:grid;place-items:center}#atelier-launcher .atelier-menu-check.checked::after{content:"\u2713"}
 .atelier-quick-menu{position:absolute;bottom:0;right:50px;width:184px;padding:3px;background:var(--atelier-panel);border:2px solid var(--atelier-edge);box-shadow:2px 3px 6px #0005}
 #atelier-launcher[data-edge=left] .atelier-quick-menu{right:auto;left:50px}#atelier-launcher .atelier-quick-menu h2{font:bold 12px Tahoma,SimSun,serif;color:#fff;background:var(--atelier-caption);margin:0 0 3px;padding:7px}
 #atelier-launcher .atelier-quick-menu button{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:6px;border:1px solid transparent;background:transparent;color:inherit;text-align:left;cursor:pointer}
@@ -11124,19 +11127,36 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
   var roots = /* @__PURE__ */ new WeakSet();
   function ensurePageControls(root = document) {
     ensureLunaTheme();
-    if (roots.has(root)) return;
-    roots.add(root);
-    if (root instanceof ShadowRoot) {
+    if (root instanceof ShadowRoot && !root.querySelector("style[data-atelier-page-controls]")) {
       const style = document.createElement("style");
+      style.setAttribute("data-atelier-page-controls", "");
       style.textContent = sharedControlCss;
       root.append(style);
     }
+    if (roots.has(root)) return;
+    roots.add(root);
     observePixelLabels(root instanceof Document ? root.documentElement : root, ".atelier-control");
   }
   function styleAtelierAction(button3) {
     button3.classList.add("atelier-control");
     const root = button3.getRootNode();
     ensurePageControls(root instanceof ShadowRoot ? root : document);
+  }
+  function placeVideoUpAction(root, button3, kind) {
+    const container = root instanceof HTMLElement ? root : root instanceof ShadowRoot ? root.host : null;
+    if (!container?.matches(".up-panel-container")) return false;
+    const message = root.querySelector('.message,a[href*="message.bilibili.com"]');
+    if (!message) return false;
+    const block = root.querySelector(".bili-blocker-profile-action");
+    const anchor = kind === "follow" && block?.parentElement === message.parentElement && message.nextElementSibling === block ? block : message;
+    if (anchor.nextElementSibling !== button3) anchor.insertAdjacentElement("afterend", button3);
+    button3.style.margin = "0 0 0 8px";
+    button3.style.flex = "0 0 auto";
+    if (kind === "block") {
+      const follow = root.querySelector(".atelier-local-follow-action");
+      if (follow && button3.nextElementSibling !== follow) button3.insertAdjacentElement("afterend", follow);
+    }
+    return true;
   }
 
   // src/modules/local-following/api.ts
@@ -11713,7 +11733,6 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
         tile.append(localFollowElement("span", "lf-meta", time));
         if (account.groupIds.length) tile.append(localFollowElement("span", "lf-meta", account.groupIds.map((id) => snapshot.groups.find((group) => group.id === id)).filter(Boolean).map(groupLabel).join("\u3001")));
         if (cache.checkError) tile.append(localFollowElement("span", "lf-meta", `\u4E0A\u6B21\u68C0\u67E5\u5931\u8D25\uFF1A${cache.checkError}`));
-        else if (cache.checkedAt) tile.append(localFollowElement("span", "lf-meta", `\u68C0\u67E5\u4E8E ${date(cache.checkedAt)}`));
         directory.append(tile);
       }
       if (!accounts.length) directory.append(localFollowElement("p", "lf-empty", "\u6CA1\u6709\u5339\u914D\u7684\u672C\u5730\u5173\u6CE8\u3002\u53EF\u4ECE\u4E3B\u9875\u6DFB\u52A0\uFF0C\u6216\u5728\u4E0A\u65B9\u7C98\u8D34\u8D26\u53F7\u94FE\u63A5\u3002"));
@@ -11935,6 +11954,7 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
         else target.insertAdjacentElement("afterend", node);
         styleAtelierAction(node);
       }
+      placeVideoUpAction(root, node, "follow");
       const followed = localFollowSnapshot().accounts.some((account) => account.uid === profile.uid);
       const label = followed ? "\u79FB\u9664\u672C\u5730\u5173\u6CE8" : "\u6DFB\u52A0\u672C\u5730\u5173\u6CE8";
       if (node.textContent !== label) node.textContent = label;
@@ -11958,7 +11978,7 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
         }
         if (!followed) lastVisited = "";
       } else lastVisited = "";
-      for (const container of document.querySelectorAll(".usercard-wrap,.up-panel-container,bili-user-profile,.bili-user-profile,.user-card-m-exp.card-loaded")) {
+      for (const container of document.querySelectorAll(".up-panel-container")) {
         if (container.closest("[data-bili-blocker-ui]")) continue;
         const root = container.shadowRoot || container;
         if (container.shadowRoot && !roots2.has(container.shadowRoot)) {
@@ -13696,6 +13716,8 @@ var utils = {
 /*\u89C6\u9891\u89C2\u770B\u9875\uFF1A\u4EC5\u8BBE\u7F6E\u4E3B\u89C6\u9891\u548C\u63A8\u8350\u5C01\u9762\u7684\u6807\u8BB0\u6837\u5F0F*/
 .video-info-detail-list .pubdate-ip .btnView,.video-info-meta .pubdate-ip .btnView{position:unset;margin:0 0 0 10px;border:none;width:35px;}
 .card-box .pic{position:relative;}
+.pod-item .cover,.video-episode-card__cover{position:relative;}
+.btnView.atelier-collection-inline{position:static!important;flex-shrink:0;margin:0 6px 0 0;}
 `;
     var festivalVideoStyle = `
 /*202303\u6D3B\u52A8\u89C6\u9891\u64AD\u653E\u9875*/
@@ -13880,12 +13902,58 @@ var utils = {
         setBtnView();
       }
     }
+    const videoCollectionSelector = ".pod-item,.video-episode-card,.multip .video-pod__item,.multip.grid .page,.pod-item .page-item";
+    function setVideoCollectionViewed(row) {
+      const readId = (node) => String(node?.getAttribute("data-key") || node?.getAttribute("data-bvid") || node?.querySelector('a[href*="/video/BV"]')?.getAttribute("href") || "").match(/BV[0-9a-zA-Z]{10}/i)?.[0];
+      let id = readId(row);
+      if (row.matches(".page-item")) {
+        const parentId = readId(row.closest(".pod-item"));
+        const index = [...row.parentElement.querySelectorAll(":scope > .page-item")].indexOf(row);
+        id = parentId && index >= 0 ? parentId + "-" + (index + 1) : void 0;
+      } else if (row.closest(".multip") && !row.matches(".pod-item")) {
+        const list = row.closest(".multip");
+        const index = [...list.querySelectorAll(list.matches(".grid") ? ".page" : ".video-pod__item")].indexOf(row);
+        const parentId = location.pathname.match(/\/video\/(BV[0-9a-zA-Z]{10})/i)?.[1] || getCurrentPageBvid()?.match(/^BV[0-9a-zA-Z]{10}/i)?.[0];
+        id = parentId && index >= 0 ? parentId + "-" + (index + 1) : void 0;
+      } else if (!id && row.matches(".video-episode-card")) {
+        const episodes = unsafeWindow.__INITIAL_STATE__?.videoSections?.flatMap((section) => section.episodes || []) || [];
+        const index = [...document.querySelectorAll(".video-episode-card")].indexOf(row);
+        id = episodes[index]?.bvid;
+      }
+      const owned = [...row.querySelectorAll(".btnView")].filter((button3) => button3.closest(videoCollectionSelector) === row);
+      const normalized = id?.replace(/^BV/i, "");
+      for (const button3 of owned) {
+        if (!normalized || button3.getAttribute("data-av") !== normalized) button3.remove();
+      }
+      if (!id) return;
+      const cover = row.querySelector(".cover,.video-episode-card__cover");
+      if (cover) {
+        setVideoIsViewed((0, import_jquery.default)(cover), "img,.activity-image-card__image", 0, id);
+      } else {
+        let title = row.querySelector(".title,.video-episode-card__info-title");
+        if (!title && row.matches(".page")) {
+          title = [...row.children].find((child) => child.tagName === "SPAN");
+          if (!title) {
+            title = document.createElement("span");
+            row.append(title);
+          }
+        }
+        if (!title) return;
+        const titleSelector = title.matches(".title") ? ".title" : title.matches(".video-episode-card__info-title") ? ".video-episode-card__info-title" : "span";
+        setVideoIsViewed((0, import_jquery.default)(row), titleSelector, 0, id, true, true);
+        (0, import_jquery.default)(title).siblings(".btnView").addClass("atelier-collection-inline");
+      }
+      setBtnView();
+      (0, import_jquery.default)(row).find(".btnView").filter(function() {
+        return this.closest(videoCollectionSelector) === row;
+      }).off("click.BiliViewedCollection").on("click.BiliViewedCollection", handleViewedButtonClick);
+    }
     let videoRecommendationsObserver = null;
     function observeVideoRecommendations() {
       if (videoRecommendationsObserver) {
         return;
       }
-      const selector = ".card-box .pic";
+      const selector = ".card-box .pic," + videoCollectionSelector;
       const pending2 = /* @__PURE__ */ new Set();
       let timer2 = null;
       const enqueue2 = (node) => {
@@ -13909,7 +13977,8 @@ var utils = {
             }
             for (const card of cards) {
               if (card.isConnected) {
-                setVideoRecommendationViewed(card);
+                if (card.matches(".card-box .pic")) setVideoRecommendationViewed(card);
+                else setVideoCollectionViewed(card);
               }
             }
           }, 80);
@@ -13929,7 +13998,7 @@ var utils = {
           }
         }
       });
-      videoRecommendationsObserver.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["href"] });
+      videoRecommendationsObserver.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["href", "data-key", "data-bvid"] });
       enqueue2(document.documentElement);
     }
     function scheduleHistoryPageScans() {
@@ -14984,24 +15053,25 @@ var utils = {
         return;
       }
       btnViewDelegateBound = true;
-      (0, import_jquery.default)(document).off("click.BiliViewedBtnView", ".btnView").on("click.BiliViewedBtnView", ".btnView", function(e) {
-        var avId = (0, import_jquery.default)(this).data("av");
-        var view = (0, import_jquery.default)(this).data("view");
-        var setIsViewed = false;
-        if (view == 0) {
-          setIsViewed = true;
-        }
-        const changed = saveGMVideoList(avId, setIsViewed);
-        showInfoLog((setIsViewed ? "\u5DF2\u6807\u8BB0\u5DF2\u770B\uFF1A" : "\u5DF2\u6807\u8BB0\u672A\u770B\uFF1A") + avId, "success");
-        sound(changed === true ? "success" : changed === false ? "error" : "click");
-        (0, import_jquery.default)(".btnView").filter(function() {
-          return (0, import_jquery.default)(this).data("av") == avId;
-        }).each(function() {
-          updateBtnViewVisual((0, import_jquery.default)(this), setIsViewed);
-        });
-        return false;
-      });
+      (0, import_jquery.default)(document).off("click.BiliViewedBtnView", ".btnView").on("click.BiliViewedBtnView", ".btnView", handleViewedButtonClick);
     };
+    function handleViewedButtonClick(e) {
+      var avId = (0, import_jquery.default)(this).data("av");
+      var view = (0, import_jquery.default)(this).data("view");
+      var setIsViewed = false;
+      if (view == 0) {
+        setIsViewed = true;
+      }
+      const changed = saveGMVideoList(avId, setIsViewed);
+      showInfoLog((setIsViewed ? "\u5DF2\u6807\u8BB0\u5DF2\u770B\uFF1A" : "\u5DF2\u6807\u8BB0\u672A\u770B\uFF1A") + avId, "success");
+      sound(changed === true ? "success" : changed === false ? "error" : "click");
+      (0, import_jquery.default)(".btnView").filter(function() {
+        return (0, import_jquery.default)(this).data("av") == avId;
+      }).each(function() {
+        updateBtnViewVisual((0, import_jquery.default)(this), setIsViewed);
+      });
+      return false;
+    }
     var isView = 0;
     var videoArr = null;
     var isTextAreaHidden = true;
@@ -15771,6 +15841,9 @@ var utils = {
       if (typeof Element !== "undefined" && node instanceof Element && node.matches(selector)) {
         results.push(node);
       }
+      if (typeof Element !== "undefined" && node instanceof Element && node.shadowRoot) {
+        visit(node.shadowRoot);
+      }
       results.push(...Array.from(node.querySelectorAll(selector)));
       for (const el of Array.from(node.querySelectorAll("*"))) {
         if (el.shadowRoot) {
@@ -15856,11 +15929,40 @@ var utils = {
     const uid = parseUid(href) ?? parseUid(attr(ownerLink, "data-usercard-mid")) ?? parseUid(attr(ownerLink, "data-user-id"));
     return { uid, name: name || void 0 };
   }
+  function readCollectionVideoItem(row) {
+    const insertionEl = row.querySelector(".video-pod__item") || row;
+    const titleEl = row.querySelector(".video-episode-card__info-title,.title") || row;
+    const titleCopy = titleEl.cloneNode(true);
+    titleCopy.querySelectorAll(".btnView").forEach((node) => node.remove());
+    const title = attr(titleEl, "title") || text(titleCopy);
+    if (!title) return null;
+    const owner = getOwner(row);
+    return {
+      kind: "video",
+      el: row,
+      insertionEl,
+      collection: true,
+      title,
+      bv: parseBv(row.getAttribute("data-key") || row.querySelector('a[href*="/video/BV"]')?.href),
+      uid: owner.uid,
+      name: owner.name
+    };
+  }
   function collectVideoItems(root = document) {
     const anchors = Array.from(root.querySelectorAll('a[href*="/video/BV"]'));
     const seen = /* @__PURE__ */ new Set();
     const items = [];
+    const collectionSelector = ".pod-item,.video-episode-card,.multip .video-pod__item,.multip.grid .page";
+    for (const row of Array.from(root.querySelectorAll(collectionSelector))) {
+      if (row.closest("[data-bili-blocker-ui]")) continue;
+      if (row.parentElement?.closest(collectionSelector)) continue;
+      const item = readCollectionVideoItem(row);
+      if (!item) continue;
+      items.push(item);
+      seen.add(row);
+    }
     for (const anchor of anchors) {
+      if (anchor.closest(collectionSelector)) continue;
       const card = closestAny(anchor, videoCardSelectors);
       if (!card || seen.has(card)) {
         continue;
@@ -16116,6 +16218,57 @@ var utils = {
   // src/ui/atelier-assets.ts
   var atelierIcons = { tv: atelier_icon_default || luna.app, following: nav_users_default, settings: nav_control_panel_default, viewed: nav_recent_documents_default, data: nav_computer_default, video: luna.history };
 
+  // src/ui/window-drag.ts
+  function enableWindowDrag(panel, caption, signal) {
+    const positions = {};
+    let drag;
+    const mode = () => panel.dataset.minimized === "true" ? "minimized" : "normal";
+    const maximized = () => panel.dataset.maximized === "true" && mode() === "normal";
+    const place = (position) => {
+      const rect = panel.getBoundingClientRect();
+      position.x = Math.max(0, Math.min(Math.max(0, innerWidth - rect.width), position.x));
+      position.y = Math.max(0, Math.min(Math.max(0, innerHeight - rect.height), position.y));
+      Object.assign(panel.style, { left: `${position.x}px`, top: `${position.y}px`, right: "auto", bottom: "auto", margin: "0" });
+    };
+    const update = () => {
+      drag = void 0;
+      for (const property of ["left", "top", "right", "bottom", "margin"]) panel.style.removeProperty(property);
+      if (!maximized() && positions[mode()]) place(positions[mode()]);
+      caption.style.cursor = maximized() ? "default" : "move";
+    };
+    caption.style.touchAction = "none";
+    caption.querySelectorAll("img").forEach((img) => {
+      img.draggable = false;
+    });
+    caption.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || maximized() || event.target.closest("button")) return;
+      const rect = panel.getBoundingClientRect();
+      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, origin: { x: rect.left, y: rect.top }, moved: false };
+      caption.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    }, { signal });
+    caption.addEventListener("pointermove", (event) => {
+      if (!drag || drag.id !== event.pointerId) return;
+      if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 4) drag.moved = true;
+      if (!drag.moved) return;
+      const position = { x: drag.origin.x + event.clientX - drag.x, y: drag.origin.y + event.clientY - drag.y };
+      place(position);
+      positions[mode()] = position;
+    }, { signal });
+    const release = (event) => {
+      if (!drag || drag.id !== event.pointerId) return;
+      if (event.type === "pointercancel" && drag.moved) {
+        positions[mode()] = drag.origin;
+        place(drag.origin);
+      }
+      drag = void 0;
+    };
+    for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) caption.addEventListener(event, release, { signal });
+    window.addEventListener("resize", update, { signal });
+    update();
+    return update;
+  }
+
   // src/modules/blocker/panel.ts
   var categories = [
     { id: "user", label: "\u7528\u6237", description: "\u6309\u7528\u6237\u8EAB\u4EFD\u8FC7\u6EE4\u5185\u5BB9\uFF0C\u767D\u540D\u5355\u4F18\u5148\u4FDD\u7559\u3002", keys: ["precise_uid", "precise_uid_white", "name", "precise_name", "nameCanonical"] },
@@ -16294,6 +16447,7 @@ var utils = {
       const minimized = panel.dataset.minimized !== "true";
       if (minimized) syncPanel?.hideSecrets();
       panel.dataset.minimized = String(minimized);
+      updateWindowPosition();
       minimize.title = minimized ? "\u5C55\u5F00\u7A97\u53E3" : "\u6700\u5C0F\u5316";
       minimize.setAttribute("aria-label", minimize.title);
       sound(minimized ? "minimize" : "restore");
@@ -16304,6 +16458,7 @@ var utils = {
       minimize.setAttribute("aria-label", minimize.title);
       const maximized = panel.dataset.maximized !== "true";
       panel.dataset.maximized = String(maximized);
+      updateWindowPosition();
       maximize.title = maximized ? "\u8FD8\u539F\u7A97\u53E3" : "\u6700\u5927\u5316";
       maximize.setAttribute("aria-label", maximize.title);
       setCaptionImages(maximize, maximized ? "restore" : "maximize");
@@ -16311,6 +16466,7 @@ var utils = {
     });
     captionButton("close", "\u5173\u95ED\u7A97\u53E3", close);
     caption.append(icon(atelierIcons.tv, 24), title, captionActions);
+    const updateWindowPosition = enableWindowDrag(panel, caption, events.signal);
     const layout = element("div", "luna-layout");
     const sidebar = element("aside", "luna-sidebar");
     const nav = element("nav", "luna-nav");
@@ -16502,6 +16658,7 @@ var utils = {
       section = next;
       saveRules.hidden = !categories.some((category2) => category2.id === section);
       panel.dataset.minimized = "false";
+      updateWindowPosition();
       minimize.title = "\u6700\u5C0F\u5316";
       minimize.setAttribute("aria-label", minimize.title);
       syncSavedRules();
@@ -16597,6 +16754,17 @@ var utils = {
     sound("open");
   }
 
+  // src/modules/blocker/visibility.ts
+  var showingBlocked = false;
+  var blockedVisibilityChangedEvent = "atelier-blocked-visibility-changed";
+  function isShowingBlocked() {
+    return showingBlocked;
+  }
+  function toggleBlockedVisibility() {
+    showingBlocked = !showingBlocked;
+    window.dispatchEvent(new Event(blockedVisibilityChangedEvent));
+  }
+
   // src/modules/blocker/runtime.ts
   var actionClass2 = "bili-blocker-action";
   var inlineActionClass = "bili-blocker-inline-action";
@@ -16607,6 +16775,7 @@ var utils = {
   var hiddenAttribute = "data-bili-blocker-hidden";
   var previousDisplayAttribute = "data-bili-blocker-previous-display";
   var previousDisplayPriorityAttribute = "data-bili-blocker-previous-display-priority";
+  var hiddenElements = /* @__PURE__ */ new Set();
   var historyShortcutInstalled = false;
   var commentExpandFastScanInstalled = false;
   var userRuleKeys = /* @__PURE__ */ new Set(["precise_uid", "precise_name", "name", "nameCanonical"]);
@@ -16636,7 +16805,7 @@ var utils = {
     ".list-item"
   ];
   var commentFastScanRootSelectors = [...commentFastScanContainerSelectors, ...commentFastScanItemSelectors];
-  var commentExpandTextPattern = /展开|更多回复|查看(?:全部)?回复|加载更多|共\s*\d+\s*条?回复|还有\s*\d+/;
+  var commentExpandTextPattern = /展开|点击查看|更多回复|查看(?:全部)?回复|加载更多|共\s*\d+\s*条?回复|还有\s*\d+/;
   function ensureRuntimeStyle() {
     if (document.getElementById("bili-atelier-blocker-style")) {
       return;
@@ -16647,7 +16816,8 @@ var utils = {
 .${actionClass2}{position:absolute;top:4px;right:4px;z-index:20}
 .${inlineActionClass},.${homeVideoActionClass},.${homeLiveActionClass},.${profileActionClass},.${spaceProfileActionClass}{margin-left:8px;vertical-align:middle}
 .${homeVideoActionClass},.${homeLiveActionClass}{float:right;flex:0 0 auto;margin-left:auto}
-[${hiddenAttribute}="true"]{display:none!important}
+[${hiddenAttribute}="true"]:not([data-bili-blocker-revealed]){display:none!important}
+[data-bili-blocker-revealed]{outline:1px dashed #a33024;outline-offset:-1px}
 `;
     document.head.appendChild(style);
   }
@@ -16668,9 +16838,18 @@ var utils = {
       el.setAttribute(previousDisplayPriorityAttribute, el.style.getPropertyPriority("display") || "");
     }
     el.setAttribute(hiddenAttribute, "true");
-    el.style.setProperty("display", "none", "important");
+    hiddenElements.add(el);
+    applyBlockedVisibility(el);
     el.title = `Bili Atelier \u5DF2\u5C4F\u853D\uFF1A${decision.type} ${decision.matching}`;
     return newlyHidden;
+  }
+  function applyBlockedVisibility(el) {
+    el.toggleAttribute("data-bili-blocker-revealed", isShowingBlocked());
+    if (isShowingBlocked()) {
+      el.style.removeProperty("display");
+      const previous = el.getAttribute(previousDisplayAttribute);
+      if (previous) el.style.setProperty("display", previous, el.getAttribute(previousDisplayPriorityAttribute) || "");
+    } else el.style.setProperty("display", "none", "important");
   }
   function hideElement(item, decision) {
     const newlyHidden = hideRawElement(item.el, decision);
@@ -16687,6 +16866,8 @@ var utils = {
     const previousDisplay = el.getAttribute(previousDisplayAttribute) || "";
     const previousDisplayPriority = el.getAttribute(previousDisplayPriorityAttribute) || "";
     el.removeAttribute(hiddenAttribute);
+    hiddenElements.delete(el);
+    el.removeAttribute("data-bili-blocker-revealed");
     el.removeAttribute(previousDisplayAttribute);
     el.removeAttribute(previousDisplayPriorityAttribute);
     el.style.removeProperty("display");
@@ -17011,6 +17192,29 @@ var utils = {
       window.setTimeout(run, delayMs);
     }
   }
+  function commentMutationRoots(records2) {
+    const roots2 = /* @__PURE__ */ new Set();
+    const itemSelector = commentFastScanItemSelectors.join(",");
+    const isOwnUi = (node) => node instanceof Element && Boolean(node.closest(".atelier-control,[data-bili-blocker-ui]"));
+    for (const record of records2) {
+      const target = record.target instanceof Element ? record.target : record.target.parentElement;
+      if (target && isOwnUi(target)) continue;
+      const changed = [...record.addedNodes, ...record.removedNodes];
+      if (changed.length && changed.every(isOwnUi)) continue;
+      let node = record.target;
+      let owner = null;
+      while (node) {
+        if (node instanceof HTMLElement) owner = node.closest(itemSelector);
+        if (owner) break;
+        node = node instanceof ShadowRoot ? node.host : node.parentNode;
+      }
+      if (owner?.isConnected) roots2.add(owner);
+      else for (const added of record.addedNodes) {
+        if (added instanceof HTMLElement && added.isConnected && !isOwnUi(added)) roots2.add(added);
+      }
+    }
+    return roots2;
+  }
   function installCommentExpandFastScan(scanComments) {
     if (commentExpandFastScanInstalled) {
       return;
@@ -17228,12 +17432,10 @@ var utils = {
     return (item.insertionEl !== item.el ? item.insertionEl : null) || root.querySelector("#user-name,.user-name,.sub-user-name,.name,.user,.reply-info,.info") || item.el;
   }
   function insertInlineActionButton(target, button3) {
-    styleCompactButton(button3);
     if (target.tagName === "A" || target.matches("#user-name,.user-name,.sub-user-name,.name")) {
       target.insertAdjacentElement("afterend", button3);
-      return;
-    }
-    target.appendChild(button3);
+    } else target.appendChild(button3);
+    styleCompactButton(button3);
   }
   function isHomeVideoItem(item) {
     return item.kind === "video" && isHomePageLocation() && Boolean(item.el.closest(
@@ -17290,6 +17492,7 @@ var utils = {
       return;
     }
     if (item.kind === "video") {
+      if (item.collection) return;
       ensureHomeVideoActionButton(item, rescan);
       return;
     }
@@ -17383,7 +17586,9 @@ var utils = {
     const label = user.uid !== void 0 ? `UP ${user.uid}` : `UP ${user.name || ""}`;
     button3.dataset.userKey = spaceProfileUserKey(user);
     button3.dataset.blocked = blocked ? "true" : "";
-    button3.textContent = blocked ? "\u5DF2\u5C4F\u853D" : "\u5C4F\u853D";
+    if (blocked) button3.dataset.confirmBlock = "";
+    const labelText = blocked ? "\u5DF2\u5C4F\u853D" : button3.dataset.confirmBlock === "true" ? "\u786E\u8BA4\uFF1F" : "\u5C4F\u853D";
+    if (button3.textContent !== labelText) button3.textContent = labelText;
     button3.title = blocked ? `\u89E3\u9664\u5C4F\u853D ${label}` : `\u5C4F\u853D ${label}`;
     button3.disabled = false;
   }
@@ -17489,7 +17694,12 @@ var utils = {
     );
     for (const container of containers) {
       const searchRoot = container.shadowRoot || container;
-      if (container.closest("[data-bili-blocker-ui]") || searchRoot.querySelector(`.${profileActionClass}`)) {
+      if (container.closest("[data-bili-blocker-ui]")) {
+        continue;
+      }
+      const existing = searchRoot.querySelector(`.${profileActionClass}`);
+      if (existing) {
+        placeVideoUpAction(searchRoot, existing, "block");
         continue;
       }
       const user = extractProfileUser(container);
@@ -17514,6 +17724,7 @@ var utils = {
           rescan();
         }
       });
+      if (placeVideoUpAction(searchRoot, button3, "block")) continue;
       if (target.tagName === "A") {
         target.insertAdjacentElement("afterend", button3);
       } else {
@@ -17571,6 +17782,7 @@ var utils = {
       }
     };
     const scan = () => {
+      for (const el of hiddenElements) if (!el.isConnected) hiddenElements.delete(el);
       if (observer) {
         observeOpenShadowRoots(document, observer, observedShadowRoots);
       }
@@ -17594,6 +17806,13 @@ var utils = {
       ensureSpaceProfileBlockButton(scan);
     };
     const scheduleScan = debounce(scan, 300);
+    window.addEventListener(blockedVisibilityChangedEvent, () => {
+      for (const el of hiddenElements) {
+        if (el.isConnected) applyBlockedVisibility(el);
+        else hiddenElements.delete(el);
+      }
+      scan();
+    });
     window.addEventListener("atelier-sync-applied", scheduleScan);
     const start = () => {
       ensureRuntimeStyle();
@@ -17602,7 +17821,10 @@ var utils = {
       }
       installHistoryShortcut(scan);
       installCommentExpandFastScan(scanComments);
-      observer = new MutationObserver(scheduleScan);
+      observer = new MutationObserver((records2) => {
+        for (const root of commentMutationRoots(records2)) scanComments(root);
+        scheduleScan();
+      });
       observer.observe(document.body, { childList: true, subtree: true });
       scan();
       scheduleStartupScans(scan);
@@ -17688,6 +17910,25 @@ var utils = {
       menu.append(entry);
       entries.push(entry);
     }
+    const visibility = document.createElement("button");
+    visibility.type = "button";
+    visibility.setAttribute("role", "menuitemcheckbox");
+    const check = document.createElement("span");
+    check.className = "atelier-menu-check";
+    check.setAttribute("aria-hidden", "true");
+    visibility.append(check, document.createTextNode("\u4E34\u65F6\u663E\u793A\u88AB\u5C4F\u853D\u9879"));
+    const updateVisibility = () => {
+      visibility.setAttribute("aria-checked", String(isShowingBlocked()));
+      check.classList.toggle("checked", isShowingBlocked());
+    };
+    visibility.addEventListener("click", () => {
+      toggleBlockedVisibility();
+      toggle(false);
+    });
+    window.addEventListener(blockedVisibilityChangedEvent, updateVisibility);
+    updateVisibility();
+    menu.append(visibility);
+    entries.push(visibility);
     let edge = readUiPreferences().edge, y = readUiPreferences().y;
     const position = () => {
       host.dataset.edge = edge;
