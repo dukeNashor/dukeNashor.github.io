@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.3.0
+// @version      0.3.1
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -13539,6 +13539,10 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;box-shadow:none}${id}[
     return icon2;
   }
 
+  // src/modules/viewed/scan.ts
+  var viewedScanEvent = "atelier-viewed-scan";
+  var requestViewedScan = () => window.dispatchEvent(new Event(viewedScanEvent));
+
   // src/core/logger.ts
   function debugLog(...args) {
     if (config.debug) {
@@ -14613,8 +14617,9 @@ ${root} .adc-duration,${root} .adc-badge{position:absolute;${xpFont};padding:0 3
 ${root} .adc-duration{right:2px;bottom:2px}${root} .adc-badge{left:2px;top:2px;color:var(--xp-caption-ink);background:var(--xp-caption)}
 /* \u672A\u770B/\u5DF2\u770B stays in the panel, outside the video's link, 4px inside the
  * cover's top-right corner. No transform: it would stop Chrome snapping the
- * button's edges to device pixels. */
-${root} .adc-video>.btnView{position:absolute;left:auto;top:calc(var(--adc-pad) + 4px);right:calc(100% - var(--adc-pad) - var(--adc-cover-w) + 4px);bottom:auto}
+ * button's edges to device pixels. It is an opaque XP button the size of
+ * \u8F6C\u53D1/\u8BC4\u8BBA/\u70B9\u8D5E; the marker's own rule makes it see-through. */
+${root} .adc-video>.btnView{opacity:1;position:absolute;left:auto;top:calc(var(--adc-pad) + 4px);right:calc(100% - var(--adc-pad) - var(--adc-cover-w) + 4px);bottom:auto}
 ${root} .adc-media-info{display:flex;flex-direction:column;gap:3px;min-width:0}
 ${root} .adc-media-title{font-weight:bold;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 ${root} .adc-media-line{color:var(--xp-muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -14626,6 +14631,7 @@ ${root} .adc-last{display:flex;align-items:flex-end;gap:8px}
 ${root} .adc-last>:not(.adc-actions){flex:1;min-width:0}
 ${root} .adc-actions{flex:none;display:flex;gap:3px;margin-left:auto}
 ${root} .adc-actions .atelier-control{min-width:0}
+${root} .adc-video>.btnView.atelier-control{min-width:0;min-height:23px;padding:2px 9px!important}
 /* Cards keep the inactive caption bitmap but use the active caption's text. */
 ${root} .adc-card[data-inactive]>.xp-caption{color:var(--xp-caption-ink)}
 ${root} .adc-card[data-inactive]>.xp-caption .xp-caption-title{text-shadow:var(--xp-dot) var(--xp-dot) var(--xp-caption-shadow)}
@@ -19531,7 +19537,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
         list.append(card);
       }
       if (hidden) status2 += `\uFF1B\u5DF2\u5C4F\u853D ${hidden} \u6761`;
-      window.dispatchEvent(new Event("scroll"));
+      requestViewedScan();
     }
     function load(first2, force = false) {
       if (loading || !first2 && !more) return Promise.resolve();
@@ -19671,6 +19677,34 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       card.querySelector(".adc-footer")?.before(area.element);
       comments = { card, dispose: area.dispose };
     }
+    const viewedButton = (node3) => node3 instanceof Element && node3.matches(".adc-video > .btnView") ? node3 : null;
+    const syncViewed = (button5) => {
+      const pressed = String(button5.classList.contains("btnIsView"));
+      if (button5.getAttribute("aria-pressed") === pressed && button5.tabIndex === 0) return;
+      Object.assign(button5, { tabIndex: 0 });
+      button5.setAttribute("role", "button");
+      button5.setAttribute("aria-label", "\u5DF2\u770B");
+      button5.setAttribute("aria-pressed", pressed);
+    };
+    new MutationObserver((records2) => {
+      for (const record of records2) {
+        if (record.type === "attributes") {
+          const button5 = viewedButton(record.target);
+          if (button5) syncViewed(button5);
+          continue;
+        }
+        for (const added of record.addedNodes) {
+          if (!(added instanceof Element)) continue;
+          for (const button5 of [added, ...added.querySelectorAll(".btnView")]) if (viewedButton(button5)) syncViewed(button5);
+        }
+      }
+    }).observe(list, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+    list.addEventListener("keydown", (event) => {
+      const button5 = viewedButton(event.target);
+      if (!button5 || event.key !== " " && event.key !== "Enter") return;
+      event.preventDefault();
+      button5.click();
+    });
     list.addEventListener("click", (event) => {
       const control = event.target.closest(".adc-actions [data-action]");
       const card = control?.closest(".adc-card.xp-window"), raw = card && cards.get(card);
@@ -19838,7 +19872,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
         ensurePageControls();
         observeCrispText(root3);
         root3.addEventListener("click", (event) => {
-          if (event.target.closest?.("button:not(:disabled)")) sound("click");
+          if (event.target.closest?.("button:not(:disabled), .btnView")) sound("click");
         });
         root3.addEventListener("change", (event) => {
           if (event.target.matches?.("input,select")) sound("select");
@@ -21777,6 +21811,7 @@ var utils = {
         GM_addStyle(spaceStyle);
         setMethod = setSpacePage;
         setPageScrollMethod();
+        window.addEventListener(viewedScanEvent, scheduleSpaceObservedRefresh);
         if ((0, import_jquery.default)(".bili-dyn-up-list__item").length == 0) {
           setTimeout(function() {
             (0, import_jquery.default)(".bili-dyn-up-list__item").unbind("click").click(function() {
