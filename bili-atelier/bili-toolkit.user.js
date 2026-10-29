@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.3.1
+// @version      0.3.2
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -13056,7 +13056,9 @@ ${id} .atelier-appearance-preview .preview-message{left:150px;top:96px;width:180
 ${id} .atelier-appearance-preview .preview-body{flex:1;margin:4px;padding:4px;background:var(--xp-window);border:1px solid var(--xp-edge)}
 ${id} .atelier-appearance-preview .preview-message .preview-body{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:8px}
 ${id} .atelier-appearance-row{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;gap:8px}
-${id}[data-maximized=true]{inset:0;width:auto;height:auto;box-shadow:none}${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw - 24px));height:auto;margin:0}${id}[data-minimized=true] :is(.luna-layout,.xp-status){display:none}
+${id}[data-maximized=true]{inset:0;width:auto;height:auto;box-shadow:none}
+${id}[data-maximized=true] .luna-rules-content{display:flex;flex-direction:column}${id}[data-maximized=true] .luna-rules-content>*{flex-shrink:0}${id}[data-maximized=true] .luna-editor-host{flex:1 0 auto;display:flex;flex-direction:column}${id}[data-maximized=true] .luna-editor{flex:1 0 auto;resize:none}
+${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw - 24px));height:auto;margin:0}${id}[data-minimized=true] :is(.luna-layout,.xp-status){display:none}
 #atelier-launcher{position:fixed;z-index:2147483500;width:44px;height:44px;isolation:isolate;color:var(--xp-ink);${xpFont}}
 #atelier-launcher [hidden]{display:none!important}#atelier-launcher .atelier-launcher-button{width:44px;height:44px;min-width:0;padding:4px;touch-action:none;box-shadow:1px 2px 4px #0004}
 #atelier-launcher img{width:16px;height:16px;object-fit:contain}#atelier-launcher .atelier-launcher-button img{width:32px;height:32px}
@@ -16572,7 +16574,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     caption.append(icon(atelierIcons.tv, 16), title, captionActions);
     const updateWindowPosition = enableWindowDrag(panel, caption, events.signal);
     const layout = element("div", "luna-layout");
-    const sidebar = element("aside", "luna-sidebar xp-taskpane");
+    const sidebar = element("div", "luna-sidebar xp-taskpane");
     const group = element("section", "xp-task-group");
     group.dataset.special = "";
     const groupHead = button2("\u5DE5\u4F5C\u53F0", () => {
@@ -16597,7 +16599,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     breadcrumb.append(document.createTextNode("\u5730\u5740"), address);
     const sectionTabs = element("nav", "luna-section-tabs xp-tabs");
     sectionTabs.setAttribute("aria-label", "\u5F53\u524D\u680F\u76EE\u5B50\u9875\u9762");
-    const content = element("main", "luna-content");
+    const content = element("div", "luna-content");
     const footer = element("footer", "luna-footer");
     const saveRules = button2("\u4FDD\u5B58\u89C4\u5219", save, "luna-button luna-button-primary xp-default");
     footer.append(saveRules, button2("\u5173\u95ED", close));
@@ -16613,7 +16615,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       const tabs2 = element("div", "luna-rule-tabs");
       tabs2.setAttribute("role", "tablist");
       tabs2.setAttribute("aria-label", category.label + "\u5339\u914D\u65B9\u5F0F");
-      const editorHost = element("div");
+      const editorHost = element("div", "luna-editor-host");
       editorHost.setAttribute("role", "tabpanel");
       editorHost.id = "bili-atelier-rule-editor";
       const modeButtons = /* @__PURE__ */ new Map();
@@ -16798,6 +16800,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       content.replaceChildren();
       content.classList.toggle("xp-tabpanel", !!tabs2.length);
       content.classList.toggle("luna-following-content", section === "following");
+      content.classList.toggle("luna-rules-content", !!category);
       if (section === "following") {
         followingPanel ??= mountLocalFollowingPanel();
         content.append(followingPanel.host);
