@@ -1,18 +1,99 @@
 {
-  "version": "0.2.2",
+  "version": "0.3.0",
   "baseUrl": "https://dukenashor.github.io/bili-atelier",
   "script": {
     "file": "bili-toolkit.user.js",
-    "sha256": "8d2b0cd779b93f78a2f9c097d1f4eb5c71406997609d4697684887dd29c1db25"
+    "sha256": "9da0c987d208b300feece718b7b7808a0a063e98bd2ca1c3bbdd3069f85b984d"
   },
   "metadata": {
     "file": "bili-toolkit.meta.js",
-    "sha256": "cbf42dd09ba2bac5c746e91a0b3390fa92772b8959799cff0df2ac975afa926e"
+    "sha256": "29a0e86c0bcc36c75d056900eec670f0b7dcd1bf2b676092296f53d5ae962f70"
   },
   "resources": [
     {
+      "name": "atelier_xp_simsun_12_bold_woff",
+      "source": "src/ui/assets/fonts/xp-simsun-12-bold.woff",
+      "file": "resources/xp-simsun-12-bold.dc3fef4f30a1a0227505e99c4ccf77657fb19ac04e8bd319f2a1b598673fa6ce.woff",
+      "sha256": "dc3fef4f30a1a0227505e99c4ccf77657fb19ac04e8bd319f2a1b598673fa6ce",
+      "bytes": 687168,
+      "mimeType": "font/woff",
+      "url": "https://dukenashor.github.io/bili-atelier/resources/xp-simsun-12-bold.dc3fef4f30a1a0227505e99c4ccf77657fb19ac04e8bd319f2a1b598673fa6ce.woff"
+    },
+    {
+      "name": "atelier_xp_simsun_12_woff",
+      "source": "src/ui/assets/fonts/xp-simsun-12.woff",
+      "file": "resources/xp-simsun-12.fc911e4307d83bd87b76bd8aff89fd490b22e96ebc2ba36d07c0ceacdd797d2f.woff",
+      "sha256": "fc911e4307d83bd87b76bd8aff89fd490b22e96ebc2ba36d07c0ceacdd797d2f",
+      "bytes": 848972,
+      "mimeType": "font/woff",
+      "url": "https://dukenashor.github.io/bili-atelier/resources/xp-simsun-12.fc911e4307d83bd87b76bd8aff89fd490b22e96ebc2ba36d07c0ceacdd797d2f.woff"
+    },
+    {
+      "name": "atelier_xp_simsun_15_bold_woff",
+      "source": "src/ui/assets/fonts/xp-simsun-15-bold.woff",
+      "file": "resources/xp-simsun-15-bold.a7e6845efb689319b1560634465640e7ffb56f41190fb3e2f802f520d57d395a.woff",
+      "sha256": "a7e6845efb689319b1560634465640e7ffb56f41190fb3e2f802f520d57d395a",
+      "bytes": 943228,
+      "mimeType": "font/woff",
+      "url": "https://dukenashor.github.io/bili-atelier/resources/xp-simsun-15-bold.a7e6845efb689319b1560634465640e7ffb56f41190fb3e2f802f520d57d395a.woff"
+    },
+    {
+      "name": "atelier_xp_simsun_15_woff",
+      "source": "src/ui/assets/fonts/xp-simsun-15.woff",
+      "file": "resources/xp-simsun-15.81258b3cb2894a7fb6d20e9a971285f5c14435cf651edde55f446d185dd760dd.woff",
+      "sha256": "81258b3cb2894a7fb6d20e9a971285f5c14435cf651edde55f446d185dd760dd",
+      "bytes": 1074064,
+      "mimeType": "font/woff",
+      "url": "https://dukenashor.github.io/bili-atelier/resources/xp-simsun-15.81258b3cb2894a7fb6d20e9a971285f5c14435cf651edde55f446d185dd760dd.woff"
+    },
+    {
+      "name": "atelier_xp_simsun_18_bold_woff",
+      "source": "src/ui/assets/fonts/xp-simsun-18-bold.woff",
+      "file": "resources/xp-simsun-18-bold.a85cebd488807914f31075269da1da93a6c63d48bacdfcedf7b2f0cb42d50ec7.woff",
+      "sha256": "a85cebd488807914f31075269da1da93a6c63d48bacdfcedf7b2f0cb42d50ec7",
+      "bytes": 1131396,
+      "mimeType": "font/woff",
+      "url": "https://dukenashor.github.io/bili-atelier/resources/xp-simsun-18-bold.a85cebd488807914f31075269da1da93a6c63d48bacdfcedf7b2f0cb42d50ec7.woff"
+    },
+    {
+      "name": "atelier_xp_simsun_18_woff",
+      "source": "src/ui/assets/fonts/xp-simsun-18.woff",
+      "file": "resources/xp-simsun-18.fd3d9b68af0e4c88a7102ed1ad3501447dbf91179bca72fd53727396ecfa88d3.woff",
+      "sha256": "fd3d9b68af0e4c88a7102ed1ad3501447dbf91179bca72fd53727396ecfa88d3",
+      "bytes": 1223884,
+      "mimeType": "font/woff",
+      "url": "https://dukenashor.github.io/bili-atelier/resources/xp-simsun-18.fd3d9b68af0e4c88a7102ed1ad3501447dbf91179bca72fd53727396ecfa88d3.woff"
+    },
+    {
+      "name": "atelier_blue_png",
+      "source": "src/ui/assets/luna/blue.png",
+      "file": "resources/blue.c0acc29a2d8e4655d952713b5732a69aa8db50462f1ab43a90b3ae40f3667bd8.png",
+      "sha256": "c0acc29a2d8e4655d952713b5732a69aa8db50462f1ab43a90b3ae40f3667bd8",
+      "bytes": 68195,
+      "mimeType": "image/png",
+      "url": "https://dukenashor.github.io/bili-atelier/resources/blue.c0acc29a2d8e4655d952713b5732a69aa8db50462f1ab43a90b3ae40f3667bd8.png"
+    },
+    {
+      "name": "atelier_olive_png",
+      "source": "src/ui/assets/luna/olive.png",
+      "file": "resources/olive.c69dc259aad8740762850846a09a39b16ce5a29804150846031cdbc155c80f56.png",
+      "sha256": "c69dc259aad8740762850846a09a39b16ce5a29804150846031cdbc155c80f56",
+      "bytes": 64875,
+      "mimeType": "image/png",
+      "url": "https://dukenashor.github.io/bili-atelier/resources/olive.c69dc259aad8740762850846a09a39b16ce5a29804150846031cdbc155c80f56.png"
+    },
+    {
+      "name": "atelier_silver_png",
+      "source": "src/ui/assets/luna/silver.png",
+      "file": "resources/silver.ff5811615f16d9b326dd2aa3ad1f8ca7f8e62795428b38fd5dda47beb53fa739.png",
+      "sha256": "ff5811615f16d9b326dd2aa3ad1f8ca7f8e62795428b38fd5dda47beb53fa739",
+      "bytes": 57408,
+      "mimeType": "image/png",
+      "url": "https://dukenashor.github.io/bili-atelier/resources/silver.ff5811615f16d9b326dd2aa3ad1f8ca7f8e62795428b38fd5dda47beb53fa739.png"
+    },
+    {
       "name": "atelier_atelier_icon_png",
-      "source": "src/ui/assets/luna-olive/atelier-icon.png",
+      "source": "src/ui/assets/xp-icons/atelier-icon.png",
       "file": "resources/atelier-icon.ccd5f55ad48331ba0f53cdc3badba82c6b2b221127182f25bafa0a92e917e3ae.png",
       "sha256": "ccd5f55ad48331ba0f53cdc3badba82c6b2b221127182f25bafa0a92e917e3ae",
       "bytes": 620469,
@@ -20,40 +101,22 @@
       "url": "https://dukenashor.github.io/bili-atelier/resources/atelier-icon.ccd5f55ad48331ba0f53cdc3badba82c6b2b221127182f25bafa0a92e917e3ae.png"
     },
     {
-      "name": "atelier_xp_text_bold_json",
-      "source": "src/ui/assets/luna-olive/xp-text-bold.json",
-      "file": "resources/xp-text-bold.ecec6c165471d55c7efea47106c91f47e5552af5104044feae5fbeffb09322f8.json",
-      "sha256": "ecec6c165471d55c7efea47106c91f47e5552af5104044feae5fbeffb09322f8",
-      "bytes": 473522,
-      "mimeType": "application/json",
-      "url": "https://dukenashor.github.io/bili-atelier/resources/xp-text-bold.ecec6c165471d55c7efea47106c91f47e5552af5104044feae5fbeffb09322f8.json"
-    },
-    {
-      "name": "atelier_xp_text_bold_png",
-      "source": "src/ui/assets/luna-olive/xp-text-bold.png",
-      "file": "resources/xp-text-bold.f4f0c8c086eb4e5bda4e9f858ce7643e35ee98a4ad94387b3759fc38f7b72e13.png",
-      "sha256": "f4f0c8c086eb4e5bda4e9f858ce7643e35ee98a4ad94387b3759fc38f7b72e13",
-      "bytes": 645712,
+      "name": "atelier_shell32_16_png",
+      "source": "src/ui/assets/xp-shell/shell32-16.png",
+      "file": "resources/shell32-16.0fc14f2323592711fd45f5e0e98cc446b48313c492a11900e78edca3b297156b.png",
+      "sha256": "0fc14f2323592711fd45f5e0e98cc446b48313c492a11900e78edca3b297156b",
+      "bytes": 77577,
       "mimeType": "image/png",
-      "url": "https://dukenashor.github.io/bili-atelier/resources/xp-text-bold.f4f0c8c086eb4e5bda4e9f858ce7643e35ee98a4ad94387b3759fc38f7b72e13.png"
+      "url": "https://dukenashor.github.io/bili-atelier/resources/shell32-16.0fc14f2323592711fd45f5e0e98cc446b48313c492a11900e78edca3b297156b.png"
     },
     {
-      "name": "atelier_xp_text_regular_json",
-      "source": "src/ui/assets/luna-olive/xp-text-regular.json",
-      "file": "resources/xp-text-regular.9a8c561311395774f715c3872bbde2dd6a811864723af09f50d5806818f4e6e6.json",
-      "sha256": "9a8c561311395774f715c3872bbde2dd6a811864723af09f50d5806818f4e6e6",
-      "bytes": 473522,
-      "mimeType": "application/json",
-      "url": "https://dukenashor.github.io/bili-atelier/resources/xp-text-regular.9a8c561311395774f715c3872bbde2dd6a811864723af09f50d5806818f4e6e6.json"
-    },
-    {
-      "name": "atelier_xp_text_regular_png",
-      "source": "src/ui/assets/luna-olive/xp-text-regular.png",
-      "file": "resources/xp-text-regular.068f6dd91cf7a45be26c26626023bfc6bef6e3af11489a9526977c45d8879ab4.png",
-      "sha256": "068f6dd91cf7a45be26c26626023bfc6bef6e3af11489a9526977c45d8879ab4",
-      "bytes": 752158,
+      "name": "atelier_shell32_32_png",
+      "source": "src/ui/assets/xp-shell/shell32-32.png",
+      "file": "resources/shell32-32.c6045c34489aa85118f41bca46792a781fee04070c1308c3d3f8217e3268a92a.png",
+      "sha256": "c6045c34489aa85118f41bca46792a781fee04070c1308c3d3f8217e3268a92a",
+      "bytes": 244712,
       "mimeType": "image/png",
-      "url": "https://dukenashor.github.io/bili-atelier/resources/xp-text-regular.068f6dd91cf7a45be26c26626023bfc6bef6e3af11489a9526977c45d8879ab4.png"
+      "url": "https://dukenashor.github.io/bili-atelier/resources/shell32-32.c6045c34489aa85118f41bca46792a781fee04070c1308c3d3f8217e3268a92a.png"
     },
     {
       "name": "atelier_xpballn_wav",

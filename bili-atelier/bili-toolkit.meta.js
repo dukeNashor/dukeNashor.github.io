@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.2.2
+// @version      0.3.0
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -28,11 +28,18 @@
 // @grant        GM_getResourceURL
 // @grant        GM_getResourceText
 // @license      MIT
+// @resource     atelier_xp_simsun_12_bold_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-12-bold.dc3fef4f30a1a0227505e99c4ccf77657fb19ac04e8bd319f2a1b598673fa6ce.woff#sha256=dc3fef4f30a1a0227505e99c4ccf77657fb19ac04e8bd319f2a1b598673fa6ce
+// @resource     atelier_xp_simsun_12_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-12.fc911e4307d83bd87b76bd8aff89fd490b22e96ebc2ba36d07c0ceacdd797d2f.woff#sha256=fc911e4307d83bd87b76bd8aff89fd490b22e96ebc2ba36d07c0ceacdd797d2f
+// @resource     atelier_xp_simsun_15_bold_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-15-bold.a7e6845efb689319b1560634465640e7ffb56f41190fb3e2f802f520d57d395a.woff#sha256=a7e6845efb689319b1560634465640e7ffb56f41190fb3e2f802f520d57d395a
+// @resource     atelier_xp_simsun_15_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-15.81258b3cb2894a7fb6d20e9a971285f5c14435cf651edde55f446d185dd760dd.woff#sha256=81258b3cb2894a7fb6d20e9a971285f5c14435cf651edde55f446d185dd760dd
+// @resource     atelier_xp_simsun_18_bold_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-18-bold.a85cebd488807914f31075269da1da93a6c63d48bacdfcedf7b2f0cb42d50ec7.woff#sha256=a85cebd488807914f31075269da1da93a6c63d48bacdfcedf7b2f0cb42d50ec7
+// @resource     atelier_xp_simsun_18_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-18.fd3d9b68af0e4c88a7102ed1ad3501447dbf91179bca72fd53727396ecfa88d3.woff#sha256=fd3d9b68af0e4c88a7102ed1ad3501447dbf91179bca72fd53727396ecfa88d3
+// @resource     atelier_blue_png https://dukenashor.github.io/bili-atelier/resources/blue.c0acc29a2d8e4655d952713b5732a69aa8db50462f1ab43a90b3ae40f3667bd8.png#sha256=c0acc29a2d8e4655d952713b5732a69aa8db50462f1ab43a90b3ae40f3667bd8
+// @resource     atelier_olive_png https://dukenashor.github.io/bili-atelier/resources/olive.c69dc259aad8740762850846a09a39b16ce5a29804150846031cdbc155c80f56.png#sha256=c69dc259aad8740762850846a09a39b16ce5a29804150846031cdbc155c80f56
+// @resource     atelier_silver_png https://dukenashor.github.io/bili-atelier/resources/silver.ff5811615f16d9b326dd2aa3ad1f8ca7f8e62795428b38fd5dda47beb53fa739.png#sha256=ff5811615f16d9b326dd2aa3ad1f8ca7f8e62795428b38fd5dda47beb53fa739
 // @resource     atelier_atelier_icon_png https://dukenashor.github.io/bili-atelier/resources/atelier-icon.ccd5f55ad48331ba0f53cdc3badba82c6b2b221127182f25bafa0a92e917e3ae.png#sha256=ccd5f55ad48331ba0f53cdc3badba82c6b2b221127182f25bafa0a92e917e3ae
-// @resource     atelier_xp_text_bold_json https://dukenashor.github.io/bili-atelier/resources/xp-text-bold.ecec6c165471d55c7efea47106c91f47e5552af5104044feae5fbeffb09322f8.json#sha256=ecec6c165471d55c7efea47106c91f47e5552af5104044feae5fbeffb09322f8
-// @resource     atelier_xp_text_bold_png https://dukenashor.github.io/bili-atelier/resources/xp-text-bold.f4f0c8c086eb4e5bda4e9f858ce7643e35ee98a4ad94387b3759fc38f7b72e13.png#sha256=f4f0c8c086eb4e5bda4e9f858ce7643e35ee98a4ad94387b3759fc38f7b72e13
-// @resource     atelier_xp_text_regular_json https://dukenashor.github.io/bili-atelier/resources/xp-text-regular.9a8c561311395774f715c3872bbde2dd6a811864723af09f50d5806818f4e6e6.json#sha256=9a8c561311395774f715c3872bbde2dd6a811864723af09f50d5806818f4e6e6
-// @resource     atelier_xp_text_regular_png https://dukenashor.github.io/bili-atelier/resources/xp-text-regular.068f6dd91cf7a45be26c26626023bfc6bef6e3af11489a9526977c45d8879ab4.png#sha256=068f6dd91cf7a45be26c26626023bfc6bef6e3af11489a9526977c45d8879ab4
+// @resource     atelier_shell32_16_png https://dukenashor.github.io/bili-atelier/resources/shell32-16.0fc14f2323592711fd45f5e0e98cc446b48313c492a11900e78edca3b297156b.png#sha256=0fc14f2323592711fd45f5e0e98cc446b48313c492a11900e78edca3b297156b
+// @resource     atelier_shell32_32_png https://dukenashor.github.io/bili-atelier/resources/shell32-32.c6045c34489aa85118f41bca46792a781fee04070c1308c3d3f8217e3268a92a.png#sha256=c6045c34489aa85118f41bca46792a781fee04070c1308c3d3f8217e3268a92a
 // @resource     atelier_xpballn_wav https://dukenashor.github.io/bili-atelier/resources/xpballn.c9de87a87b68dd754fa29f2989c240949ad9b1f0423d019ca68afcd86e107639.wav#sha256=c9de87a87b68dd754fa29f2989c240949ad9b1f0423d019ca68afcd86e107639
 // @resource     atelier_xpbatcrt_wav https://dukenashor.github.io/bili-atelier/resources/xpbatcrt.cb02dd9f8b4d18aab9a5c51a26faac12e861dd362800a12292f243432a982325.wav#sha256=cb02dd9f8b4d18aab9a5c51a26faac12e861dd362800a12292f243432a982325
 // @resource     atelier_xpbatlow_wav https://dukenashor.github.io/bili-atelier/resources/xpbatlow.bd4a58b1e2b8e93bcf5b76df3e4a9f67ce0926107a5702ed6bac0e63466a22fd.wav#sha256=bd4a58b1e2b8e93bcf5b76df3e4a9f67ce0926107a5702ed6bac0e63466a22fd

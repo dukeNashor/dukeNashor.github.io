@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.2.2
+// @version      0.3.0
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -28,11 +28,18 @@
 // @grant        GM_getResourceURL
 // @grant        GM_getResourceText
 // @license      MIT
+// @resource     atelier_xp_simsun_12_bold_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-12-bold.dc3fef4f30a1a0227505e99c4ccf77657fb19ac04e8bd319f2a1b598673fa6ce.woff#sha256=dc3fef4f30a1a0227505e99c4ccf77657fb19ac04e8bd319f2a1b598673fa6ce
+// @resource     atelier_xp_simsun_12_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-12.fc911e4307d83bd87b76bd8aff89fd490b22e96ebc2ba36d07c0ceacdd797d2f.woff#sha256=fc911e4307d83bd87b76bd8aff89fd490b22e96ebc2ba36d07c0ceacdd797d2f
+// @resource     atelier_xp_simsun_15_bold_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-15-bold.a7e6845efb689319b1560634465640e7ffb56f41190fb3e2f802f520d57d395a.woff#sha256=a7e6845efb689319b1560634465640e7ffb56f41190fb3e2f802f520d57d395a
+// @resource     atelier_xp_simsun_15_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-15.81258b3cb2894a7fb6d20e9a971285f5c14435cf651edde55f446d185dd760dd.woff#sha256=81258b3cb2894a7fb6d20e9a971285f5c14435cf651edde55f446d185dd760dd
+// @resource     atelier_xp_simsun_18_bold_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-18-bold.a85cebd488807914f31075269da1da93a6c63d48bacdfcedf7b2f0cb42d50ec7.woff#sha256=a85cebd488807914f31075269da1da93a6c63d48bacdfcedf7b2f0cb42d50ec7
+// @resource     atelier_xp_simsun_18_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-18.fd3d9b68af0e4c88a7102ed1ad3501447dbf91179bca72fd53727396ecfa88d3.woff#sha256=fd3d9b68af0e4c88a7102ed1ad3501447dbf91179bca72fd53727396ecfa88d3
+// @resource     atelier_blue_png https://dukenashor.github.io/bili-atelier/resources/blue.c0acc29a2d8e4655d952713b5732a69aa8db50462f1ab43a90b3ae40f3667bd8.png#sha256=c0acc29a2d8e4655d952713b5732a69aa8db50462f1ab43a90b3ae40f3667bd8
+// @resource     atelier_olive_png https://dukenashor.github.io/bili-atelier/resources/olive.c69dc259aad8740762850846a09a39b16ce5a29804150846031cdbc155c80f56.png#sha256=c69dc259aad8740762850846a09a39b16ce5a29804150846031cdbc155c80f56
+// @resource     atelier_silver_png https://dukenashor.github.io/bili-atelier/resources/silver.ff5811615f16d9b326dd2aa3ad1f8ca7f8e62795428b38fd5dda47beb53fa739.png#sha256=ff5811615f16d9b326dd2aa3ad1f8ca7f8e62795428b38fd5dda47beb53fa739
 // @resource     atelier_atelier_icon_png https://dukenashor.github.io/bili-atelier/resources/atelier-icon.ccd5f55ad48331ba0f53cdc3badba82c6b2b221127182f25bafa0a92e917e3ae.png#sha256=ccd5f55ad48331ba0f53cdc3badba82c6b2b221127182f25bafa0a92e917e3ae
-// @resource     atelier_xp_text_bold_json https://dukenashor.github.io/bili-atelier/resources/xp-text-bold.ecec6c165471d55c7efea47106c91f47e5552af5104044feae5fbeffb09322f8.json#sha256=ecec6c165471d55c7efea47106c91f47e5552af5104044feae5fbeffb09322f8
-// @resource     atelier_xp_text_bold_png https://dukenashor.github.io/bili-atelier/resources/xp-text-bold.f4f0c8c086eb4e5bda4e9f858ce7643e35ee98a4ad94387b3759fc38f7b72e13.png#sha256=f4f0c8c086eb4e5bda4e9f858ce7643e35ee98a4ad94387b3759fc38f7b72e13
-// @resource     atelier_xp_text_regular_json https://dukenashor.github.io/bili-atelier/resources/xp-text-regular.9a8c561311395774f715c3872bbde2dd6a811864723af09f50d5806818f4e6e6.json#sha256=9a8c561311395774f715c3872bbde2dd6a811864723af09f50d5806818f4e6e6
-// @resource     atelier_xp_text_regular_png https://dukenashor.github.io/bili-atelier/resources/xp-text-regular.068f6dd91cf7a45be26c26626023bfc6bef6e3af11489a9526977c45d8879ab4.png#sha256=068f6dd91cf7a45be26c26626023bfc6bef6e3af11489a9526977c45d8879ab4
+// @resource     atelier_shell32_16_png https://dukenashor.github.io/bili-atelier/resources/shell32-16.0fc14f2323592711fd45f5e0e98cc446b48313c492a11900e78edca3b297156b.png#sha256=0fc14f2323592711fd45f5e0e98cc446b48313c492a11900e78edca3b297156b
+// @resource     atelier_shell32_32_png https://dukenashor.github.io/bili-atelier/resources/shell32-32.c6045c34489aa85118f41bca46792a781fee04070c1308c3d3f8217e3268a92a.png#sha256=c6045c34489aa85118f41bca46792a781fee04070c1308c3d3f8217e3268a92a
 // @resource     atelier_xpballn_wav https://dukenashor.github.io/bili-atelier/resources/xpballn.c9de87a87b68dd754fa29f2989c240949ad9b1f0423d019ca68afcd86e107639.wav#sha256=c9de87a87b68dd754fa29f2989c240949ad9b1f0423d019ca68afcd86e107639
 // @resource     atelier_xpbatcrt_wav https://dukenashor.github.io/bili-atelier/resources/xpbatcrt.cb02dd9f8b4d18aab9a5c51a26faac12e861dd362800a12292f243432a982325.wav#sha256=cb02dd9f8b4d18aab9a5c51a26faac12e861dd362800a12292f243432a982325
 // @resource     atelier_xpbatlow_wav https://dukenashor.github.io/bili-atelier/resources/xpbatlow.bd4a58b1e2b8e93bcf5b76df3e4a9f67ce0926107a5702ed6bac0e63466a22fd.wav#sha256=bd4a58b1e2b8e93bcf5b76df3e4a9f67ce0926107a5702ed6bac0e63466a22fd
@@ -214,12 +221,12 @@
       exports.isValid = function isValid(level) {
         return level && typeof level.bit !== "undefined" && level.bit >= 0 && level.bit < 4;
       };
-      exports.from = function from(value, defaultValue) {
-        if (exports.isValid(value)) {
-          return value;
+      exports.from = function from(value2, defaultValue) {
+        if (exports.isValid(value2)) {
+          return value2;
         }
         try {
-          return fromString(value);
+          return fromString(value2);
         } catch (e) {
           return defaultValue;
         }
@@ -273,16 +280,16 @@
         this.data = new Uint8Array(size * size);
         this.reservedBit = new Uint8Array(size * size);
       }
-      BitMatrix.prototype.set = function(row, col, value, reserved) {
+      BitMatrix.prototype.set = function(row, col, value2, reserved) {
         const index = row * this.size + col;
-        this.data[index] = value;
+        this.data[index] = value2;
         if (reserved) this.reservedBit[index] = true;
       };
       BitMatrix.prototype.get = function(row, col) {
         return this.data[row * this.size + col];
       };
-      BitMatrix.prototype.xor = function(row, col, value) {
-        this.data[row * this.size + col] ^= value;
+      BitMatrix.prototype.xor = function(row, col, value2) {
+        this.data[row * this.size + col] ^= value2;
       };
       BitMatrix.prototype.isReserved = function(row, col) {
         return this.reservedBit[row * this.size + col];
@@ -367,8 +374,8 @@
       exports.isValid = function isValid(mask) {
         return mask != null && mask !== "" && !isNaN(mask) && mask >= 0 && mask <= 7;
       };
-      exports.from = function from(value) {
-        return exports.isValid(value) ? parseInt(value, 10) : void 0;
+      exports.from = function from(value2) {
+        return exports.isValid(value2) ? parseInt(value2, 10) : void 0;
       };
       exports.getPenaltyN1 = function getPenaltyN1(data) {
         const size = data.size;
@@ -472,14 +479,14 @@
         const numPatterns = Object.keys(exports.Patterns).length;
         let bestPattern = 0;
         let lowerPenalty = Infinity;
-        for (let p = 0; p < numPatterns; p++) {
-          setupFormatFunc(p);
-          exports.applyMask(p, data);
+        for (let p2 = 0; p2 < numPatterns; p2++) {
+          setupFormatFunc(p2);
+          exports.applyMask(p2, data);
           const penalty = exports.getPenaltyN1(data) + exports.getPenaltyN2(data) + exports.getPenaltyN3(data) + exports.getPenaltyN4(data);
-          exports.applyMask(p, data);
+          exports.applyMask(p2, data);
           if (penalty < lowerPenalty) {
             lowerPenalty = penalty;
-            bestPattern = p;
+            bestPattern = p2;
           }
         }
         return bestPattern;
@@ -1054,12 +1061,12 @@
             throw new Error("Unknown mode: " + string);
         }
       }
-      exports.from = function from(value, defaultValue) {
-        if (exports.isValid(value)) {
-          return value;
+      exports.from = function from(value2, defaultValue) {
+        if (exports.isValid(value2)) {
+          return value2;
         }
         try {
-          return fromString(value);
+          return fromString(value2);
         } catch (e) {
           return defaultValue;
         }
@@ -1105,9 +1112,9 @@
         }
         return void 0;
       }
-      exports.from = function from(value, defaultValue) {
-        if (VersionCheck.isValid(value)) {
-          return parseInt(value, 10);
+      exports.from = function from(value2, defaultValue) {
+        if (VersionCheck.isValid(value2)) {
+          return parseInt(value2, 10);
         }
         return defaultValue;
       };
@@ -1198,17 +1205,17 @@
         return NumericData.getBitsLength(this.data.length);
       };
       NumericData.prototype.write = function write(bitBuffer) {
-        let i, group, value;
+        let i, group, value2;
         for (i = 0; i + 3 <= this.data.length; i += 3) {
           group = this.data.substr(i, 3);
-          value = parseInt(group, 10);
-          bitBuffer.put(value, 10);
+          value2 = parseInt(group, 10);
+          bitBuffer.put(value2, 10);
         }
         const remainingNum = this.data.length - i;
         if (remainingNum > 0) {
           group = this.data.substr(i);
-          value = parseInt(group, 10);
-          bitBuffer.put(value, remainingNum * 3 + 1);
+          value2 = parseInt(group, 10);
+          bitBuffer.put(value2, remainingNum * 3 + 1);
         }
       };
       module.exports = NumericData;
@@ -1282,9 +1289,9 @@
       AlphanumericData.prototype.write = function write(bitBuffer) {
         let i;
         for (i = 0; i + 2 <= this.data.length; i += 2) {
-          let value = ALPHA_NUM_CHARS.indexOf(this.data[i]) * 45;
-          value += ALPHA_NUM_CHARS.indexOf(this.data[i + 1]);
-          bitBuffer.put(value, 11);
+          let value2 = ALPHA_NUM_CHARS.indexOf(this.data[i]) * 45;
+          value2 += ALPHA_NUM_CHARS.indexOf(this.data[i + 1]);
+          bitBuffer.put(value2, 11);
         }
         if (this.data.length % 2) {
           bitBuffer.put(ALPHA_NUM_CHARS.indexOf(this.data[i]), 6);
@@ -1345,18 +1352,18 @@
       KanjiData.prototype.write = function(bitBuffer) {
         let i;
         for (i = 0; i < this.data.length; i++) {
-          let value = Utils.toSJIS(this.data[i]);
-          if (value >= 33088 && value <= 40956) {
-            value -= 33088;
-          } else if (value >= 57408 && value <= 60351) {
-            value -= 49472;
+          let value2 = Utils.toSJIS(this.data[i]);
+          if (value2 >= 33088 && value2 <= 40956) {
+            value2 -= 33088;
+          } else if (value2 >= 57408 && value2 <= 60351) {
+            value2 -= 49472;
           } else {
             throw new Error(
               "Invalid SJIS character: " + this.data[i] + "\nMake sure your charset is UTF-8"
             );
           }
-          value = (value >>> 8 & 255) * 192 + (value & 255);
-          bitBuffer.put(value, 13);
+          value2 = (value2 >>> 8 & 255) * 192 + (value2 & 255);
+          bitBuffer.put(value2, 13);
         }
       };
       module.exports = KanjiData;
@@ -1442,8 +1449,8 @@
            * Add a new item to the queue and ensure the highest priority element
            * is at the front of the queue.
            */
-          push: function(value, cost) {
-            var item = { value, cost };
+          push: function(value2, cost) {
+            var item = { value: value2, cost };
             this.queue.push(item);
             this.queue.sort(this.sorter);
           },
@@ -1577,19 +1584,19 @@
           const nodeGroup = nodes[i];
           const currentNodeIds = [];
           for (let j = 0; j < nodeGroup.length; j++) {
-            const node = nodeGroup[j];
+            const node3 = nodeGroup[j];
             const key2 = "" + i + j;
             currentNodeIds.push(key2);
-            table[key2] = { node, lastCount: 0 };
+            table[key2] = { node: node3, lastCount: 0 };
             graph[key2] = {};
             for (let n = 0; n < prevNodeIds.length; n++) {
               const prevNodeId = prevNodeIds[n];
-              if (table[prevNodeId] && table[prevNodeId].node.mode === node.mode) {
-                graph[prevNodeId][key2] = getSegmentBitsLength(table[prevNodeId].lastCount + node.length, node.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node.mode);
-                table[prevNodeId].lastCount += node.length;
+              if (table[prevNodeId] && table[prevNodeId].node.mode === node3.mode) {
+                graph[prevNodeId][key2] = getSegmentBitsLength(table[prevNodeId].lastCount + node3.length, node3.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node3.mode);
+                table[prevNodeId].lastCount += node3.length;
               } else {
-                if (table[prevNodeId]) table[prevNodeId].lastCount = node.length;
-                graph[prevNodeId][key2] = getSegmentBitsLength(node.length, node.mode) + 4 + Mode.getCharCountIndicator(node.mode, version);
+                if (table[prevNodeId]) table[prevNodeId].lastCount = node3.length;
+                graph[prevNodeId][key2] = getSegmentBitsLength(node3.length, node3.mode) + 4 + Mode.getCharCountIndicator(node3.mode, version);
               }
             }
           }
@@ -1688,9 +1695,9 @@
       function setupTimingPattern(matrix) {
         const size = matrix.size;
         for (let r = 8; r < size - 8; r++) {
-          const value = r % 2 === 0;
-          matrix.set(r, 6, value, true);
-          matrix.set(6, r, value, true);
+          const value2 = r % 2 === 0;
+          matrix.set(r, 6, value2, true);
+          matrix.set(6, r, value2, true);
         }
       }
       function setupAlignmentPattern(matrix, version) {
@@ -1943,13 +1950,13 @@
       exports.getOptions = function getOptions(options) {
         if (!options) options = {};
         if (!options.color) options.color = {};
-        const margin = typeof options.margin === "undefined" || options.margin === null || options.margin < 0 ? 4 : options.margin;
-        const width = options.width && options.width >= 21 ? options.width : void 0;
+        const margin2 = typeof options.margin === "undefined" || options.margin === null || options.margin < 0 ? 4 : options.margin;
+        const width2 = options.width && options.width >= 21 ? options.width : void 0;
         const scale = options.scale || 4;
         return {
-          width,
-          scale: width ? 4 : scale,
-          margin,
+          width: width2,
+          scale: width2 ? 4 : scale,
+          margin: margin2,
           color: {
             dark: hex2rgba(options.color.dark || "#000000ff"),
             light: hex2rgba(options.color.light || "#ffffffff")
@@ -2010,7 +2017,7 @@
           throw new Error("You need to specify a canvas element");
         }
       }
-      exports.render = function render(qrData, canvas, options) {
+      exports.render = function render2(qrData, canvas, options) {
         let opts = options;
         let canvasEl = canvas;
         if (typeof opts === "undefined" && (!canvas || !canvas.getContext)) {
@@ -2023,10 +2030,10 @@
         opts = Utils.getOptions(opts);
         const size = Utils.getImageWidth(qrData.modules.size, opts);
         const ctx = canvasEl.getContext("2d");
-        const image = ctx.createImageData(size, size);
-        Utils.qrToImageData(image.data, qrData, opts);
+        const image3 = ctx.createImageData(size, size);
+        Utils.qrToImageData(image3.data, qrData, opts);
         clearCanvas(ctx, canvasEl, size);
-        ctx.putImageData(image, 0, 0);
+        ctx.putImageData(image3, 0, 0);
         return canvasEl;
       };
       exports.renderToDataURL = function renderToDataURL(qrData, canvas, options) {
@@ -2058,7 +2065,7 @@
         if (typeof y !== "undefined") str += " " + y;
         return str;
       }
-      function qrToPath(data, size, margin) {
+      function qrToPath(data, size, margin2) {
         let path = "";
         let moveBy = 0;
         let newRow = false;
@@ -2070,7 +2077,7 @@
           if (data[i]) {
             lineLength++;
             if (!(i > 0 && col > 0 && data[i - 1])) {
-              path += newRow ? svgCmd("M", col + margin, 0.5 + row + margin) : svgCmd("m", moveBy, 0);
+              path += newRow ? svgCmd("M", col + margin2, 0.5 + row + margin2) : svgCmd("m", moveBy, 0);
               moveBy = 0;
               newRow = false;
             }
@@ -2084,7 +2091,7 @@
         }
         return path;
       }
-      exports.render = function render(qrData, options, cb) {
+      exports.render = function render2(qrData, options, cb) {
         const opts = Utils.getOptions(options);
         const size = qrData.modules.size;
         const data = qrData.modules.data;
@@ -2092,8 +2099,8 @@
         const bg = !opts.color.light.a ? "" : "<path " + getColorAttrib(opts.color.light, "fill") + ' d="M0 0h' + qrcodesize + "v" + qrcodesize + 'H0z"/>';
         const path = "<path " + getColorAttrib(opts.color.dark, "stroke") + ' d="' + qrToPath(data, size, opts.margin) + '"/>';
         const viewBox = 'viewBox="0 0 ' + qrcodesize + " " + qrcodesize + '"';
-        const width = !opts.width ? "" : 'width="' + opts.width + '" height="' + opts.width + '" ';
-        const svgTag = '<svg xmlns="http://www.w3.org/2000/svg" ' + width + viewBox + ' shape-rendering="crispEdges">' + bg + path + "</svg>\n";
+        const width2 = !opts.width ? "" : 'width="' + opts.width + '" height="' + opts.width + '" ';
+        const svgTag = '<svg xmlns="http://www.w3.org/2000/svg" ' + width2 + viewBox + ' shape-rendering="crispEdges">' + bg + path + "</svg>\n";
         if (typeof cb === "function") {
           cb(null, svgTag);
         }
@@ -2218,13 +2225,13 @@
           nonce: true,
           noModule: true
         };
-        function DOMEval(code, node, doc) {
+        function DOMEval(code, node3, doc) {
           doc = doc || document2;
           var i, val, script = doc.createElement("script");
           script.text = code;
-          if (node) {
+          if (node3) {
             for (i in preservedScriptAttributes) {
-              val = node[i] || node.getAttribute && node.getAttribute(i);
+              val = node3[i] || node3.getAttribute && node3.getAttribute(i);
               if (val) {
                 script.setAttribute(i, val);
               }
@@ -2400,10 +2407,10 @@
           },
           // Retrieve the text value of an array of DOM nodes
           text: function(elem) {
-            var node, ret = "", i = 0, nodeType = elem.nodeType;
+            var node3, ret = "", i = 0, nodeType = elem.nodeType;
             if (!nodeType) {
-              while (node = elem[i++]) {
-                ret += jQuery.text(node);
+              while (node3 = elem[i++]) {
+                ret += jQuery.text(node3);
               }
             }
             if (nodeType === 1 || nodeType === 11) {
@@ -2461,20 +2468,20 @@
           },
           // arg is for internal usage only
           map: function(elems, callback, arg) {
-            var length, value, i = 0, ret = [];
+            var length, value2, i = 0, ret = [];
             if (isArrayLike(elems)) {
               length = elems.length;
               for (; i < length; i++) {
-                value = callback(elems[i], i, arg);
-                if (value != null) {
-                  ret.push(value);
+                value2 = callback(elems[i], i, arg);
+                if (value2 != null) {
+                  ret.push(value2);
                 }
               }
             } else {
               for (i in elems) {
-                value = callback(elems[i], i, arg);
-                if (value != null) {
-                  ret.push(value);
+                value2 = callback(elems[i], i, arg);
+                if (value2 != null) {
+                  ret.push(value2);
                 }
               }
             }
@@ -2665,11 +2672,11 @@
           }
           function createCache() {
             var keys = [];
-            function cache(key2, value) {
+            function cache(key2, value2) {
               if (keys.push(key2 + " ") > Expr.cacheLength) {
                 delete cache[keys.shift()];
               }
-              return cache[key2 + " "] = value;
+              return cache[key2 + " "] = value2;
             }
             return cache;
           }
@@ -2737,8 +2744,8 @@
           function testContext(context) {
             return context && typeof context.getElementsByTagName !== "undefined" && context;
           }
-          function setDocument(node) {
-            var subWindow, doc = node ? node.ownerDocument || node : preferredDoc;
+          function setDocument(node3) {
+            var subWindow, doc = node3 ? node3.ownerDocument || node3 : preferredDoc;
             if (doc == document3 || doc.nodeType !== 9 || !doc.documentElement) {
               return document3;
             }
@@ -2788,23 +2795,23 @@
               Expr.filter.ID = function(id) {
                 var attrId = id.replace(runescape, funescape);
                 return function(elem) {
-                  var node2 = typeof elem.getAttributeNode !== "undefined" && elem.getAttributeNode("id");
-                  return node2 && node2.value === attrId;
+                  var node4 = typeof elem.getAttributeNode !== "undefined" && elem.getAttributeNode("id");
+                  return node4 && node4.value === attrId;
                 };
               };
               Expr.find.ID = function(id, context) {
                 if (typeof context.getElementById !== "undefined" && documentIsHTML) {
-                  var node2, i2, elems, elem = context.getElementById(id);
+                  var node4, i2, elems, elem = context.getElementById(id);
                   if (elem) {
-                    node2 = elem.getAttributeNode("id");
-                    if (node2 && node2.value === id) {
+                    node4 = elem.getAttributeNode("id");
+                    if (node4 && node4.value === id) {
                       return [elem];
                     }
                     elems = context.getElementsByName(id);
                     i2 = 0;
                     while (elem = elems[i2++]) {
-                      node2 = elem.getAttributeNode("id");
-                      if (node2 && node2.value === id) {
+                      node4 = elem.getAttributeNode("id");
+                      if (node4 && node4.value === id) {
                         return [elem];
                       }
                     }
@@ -3054,13 +3061,13 @@
                     return !!elem.parentNode;
                   }
                 ) : function(elem, _context, xml) {
-                  var cache, outerCache, node, nodeIndex, start, dir2 = simple !== forward ? "nextSibling" : "previousSibling", parent = elem.parentNode, name = ofType && elem.nodeName.toLowerCase(), useCache = !xml && !ofType, diff = false;
+                  var cache, outerCache, node3, nodeIndex, start, dir2 = simple !== forward ? "nextSibling" : "previousSibling", parent = elem.parentNode, name = ofType && elem.nodeName.toLowerCase(), useCache = !xml && !ofType, diff = false;
                   if (parent) {
                     if (simple) {
                       while (dir2) {
-                        node = elem;
-                        while (node = node[dir2]) {
-                          if (ofType ? nodeName(node, name) : node.nodeType === 1) {
+                        node3 = elem;
+                        while (node3 = node3[dir2]) {
+                          if (ofType ? nodeName(node3, name) : node3.nodeType === 1) {
                             return false;
                           }
                         }
@@ -3074,10 +3081,10 @@
                       cache = outerCache[type] || [];
                       nodeIndex = cache[0] === dirruns && cache[1];
                       diff = nodeIndex && cache[2];
-                      node = nodeIndex && parent.childNodes[nodeIndex];
-                      while (node = ++nodeIndex && node && node[dir2] || // Fallback to seeking `elem` from the start
+                      node3 = nodeIndex && parent.childNodes[nodeIndex];
+                      while (node3 = ++nodeIndex && node3 && node3[dir2] || // Fallback to seeking `elem` from the start
                       (diff = nodeIndex = 0) || start.pop()) {
-                        if (node.nodeType === 1 && ++diff && node === elem) {
+                        if (node3.nodeType === 1 && ++diff && node3 === elem) {
                           outerCache[type] = [dirruns, nodeIndex, diff];
                           break;
                         }
@@ -3090,13 +3097,13 @@
                         diff = nodeIndex;
                       }
                       if (diff === false) {
-                        while (node = ++nodeIndex && node && node[dir2] || (diff = nodeIndex = 0) || start.pop()) {
-                          if ((ofType ? nodeName(node, name) : node.nodeType === 1) && ++diff) {
+                        while (node3 = ++nodeIndex && node3 && node3[dir2] || (diff = nodeIndex = 0) || start.pop()) {
+                          if ((ofType ? nodeName(node3, name) : node3.nodeType === 1) && ++diff) {
                             if (useCache) {
-                              outerCache = node[expando] || (node[expando] = {});
+                              outerCache = node3[expando] || (node3[expando] = {});
                               outerCache[type] = [dirruns, diff];
                             }
-                            if (node === elem) {
+                            if (node3 === elem) {
                               break;
                             }
                           }
@@ -3346,7 +3353,7 @@
             return selector;
           }
           function addCombinator(matcher, combinator, base) {
-            var dir2 = combinator.dir, skip = combinator.next, key2 = skip || dir2, checkNonElements = base && key2 === "parentNode", doneName = done++;
+            var dir2 = combinator.dir, skip2 = combinator.next, key2 = skip2 || dir2, checkNonElements = base && key2 === "parentNode", doneName = done++;
             return combinator.first ? (
               // Check against closest ancestor/preceding element
               function(elem, context, xml) {
@@ -3373,7 +3380,7 @@
                   while (elem = elem[dir2]) {
                     if (elem.nodeType === 1 || checkNonElements) {
                       outerCache = elem[expando] || (elem[expando] = {});
-                      if (skip && nodeName(elem, skip)) {
+                      if (skip2 && nodeName(elem, skip2)) {
                         elem = elem[dir2] || elem;
                       } else if ((oldCache = outerCache[key2]) && oldCache[0] === dirruns && oldCache[1] === doneName) {
                         return newCache[2] = oldCache[2];
@@ -3765,12 +3772,12 @@
             ).length;
           }
         });
-        var rootjQuery, rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/, init = jQuery.fn.init = function(selector, context, root) {
+        var rootjQuery, rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/, init = jQuery.fn.init = function(selector, context, root3) {
           var match, elem;
           if (!selector) {
             return this;
           }
-          root = root || rootjQuery;
+          root3 = root3 || rootjQuery;
           if (typeof selector === "string") {
             if (selector[0] === "<" && selector[selector.length - 1] === ">" && selector.length >= 3) {
               match = [null, selector, null];
@@ -3804,7 +3811,7 @@
                 return this;
               }
             } else if (!context || context.jquery) {
-              return (context || root).find(selector);
+              return (context || root3).find(selector);
             } else {
               return this.constructor(context).find(selector);
             }
@@ -3813,7 +3820,7 @@
             this.length = 1;
             return this;
           } else if (isFunction(selector)) {
-            return root.ready !== void 0 ? root.ready(selector) : (
+            return root3.ready !== void 0 ? root3.ready(selector) : (
               // Execute immediately if ready is not present
               selector(jQuery)
             );
@@ -4093,18 +4100,18 @@
         function Thrower(ex) {
           throw ex;
         }
-        function adoptValue(value, resolve, reject, noValue) {
+        function adoptValue(value2, resolve, reject, noValue) {
           var method;
           try {
-            if (value && isFunction(method = value.promise)) {
-              method.call(value).done(resolve).fail(reject);
-            } else if (value && isFunction(method = value.then)) {
-              method.call(value, resolve, reject);
+            if (value2 && isFunction(method = value2.promise)) {
+              method.call(value2).done(resolve).fail(reject);
+            } else if (value2 && isFunction(method = value2.then)) {
+              method.call(value2, resolve, reject);
             } else {
-              resolve.apply(void 0, [value].slice(noValue));
+              resolve.apply(void 0, [value2].slice(noValue));
             }
-          } catch (value2) {
-            reject.apply(void 0, [value2]);
+          } catch (value3) {
+            reject.apply(void 0, [value3]);
           }
         }
         jQuery.extend({
@@ -4135,9 +4142,9 @@
                 1,
                 "rejected"
               ]
-            ], state = "pending", promise = {
+            ], state2 = "pending", promise = {
               state: function() {
-                return state;
+                return state2;
               },
               always: function() {
                 deferred.done(arguments).fail(arguments);
@@ -4280,7 +4287,7 @@
               if (stateString) {
                 list.add(
                   function() {
-                    state = stateString;
+                    state2 = stateString;
                   },
                   // rejected_callbacks.disable
                   // fulfilled_callbacks.disable
@@ -4310,9 +4317,9 @@
           // Deferred helper
           when: function(singleValue) {
             var remaining = arguments.length, i = remaining, resolveContexts = Array(i), resolveValues = slice.call(arguments), primary = jQuery.Deferred(), updateFunc = function(i2) {
-              return function(value) {
+              return function(value2) {
                 resolveContexts[i2] = this;
-                resolveValues[i2] = arguments.length > 1 ? slice.call(arguments) : value;
+                resolveValues[i2] = arguments.length > 1 ? slice.call(arguments) : value2;
                 if (!--remaining) {
                   primary.resolveWith(resolveContexts, resolveValues);
                 }
@@ -4387,26 +4394,26 @@
           document2.addEventListener("DOMContentLoaded", completed);
           window2.addEventListener("load", completed);
         }
-        var access = function(elems, fn, key2, value, chainable, emptyGet, raw) {
+        var access = function(elems, fn, key2, value2, chainable, emptyGet, raw) {
           var i = 0, len = elems.length, bulk = key2 == null;
           if (toType(key2) === "object") {
             chainable = true;
             for (i in key2) {
               access(elems, fn, i, key2[i], true, emptyGet, raw);
             }
-          } else if (value !== void 0) {
+          } else if (value2 !== void 0) {
             chainable = true;
-            if (!isFunction(value)) {
+            if (!isFunction(value2)) {
               raw = true;
             }
             if (bulk) {
               if (raw) {
-                fn.call(elems, value);
+                fn.call(elems, value2);
                 fn = null;
               } else {
                 bulk = fn;
-                fn = function(elem, _key, value2) {
-                  return bulk.call(jQuery(elem), value2);
+                fn = function(elem, _key, value3) {
+                  return bulk.call(jQuery(elem), value3);
                 };
               }
             }
@@ -4415,7 +4422,7 @@
                 fn(
                   elems[i],
                   key2,
-                  raw ? value : value.call(elems[i], i, fn(elems[i], key2))
+                  raw ? value2 : value2.call(elems[i], i, fn(elems[i], key2))
                 );
               }
             }
@@ -4444,26 +4451,26 @@
         Data.uid = 1;
         Data.prototype = {
           cache: function(owner) {
-            var value = owner[this.expando];
-            if (!value) {
-              value = {};
+            var value2 = owner[this.expando];
+            if (!value2) {
+              value2 = {};
               if (acceptData(owner)) {
                 if (owner.nodeType) {
-                  owner[this.expando] = value;
+                  owner[this.expando] = value2;
                 } else {
                   Object.defineProperty(owner, this.expando, {
-                    value,
+                    value: value2,
                     configurable: true
                   });
                 }
               }
             }
-            return value;
+            return value2;
           },
-          set: function(owner, data, value) {
+          set: function(owner, data, value2) {
             var prop, cache = this.cache(owner);
             if (typeof data === "string") {
-              cache[camelCase(data)] = value;
+              cache[camelCase(data)] = value2;
             } else {
               for (prop in data) {
                 cache[camelCase(prop)] = data[prop];
@@ -4477,12 +4484,12 @@
               owner[this.expando] && owner[this.expando][camelCase(key2)]
             );
           },
-          access: function(owner, key2, value) {
-            if (key2 === void 0 || key2 && typeof key2 === "string" && value === void 0) {
+          access: function(owner, key2, value2) {
+            if (key2 === void 0 || key2 && typeof key2 === "string" && value2 === void 0) {
               return this.get(owner, key2);
             }
-            this.set(owner, key2, value);
-            return value !== void 0 ? value : key2;
+            this.set(owner, key2, value2);
+            return value2 !== void 0 ? value2 : key2;
           },
           remove: function(owner, key2) {
             var i, cache = owner[this.expando];
@@ -4572,7 +4579,7 @@
           }
         });
         jQuery.fn.extend({
-          data: function(key2, value) {
+          data: function(key2, value2) {
             var i, name, data, elem = this[0], attrs = elem && elem.attributes;
             if (key2 === void 0) {
               if (this.length) {
@@ -4598,9 +4605,9 @@
                 dataUser.set(this, key2);
               });
             }
-            return access(this, function(value2) {
+            return access(this, function(value3) {
               var data2;
-              if (elem && value2 === void 0) {
+              if (elem && value3 === void 0) {
                 data2 = dataUser.get(elem, key2);
                 if (data2 !== void 0) {
                   return data2;
@@ -4612,9 +4619,9 @@
                 return;
               }
               this.each(function() {
-                dataUser.set(this, key2, value2);
+                dataUser.set(this, key2, value3);
               });
-            }, null, value, arguments.length > 1, null, true);
+            }, null, value2, arguments.length > 1, null, true);
           },
           removeData: function(key2) {
             return this.each(function() {
@@ -4698,8 +4705,8 @@
           // Get a promise resolved when queues of a certain type
           // are emptied (fx is the type by default)
           promise: function(type, obj) {
-            var tmp, count = 1, defer = jQuery.Deferred(), elements = this, i = this.length, resolve = function() {
-              if (!--count) {
+            var tmp, count2 = 1, defer = jQuery.Deferred(), elements = this, i = this.length, resolve = function() {
+              if (!--count2) {
                 defer.resolveWith(elements, [elements]);
               }
             };
@@ -4711,7 +4718,7 @@
             while (i--) {
               tmp = dataPriv.get(elements[i], type + "queueHooks");
               if (tmp && tmp.empty) {
-                count++;
+                count2++;
                 tmp.empty.add(resolve);
               }
             }
@@ -4825,9 +4832,9 @@
           hide: function() {
             return showHide(this);
           },
-          toggle: function(state) {
-            if (typeof state === "boolean") {
-              return state ? this.show() : this.hide();
+          toggle: function(state2) {
+            if (typeof state2 === "boolean") {
+              return state2 ? this.show() : this.hide();
             }
             return this.each(function() {
               if (isHiddenWithinTree(this)) {
@@ -5191,12 +5198,12 @@
                   return this.originalEvent[name];
                 }
               },
-              set: function(value) {
+              set: function(value2) {
                 Object.defineProperty(this, name, {
                   enumerable: true,
                   configurable: true,
                   writable: true,
-                  value
+                  value: value2
                 });
               }
             });
@@ -5561,12 +5568,12 @@
         }
         function domManip(collection, args, callback, ignored) {
           args = flat(args);
-          var fragment, first2, scripts, hasScripts, node, doc, i = 0, l = collection.length, iNoClone = l - 1, value = args[0], valueIsFunction = isFunction(value);
-          if (valueIsFunction || l > 1 && typeof value === "string" && !support.checkClone && rchecked.test(value)) {
+          var fragment, first2, scripts, hasScripts, node3, doc, i = 0, l = collection.length, iNoClone = l - 1, value2 = args[0], valueIsFunction = isFunction(value2);
+          if (valueIsFunction || l > 1 && typeof value2 === "string" && !support.checkClone && rchecked.test(value2)) {
             return collection.each(function(index) {
               var self = collection.eq(index);
               if (valueIsFunction) {
-                args[0] = value.call(this, index, self.html());
+                args[0] = value2.call(this, index, self.html());
               }
               domManip(self, args, callback, ignored);
             });
@@ -5581,29 +5588,29 @@
               scripts = jQuery.map(getAll(fragment, "script"), disableScript);
               hasScripts = scripts.length;
               for (; i < l; i++) {
-                node = fragment;
+                node3 = fragment;
                 if (i !== iNoClone) {
-                  node = jQuery.clone(node, true, true);
+                  node3 = jQuery.clone(node3, true, true);
                   if (hasScripts) {
-                    jQuery.merge(scripts, getAll(node, "script"));
+                    jQuery.merge(scripts, getAll(node3, "script"));
                   }
                 }
-                callback.call(collection[i], node, i);
+                callback.call(collection[i], node3, i);
               }
               if (hasScripts) {
                 doc = scripts[scripts.length - 1].ownerDocument;
                 jQuery.map(scripts, restoreScript);
                 for (i = 0; i < hasScripts; i++) {
-                  node = scripts[i];
-                  if (rscriptType.test(node.type || "") && !dataPriv.access(node, "globalEval") && jQuery.contains(doc, node)) {
-                    if (node.src && (node.type || "").toLowerCase() !== "module") {
-                      if (jQuery._evalUrl && !node.noModule) {
-                        jQuery._evalUrl(node.src, {
-                          nonce: node.nonce || node.getAttribute("nonce")
+                  node3 = scripts[i];
+                  if (rscriptType.test(node3.type || "") && !dataPriv.access(node3, "globalEval") && jQuery.contains(doc, node3)) {
+                    if (node3.src && (node3.type || "").toLowerCase() !== "module") {
+                      if (jQuery._evalUrl && !node3.noModule) {
+                        jQuery._evalUrl(node3.src, {
+                          nonce: node3.nonce || node3.getAttribute("nonce")
                         }, doc);
                       }
                     } else {
-                      DOMEval(node.textContent.replace(rcleanScript, ""), node, doc);
+                      DOMEval(node3.textContent.replace(rcleanScript, ""), node3, doc);
                     }
                   }
                 }
@@ -5613,16 +5620,16 @@
           return collection;
         }
         function remove(elem, selector, keepData) {
-          var node, nodes = selector ? jQuery.filter(selector, elem) : elem, i = 0;
-          for (; (node = nodes[i]) != null; i++) {
-            if (!keepData && node.nodeType === 1) {
-              jQuery.cleanData(getAll(node));
+          var node3, nodes = selector ? jQuery.filter(selector, elem) : elem, i = 0;
+          for (; (node3 = nodes[i]) != null; i++) {
+            if (!keepData && node3.nodeType === 1) {
+              jQuery.cleanData(getAll(node3));
             }
-            if (node.parentNode) {
-              if (keepData && isAttached(node)) {
-                setGlobalEval(getAll(node, "script"));
+            if (node3.parentNode) {
+              if (keepData && isAttached(node3)) {
+                setGlobalEval(getAll(node3, "script"));
               }
-              node.parentNode.removeChild(node);
+              node3.parentNode.removeChild(node3);
             }
           }
           return elem;
@@ -5687,14 +5694,14 @@
           remove: function(selector) {
             return remove(this, selector);
           },
-          text: function(value) {
-            return access(this, function(value2) {
-              return value2 === void 0 ? jQuery.text(this) : this.empty().each(function() {
+          text: function(value2) {
+            return access(this, function(value3) {
+              return value3 === void 0 ? jQuery.text(this) : this.empty().each(function() {
                 if (this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9) {
-                  this.textContent = value2;
+                  this.textContent = value3;
                 }
               });
-            }, null, value, arguments.length);
+            }, null, value2, arguments.length);
           },
           append: function() {
             return domManip(this, arguments, function(elem) {
@@ -5743,20 +5750,20 @@
               return jQuery.clone(this, dataAndEvents, deepDataAndEvents);
             });
           },
-          html: function(value) {
-            return access(this, function(value2) {
+          html: function(value2) {
+            return access(this, function(value3) {
               var elem = this[0] || {}, i = 0, l = this.length;
-              if (value2 === void 0 && elem.nodeType === 1) {
+              if (value3 === void 0 && elem.nodeType === 1) {
                 return elem.innerHTML;
               }
-              if (typeof value2 === "string" && !rnoInnerhtml.test(value2) && !wrapMap[(rtagName.exec(value2) || ["", ""])[1].toLowerCase()]) {
-                value2 = jQuery.htmlPrefilter(value2);
+              if (typeof value3 === "string" && !rnoInnerhtml.test(value3) && !wrapMap[(rtagName.exec(value3) || ["", ""])[1].toLowerCase()]) {
+                value3 = jQuery.htmlPrefilter(value3);
                 try {
                   for (; i < l; i++) {
                     elem = this[i] || {};
                     if (elem.nodeType === 1) {
                       jQuery.cleanData(getAll(elem, false));
-                      elem.innerHTML = value2;
+                      elem.innerHTML = value3;
                     }
                   }
                   elem = 0;
@@ -5764,9 +5771,9 @@
                 }
               }
               if (elem) {
-                this.empty().append(value2);
+                this.empty().append(value3);
               }
-            }, null, value, arguments.length);
+            }, null, value2, arguments.length);
           },
           replaceWith: function() {
             var ignored = [];
@@ -5900,7 +5907,7 @@
           });
         })();
         function curCSS(elem, name, computed) {
-          var width, minWidth, maxWidth, ret, isCustomProp = rcustomProp.test(name), style = elem.style;
+          var width2, minWidth, maxWidth, ret, isCustomProp = rcustomProp.test(name), style = elem.style;
           computed = computed || getStyles(elem);
           if (computed) {
             ret = computed.getPropertyValue(name) || computed[name];
@@ -5911,12 +5918,12 @@
               ret = jQuery.style(elem, name);
             }
             if (!support.pixelBoxStyles() && rnumnonpx.test(ret) && rboxStyle.test(name)) {
-              width = style.width;
+              width2 = style.width;
               minWidth = style.minWidth;
               maxWidth = style.maxWidth;
               style.minWidth = style.maxWidth = style.width = ret;
               ret = computed.width;
-              style.width = width;
+              style.width = width2;
               style.minWidth = minWidth;
               style.maxWidth = maxWidth;
             }
@@ -5962,12 +5969,12 @@
           letterSpacing: "0",
           fontWeight: "400"
         };
-        function setPositiveNumber(_elem, value, subtract) {
-          var matches = rcssNum.exec(value);
+        function setPositiveNumber(_elem, value2, subtract) {
+          var matches = rcssNum.exec(value2);
           return matches ? (
             // Guard against undefined "subtract", e.g., when used as in cssHooks
             Math.max(0, matches[2] - (subtract || 0)) + (matches[3] || "px")
-          ) : value;
+          ) : value2;
         }
         function boxModelAdjustment(elem, dimension, box, isBorderBox, styles, computedVal) {
           var i = dimension === "width" ? 1 : 0, extra = 0, delta = 0, marginDelta = 0;
@@ -6086,7 +6093,7 @@
           // setting or getting the value
           cssProps: {},
           // Get and set the style property on a DOM Node
-          style: function(elem, name, value, extra) {
+          style: function(elem, name, value2, extra) {
             if (!elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style) {
               return;
             }
@@ -6095,26 +6102,26 @@
               name = finalPropName(origName);
             }
             hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName];
-            if (value !== void 0) {
-              type = typeof value;
-              if (type === "string" && (ret = rcssNum.exec(value)) && ret[1]) {
-                value = adjustCSS(elem, name, ret);
+            if (value2 !== void 0) {
+              type = typeof value2;
+              if (type === "string" && (ret = rcssNum.exec(value2)) && ret[1]) {
+                value2 = adjustCSS(elem, name, ret);
                 type = "number";
               }
-              if (value == null || value !== value) {
+              if (value2 == null || value2 !== value2) {
                 return;
               }
               if (type === "number" && !isCustomProp) {
-                value += ret && ret[3] || (jQuery.cssNumber[origName] ? "" : "px");
+                value2 += ret && ret[3] || (jQuery.cssNumber[origName] ? "" : "px");
               }
-              if (!support.clearCloneStyle && value === "" && name.indexOf("background") === 0) {
+              if (!support.clearCloneStyle && value2 === "" && name.indexOf("background") === 0) {
                 style[name] = "inherit";
               }
-              if (!hooks || !("set" in hooks) || (value = hooks.set(elem, value, extra)) !== void 0) {
+              if (!hooks || !("set" in hooks) || (value2 = hooks.set(elem, value2, extra)) !== void 0) {
                 if (isCustomProp) {
-                  style.setProperty(name, value);
+                  style.setProperty(name, value2);
                 } else {
-                  style[name] = value;
+                  style[name] = value2;
                 }
               }
             } else {
@@ -6161,7 +6168,7 @@
                 }) : getWidthOrHeight(elem, dimension, extra);
               }
             },
-            set: function(elem, value, extra) {
+            set: function(elem, value2, extra) {
               var matches, styles = getStyles(elem), scrollboxSizeBuggy = !support.scrollboxSize() && styles.position === "absolute", boxSizingNeeded = scrollboxSizeBuggy || extra, isBorderBox = boxSizingNeeded && jQuery.css(elem, "boxSizing", false, styles) === "border-box", subtract = extra ? boxModelAdjustment(
                 elem,
                 dimension,
@@ -6174,11 +6181,11 @@
                   elem["offset" + dimension[0].toUpperCase() + dimension.slice(1)] - parseFloat(styles[dimension]) - boxModelAdjustment(elem, dimension, "border", false, styles) - 0.5
                 );
               }
-              if (subtract && (matches = rcssNum.exec(value)) && (matches[3] || "px") !== "px") {
-                elem.style[dimension] = value;
-                value = jQuery.css(elem, dimension);
+              if (subtract && (matches = rcssNum.exec(value2)) && (matches[3] || "px") !== "px") {
+                elem.style[dimension] = value2;
+                value2 = jQuery.css(elem, dimension);
               }
-              return setPositiveNumber(elem, value, subtract);
+              return setPositiveNumber(elem, value2, subtract);
             }
           };
         });
@@ -6198,10 +6205,10 @@
           border: "Width"
         }, function(prefix3, suffix) {
           jQuery.cssHooks[prefix3 + suffix] = {
-            expand: function(value) {
-              var i = 0, expanded = {}, parts = typeof value === "string" ? value.split(" ") : [value];
+            expand: function(value2) {
+              var i = 0, expanded = {}, parts2 = typeof value2 === "string" ? value2.split(" ") : [value2];
               for (; i < 4; i++) {
-                expanded[prefix3 + cssExpand[i] + suffix] = parts[i] || parts[i - 2] || parts[0];
+                expanded[prefix3 + cssExpand[i] + suffix] = parts2[i] || parts2[i - 2] || parts2[0];
               }
               return expanded;
             }
@@ -6211,8 +6218,8 @@
           }
         });
         jQuery.fn.extend({
-          css: function(name, value) {
-            return access(this, function(elem, name2, value2) {
+          css: function(name, value2) {
+            return access(this, function(elem, name2, value3) {
               var styles, len, map = {}, i = 0;
               if (Array.isArray(name2)) {
                 styles = getStyles(elem);
@@ -6222,8 +6229,8 @@
                 }
                 return map;
               }
-              return value2 !== void 0 ? jQuery.style(elem, name2, value2) : jQuery.css(elem, name2);
-            }, name, value, arguments.length > 1);
+              return value3 !== void 0 ? jQuery.style(elem, name2, value3) : jQuery.css(elem, name2);
+            }, name, value2, arguments.length > 1);
           }
         });
         function Tween(elem, options, prop, end, easing) {
@@ -6300,11 +6307,11 @@
           }
         };
         jQuery.easing = {
-          linear: function(p) {
-            return p;
+          linear: function(p2) {
+            return p2;
           },
-          swing: function(p) {
-            return 0.5 - Math.cos(p * Math.PI) / 2;
+          swing: function(p2) {
+            return 0.5 - Math.cos(p2 * Math.PI) / 2;
           },
           _default: "swing"
         };
@@ -6339,16 +6346,16 @@
           }
           return attrs;
         }
-        function createTween(value, prop, animation) {
+        function createTween(value2, prop, animation) {
           var tween, collection = (Animation.tweeners[prop] || []).concat(Animation.tweeners["*"]), index = 0, length = collection.length;
           for (; index < length; index++) {
-            if (tween = collection[index].call(animation, prop, value)) {
+            if (tween = collection[index].call(animation, prop, value2)) {
               return tween;
             }
           }
         }
         function defaultPrefilter(elem, props, opts) {
-          var prop, value, toggle, hooks, oldfire, propTween, restoreDisplay, display, isBox = "width" in props || "height" in props, anim = this, orig = {}, style = elem.style, hidden = elem.nodeType && isHiddenWithinTree(elem), dataShow = dataPriv.get(elem, "fxshow");
+          var prop, value2, toggle, hooks, oldfire, propTween, restoreDisplay, display, isBox = "width" in props || "height" in props, anim = this, orig = {}, style = elem.style, hidden = elem.nodeType && isHiddenWithinTree(elem), dataShow = dataPriv.get(elem, "fxshow");
           if (!opts.queue) {
             hooks = jQuery._queueHooks(elem, "fx");
             if (hooks.unqueued == null) {
@@ -6371,12 +6378,12 @@
             });
           }
           for (prop in props) {
-            value = props[prop];
-            if (rfxtypes.test(value)) {
+            value2 = props[prop];
+            if (rfxtypes.test(value2)) {
               delete props[prop];
-              toggle = toggle || value === "toggle";
-              if (value === (hidden ? "hide" : "show")) {
-                if (value === "show" && dataShow && dataShow[prop] !== void 0) {
+              toggle = toggle || value2 === "toggle";
+              if (value2 === (hidden ? "hide" : "show")) {
+                if (value2 === "show" && dataShow && dataShow[prop] !== void 0) {
                   hidden = true;
                 } else {
                   continue;
@@ -6466,26 +6473,26 @@
           }
         }
         function propFilter(props, specialEasing) {
-          var index, name, easing, value, hooks;
+          var index, name, easing, value2, hooks;
           for (index in props) {
             name = camelCase(index);
             easing = specialEasing[name];
-            value = props[index];
-            if (Array.isArray(value)) {
-              easing = value[1];
-              value = props[index] = value[0];
+            value2 = props[index];
+            if (Array.isArray(value2)) {
+              easing = value2[1];
+              value2 = props[index] = value2[0];
             }
             if (index !== name) {
-              props[name] = value;
+              props[name] = value2;
               delete props[index];
             }
             hooks = jQuery.cssHooks[name];
             if (hooks && "expand" in hooks) {
-              value = hooks.expand(value);
+              value2 = hooks.expand(value2);
               delete props[name];
-              for (index in value) {
+              for (index in value2) {
                 if (!(index in props)) {
-                  props[index] = value[index];
+                  props[index] = value2[index];
                   specialEasing[index] = easing;
                 }
               }
@@ -6581,9 +6588,9 @@
         }
         jQuery.Animation = jQuery.extend(Animation, {
           tweeners: {
-            "*": [function(prop, value) {
-              var tween = this.createTween(prop, value);
-              adjustCSS(tween.elem, prop, rcssNum.exec(value), tween);
+            "*": [function(prop, value2) {
+              var tween = this.createTween(prop, value2);
+              adjustCSS(tween.elem, prop, rcssNum.exec(value2), tween);
               return tween;
             }]
           },
@@ -6774,11 +6781,11 @@
           // Default speed
           _default: 400
         };
-        jQuery.fn.delay = function(time, type) {
-          time = jQuery.fx ? jQuery.fx.speeds[time] || time : time;
+        jQuery.fn.delay = function(time2, type) {
+          time2 = jQuery.fx ? jQuery.fx.speeds[time2] || time2 : time2;
           type = type || "fx";
           return this.queue(type, function(next, hooks) {
-            var timeout = window2.setTimeout(next, time);
+            var timeout = window2.setTimeout(next, time2);
             hooks.stop = function() {
               window2.clearTimeout(timeout);
             };
@@ -6796,8 +6803,8 @@
         })();
         var boolHook, attrHandle = jQuery.expr.attrHandle;
         jQuery.fn.extend({
-          attr: function(name, value) {
-            return access(this, jQuery.attr, name, value, arguments.length > 1);
+          attr: function(name, value2) {
+            return access(this, jQuery.attr, name, value2, arguments.length > 1);
           },
           removeAttr: function(name) {
             return this.each(function() {
@@ -6806,27 +6813,27 @@
           }
         });
         jQuery.extend({
-          attr: function(elem, name, value) {
+          attr: function(elem, name, value2) {
             var ret, hooks, nType = elem.nodeType;
             if (nType === 3 || nType === 8 || nType === 2) {
               return;
             }
             if (typeof elem.getAttribute === "undefined") {
-              return jQuery.prop(elem, name, value);
+              return jQuery.prop(elem, name, value2);
             }
             if (nType !== 1 || !jQuery.isXMLDoc(elem)) {
               hooks = jQuery.attrHooks[name.toLowerCase()] || (jQuery.expr.match.bool.test(name) ? boolHook : void 0);
             }
-            if (value !== void 0) {
-              if (value === null) {
+            if (value2 !== void 0) {
+              if (value2 === null) {
                 jQuery.removeAttr(elem, name);
                 return;
               }
-              if (hooks && "set" in hooks && (ret = hooks.set(elem, value, name)) !== void 0) {
+              if (hooks && "set" in hooks && (ret = hooks.set(elem, value2, name)) !== void 0) {
                 return ret;
               }
-              elem.setAttribute(name, value + "");
-              return value;
+              elem.setAttribute(name, value2 + "");
+              return value2;
             }
             if (hooks && "get" in hooks && (ret = hooks.get(elem, name)) !== null) {
               return ret;
@@ -6836,20 +6843,20 @@
           },
           attrHooks: {
             type: {
-              set: function(elem, value) {
-                if (!support.radioValue && value === "radio" && nodeName(elem, "input")) {
+              set: function(elem, value2) {
+                if (!support.radioValue && value2 === "radio" && nodeName(elem, "input")) {
                   var val = elem.value;
-                  elem.setAttribute("type", value);
+                  elem.setAttribute("type", value2);
                   if (val) {
                     elem.value = val;
                   }
-                  return value;
+                  return value2;
                 }
               }
             }
           },
-          removeAttr: function(elem, value) {
-            var name, i = 0, attrNames = value && value.match(rnothtmlwhite);
+          removeAttr: function(elem, value2) {
+            var name, i = 0, attrNames = value2 && value2.match(rnothtmlwhite);
             if (attrNames && elem.nodeType === 1) {
               while (name = attrNames[i++]) {
                 elem.removeAttribute(name);
@@ -6858,8 +6865,8 @@
           }
         });
         boolHook = {
-          set: function(elem, value, name) {
-            if (value === false) {
+          set: function(elem, value2, name) {
+            if (value2 === false) {
               jQuery.removeAttr(elem, name);
             } else {
               elem.setAttribute(name, name);
@@ -6882,8 +6889,8 @@
         });
         var rfocusable = /^(?:input|select|textarea|button)$/i, rclickable = /^(?:a|area)$/i;
         jQuery.fn.extend({
-          prop: function(name, value) {
-            return access(this, jQuery.prop, name, value, arguments.length > 1);
+          prop: function(name, value2) {
+            return access(this, jQuery.prop, name, value2, arguments.length > 1);
           },
           removeProp: function(name) {
             return this.each(function() {
@@ -6892,7 +6899,7 @@
           }
         });
         jQuery.extend({
-          prop: function(elem, name, value) {
+          prop: function(elem, name, value2) {
             var ret, hooks, nType = elem.nodeType;
             if (nType === 3 || nType === 8 || nType === 2) {
               return;
@@ -6901,11 +6908,11 @@
               name = jQuery.propFix[name] || name;
               hooks = jQuery.propHooks[name];
             }
-            if (value !== void 0) {
-              if (hooks && "set" in hooks && (ret = hooks.set(elem, value, name)) !== void 0) {
+            if (value2 !== void 0) {
+              if (hooks && "set" in hooks && (ret = hooks.set(elem, value2, name)) !== void 0) {
                 return ret;
               }
-              return elem[name] = value;
+              return elem[name] = value2;
             }
             if (hooks && "get" in hooks && (ret = hooks.get(elem, name)) !== null) {
               return ret;
@@ -6965,31 +6972,31 @@
         ], function() {
           jQuery.propFix[this.toLowerCase()] = this;
         });
-        function stripAndCollapse(value) {
-          var tokens = value.match(rnothtmlwhite) || [];
+        function stripAndCollapse(value2) {
+          var tokens = value2.match(rnothtmlwhite) || [];
           return tokens.join(" ");
         }
         function getClass(elem) {
           return elem.getAttribute && elem.getAttribute("class") || "";
         }
-        function classesToArray(value) {
-          if (Array.isArray(value)) {
-            return value;
+        function classesToArray(value2) {
+          if (Array.isArray(value2)) {
+            return value2;
           }
-          if (typeof value === "string") {
-            return value.match(rnothtmlwhite) || [];
+          if (typeof value2 === "string") {
+            return value2.match(rnothtmlwhite) || [];
           }
           return [];
         }
         jQuery.fn.extend({
-          addClass: function(value) {
+          addClass: function(value2) {
             var classNames, cur, curValue, className, i, finalValue;
-            if (isFunction(value)) {
+            if (isFunction(value2)) {
               return this.each(function(j) {
-                jQuery(this).addClass(value.call(this, j, getClass(this)));
+                jQuery(this).addClass(value2.call(this, j, getClass(this)));
               });
             }
-            classNames = classesToArray(value);
+            classNames = classesToArray(value2);
             if (classNames.length) {
               return this.each(function() {
                 curValue = getClass(this);
@@ -7010,17 +7017,17 @@
             }
             return this;
           },
-          removeClass: function(value) {
+          removeClass: function(value2) {
             var classNames, cur, curValue, className, i, finalValue;
-            if (isFunction(value)) {
+            if (isFunction(value2)) {
               return this.each(function(j) {
-                jQuery(this).removeClass(value.call(this, j, getClass(this)));
+                jQuery(this).removeClass(value2.call(this, j, getClass(this)));
               });
             }
             if (!arguments.length) {
               return this.attr("class", "");
             }
-            classNames = classesToArray(value);
+            classNames = classesToArray(value2);
             if (classNames.length) {
               return this.each(function() {
                 curValue = getClass(this);
@@ -7041,20 +7048,20 @@
             }
             return this;
           },
-          toggleClass: function(value, stateVal) {
-            var classNames, className, i, self, type = typeof value, isValidValue = type === "string" || Array.isArray(value);
-            if (isFunction(value)) {
+          toggleClass: function(value2, stateVal) {
+            var classNames, className, i, self, type = typeof value2, isValidValue = type === "string" || Array.isArray(value2);
+            if (isFunction(value2)) {
               return this.each(function(i2) {
                 jQuery(this).toggleClass(
-                  value.call(this, i2, getClass(this), stateVal),
+                  value2.call(this, i2, getClass(this), stateVal),
                   stateVal
                 );
               });
             }
             if (typeof stateVal === "boolean" && isValidValue) {
-              return stateVal ? this.addClass(value) : this.removeClass(value);
+              return stateVal ? this.addClass(value2) : this.removeClass(value2);
             }
-            classNames = classesToArray(value);
+            classNames = classesToArray(value2);
             return this.each(function() {
               if (isValidValue) {
                 self = jQuery(this);
@@ -7066,7 +7073,7 @@
                     self.addClass(className);
                   }
                 }
-              } else if (value === void 0 || type === "boolean") {
+              } else if (value2 === void 0 || type === "boolean") {
                 className = getClass(this);
                 if (className) {
                   dataPriv.set(this, "__className__", className);
@@ -7074,7 +7081,7 @@
                 if (this.setAttribute) {
                   this.setAttribute(
                     "class",
-                    className || value === false ? "" : dataPriv.get(this, "__className__") || ""
+                    className || value2 === false ? "" : dataPriv.get(this, "__className__") || ""
                   );
                 }
               }
@@ -7093,7 +7100,7 @@
         });
         var rreturn = /\r/g;
         jQuery.fn.extend({
-          val: function(value) {
+          val: function(value2) {
             var hooks, ret, valueIsFunction, elem = this[0];
             if (!arguments.length) {
               if (elem) {
@@ -7109,24 +7116,24 @@
               }
               return;
             }
-            valueIsFunction = isFunction(value);
+            valueIsFunction = isFunction(value2);
             return this.each(function(i) {
               var val;
               if (this.nodeType !== 1) {
                 return;
               }
               if (valueIsFunction) {
-                val = value.call(this, i, jQuery(this).val());
+                val = value2.call(this, i, jQuery(this).val());
               } else {
-                val = value;
+                val = value2;
               }
               if (val == null) {
                 val = "";
               } else if (typeof val === "number") {
                 val += "";
               } else if (Array.isArray(val)) {
-                val = jQuery.map(val, function(value2) {
-                  return value2 == null ? "" : value2 + "";
+                val = jQuery.map(val, function(value3) {
+                  return value3 == null ? "" : value3 + "";
                 });
               }
               hooks = jQuery.valHooks[this.type] || jQuery.valHooks[this.nodeName.toLowerCase()];
@@ -7152,7 +7159,7 @@
             },
             select: {
               get: function(elem) {
-                var value, option, i, options = elem.options, index = elem.selectedIndex, one = elem.type === "select-one", values = one ? null : [], max = one ? index + 1 : options.length;
+                var value2, option, i, options = elem.options, index = elem.selectedIndex, one = elem.type === "select-one", values = one ? null : [], max = one ? index + 1 : options.length;
                 if (index < 0) {
                   i = max;
                 } else {
@@ -7162,17 +7169,17 @@
                   option = options[i];
                   if ((option.selected || i === index) && // Don't return options that are disabled or in a disabled optgroup
                   !option.disabled && (!option.parentNode.disabled || !nodeName(option.parentNode, "optgroup"))) {
-                    value = jQuery(option).val();
+                    value2 = jQuery(option).val();
                     if (one) {
-                      return value;
+                      return value2;
                     }
-                    values.push(value);
+                    values.push(value2);
                   }
                 }
                 return values;
               },
-              set: function(elem, value) {
-                var optionSet, option, options = elem.options, values = jQuery.makeArray(value), i = options.length;
+              set: function(elem, value2) {
+                var optionSet, option, options = elem.options, values = jQuery.makeArray(value2), i = options.length;
                 while (i--) {
                   option = options[i];
                   if (option.selected = jQuery.inArray(jQuery.valHooks.option.get(option), values) > -1) {
@@ -7189,9 +7196,9 @@
         });
         jQuery.each(["radio", "checkbox"], function() {
           jQuery.valHooks[this] = {
-            set: function(elem, value) {
-              if (Array.isArray(value)) {
-                return elem.checked = jQuery.inArray(jQuery(elem).val(), value) > -1;
+            set: function(elem, value2) {
+              if (Array.isArray(value2)) {
+                return elem.checked = jQuery.inArray(jQuery(elem).val(), value2) > -1;
               }
             }
           };
@@ -7360,8 +7367,8 @@
         }
         jQuery.param = function(a, traditional) {
           var prefix3, s = [], add = function(key2, valueOrFunction) {
-            var value = isFunction(valueOrFunction) ? valueOrFunction() : valueOrFunction;
-            s[s.length] = encodeURIComponent(key2) + "=" + encodeURIComponent(value == null ? "" : value);
+            var value2 = isFunction(valueOrFunction) ? valueOrFunction() : valueOrFunction;
+            s[s.length] = encodeURIComponent(key2) + "=" + encodeURIComponent(value2 == null ? "" : value2);
           };
           if (a == null) {
             return "";
@@ -7492,37 +7499,37 @@
           }
         }
         function ajaxConvert(s, response, jqXHR, isSuccess) {
-          var conv2, current, conv, tmp, prev, converters = {}, dataTypes = s.dataTypes.slice();
+          var conv2, current2, conv, tmp, prev, converters = {}, dataTypes = s.dataTypes.slice();
           if (dataTypes[1]) {
             for (conv in s.converters) {
               converters[conv.toLowerCase()] = s.converters[conv];
             }
           }
-          current = dataTypes.shift();
-          while (current) {
-            if (s.responseFields[current]) {
-              jqXHR[s.responseFields[current]] = response;
+          current2 = dataTypes.shift();
+          while (current2) {
+            if (s.responseFields[current2]) {
+              jqXHR[s.responseFields[current2]] = response;
             }
             if (!prev && isSuccess && s.dataFilter) {
               response = s.dataFilter(response, s.dataType);
             }
-            prev = current;
-            current = dataTypes.shift();
-            if (current) {
-              if (current === "*") {
-                current = prev;
-              } else if (prev !== "*" && prev !== current) {
-                conv = converters[prev + " " + current] || converters["* " + current];
+            prev = current2;
+            current2 = dataTypes.shift();
+            if (current2) {
+              if (current2 === "*") {
+                current2 = prev;
+              } else if (prev !== "*" && prev !== current2) {
+                conv = converters[prev + " " + current2] || converters["* " + current2];
                 if (!conv) {
                   for (conv2 in converters) {
                     tmp = conv2.split(" ");
-                    if (tmp[1] === current) {
+                    if (tmp[1] === current2) {
                       conv = converters[prev + " " + tmp[0]] || converters["* " + tmp[0]];
                       if (conv) {
                         if (conv === true) {
                           conv = converters[conv2];
                         } else if (converters[conv2] !== true) {
-                          current = tmp[0];
+                          current2 = tmp[0];
                           dataTypes.unshift(tmp[1]);
                         }
                         break;
@@ -7539,7 +7546,7 @@
                     } catch (e) {
                       return {
                         state: "parsererror",
-                        error: conv ? e : "No conversion from " + prev + " to " + current
+                        error: conv ? e : "No conversion from " + prev + " to " + current2
                       };
                     }
                   }
@@ -7654,10 +7661,10 @@
                 return completed2 ? responseHeadersString : null;
               },
               // Caches the header
-              setRequestHeader: function(name, value) {
+              setRequestHeader: function(name, value2) {
                 if (completed2 == null) {
                   name = requestHeadersNames[name.toLowerCase()] = requestHeadersNames[name.toLowerCase()] || name;
-                  requestHeaders[name] = value;
+                  requestHeaders[name] = value2;
                 }
                 return this;
               },
@@ -8169,9 +8176,9 @@
           }
         });
         support.createHTMLDocument = (function() {
-          var body = document2.implementation.createHTMLDocument("").body;
-          body.innerHTML = "<form></form><form></form>";
-          return body.childNodes.length === 2;
+          var body2 = document2.implementation.createHTMLDocument("").body;
+          body2.innerHTML = "<form></form><form></form>";
+          return body2.childNodes.length === 2;
         })();
         jQuery.parseHTML = function(data, context, keepScripts) {
           if (typeof data !== "string") {
@@ -8391,9 +8398,9 @@
             content: type,
             "": "outer" + name
           }, function(defaultExtra, funcName) {
-            jQuery.fn[funcName] = function(margin, value) {
-              var chainable = arguments.length && (defaultExtra || typeof margin !== "boolean"), extra = defaultExtra || (margin === true || value === true ? "margin" : "border");
-              return access(this, function(elem, type2, value2) {
+            jQuery.fn[funcName] = function(margin2, value2) {
+              var chainable = arguments.length && (defaultExtra || typeof margin2 !== "boolean"), extra = defaultExtra || (margin2 === true || value2 === true ? "margin" : "border");
+              return access(this, function(elem, type2, value3) {
                 var doc;
                 if (isWindow(elem)) {
                   return funcName.indexOf("outer") === 0 ? elem["inner" + name] : elem.document.documentElement["client" + name];
@@ -8408,14 +8415,14 @@
                     doc["client" + name]
                   );
                 }
-                return value2 === void 0 ? (
+                return value3 === void 0 ? (
                   // Get width or height on the element, requesting but not forcing parseFloat
                   jQuery.css(elem, type2, extra)
                 ) : (
                   // Set width or height on the element
-                  jQuery.style(elem, type2, value2, extra)
+                  jQuery.style(elem, type2, value3, extra)
                 );
-              }, type, chainable ? margin : void 0, chainable);
+              }, type, chainable ? margin2 : void 0, chainable);
             };
           });
         });
@@ -8542,8 +8549,8 @@
   }
 
   // src/modules/viewed/storage.ts
-  function getViewedGroupId(value) {
-    const id = String(value || "").trim();
+  function getViewedGroupId(value2) {
+    const id = String(value2 || "").trim();
     if (/^(ep|ss)[1-9][0-9]*$/.test(id)) return `${id.slice(0, 2)}${id.slice(-1)}`;
     if (id.length < 5) {
       return "";
@@ -8562,8 +8569,8 @@
     }
     return "";
   }
-  function getLegacyViewedGroupId(value) {
-    const id = String(value);
+  function getLegacyViewedGroupId(value2) {
+    const id = String(value2);
     if (/^(ep|ss)[1-9][0-9]*$/.test(id)) return `${id.slice(0, 2)}${id.slice(-1)}`;
     if (id.length < 5) {
       return "";
@@ -8582,8 +8589,8 @@
     }
     return "";
   }
-  function normalizeViewedId(value) {
-    let id = String(value || "").trim();
+  function normalizeViewedId(value2) {
+    let id = String(value2 || "").trim();
     if (!id) {
       return null;
     }
@@ -8593,8 +8600,8 @@
   function groupViewedItems(values) {
     const groups = {};
     const seen = /* @__PURE__ */ new Set();
-    for (const value of values) {
-      const id = normalizeViewedId(value);
+    for (const value2 of values) {
+      const id = normalizeViewedId(value2);
       if (!id || seen.has(id)) {
         continue;
       }
@@ -8609,8 +8616,8 @@
   }
   function groupLegacyViewedItems(values) {
     const groups = {};
-    for (const value of values) {
-      const id = String(value);
+    for (const value2 of values) {
+      const id = String(value2);
       if (id.length < 6) {
         continue;
       }
@@ -8628,11 +8635,11 @@
   function flattenViewedGroups(groups) {
     const items = [];
     const seen = /* @__PURE__ */ new Set();
-    for (const value of Object.values(groups)) {
-      if (!Array.isArray(value)) {
+    for (const value2 of Object.values(groups)) {
+      if (!Array.isArray(value2)) {
         continue;
       }
-      for (const item of value) {
+      for (const item of value2) {
         const id = normalizeViewedId(item);
         if (!id || seen.has(id)) {
           continue;
@@ -8652,8 +8659,8 @@
     }
     return GM_listValues().filter((key2) => String(key2).startsWith("BiliViewed_"));
   }
-  function readViewedGroup(groupId, fallback = null) {
-    return GM_getValue(viewedGroupStorageKey(groupId), fallback);
+  function readViewedGroup(groupId, fallback2 = null) {
+    return GM_getValue(viewedGroupStorageKey(groupId), fallback2);
   }
   function writeViewedGroup(groupId, values) {
     const before = new Set(readViewedGroup(groupId, []).map((v) => `v:${v}`));
@@ -8689,12 +8696,12 @@
     });
     return { items: flattenViewedGroups(groups), groups };
   }
-  function isLegacyViewedExport(value) {
-    return !!value && typeof value === "object" && Object.keys(value).some((key2) => key2.startsWith("BiliViewed_"));
+  function isLegacyViewedExport(value2) {
+    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key2) => key2.startsWith("BiliViewed_"));
   }
-  function normalizeLegacyViewedExport(value) {
+  function normalizeLegacyViewedExport(value2) {
     const groups = {};
-    for (const [key2, items] of Object.entries(value)) {
+    for (const [key2, items] of Object.entries(value2)) {
       if (!key2.startsWith("BiliViewed_") || !Array.isArray(items)) {
         continue;
       }
@@ -8712,12 +8719,12 @@
   function resolveOptions(options = {}) {
     return { ...defaultMatchOptions, ...options };
   }
-  function normalizeText(value, options = {}) {
-    if (value === null || value === void 0) {
+  function normalizeText(value2, options = {}) {
+    if (value2 === null || value2 === void 0) {
       return null;
     }
     const resolvedOptions = resolveOptions(options);
-    let text2 = String(value).trim();
+    let text2 = String(value2).trim();
     if (text2.length === 0) {
       return null;
     }
@@ -8729,17 +8736,17 @@
     }
     return text2.length > 0 ? text2 : null;
   }
-  function normalizeRuleValue(value, options = {}) {
-    if (typeof value === "number") {
-      return Number.isFinite(value) ? value : null;
+  function normalizeRuleValue(value2, options = {}) {
+    if (typeof value2 === "number") {
+      return Number.isFinite(value2) ? value2 : null;
     }
-    return normalizeText(value, options);
+    return normalizeText(value2, options);
   }
-  function validateRuleInput(value, integerRule = false) {
-    if (value === null || value === void 0) {
+  function validateRuleInput(value2, integerRule = false) {
+    if (value2 === null || value2 === void 0) {
       return { status: false, res: "\u5185\u5BB9\u4E0D\u80FD\u4E3A\u7A7A" };
     }
-    const trimmed = String(value).trim();
+    const trimmed = String(value2).trim();
     if (trimmed.length === 0) {
       return { status: false, res: "\u5185\u5BB9\u4E0D\u80FD\u4E3A\u7A7A" };
     }
@@ -8752,11 +8759,11 @@
     }
     return { status: true, res: parsed };
   }
-  function exactMatch(ruleList, value, options = {}) {
+  function exactMatch(ruleList, value2, options = {}) {
     if (!Array.isArray(ruleList)) {
       return null;
     }
-    const normalizedValue = normalizeRuleValue(value, options);
+    const normalizedValue = normalizeRuleValue(value2, options);
     if (normalizedValue === null) {
       return null;
     }
@@ -8771,11 +8778,11 @@
     }
     return null;
   }
-  function fuzzyMatch(ruleList, value, options = {}) {
+  function fuzzyMatch(ruleList, value2, options = {}) {
     if (!Array.isArray(ruleList)) {
       return null;
     }
-    const normalizedValue = normalizeText(value, options);
+    const normalizedValue = normalizeText(value2, options);
     if (normalizedValue === null) {
       return null;
     }
@@ -8790,11 +8797,11 @@
     }
     return null;
   }
-  function regexMatch(ruleList, value, options = {}) {
+  function regexMatch(ruleList, value2, options = {}) {
     if (!Array.isArray(ruleList)) {
       return null;
     }
-    const normalizedValue = normalizeText(value, options);
+    const normalizedValue = normalizeText(value2, options);
     if (normalizedValue === null) {
       return null;
     }
@@ -8814,16 +8821,16 @@
     }
     return null;
   }
-  function blockExactFuzzyRegex(value, config2) {
-    const exact = exactMatch(config2.exactRules, value, config2.options);
+  function blockExactFuzzyRegex(value2, config2) {
+    const exact = exactMatch(config2.exactRules, value2, config2.options);
     if (exact) {
       return exact;
     }
-    const fuzzy = fuzzyMatch(config2.fuzzyRules, value, config2.options);
+    const fuzzy = fuzzyMatch(config2.fuzzyRules, value2, config2.options);
     if (fuzzy) {
       return fuzzy;
     }
-    return regexMatch(config2.regexRules, value, {
+    return regexMatch(config2.regexRules, value2, {
       ...config2.options,
       onInvalidRule: config2.onInvalidRegexRule
     });
@@ -8851,12 +8858,12 @@
   function emptySnapshot() {
     return Object.fromEntries(ruleDefinitions.map((rule) => [rule.key, []]));
   }
-  function normalizeStoredRules(value, integer = false) {
-    if (!Array.isArray(value)) {
+  function normalizeStoredRules(value2, integer = false) {
+    if (!Array.isArray(value2)) {
       return [];
     }
     const normalized = [];
-    for (const item of value) {
+    for (const item of value2) {
       const validation = validateRuleInput(item, integer);
       if (!validation.status || normalized.includes(validation.res)) {
         continue;
@@ -8885,31 +8892,31 @@
     }
     return snapshot;
   }
-  function addRuleItem(key2, value) {
-    const validation = validateRuleInput(value, integerRuleKeys.has(key2));
+  function addRuleItem(key2, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key2));
     if (!validation.status) {
       return validation;
     }
-    const current = readRuleList(key2);
-    if (current.includes(validation.res)) {
+    const current2 = readRuleList(key2);
+    if (current2.includes(validation.res)) {
       return { status: false, res: "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" };
     }
-    current.push(validation.res);
-    writeRuleList(key2, current);
+    current2.push(validation.res);
+    writeRuleList(key2, current2);
     return { status: true, res: "\u6DFB\u52A0\u6210\u529F", value: validation.res };
   }
-  function removeRuleItem(key2, value) {
-    const validation = validateRuleInput(value, integerRuleKeys.has(key2));
+  function removeRuleItem(key2, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key2));
     if (!validation.status) {
       return validation;
     }
-    const current = readRuleList(key2);
-    const index = current.findIndex((item) => item === validation.res);
+    const current2 = readRuleList(key2);
+    const index = current2.findIndex((item) => item === validation.res);
     if (index < 0) {
       return { status: false, res: "\u89C4\u5219\u4E0D\u5B58\u5728" };
     }
-    current.splice(index, 1);
-    writeRuleList(key2, current);
+    current2.splice(index, 1);
+    writeRuleList(key2, current2);
     return { status: true, res: "\u5DF2\u89E3\u9664\u5C4F\u853D", value: validation.res };
   }
   function importRuleSnapshot(data, mode) {
@@ -8927,9 +8934,9 @@
         changed += written.length;
         continue;
       }
-      const current = readRuleList(rule.key);
-      const merged = writeRuleList(rule.key, current.concat(incoming));
-      changed += Math.max(0, merged.length - current.length);
+      const current2 = readRuleList(rule.key);
+      const merged = writeRuleList(rule.key, current2.concat(incoming));
+      changed += Math.max(0, merged.length - current2.length);
     }
     return { status: true, res: `\u5BFC\u5165\u5B8C\u6210\uFF0C\u53D8\u66F4 ${changed} \u6761` };
   }
@@ -8943,8 +8950,8 @@
     }
     return result;
   }
-  function parseRuleText(value, integer = false) {
-    const lines = value.split(/\r?\n/g);
+  function parseRuleText(value2, integer = false) {
+    const lines = value2.split(/\r?\n/g);
     return normalizeStoredRules(lines, integer);
   }
   function formatRuleText(values) {
@@ -8955,10 +8962,10 @@
   var atelierDataSchema = "bili-atelier-data";
   var atelierDataVersion = 1;
   var ruleKeySet = new Set(ruleDefinitions.map((rule) => rule.key));
-  function splitLegacyBlockerExport(value) {
+  function splitLegacyBlockerExport(value2) {
     const rules = {};
     const legacySettings = {};
-    for (const [key2, data] of Object.entries(value)) {
+    for (const [key2, data] of Object.entries(value2)) {
       if (ruleKeySet.has(key2) && Array.isArray(data)) {
         rules[key2] = data;
       } else if (!key2.startsWith("BiliViewed_")) {
@@ -8991,11 +8998,11 @@
       blockerRules: {}
     });
   }
-  function normalizeAtelierDataInput(value) {
-    if (!value || typeof value !== "object") {
+  function normalizeAtelierDataInput(value2) {
+    if (!value2 || typeof value2 !== "object") {
       throw new Error("\u5BFC\u5165\u5185\u5BB9\u5FC5\u987B\u662F JSON \u5BF9\u8C61");
     }
-    const data = value;
+    const data = value2;
     if (data.schema === atelierDataSchema) {
       return createAtelierDataPackage({
         viewed: data.viewed || { items: [], groups: {} },
@@ -9017,14 +9024,14 @@
       legacySettings: blocker.legacySettings
     });
   }
-  function importAtelierDataInput(value, mode) {
-    const normalized = normalizeAtelierDataInput(value);
-    const viewed = writeViewedStorage(normalized.viewed, mode);
+  function importAtelierDataInput(value2, mode) {
+    const normalized = normalizeAtelierDataInput(value2);
+    const viewed2 = writeViewedStorage(normalized.viewed, mode);
     const rulesResult = importRuleSnapshot(normalized.blocker.rules, mode);
     return {
       status: true,
-      res: `\u5BFC\u5165\u5B8C\u6210\uFF1A\u5DF2\u770B ${viewed.items.length} \u6761\uFF1B${rulesResult.res}`,
-      viewed,
+      res: `\u5BFC\u5165\u5B8C\u6210\uFF1A\u5DF2\u770B ${viewed2.items.length} \u6761\uFF1B${rulesResult.res}`,
+      viewed: viewed2,
       rules: readRuleSnapshot()
     };
   }
@@ -9032,20 +9039,20 @@
   // src/modules/sync/protocol.ts
   var seedId = (key2) => `seed:${key2}`;
   function validKey(key2) {
-    const value = key2.slice(2);
-    if (key2.startsWith("v:")) return /^(1[0-9A-Za-z]{9}(?:-[1-9][0-9]*)?|(ep|ss)[1-9][0-9]*)$/.test(value);
-    if (key2.startsWith("u:")) return /^[1-9][0-9]*$/.test(value) && Number.isSafeInteger(Number(value));
-    return key2.startsWith("n:") && value.length > 0 && value === value.trim().toLowerCase();
+    const value2 = key2.slice(2);
+    if (key2.startsWith("v:")) return /^(1[0-9A-Za-z]{9}(?:-[1-9][0-9]*)?|(ep|ss)[1-9][0-9]*)$/.test(value2);
+    if (key2.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
+    return key2.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
   }
   function batch(operations) {
     return { schema: "bili-atelier-sync", version: 1, operations };
   }
-  function parseBatch(value) {
-    const b = value;
+  function parseBatch(value2) {
+    const b = value2;
     if (!b || b.schema !== "bili-atelier-sync" || b.version !== 1 || !Array.isArray(b.operations) || b.operations.length > 1e4) throw new Error("\u4E0D\u652F\u6301\u7684\u540C\u6B65\u6570\u636E\u683C\u5F0F\u6216\u7248\u672C");
     const ids = /* @__PURE__ */ new Set();
     for (const o of b.operations) {
-      if (!o || typeof o.key !== "string" || !validKey(o.key) || typeof o.id !== "string" || !(o.id === seedId(o.key) || /^[0-9a-f-]{36}$/.test(o.id)) || typeof o.present !== "boolean" || !Array.isArray(o.parents) || o.parents.some((p) => typeof p !== "string" || p === o.id) || ids.has(o.id) || o.id === seedId(o.key) && (!o.present || o.parents.length !== 0)) throw new Error("\u540C\u6B65\u8BB0\u5F55\u635F\u574F\uFF0C\u672A\u5E94\u7528");
+      if (!o || typeof o.key !== "string" || !validKey(o.key) || typeof o.id !== "string" || !(o.id === seedId(o.key) || /^[0-9a-f-]{36}$/.test(o.id)) || typeof o.present !== "boolean" || !Array.isArray(o.parents) || o.parents.some((p2) => typeof p2 !== "string" || p2 === o.id) || ids.has(o.id) || o.id === seedId(o.key) && (!o.present || o.parents.length !== 0)) throw new Error("\u540C\u6B65\u8BB0\u5F55\u635F\u574F\uFF0C\u672A\u5E94\u7528");
       ids.add(o.id);
     }
     return b;
@@ -9060,14 +9067,14 @@
     const degrees = /* @__PURE__ */ new Map(), children = /* @__PURE__ */ new Map();
     for (const o of map.values()) {
       degrees.set(o.id, 0);
-      for (const p of o.parents) {
-        if (!map.has(p)) {
-          if (p !== seedId(o.key)) throw new Error("\u540C\u6B65\u5386\u53F2\u4E0D\u5B8C\u6574\uFF0C\u8BF7\u6062\u590D\u88AB\u5220\u9664\u7684\u4E91\u7AEF\u6587\u4EF6");
+      for (const p2 of o.parents) {
+        if (!map.has(p2)) {
+          if (p2 !== seedId(o.key)) throw new Error("\u540C\u6B65\u5386\u53F2\u4E0D\u5B8C\u6574\uFF0C\u8BF7\u6062\u590D\u88AB\u5220\u9664\u7684\u4E91\u7AEF\u6587\u4EF6");
           continue;
         }
-        if (map.get(p).key !== o.key) throw new Error("\u540C\u6B65\u64CD\u4F5C\u5F15\u7528\u4E86\u5176\u4ED6\u6761\u76EE");
+        if (map.get(p2).key !== o.key) throw new Error("\u540C\u6B65\u64CD\u4F5C\u5F15\u7528\u4E86\u5176\u4ED6\u6761\u76EE");
         degrees.set(o.id, degrees.get(o.id) + 1);
-        children.set(p, [...children.get(p) || [], o.id]);
+        children.set(p2, [...children.get(p2) || [], o.id]);
       }
     }
     const queue = [...degrees].filter(([, n]) => n === 0).map(([id]) => id);
@@ -9103,10 +9110,10 @@
     if (!c || c.schema !== "bili-atelier-b2-config" || c.version !== 1 || ![c.keyId, c.applicationKey, c.bucketId].every((v) => typeof v === "string" && /^[A-Za-z0-9]+$/.test(v)) || typeof c.prefix !== "string" || !/^[A-Za-z0-9_-]+\/$/.test(c.prefix)) throw new Error("\u8BF7\u586B\u5199\u6709\u6548\u7684 Key ID\u3001\u5E94\u7528\u5BC6\u94A5\u3001Bucket ID \u548C\u76EE\u5F55\uFF08\u4F8B\u5982 atelier/\uFF09");
     return { schema: c.schema, version: c.version, keyId: c.keyId, applicationKey: c.applicationKey, bucketId: c.bucketId, prefix: c.prefix };
   }
-  function b2Url(value) {
-    const u = new URL(value);
+  function b2Url(value2) {
+    const u = new URL(value2);
     if (u.protocol !== "https:" || !["backblazeb2.com", "backblaze.com"].some((domain) => u.hostname.endsWith(`.${domain}`)) || u.port || u.username || u.password) throw new Error("B2 \u8FD4\u56DE\u4E86\u4E0D\u5B89\u5168\u7684\u670D\u52A1\u5730\u5740");
-    return value;
+    return value2;
   }
   var gmRequest = (url, method, headers, data) => new Promise((resolve, reject) => {
     GM_xmlhttpRequest({
@@ -9154,10 +9161,10 @@
       b2Url(api.apiUrl);
       b2Url(api.downloadUrl);
       const allowed = api.allowed;
-      if (!["listFiles", "readFiles", "writeFiles"].every((p) => allowed.capabilities.includes(p)) || allowed.buckets && !allowed.buckets.some((b) => b.id === this.config.bucketId) || allowed.namePrefix && !this.config.prefix.startsWith(allowed.namePrefix)) throw new Error("\u5E94\u7528\u5BC6\u94A5\u9700\u8981\u76EE\u6807\u76EE\u5F55\u7684 listFiles\u3001readFiles\u3001writeFiles \u6743\u9650");
+      if (!["listFiles", "readFiles", "writeFiles"].every((p2) => allowed.capabilities.includes(p2)) || allowed.buckets && !allowed.buckets.some((b) => b.id === this.config.bucketId) || allowed.namePrefix && !this.config.prefix.startsWith(allowed.namePrefix)) throw new Error("\u5E94\u7528\u5BC6\u94A5\u9700\u8981\u76EE\u6807\u76EE\u5F55\u7684 listFiles\u3001readFiles\u3001writeFiles \u6743\u9650");
     }
-    call(name, body) {
-      return this.request(`${this.auth.apiInfo.storageApi.apiUrl}/b2api/v3/${name}`, "POST", { Authorization: this.auth.authorizationToken, "Content-Type": "application/json" }, JSON.stringify(body));
+    call(name, body2) {
+      return this.request(`${this.auth.apiInfo.storageApi.apiUrl}/b2api/v3/${name}`, "POST", { Authorization: this.auth.authorizationToken, "Content-Type": "application/json" }, JSON.stringify(body2));
     }
     list() {
       return this.listDirectory("ops");
@@ -9179,9 +9186,9 @@
     download(fileId) {
       return this.request(`${this.auth.apiInfo.storageApi.downloadUrl}/b2api/v3/b2_download_file_by_id?fileId=${encodeURIComponent(fileId)}`, "GET", { Authorization: this.auth.authorizationToken });
     }
-    async upload(name, value) {
+    async upload(name, value2) {
       const upload = await this.call("b2_get_upload_url", { bucketId: this.config.bucketId });
-      const bytes = new TextEncoder().encode(JSON.stringify(value));
+      const bytes = new TextEncoder().encode(JSON.stringify(value2));
       const hash = [...new Uint8Array(await crypto.subtle.digest("SHA-1", bytes))].map((b) => b.toString(16).padStart(2, "0")).join("");
       return this.request(b2Url(upload.uploadUrl), "POST", {
         Authorization: upload.authorizationToken,
@@ -9195,17 +9202,17 @@
   // src/modules/local-following/protocol.ts
   var uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
   var lexical = (a, b) => a < b ? -1 : a > b ? 1 : 0;
-  var validUuid = (value) => typeof value === "string" && value.length === 36 && uuidPattern.test(value);
-  var validUid = (value) => /^[1-9][0-9]*$/.exec(value)?.[0] === value && Number.isSafeInteger(Number(value));
-  function fields(value, names2) {
-    return value !== null && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === names2.length && names2.every((name) => Object.prototype.hasOwnProperty.call(value, name));
+  var validUuid = (value2) => typeof value2 === "string" && value2.length === 36 && uuidPattern.test(value2);
+  var validUid = (value2) => /^[1-9][0-9]*$/.exec(value2)?.[0] === value2 && Number.isSafeInteger(Number(value2));
+  function fields(value2, names4) {
+    return value2 !== null && typeof value2 === "object" && !Array.isArray(value2) && Object.keys(value2).length === names4.length && names4.every((name) => Object.prototype.hasOwnProperty.call(value2, name));
   }
-  function validFace(value) {
-    if (typeof value !== "string") return false;
-    if (value === "") return true;
-    if (!/^https?:\/\//.test(value) || /\s/.test(value)) return false;
+  function validFace(value2) {
+    if (typeof value2 !== "string") return false;
+    if (value2 === "") return true;
+    if (!/^https?:\/\//.test(value2) || /\s/.test(value2)) return false;
     try {
-      const url = new URL(value);
+      const url = new URL(value2);
       return Boolean(url.hostname) && !url.username && !url.password;
     } catch {
       return false;
@@ -9213,30 +9220,34 @@
   }
   function readKey(key2) {
     if (typeof key2 !== "string") throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
-    const parts = key2.split(":");
-    if (parts.length === 2 && parts[0] === "follow" && validUid(parts[1])) return { kind: "follow", uid: parts[1] };
-    if (parts.length === 2 && parts[0] === "group" && validUuid(parts[1])) return { kind: "group", group: parts[1] };
-    if (parts.length === 4 && parts[0] === "member" && validUid(parts[1]) && validUuid(parts[2]) && validUuid(parts[3]))
-      return { kind: "member", uid: parts[1], generation: parts[2], group: parts[3] };
+    const parts2 = key2.split(":");
+    if (parts2.length === 2 && parts2[0] === "follow" && validUid(parts2[1])) return { kind: "follow", uid: parts2[1] };
+    if (parts2.length === 2 && parts2[0] === "group" && validUuid(parts2[1])) return { kind: "group", group: parts2[1] };
+    if (parts2.length === 2 && parts2[0] === "group-icon" && validUuid(parts2[1])) return { kind: "icon", group: parts2[1] };
+    if (parts2.length === 4 && parts2[0] === "member" && validUid(parts2[1]) && validUuid(parts2[2]) && validUuid(parts2[3]))
+      return { kind: "member", uid: parts2[1], generation: parts2[2], group: parts2[3] };
     if (key2 === "group-order") return { kind: "order" };
     throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
   }
-  function readValue(key2, value) {
+  function readValue(key2, value2) {
     switch (key2.kind) {
       case "follow":
-        if (value === null) return null;
-        if (fields(value, ["name", "face", "addedAt"]) && typeof value.name === "string" && validFace(value.face) && typeof value.addedAt === "number" && Number.isSafeInteger(value.addedAt) && value.addedAt >= 0)
-          return { name: value.name, face: value.face, addedAt: value.addedAt };
+        if (value2 === null) return null;
+        if (fields(value2, ["name", "face", "addedAt"]) && typeof value2.name === "string" && validFace(value2.face) && typeof value2.addedAt === "number" && Number.isSafeInteger(value2.addedAt) && value2.addedAt >= 0)
+          return { name: value2.name, face: value2.face, addedAt: value2.addedAt };
         break;
       case "group":
-        if (value === null) return null;
-        if (typeof value === "string" && value.length > 0 && value === value.trim()) return value;
+        if (value2 === null) return null;
+        if (typeof value2 === "string" && value2.length > 0 && value2 === value2.trim()) return value2;
         break;
       case "member":
-        if (typeof value === "boolean") return value;
+        if (typeof value2 === "boolean") return value2;
+        break;
+      case "icon":
+        if (Number.isInteger(value2) && value2 > 0 && value2 <= 65535) return value2;
         break;
       case "order":
-        if (Array.isArray(value) && value.every(validUuid) && new Set(value).size === value.length) return [...value];
+        if (Array.isArray(value2) && value2.every(validUuid) && new Set(value2).size === value2.length) return [...value2];
     }
     throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u503C\u635F\u574F");
   }
@@ -9247,14 +9258,15 @@
     return { id: input.id, key: input.key, value: readValue(key2, input.value), parents: [...input.parents].sort(lexical) };
   }
   function parseLocalFollowBatch(input) {
-    if (!fields(input, ["schema", "version", "operations"]) || input.schema !== "bili-atelier-local-following" || input.version !== 1 || !Array.isArray(input.operations) || input.operations.length > 1e4)
+    if (!fields(input, ["schema", "version", "operations"]) || input.schema !== "bili-atelier-local-following" || input.version !== 1 && input.version !== 2 || !Array.isArray(input.operations) || input.operations.length > 1e4)
       throw new Error("\u4E0D\u652F\u6301\u7684\u672C\u5730\u5173\u6CE8\u540C\u6B65\u683C\u5F0F\u6216\u7248\u672C");
     const operations = input.operations.map(readOperation);
     if (new Set(operations.map((o) => o.id)).size !== operations.length) throw new Error("\u672C\u5730\u5173\u6CE8\u6279\u6B21\u5305\u542B\u91CD\u590D\u64CD\u4F5C ID");
-    return { schema: "bili-atelier-local-following", version: 1, operations };
+    return { schema: "bili-atelier-local-following", version: input.version, operations };
   }
   function localFollowBatch(operations) {
-    return parseLocalFollowBatch({ schema: "bili-atelier-local-following", version: 1, operations });
+    const version = operations.some((o) => o.key.startsWith("group-icon:")) ? 2 : 1;
+    return parseLocalFollowBatch({ schema: "bili-atelier-local-following", version, operations });
   }
   function mergeLocalFollowOperations(...arrays) {
     const map = /* @__PURE__ */ new Map();
@@ -9280,6 +9292,7 @@
         if (!generation || generation.key !== `follow:${key2.uid}` || generation.value === null || !groupKeys.has(`group:${key2.group}`))
           throw new Error("\u672C\u5730\u5173\u6CE8\u6210\u5458\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u8D26\u53F7\u4EE3\u6216\u5206\u7EC4");
       }
+      if (key2.kind === "icon" && !groupKeys.has(`group:${key2.group}`)) throw new Error("\u672C\u5730\u5173\u6CE8\u56FE\u6807\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
       if (key2.kind === "order" && op.value.some((id) => !groupKeys.has(`group:${id}`)))
         throw new Error("\u672C\u5730\u5173\u6CE8\u6392\u5E8F\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
     }
@@ -9309,8 +9322,10 @@
   function materializeLocalFollow(operations) {
     const heads = localFollowFrontier(operations), groupMap = /* @__PURE__ */ new Map();
     for (const [key2, ops] of heads) if (key2.startsWith("group:")) {
-      const value = winner(ops).value;
-      if (value !== null) groupMap.set(key2.slice(6), { id: key2.slice(6), name: value });
+      const value2 = winner(ops).value;
+      if (value2 === null) continue;
+      const id = key2.slice(6), icon2 = heads.get(`group-icon:${id}`);
+      groupMap.set(id, icon2 ? { id, name: value2, icon: winner(icon2).value } : { id, name: value2 });
     }
     const orderHeads = heads.get("group-order");
     const order = orderHeads ? winner(orderHeads).value.filter((id) => groupMap.has(id)) : [];
@@ -9337,7 +9352,8 @@
   var localFollowChangedEvent = "atelier-local-following-changed";
   var listeners = /* @__PURE__ */ new Set();
   var uuid = () => crypto.randomUUID();
-  function localFollowRecords() {
+  var recordKeys = () => GM_listValues().filter((key2) => key2.startsWith(prefix + "record_") || key2.startsWith(prefix + "pull_")).sort();
+  function localFollowRecords(keys = recordKeys()) {
     const result = /* @__PURE__ */ new Map();
     const add = (id, raw) => {
       if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(id)) throw new Error("\u672C\u5730\u5173\u6CE8\u65E5\u5FD7\u6587\u4EF6\u540D\u635F\u574F");
@@ -9348,18 +9364,26 @@
       }
       result.set(id, batch2);
     };
-    for (const key2 of GM_listValues()) {
+    for (const key2 of keys) {
       if (key2.startsWith(prefix + "record_")) add(key2.slice((prefix + "record_").length), GM_getValue(key2));
       else if (key2.startsWith(prefix + "pull_")) {
-        const value = GM_getValue(key2);
-        if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("\u672C\u5730\u5173\u6CE8\u62C9\u53D6\u65E5\u5FD7\u635F\u574F");
-        for (const [id, raw] of Object.entries(value)) add(id, raw);
+        const value2 = GM_getValue(key2);
+        if (!value2 || typeof value2 !== "object" || Array.isArray(value2)) throw new Error("\u672C\u5730\u5173\u6CE8\u62C9\u53D6\u65E5\u5FD7\u635F\u574F");
+        for (const [id, raw] of Object.entries(value2)) add(id, raw);
       }
     }
     return [...result].sort(([a], [b]) => a.localeCompare(b));
   }
-  var localFollowKnown = () => mergeLocalFollowOperations(...localFollowRecords().map(([, batch2]) => batch2.operations));
-  var localFollowSnapshot = () => materializeLocalFollow(localFollowKnown());
+  var memo;
+  var localFollowKnown = () => {
+    const keys = recordKeys(), names4 = keys.join("\n");
+    if (memo?.names !== names4) memo = { names: names4, known: mergeLocalFollowOperations(...localFollowRecords(keys).map(([, batch2]) => batch2.operations)) };
+    return memo.known;
+  };
+  var localFollowSnapshot = () => {
+    const known2 = localFollowKnown();
+    return memo.snapshot ??= materializeLocalFollow(known2);
+  };
   var localFollowIsSent = (id) => GM_getValue(prefix + "sent_" + id, false) === true;
   var markLocalFollowSent = (id) => {
     GM_setValue(prefix + "sent_" + id, true);
@@ -9396,8 +9420,8 @@
       if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(id)) throw new Error("\u8FDC\u7AEF\u672C\u5730\u5173\u6CE8\u6279\u6B21\u540D\u79F0\u65E0\u6548");
       return [id, parseLocalFollowBatch(raw)];
     });
-    const current = localFollowRecords();
-    const all = new Map(current);
+    const current2 = localFollowRecords();
+    const all = new Map(current2);
     for (const [id, incoming] of parsed) {
       const existing = all.get(id);
       if (existing && canonicalBatch(existing) !== canonicalBatch(incoming)) throw new Error("\u672C\u5730\u5173\u6CE8\u6279\u6B21 ID \u51B2\u7A81");
@@ -9410,7 +9434,7 @@
         version: 1,
         createdAt: (/* @__PURE__ */ new Date()).toISOString(),
         snapshot: localFollowSnapshot(),
-        batches: Object.fromEntries(current)
+        batches: Object.fromEntries(current2)
       });
     }
     if (parsed.length) GM_setValue(prefix + "pull_" + uuid(), Object.fromEntries(parsed));
@@ -9428,8 +9452,8 @@
     if (!changes2.length) return;
     const heads = localFollowFrontier(known2);
     const operations = [];
-    for (const [key2, value] of changes2) {
-      const operation = { id: uuid(), key: key2, value, parents: (heads.get(key2) ?? []).map((head) => head.id).sort() };
+    for (const [key2, value2] of changes2) {
+      const operation = { id: uuid(), key: key2, value: value2, parents: (heads.get(key2) ?? []).map((head) => head.id).sort() };
       operations.push(operation);
       heads.set(key2, [operation]);
     }
@@ -9443,25 +9467,25 @@
     pulse();
     notify(true);
   }
-  function normalizeLocalUid(value) {
-    const text2 = String(value ?? "").trim();
+  function normalizeLocalUid(value2) {
+    const text2 = String(value2 ?? "").trim();
     return /^[1-9]\d*$/.test(text2) && Number.isSafeInteger(Number(text2)) ? text2 : null;
   }
-  function parseLocalFollowInput(value) {
-    const direct = normalizeLocalUid(value);
+  function parseLocalFollowInput(value2) {
+    const direct = normalizeLocalUid(value2);
     if (direct) return direct;
     try {
-      const url = new URL(value.trim().replace(/^\/\//, "https://"));
+      const url = new URL(value2.trim().replace(/^\/\//, "https://"));
       if (url.hostname !== "space.bilibili.com" || !/^https?:$/.test(url.protocol) || url.username || url.password || url.port) return null;
       return normalizeLocalUid(url.pathname.match(/^\/(\d+)(?:\/|$)/)?.[1]);
     } catch {
       return null;
     }
   }
-  function safeLocalFace(value) {
-    if (typeof value !== "string" || !value) return "";
+  function safeLocalFace(value2) {
+    if (typeof value2 !== "string" || !value2) return "";
     try {
-      const url = new URL(value.startsWith("//") ? "https:" + value : value);
+      const url = new URL(value2.startsWith("//") ? "https:" + value2 : value2);
       return /^https?:$/.test(url.protocol) && !url.username && !url.password ? url.href : "";
     } catch {
       return "";
@@ -9503,6 +9527,20 @@
       return [["group-order", order]];
     });
   }
+  function setLocalFollowGroupIcon(id, icon2) {
+    edit((snapshot) => {
+      const group = snapshot.groups.find((group2) => group2.id === id);
+      if (!group) throw new Error("\u8BE5\u5206\u7EC4\u5DF2\u88AB\u5220\u9664");
+      return group.icon === icon2 ? [] : [[`group-icon:${id}`, icon2]];
+    });
+  }
+  function invertLocalFollowMembership(uids, groupId) {
+    const chosen = new Set(uids);
+    edit((snapshot) => {
+      if (!snapshot.groups.some((group) => group.id === groupId)) throw new Error("\u8BE5\u5206\u7EC4\u5DF2\u88AB\u5220\u9664");
+      return snapshot.accounts.filter((account) => chosen.has(account.uid)).flatMap((account) => account.generations.map((generation) => [`member:${account.uid}:${generation}:${groupId}`, !account.groupIds.includes(groupId)]));
+    });
+  }
   function setLocalFollowMembership(uids, groupId, member) {
     const chosen = new Set(uids);
     edit((snapshot) => {
@@ -9515,9 +9553,9 @@
   }
   function writeLocalFollowCache(uid, patch) {
     if (!normalizeLocalUid(uid)) return;
-    const current = readLocalFollowCache(uid), updates = { ...current.updates };
-    for (const [kind, value] of Object.entries(patch.updates ?? {})) if (Number.isSafeInteger(value) && value > (updates[kind] ?? 0)) updates[kind] = value;
-    GM_setValue(prefix + "cache_" + uid, { ...current, ...patch, updates });
+    const current2 = readLocalFollowCache(uid), updates = { ...current2.updates };
+    for (const [kind, value2] of Object.entries(patch.updates ?? {})) if (Number.isSafeInteger(value2) && value2 > (updates[kind] ?? 0)) updates[kind] = value2;
+    GM_setValue(prefix + "cache_" + uid, { ...current2, ...patch, updates });
     pulse();
     notify(false);
   }
@@ -9525,21 +9563,21 @@
     if (localFollowSnapshot().accounts.some((account) => account.uid === uid)) writeLocalFollowCache(uid, { viewedAt: now });
   }
   var readLocalFollowPreferences = () => GM_getValue(prefix + "preferences", null);
-  var writeLocalFollowPreferences = (value) => GM_setValue(prefix + "preferences", value);
+  var writeLocalFollowPreferences = (value2) => GM_setValue(prefix + "preferences", value2);
 
   // src/modules/sync/service.ts
   var prefix2 = "AtelierSync_";
   var recordsPrefix = `${prefix2}record_`;
   var getConfig = () => GM_getValue(`${prefix2}config`, null);
   var paused = () => GM_getValue(`${prefix2}paused`, true);
-  function setPaused(value) {
-    GM_setValue(`${prefix2}paused`, value);
+  function setPaused(value2) {
+    GM_setValue(`${prefix2}paused`, value2);
     notify2();
-    if (!value) schedule();
+    if (!value2) schedule();
   }
-  function saveConfig(value) {
+  function saveConfig(value2) {
     if (busy) throw new Error("\u540C\u6B65\u6B63\u5728\u8FDB\u884C\uFF0C\u8BF7\u5B8C\u6210\u540E\u518D\u4FEE\u6539\u8FDE\u63A5\u914D\u7F6E");
-    const c = parseConfig(value), old = getConfig();
+    const c = parseConfig(value2), old = getConfig();
     if (old && GM_getValue(prefix2 + "merged", false) && (old.bucketId !== c.bucketId || old.prefix !== c.prefix)) throw new Error("\u5DF2\u6709\u540C\u6B65\u5386\u53F2\uFF0C\u4E0D\u80FD\u76F4\u63A5\u5207\u6362\u5B58\u50A8\u6876\u6216\u76EE\u5F55\uFF1B\u8BF7\u7EE7\u7EED\u4F7F\u7528\u539F\u540C\u6B65\u7A7A\u95F4");
     GM_setValue(`${prefix2}config`, c);
     retryAfter = 0;
@@ -9564,11 +9602,11 @@
     ].filter(validKey));
   }
   function apply() {
-    const desired = materialize(known()), current = localKeys();
-    if (desired.size === current.size && [...desired].every((k) => current.has(k))) return;
+    const desired = materialize(known()), current2 = localKeys();
+    if (desired.size === current2.size && [...desired].every((k) => current2.has(k))) return;
     applyFromSync(() => {
-      const viewed = readViewedStorage().items.filter((v) => !validKey(`v:${v}`));
-      writeViewedStorage({ items: [...viewed, ...[...desired].filter((k) => k.startsWith("v:")).map((k) => k.slice(2))] }, "overwrite");
+      const viewed2 = readViewedStorage().items.filter((v) => !validKey(`v:${v}`));
+      writeViewedStorage({ items: [...viewed2, ...[...desired].filter((k) => k.startsWith("v:")).map((k) => k.slice(2))] }, "overwrite");
       for (const [type, key2] of [["u:", "precise_uid"], ["n:", "precise_name"]]) {
         const unsupported = readRuleList(key2).filter((v) => !validKey(`${type}${String(v).trim().toLowerCase()}`));
         writeRuleList(key2, [...unsupported, ...[...desired].filter((k) => k.startsWith(type)).map((k) => k.slice(2))]);
@@ -9669,8 +9707,8 @@
     }
   }
   function downloadBackup() {
-    const value = GM_getValue(`${prefix2}backup`, null);
-    const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: "application/json" }));
+    const value2 = GM_getValue(`${prefix2}backup`, null);
+    const url = URL.createObjectURL(new Blob([JSON.stringify(value2, null, 2)], { type: "application/json" }));
     const a = document.createElement("a");
     a.href = url;
     a.download = "atelier-before-sync.json";
@@ -9678,9 +9716,9 @@
     setTimeout(() => URL.revokeObjectURL(url), 1e3);
   }
   function downloadLocalFollowBackup() {
-    const value = localFollowBackup();
-    if (value == null) throw new Error("\u672C\u5730\u5173\u6CE8\u5C1A\u672A\u9996\u6B21\u5408\u5E76\uFF0C\u5907\u4EFD\u5C06\u5728\u9996\u6B21\u5408\u5E76\u524D\u4FDD\u5B58");
-    const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: "application/json" }));
+    const value2 = localFollowBackup();
+    if (value2 == null) throw new Error("\u672C\u5730\u5173\u6CE8\u5C1A\u672A\u9996\u6B21\u5408\u5E76\uFF0C\u5907\u4EFD\u5C06\u5728\u9996\u6B21\u5408\u5E76\u524D\u4FDD\u5B58");
+    const url = URL.createObjectURL(new Blob([JSON.stringify(value2, null, 2)], { type: "application/json" }));
     const a = document.createElement("a");
     a.href = url;
     a.download = "atelier-local-following-before-sync.json";
@@ -10243,14 +10281,6 @@
     unavailable();
     return "";
   }
-  function readCachedResourceJson(name) {
-    try {
-      return JSON.parse(GM_getResourceText(name));
-    } catch {
-      unavailable();
-      return null;
-    }
-  }
 
   // src/ui/assets/xp-sounds/xpballn.wav
   var xpballn_default = readCachedResourceUrl("atelier_xpballn_wav");
@@ -10335,15 +10365,15 @@
 
   // src/modules/sounds/engine.ts
   var soundCategories = ["navigation", "controls"];
-  var volume = (value, fallback) => typeof value === "number" && Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : fallback;
+  var volume = (value2, fallback2) => typeof value2 === "number" && Number.isFinite(value2) ? Math.max(0, Math.min(1, value2)) : fallback2;
   function normalizeSoundPreferences(raw) {
-    const value = raw;
+    const value2 = raw;
     return {
-      enabled: typeof value?.enabled === "boolean" ? value.enabled : true,
-      volume: volume(value?.volume, 0.55),
+      enabled: typeof value2?.enabled === "boolean" ? value2.enabled : true,
+      volume: volume(value2?.volume, 0.55),
       categories: Object.fromEntries(soundCategories.map((category) => [category, {
-        enabled: typeof value?.categories?.[category]?.enabled === "boolean" ? value.categories[category].enabled : true,
-        volume: volume(value?.categories?.[category]?.volume, 1)
+        enabled: typeof value2?.categories?.[category]?.enabled === "boolean" ? value2.categories[category].enabled : true,
+        volume: volume(value2?.categories?.[category]?.volume, 1)
       }]))
     };
   }
@@ -10397,19 +10427,19 @@
   var soundMediaPrefix = "AtelierSounds_media_";
   var soundMediaLeaseMs = 15e4;
   function activeMediaHeartbeat(raw, now) {
-    const value = raw;
-    return value?.version === 1 && value.playing === true && typeof value.at === "number" && Number.isFinite(value.at) && value.at <= now + 5e3 && now - value.at <= soundMediaLeaseMs;
+    const value2 = raw;
+    return value2?.version === 1 && value2.playing === true && typeof value2.at === "number" && Number.isFinite(value2.at) && value2.at <= now + 5e3 && now - value2.at <= soundMediaLeaseMs;
   }
 
   // src/modules/sounds/media.ts
   var pulseKey = "AtelierSounds_mediaPulse";
   function startSoundMediaMonitor(changed) {
     const key2 = soundMediaPrefix + crypto.randomUUID();
-    const media = /* @__PURE__ */ new Set(), roots2 = /* @__PURE__ */ new WeakSet(), frames = /* @__PURE__ */ new WeakSet();
+    const media2 = /* @__PURE__ */ new Set(), roots2 = /* @__PURE__ */ new WeakSet(), frames = /* @__PURE__ */ new WeakSet();
     let suspended = false, playing = false, published = false;
     const events = new AbortController();
     const observer = new MutationObserver((records2) => {
-      for (const record of records2) for (const node of record.addedNodes) if (node.nodeType === 1) discover(node);
+      for (const record of records2) for (const node3 of record.addedNodes) if (node3.nodeType === 1) discover(node3);
       update();
     });
     function signal() {
@@ -10428,18 +10458,18 @@
         signal();
       }
     }
-    function track(node) {
-      if (media.has(node)) return;
-      media.add(node);
-      for (const name of ["play", "playing", "pause", "ended", "emptied", "abort"]) node.addEventListener(name, update, { signal: events.signal });
+    function track(node3) {
+      if (media2.has(node3)) return;
+      media2.add(node3);
+      for (const name of ["play", "playing", "pause", "ended", "emptied", "abort"]) node3.addEventListener(name, update, { signal: events.signal });
     }
-    function discover(root) {
-      if (root instanceof HTMLMediaElement) track(root);
-      if (root.shadowRoot) watch(root.shadowRoot);
-      for (const node of root.querySelectorAll("video,audio")) track(node);
-      for (const node of root.querySelectorAll("*")) if (node.shadowRoot) watch(node.shadowRoot);
-      const foundFrames = [...root.querySelectorAll("iframe")];
-      if (root.tagName === "IFRAME") foundFrames.unshift(root);
+    function discover(root3) {
+      if (root3 instanceof HTMLMediaElement) track(root3);
+      if (root3.shadowRoot) watch(root3.shadowRoot);
+      for (const node3 of root3.querySelectorAll("video,audio")) track(node3);
+      for (const node3 of root3.querySelectorAll("*")) if (node3.shadowRoot) watch(node3.shadowRoot);
+      const foundFrames = [...root3.querySelectorAll("iframe")];
+      if (root3.tagName === "IFRAME") foundFrames.unshift(root3);
       for (const frame of foundFrames) {
         const read = () => {
           try {
@@ -10454,31 +10484,31 @@
         read();
       }
     }
-    function watch(root) {
-      if (roots2.has(root)) return;
-      roots2.add(root);
-      observer.observe(root, { childList: true, subtree: true });
-      root.addEventListener("play", (event) => {
+    function watch(root3) {
+      if (roots2.has(root3)) return;
+      roots2.add(root3);
+      observer.observe(root3, { childList: true, subtree: true });
+      root3.addEventListener("play", (event) => {
         const target = event.target;
         if (target && (target.tagName === "VIDEO" || target.tagName === "AUDIO" || target instanceof HTMLMediaElement)) track(target);
         update();
       }, { capture: true, signal: events.signal });
-      discover(root);
+      discover(root3);
     }
     function update() {
       let next = false;
-      for (const node of media) {
-        let connected = node.isConnected;
+      for (const node3 of media2) {
+        let connected = node3.isConnected;
         try {
-          const frame = node.ownerDocument.defaultView?.frameElement;
+          const frame = node3.ownerDocument.defaultView?.frameElement;
           if (frame && !frame.isConnected) connected = false;
         } catch {
         }
         if (!connected) {
-          media.delete(node);
+          media2.delete(node3);
           continue;
         }
-        if (!node.paused && !node.ended) next = true;
+        if (!node3.paused && !node3.ended) next = true;
       }
       const was = playing;
       playing = next;
@@ -10630,16 +10660,16 @@
   var previewPlaying = false;
   var foreground = () => window.top === window.self && !document.hidden && document.hasFocus();
   var readSoundPreferences = () => normalizeSoundPreferences(typeof GM_getValue === "function" ? GM_getValue(preferenceKey, null) : null);
-  function writeSoundPreferences(value) {
-    GM_setValue(preferenceKey, normalizeSoundPreferences(value));
+  function writeSoundPreferences(value2) {
+    GM_setValue(preferenceKey, normalizeSoundPreferences(value2));
     engine?.stop();
     window.dispatchEvent(new Event(soundPreferencesChanged));
   }
   function request(cue) {
     const alias = aliases[cue];
     if (!alias) return;
-    const value = catalog_default.cues[alias];
-    return { asset: clips.get(value.sound), category: value.category, priority: value.priority };
+    const value2 = catalog_default.cues[alias];
+    return { asset: clips.get(value2.sound), category: value2.category, priority: value2.priority };
   }
   function enqueue(cue, action, valid) {
     if (!action) return;
@@ -10719,9 +10749,9 @@
       const activate = (event) => {
         if (!event.isTrusted || !foreground()) return;
         transport.unlock();
-        const current = gesture = ++sequence;
+        const current2 = gesture = ++sequence;
         window.setTimeout(() => {
-          if (gesture === current) gesture = 0;
+          if (gesture === current2) gesture = 0;
         }, 0);
       };
       for (const name of ["pointerdown", "click", "keydown", "change", "submit"]) document.addEventListener(name, activate, true);
@@ -10759,195 +10789,2115 @@
     script.remove();
   }
 
-  // src/ui/assets/luna-olive/caption.png
-  var caption_default = "data:image/png;base64,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";
+  // src/ui/assets/luna/blue.png
+  var blue_default = readCachedResourceUrl("atelier_blue_png");
 
-  // src/ui/assets/luna-olive/radio-normal.png
-  var radio_normal_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAABAUlEQVR4nGP8//8/AwzIBjUiOGjg8bp6RhibEaRJFkmxh6kig7OhAoOxqiTDxXtvGPaef8Cw5cQtFM0sMI6lphRDoLUqg5W2DAMTEzMDMzMLg62ePIOjkTKDl4U6w8oDVxgOXrgPVssCsyUQTQMzMzMDCwuEtjdQAtMgTSD1TDAnWeHQABJjYmJicDBUYQiy0wHbBNbkbKiAVwOM9rbURGgyVpUkqAGELXUUEJou3ntDUAMIn7r+GKFp7/kHBDWA8JZj1xGaQPFw7OoTvBr2n7/LsObARYgmWEyD4uHI5Yc4NSzZeRYzckFxAMKgYAWFEsjTp64/ADsJZgNKMiI17QEAZEFjecNMQigAAAAASUVORK5CYII=";
+  // src/ui/assets/luna/blue/theme.json
+  var theme_default = {
+    globals: {
+      edgelightcolor: "#f1efe2",
+      edgehighlightcolor: "#ffffff",
+      edgeshadowcolor: "#aca899",
+      edgedkshadowcolor: "#716f64",
+      edgefillcolor: "#ece9d8"
+    },
+    SysMetrics: {
+      scrollbarwidth: "17",
+      scrollbarheight: "17",
+      window: "#ffffff",
+      menubar: "#ece9d8",
+      menu: "#ffffff",
+      background: "#004e98",
+      btnface: "#ece9d8",
+      highlight: "#316ac5",
+      activecaption: "#0054e3",
+      captiontext: "#ffffff",
+      inactivecaption: "#7a96df",
+      inactivecaptiontext: "#d8e4f8",
+      gradientactivecaption: "#3d95ff",
+      gradientinactivecaption: "#9db9eb",
+      highlighttext: "#ffffff",
+      menuhilight: "#316ac5",
+      btnshadow: "#aca899",
+      graytext: "#aca899",
+      btnhighlight: "#ffffff",
+      dkshadow3d: "#716f64",
+      light3d: "#f1efe2",
+      captionfont: "Trebuchet MS, 10, bold",
+      captionbarheight: "25",
+      smallcaptionfont: "Tahoma, 8, bold",
+      smcaptionbarheight: "17",
+      smcaptionbarwidth: "17",
+      menufont: "Tahoma, 8",
+      statusfont: "Tahoma, 8",
+      msgboxfont: "Tahoma, 8",
+      icontitlefont: "Tahoma, 8",
+      flatmenus: "true",
+      cssname: "cpwebvw.css",
+      xmlname: "default.xml",
+      mincolordepth: "15"
+    },
+    "Button.Pushbutton": {
+      bgtype: "imagefile",
+      sizingmargins: "8, 8, 9, 9",
+      sizingtype: "Stretch",
+      contentmargins: "3, 3, 3, 3",
+      imagefile: "Blue\\button.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      textcolor: "#000000",
+      fillcolorhint: "#f3f3ef",
+      bordercolorhint: "#003c74",
+      accentcolorhint: "#fac458",
+      minsize: "10, 5"
+    },
+    "Button.Checkbox": {
+      bgtype: "imagefile",
+      imagelayout: "vertical",
+      sizingtype: "TrueSize",
+      sizingmargins: "0, 0, 0, 0",
+      contentmargins: "0, 0, 0, 0",
+      imagecount: "12",
+      mirrorimage: "false",
+      fillcolorhint: "#21a121",
+      bordercolorhint: "#1d5281",
+      accentcolorhint: "#fac458",
+      imageselecttype: "Dpi",
+      truesizescalingtype: "Dpi",
+      truesizestretchmark: "50",
+      uniformsizing: "true",
+      imagefile1: "Blue\\CheckBox13.bmp",
+      imagefile2: "Blue\\CheckBox16.bmp",
+      imagefile3: "Blue\\CheckBox25.bmp",
+      mindpi1: "96",
+      mindpi2: "118",
+      mindpi3: "185"
+    },
+    "Button.Radiobutton": {
+      bgtype: "imagefile",
+      imagelayout: "vertical",
+      transparent: "true",
+      sizingtype: "TrueSize",
+      sizingmargins: "0, 0, 0, 0",
+      contentmargins: "0, 0, 0, 0",
+      imagecount: "8",
+      fillcolorhint: "#21a121",
+      bordercolorhint: "#1d5281",
+      accentcolorhint: "#fac458",
+      imageselecttype: "Dpi",
+      truesizescalingtype: "Dpi",
+      truesizestretchmark: "50",
+      uniformsizing: "true",
+      imagefile1: "Blue\\RadioButton13.bmp",
+      imagefile2: "Blue\\RadioButton16.bmp",
+      imagefile3: "Blue\\RadioButton25.bmp",
+      mindpi1: "96",
+      mindpi2: "118",
+      mindpi3: "185"
+    },
+    Edit: {
+      bgtype: "BorderFill",
+      bordersize: "1",
+      fillcolor: "#ffffff",
+      bordercolor: "#7f9db9"
+    },
+    ListView: {
+      bgtype: "BorderFill",
+      bordersize: "1",
+      fillcolor: "#ffffff",
+      bordercolor: "#7f9db9"
+    },
+    Window: {
+      bgtype: "ImageFile",
+      transparent: "true",
+      textshadowoffset: "1,1",
+      textshadowcolor: "#0a1883"
+    },
+    "Window.Caption": {
+      imagefile: "Blue\\FrameCaption.bmp",
+      sizingmargins: "28, 35, 9, 17",
+      contentmargins: "1, 1, 1, 1",
+      captionmargins: "4, 3, 0, 0",
+      sizingtype: "stretch",
+      imagelayout: "vertical",
+      imagecount: "2",
+      transparent: "True",
+      fillcolorhint: "#0054e5"
+    },
+    "Window.FrameLeft": {
+      imagefile: "Blue\\frameLeft.bmp",
+      sizingmargins: "2, 2, 0, 0",
+      sizingtype: "stretch",
+      imagelayout: "vertical",
+      imagecount: "2",
+      transparent: "FALSE",
+      borderonly: "FALSE"
+    },
+    "Window.FrameBottom": {
+      imagefile: "Blue\\frameBottom.bmp",
+      sizingmargins: "5, 5, 2, 2",
+      sizingtype: "stretch",
+      imagelayout: "vertical",
+      imagecount: "2",
+      transparent: "FALSE",
+      borderonly: "FALSE"
+    },
+    "Button.GroupBox": {
+      textcolor: "#0046d5",
+      bgtype: "imagefile",
+      sizingmargins: "4, 4, 4, 4",
+      sizingtype: "Tile",
+      imagefile: "Blue\\GroupBox.bmp",
+      borderonly: "true",
+      transparent: "true",
+      bordercolorhint: "#d0d0bf",
+      normalsize: "9999, 9999"
+    },
+    Combobox: {
+      bgtype: "BorderFill",
+      bordersize: "1",
+      fillcolor: "#ffffff",
+      bordercolor: "#7f9db9"
+    },
+    "Combobox.DropDownButton": {
+      bgtype: "imagefile",
+      imagelayout: "vertical",
+      sizingtype: "Stretch",
+      imagefile: "Blue\\ComboButton.bmp",
+      sizingmargins: "3, 3, 3, 3",
+      contentmargins: "0, 0, 0, 0",
+      imagecount: "4",
+      glyphtype: "ImageGlyph",
+      glyphimagefile: "Blue\\ComboButtonGlyph.bmp",
+      glyphtransparent: "true",
+      fillcolorhint: "#c8d6fb",
+      bordercolorhint: "#ffffff"
+    },
+    "ScrollBar.ArrowBtn": {
+      bgtype: "ImageFile",
+      sizingmargins: "5, 5, 5, 5",
+      contentmargins: "0, 0, 3, 3",
+      sizingtype: "Stretch",
+      imagefile: "Blue\\ScrollArrows.bmp",
+      imagecount: "16",
+      imagelayout: "Vertical",
+      glyphtype: "ImageGlyph",
+      glyphtransparent: "True",
+      fillcolorhint: "#c8d6fb",
+      bordercolorhint: "#ffffff",
+      imageselecttype: "size",
+      truesizescalingtype: "size",
+      sourceshrink: "True",
+      truesizestretchmark: "150",
+      uniformsizing: "true",
+      imagefile1: "Blue\\ScrollArrowGlyphsSmall.bmp",
+      imagefile2: "Blue\\ScrollArrowGlyphs.bmp",
+      minsize1: "7, 7",
+      minsize2: "9, 9",
+      normalsize: "7, 10"
+    },
+    "Scrollbar.ThumbBtnVert": {
+      bgtype: "ImageFile",
+      sizingmargins: "5, 5, 5, 5",
+      contentmargins: "0, 0, 4, 4",
+      imagefile: "Blue\\ScrollThumbVertical.bmp",
+      imagecount: "4",
+      imagelayout: "vertical",
+      fillcolorhint: "#c6d5fd",
+      bordercolorhint: "#ffffff"
+    },
+    "Scrollbar.ThumbBtnHorz": {
+      bgtype: "ImageFile",
+      sizingmargins: "5, 5, 5, 5",
+      contentmargins: "4, 4, 0, 0",
+      imagefile: "Blue\\ScrollThumbHorizontal.bmp",
+      imagecount: "4",
+      imagelayout: "Vertical",
+      fillcolorhint: "#c6d5fd",
+      bordercolorhint: "#ffffff"
+    },
+    "Scrollbar.GripperVert": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagefile: "Blue\\ScrollThumbGripperVertical.BMP",
+      imagecount: "4",
+      transparent: "True",
+      imagelayout: "Vertical"
+    },
+    "Scrollbar.GripperHorz": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagefile: "Blue\\ScrollThumbGripperHorizontal.BMP",
+      imagelayout: "vertical",
+      transparent: "True",
+      imagecount: "4"
+    },
+    "Scrollbar.LowerTrackVert": {
+      bgtype: "imagefile",
+      imagefile: "Blue\\ScrollShaftVertical.bmp",
+      sizingmargins: "1, 1, 0, 0",
+      imagecount: "4",
+      imagelayout: "Vertical",
+      fillcolorhint: "#c6d5fd"
+    },
+    "Scrollbar.LowerTrackHorz": {
+      bgtype: "imagefile",
+      imagefile: "Blue\\ScrollShaftHorizontal.bmp",
+      sizingmargins: "0, 0, 1, 1",
+      imagecount: "4",
+      imagelayout: "Vertical",
+      fillcolorhint: "#c6d5fd"
+    },
+    Toolbar: {
+      bgtype: "Borderfill",
+      bordersize: "0",
+      fillcolor: "#ece9d8",
+      textcolor: "#000000"
+    },
+    "Toolbar(Pressed)": {
+      textcolor: "#ffffff"
+    },
+    Status: {
+      sizingmargins: "50, 17, 5, 9",
+      imagefile: "Blue\\StatusBackground.bmp",
+      bgtype: "imagefile",
+      imagecount: "1",
+      sizingtype: "Tile",
+      fillcolorhint: "#ece9d8"
+    },
+    Progress: {
+      progresschunksize: "6",
+      progressspacesize: "2",
+      bgtype: "borderFill",
+      filltype: "Solid",
+      fillcolor: "#2ed331",
+      bordersize: "1",
+      bordercolor: "#ebebe4"
+    },
+    ExplorerBar: {
+      bgtype: "BorderFill",
+      filltype: "VertGradient",
+      gradientratio1: "0",
+      gradientcolor1: "#8caae6",
+      gradientratio2: "255",
+      gradientcolor2: "#6487dc",
+      bordersize: "0",
+      contentmargins: "12, 12, 12, 12"
+    },
+    "Toolbar.Button": {
+      sizingmargins: "4, 4, 4, 4",
+      contentmargins: "0, 0, 0, 0",
+      imagefile: "Blue\\ToolbarButtons.bmp",
+      bgtype: "imagefile",
+      imagelayout: "vertical",
+      imagecount: "6",
+      sizingtype: "Stretch",
+      transparent: "true",
+      transparentcolor: "#ff00ff",
+      fillcolorhint: "#f1f3ef",
+      bordercolorhint: "#cecec3"
+    },
+    "Toolbar.Separator": {
+      sizingmargins: "5, 2, 2, 1",
+      imagefile: "Blue\\Separator.bmp",
+      bgtype: "imagefile",
+      imagecount: "1",
+      sizingtype: "tile",
+      transparent: "true",
+      transparentcolor: "#ff0000",
+      fillcolorhint: "#cac6af"
+    },
+    "Status.Pane": {
+      sizingmargins: "0, 2, 2, 2",
+      imagefile: "Blue\\StatusPane.bmp",
+      bgtype: "imagefile",
+      imagecount: "1",
+      sizingtype: "Tile",
+      transparent: "True",
+      transparentcolor: "#ff0000"
+    },
+    "Status.Gripper": {
+      contentmargins: "0,0,0,0",
+      imagefile: "Blue\\ResizeGrip2.bmp",
+      bgtype: "imagefile",
+      imagecount: "2",
+      sizingtype: "trueSize",
+      transparent: "True",
+      transparentcolor: "#ff0000",
+      fillcolorhint: "#b8b4a3",
+      valign: "Bottom"
+    },
+    "Progress.Bar": {
+      bgtype: "imagefile",
+      imagefile: "Blue\\ProgressTrack.bmp",
+      minsize: "10,10",
+      sizingmargins: "4, 4, 3, 3",
+      sizingtype: "tile",
+      fillcolorhint: "#ffffff",
+      bordercolorhint: "#686868",
+      normalsize: "100, 18",
+      sourceshrink: "true"
+    },
+    "Progress.Chunk": {
+      bgtype: "imagefile",
+      imagefile: "Blue\\ProgressChunk.bmp",
+      sizingmargins: "0, 0, 6, 5",
+      sizingtype: "tile",
+      fillcolorhint: "#2ed331"
+    },
+    "Tab.Pane": {
+      bgtype: "imagefile",
+      imagefile: "Blue\\TabPaneEdge.bmp",
+      sizingmargins: "2, 4, 2, 4",
+      sizingtype: "stretch",
+      imagecount: "1",
+      fillcolorhint: "#fbfbfd",
+      bordercolorhint: "#919b9c"
+    },
+    "Tab.TabItem": {
+      sizingmargins: "6, 6, 6, 6",
+      contentmargins: "0, 0, 0, 0",
+      bgtype: "imagefile",
+      imagefile: "Blue\\tabItem.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      fillcolorhint: "#f8f8f6",
+      bordercolorhint: "#91a7b4",
+      accentcolorhint: "#ffc83c"
+    },
+    "Tab.TabItemLeftEdge": {
+      sizingmargins: "6, 6, 6, 6",
+      contentmargins: "0, 0, 0, 0",
+      bgtype: "imagefile",
+      imagefile: "Blue\\tabItemLeft.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      fillcolorhint: "#f8f8f6",
+      bordercolorhint: "#91a7b4",
+      accentcolorhint: "#ffc83c"
+    },
+    "Tab.TabItemRightEdge": {
+      sizingmargins: "6, 6, 6, 6",
+      contentmargins: "0, 0, 0, 0",
+      bgtype: "imagefile",
+      imagefile: "Blue\\tabItemRight.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      fillcolorhint: "#f8f8f6",
+      bordercolorhint: "#91a7b4",
+      accentcolorhint: "#ffc83c"
+    },
+    "Tab.TabItemBothEdge": {
+      sizingmargins: "6, 6, 6, 6",
+      contentmargins: "0, 0, 0, 0",
+      bgtype: "imagefile",
+      imagefile: "Blue\\tabItemBoth.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      fillcolorhint: "#f8f8f6",
+      bordercolorhint: "#91a7b4",
+      accentcolorhint: "#ffc83c"
+    },
+    "Tab.Body": {
+      bgtype: "imagefile",
+      stockimagefile: "Blue\\TabBackground.bmp",
+      fillcolorhint: "#fbfbfd",
+      imageselecttype: "Dpi",
+      truesizescalingtype: "Dpi",
+      truesizestretchmark: "50",
+      imagefile1: "Blue\\TabBackground.bmp",
+      imagefile2: "Blue\\TabBackground133.bmp",
+      mindpi1: "96",
+      mindpi2: "164"
+    },
+    "Header.HeaderItem": {
+      bgtype: "imagefile",
+      sizingmargins: "8, 8, 3, 4",
+      contentmargins: "3, 0, 0, 0",
+      imagefile: "Blue\\ListViewHeader.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      sizingtype: "tile",
+      transparent: "true",
+      transparentcolor: "#ff0000",
+      fillcolorhint: "#faf8f3",
+      accentcolorhint: "#fcc247"
+    },
+    "ExplorerBar.NormalGroupHead": {
+      bgtype: "ImageFile",
+      sizingtype: "Stretch",
+      imagefile: "Blue\\NormalGroupHead.bmp",
+      sizingmargins: "3, 106, 3, 1",
+      transparent: "true",
+      font: "Tahoma, 8, Bold",
+      textcolor: "#215dc6",
+      contentmargins: "8, 8, 7, 7",
+      fillcolorhint: "#f0f3fb"
+    },
+    "ExplorerBar.NormalGroupBackground": {
+      bgtype: "ImageFile",
+      fillcolor: "#d6dff7",
+      bordercolor: "#ffffff",
+      sizingtype: "Stretch",
+      imagefile: "Blue\\NormalGroupBackground.bmp",
+      sizingmargins: "3, 3, 3, 3",
+      font: "Tahoma, 8",
+      textcolor: "#265cc0",
+      contentmargins: "8, 8, 7, 7"
+    },
+    "ExplorerBar.NormalGroupCollapse": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagelayout: "Vertical",
+      imagefile: "Blue\\NormalGroupCollapse.bmp",
+      imagecount: "3",
+      transparent: "true",
+      offsettype: "TopRight",
+      offset: "-3, 1",
+      fillcolorhint: "#ecf0f9",
+      bordercolorhint: "#a5bbe4"
+    },
+    "ExplorerBar.NormalGroupExpand": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagelayout: "Vertical",
+      imagefile: "Blue\\NormalGroupExpand.bmp",
+      imagecount: "3",
+      transparent: "true",
+      offsettype: "TopRight",
+      offset: "-3, 1",
+      fillcolorhint: "#ecf0f9",
+      bordercolorhint: "#a5bbe4"
+    },
+    "ExplorerBar.SpecialGroupHead": {
+      bgtype: "ImageFile",
+      sizingtype: "Stretch",
+      imagefile: "Blue\\SpecialGroupHead.bmp",
+      sizingmargins: "3, 106, 3, 1",
+      transparent: "true",
+      font: "Tahoma, 8, Bold",
+      textcolor: "#ffffff",
+      fillcolor: "#0248b2",
+      contentmargins: "8, 8, 7, 7"
+    },
+    "ExplorerBar.SpecialGroupBackground": {
+      bgtype: "ImageFile",
+      sizingtype: "Stretch",
+      imagefile: "Blue\\SpecialGroupBackground.bmp",
+      sizingmargins: "3, 3, 3, 3",
+      font: "Tahoma, 8",
+      textcolor: "#265cc0",
+      contentmargins: "8, 8, 7, 7",
+      fillcolorhint: "#eff3ff"
+    },
+    "ExplorerBar.SpecialGroupCollapse": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagelayout: "Vertical",
+      imagefile: "Blue\\SpecialGroupCollapse.bmp",
+      imagecount: "3",
+      transparent: "true",
+      offsettype: "TopRight",
+      offset: "-3, 1",
+      fillcolorhint: "#2459c3",
+      bordercolorhint: "#4672cd"
+    },
+    "ExplorerBar.SpecialGroupExpand": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagelayout: "Vertical",
+      imagefile: "Blue\\SpecialGroupExpand.bmp",
+      imagecount: "3",
+      transparent: "true",
+      offsettype: "TopRight",
+      offset: "-3, 1",
+      fillcolorhint: "#2459c3",
+      bordercolorhint: "#4672cd"
+    }
+  };
 
-  // src/ui/assets/luna-olive/radio-checked.png
-  var radio_checked_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAABfElEQVR4nGP8//8/AwzIBjUiOGjg8bp6RhibEaRJFkmxl5kyg6uxEoOJuhTD+bsvGXafvc+w+dhNFM0sMI61tgxDkK06g42OHAMTExMDMzMzg52eIoOjoQqDl4UGw8p9lxkOXLgHVssCsyUITQMTEzOcdjBQYmBmYgZrAqlngjnJBqrhN+Nvhv2fDjAkXk5k2Ph4E8P3v9/B4o5GKgxB9rpgm8CaXI2V4DYc/3KCYc3P1QzfWL4ydF7rYNh0bxPYNpC8j6UmQpOJuhTcKUseL2F4++4dw9dv3xh+/PzN0HOqG6yBkZGRwVJHAaHp/N2XcD8EC4cwvHj6guHVy9cMnz6+ZygyKgFrAGk8ee0xQtPus/fhNnnIeDAUqBQyMH1hYWg1b2cI0w6D2sTEsOXYNUg8yQQ2gENvepE/OJRACmB+gNkA0rD//B2GhNblEJtgMQ2Kh8OXHuLUsGTnWczIBcUBCIOCFRRKIE+fvPYA7KQ1By6iJClwMiI17QEAxE2SfAwrA7MAAAAASUVORK5CYII=";
+  // src/ui/assets/luna/olive.png
+  var olive_default = readCachedResourceUrl("atelier_olive_png");
 
-  // src/ui/assets/luna-olive/scroll-up.png
-  var scroll_up_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAIAAAC0D9CtAAABOElEQVR4nJXQP0/CQBgG8PdqK6QJBkMY/ACkAwNJE2UwODCy+D34Tn4IJ+MqMJhOHTQxJkzyJylXAVvotXc9cxwpNJYK7/Q09/7Sew65eFTQynpJhyMmiqLxcKICgFbU+q/Plj3IB9eN26bZXgRYGACw7EHrrpVvei+9ptn+SYwcB08OgWrlSoYlcVJm9j371/hkkTJnKsq/HgAEdLUzznzKGQWQjG8C32QRnPlUrrGYpv4TUZot9nd4uDO+t05uJsP+p++tk00FTp04Pt0ApPuw1eE+lQzj+TgMCUJUGK4iRDkXpzJ4Ps4wAREt5d7fIE/FKMr2wKjVPz7fAIo5NYxaHQAuCpfIxaP3sXVjdI5p/2Q/NEodYUjE+sNHd/nl0WVICIOQxwiAiTLK9mE19bysV+/NbuDALyMzkKTN3TqoAAAAAElFTkSuQmCC";
+  // src/ui/assets/luna/olive/theme.json
+  var theme_default2 = {
+    globals: {
+      edgelightcolor: "#f1efe2",
+      edgehighlightcolor: "#ffffff",
+      edgeshadowcolor: "#aca899",
+      edgedkshadowcolor: "#716f64",
+      edgefillcolor: "#ece9d8"
+    },
+    SysMetrics: {
+      scrollbarwidth: "17",
+      scrollbarheight: "17",
+      window: "#ffffff",
+      menubar: "#ece9d8",
+      menu: "#ffffff",
+      background: "#9dacbd",
+      btnface: "#ece9d8",
+      highlight: "#93a070",
+      activecaption: "#8ba169",
+      captiontext: "#ffffff",
+      inactivecaption: "#d4d6ba",
+      inactivecaptiontext: "#ffffff",
+      gradientactivecaption: "#c6d2a2",
+      gradientinactivecaption: "#d4d6ba",
+      highlighttext: "#ffffff",
+      menuhilight: "#93a070",
+      btnshadow: "#aca899",
+      graytext: "#aca899",
+      btnhighlight: "#ffffff",
+      dkshadow3d: "#716f64",
+      light3d: "#f1efe2",
+      captionfont: "Trebuchet MS, 10, bold",
+      captionbarheight: "25",
+      smallcaptionfont: "Tahoma, 8, bold",
+      smcaptionbarheight: "17",
+      smcaptionbarwidth: "17",
+      menufont: "Tahoma, 8",
+      statusfont: "Tahoma, 8",
+      msgboxfont: "Tahoma, 8",
+      icontitlefont: "Tahoma, 8",
+      flatmenus: "true",
+      cssname: "cpwebvw.css",
+      xmlname: "default.xml",
+      mincolordepth: "15"
+    },
+    "Button.Pushbutton": {
+      bgtype: "imagefile",
+      sizingmargins: "8, 8, 9, 9",
+      sizingtype: "Stretch",
+      contentmargins: "3, 3, 3, 3",
+      imagefile: "HomeStead\\button.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      textcolor: "#000000",
+      fillcolorhint: "#f3f3ef",
+      bordercolorhint: "#056206",
+      accentcolorhint: "#e3914f",
+      minsize: "10, 5"
+    },
+    "Button.Checkbox": {
+      bgtype: "imagefile",
+      imagelayout: "vertical",
+      sizingtype: "TrueSize",
+      sizingmargins: "0, 0, 0, 0",
+      contentmargins: "0, 0, 0, 0",
+      imagecount: "12",
+      mirrorimage: "false",
+      fillcolorhint: "#21a121",
+      bordercolorhint: "#1d5281",
+      accentcolorhint: "#fac458",
+      imageselecttype: "Dpi",
+      truesizescalingtype: "Dpi",
+      truesizestretchmark: "50",
+      uniformsizing: "true",
+      imagefile1: "HomeStead\\CheckBox13.bmp",
+      imagefile2: "HomeStead\\CheckBox16.bmp",
+      imagefile3: "HomeStead\\CheckBox25.bmp",
+      mindpi1: "96",
+      mindpi2: "118",
+      mindpi3: "185"
+    },
+    "Button.Radiobutton": {
+      bgtype: "imagefile",
+      imagelayout: "vertical",
+      transparent: "true",
+      sizingtype: "TrueSize",
+      sizingmargins: "0, 0, 0, 0",
+      contentmargins: "0, 0, 0, 0",
+      imagecount: "8",
+      fillcolorhint: "#21a121",
+      bordercolorhint: "#1d5281",
+      accentcolorhint: "#fac458",
+      imageselecttype: "Dpi",
+      truesizescalingtype: "Dpi",
+      truesizestretchmark: "50",
+      uniformsizing: "true",
+      imagefile1: "HomeStead\\RadioButton13.bmp",
+      imagefile2: "HomeStead\\RadioButton16.bmp",
+      imagefile3: "HomeStead\\RadioButton25.bmp",
+      mindpi1: "96",
+      mindpi2: "118",
+      mindpi3: "185"
+    },
+    Edit: {
+      bgtype: "BorderFill",
+      bordersize: "1",
+      fillcolor: "#ffffff",
+      bordercolor: "#a4b97f"
+    },
+    ListView: {
+      bgtype: "BorderFill",
+      bordersize: "1",
+      fillcolor: "#ffffff",
+      bordercolor: "#a4b97f"
+    },
+    Window: {
+      bgtype: "ImageFile",
+      transparent: "true",
+      textshadowoffset: "1,1",
+      textshadowcolor: "#41400a"
+    },
+    "Window.Caption": {
+      imagefile: "HomeStead\\FrameCaption.bmp",
+      sizingmargins: "28, 35, 9, 17",
+      contentmargins: "1, 1, 1, 1",
+      captionmargins: "4, 3, 0, 0",
+      sizingtype: "stretch",
+      imagelayout: "vertical",
+      imagecount: "2",
+      transparent: "True",
+      fillcolorhint: "#aab886"
+    },
+    "Window.FrameLeft": {
+      imagefile: "HomeStead\\frameLeft.bmp",
+      sizingmargins: "2, 2, 0, 0",
+      sizingtype: "stretch",
+      imagelayout: "vertical",
+      imagecount: "2",
+      transparent: "FALSE",
+      borderonly: "FALSE"
+    },
+    "Window.FrameBottom": {
+      imagefile: "HomeStead\\frameBottom.bmp",
+      sizingmargins: "5, 5, 2, 2",
+      sizingtype: "stretch",
+      imagelayout: "vertical",
+      imagecount: "2",
+      transparent: "FALSE",
+      borderonly: "FALSE"
+    },
+    "Button.GroupBox": {
+      textcolor: "#99540a",
+      bgtype: "imagefile",
+      sizingmargins: "4, 4, 4, 4",
+      sizingtype: "Tile",
+      imagefile: "HomeStead\\GroupBox.bmp",
+      borderonly: "true",
+      transparent: "true",
+      bordercolorhint: "#d0d0bf",
+      normalsize: "9999, 9999"
+    },
+    Combobox: {
+      bgtype: "BorderFill",
+      bordersize: "1",
+      fillcolor: "#ffffff",
+      bordercolor: "#a4b97f"
+    },
+    "Combobox.DropDownButton": {
+      bgtype: "imagefile",
+      imagelayout: "vertical",
+      sizingtype: "Stretch",
+      imagefile: "HomeStead\\ComboButton.bmp",
+      sizingmargins: "3, 3, 3, 3",
+      contentmargins: "0, 0, 0, 0",
+      imagecount: "4",
+      glyphtype: "ImageGlyph",
+      glyphimagefile: "HomeStead\\ComboButtonGlyph.bmp",
+      glyphtransparent: "true",
+      fillcolorhint: "#a0b086",
+      bordercolorhint: "#ffffff"
+    },
+    "ScrollBar.ArrowBtn": {
+      bgtype: "ImageFile",
+      sizingmargins: "5, 5, 5, 5",
+      contentmargins: "0, 0, 3, 3",
+      sizingtype: "Stretch",
+      imagefile: "HomeStead\\ScrollArrows.bmp",
+      imagecount: "16",
+      imagelayout: "Vertical",
+      glyphtype: "ImageGlyph",
+      glyphtransparent: "True",
+      fillcolorhint: "#a0b086",
+      bordercolorhint: "#ffffff",
+      imageselecttype: "size",
+      truesizescalingtype: "size",
+      sourceshrink: "True",
+      truesizestretchmark: "150",
+      uniformsizing: "true",
+      imagefile1: "HomeStead\\ScrollArrowGlyphsSmall.bmp",
+      imagefile2: "HomeStead\\ScrollArrowGlyphs.bmp",
+      minsize1: "7, 7",
+      minsize2: "9, 9",
+      normalsize: "7, 10"
+    },
+    "Scrollbar.ThumbBtnVert": {
+      bgtype: "ImageFile",
+      sizingmargins: "5, 5, 5, 5",
+      contentmargins: "0, 0, 4, 4",
+      imagefile: "HomeStead\\ScrollThumbVertical.bmp",
+      imagecount: "4",
+      imagelayout: "vertical",
+      fillcolorhint: "#a0b086",
+      bordercolorhint: "#ffffff"
+    },
+    "Scrollbar.ThumbBtnHorz": {
+      bgtype: "ImageFile",
+      sizingmargins: "5, 5, 5, 5",
+      contentmargins: "4, 4, 0, 0",
+      imagefile: "HomeStead\\ScrollThumbHorizontal.bmp",
+      imagecount: "4",
+      imagelayout: "Vertical",
+      fillcolorhint: "#a0b086",
+      bordercolorhint: "#ffffff"
+    },
+    "Scrollbar.GripperVert": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagefile: "HomeStead\\ScrollThumbGripperVertical.BMP",
+      imagecount: "4",
+      transparent: "True",
+      imagelayout: "Vertical"
+    },
+    "Scrollbar.GripperHorz": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagefile: "HomeStead\\ScrollThumbGripperHorizontal.BMP",
+      imagelayout: "vertical",
+      transparent: "True",
+      imagecount: "4"
+    },
+    "Scrollbar.LowerTrackVert": {
+      bgtype: "imagefile",
+      imagefile: "HomeStead\\ScrollShaftVertical.bmp",
+      sizingmargins: "1, 1, 0, 0",
+      imagecount: "4",
+      imagelayout: "Vertical",
+      fillcolorhint: "#f4f3ee"
+    },
+    "Scrollbar.LowerTrackHorz": {
+      bgtype: "imagefile",
+      imagefile: "HomeStead\\ScrollShaftHorizontal.bmp",
+      sizingmargins: "0, 0, 1, 1",
+      imagecount: "4",
+      imagelayout: "Vertical",
+      fillcolorhint: "#f4f3ee"
+    },
+    Toolbar: {
+      bgtype: "Borderfill",
+      bordersize: "0",
+      fillcolor: "#ece9d8",
+      textcolor: "#000000"
+    },
+    "Toolbar(Pressed)": {
+      textcolor: "#ffffff"
+    },
+    Status: {
+      sizingmargins: "50, 17, 5, 9",
+      imagefile: "HomeStead\\StatusBackground.bmp",
+      bgtype: "imagefile",
+      imagecount: "1",
+      sizingtype: "Tile",
+      fillcolorhint: "#ece9d8"
+    },
+    Progress: {
+      progresschunksize: "6",
+      progressspacesize: "2",
+      bgtype: "borderFill",
+      filltype: "Solid",
+      fillcolor: "#2ed331",
+      bordersize: "1",
+      bordercolor: "#ebebe4"
+    },
+    ExplorerBar: {
+      bgtype: "BorderFill",
+      filltype: "VertGradient",
+      gradientratio1: "0",
+      gradientcolor1: "#d3d9bc",
+      gradientratio2: "255",
+      gradientcolor2: "#afb988",
+      bordersize: "0",
+      contentmargins: "12, 12, 12, 12"
+    },
+    "Toolbar.Button": {
+      sizingmargins: "4, 4, 4, 4",
+      contentmargins: "0, 0, 0, 0",
+      imagefile: "HomeStead\\ToolbarButtons.bmp",
+      bgtype: "imagefile",
+      imagelayout: "vertical",
+      imagecount: "6",
+      sizingtype: "Stretch",
+      transparent: "true",
+      transparentcolor: "#ff00ff",
+      fillcolorhint: "#f1f3ef",
+      bordercolorhint: "#cecec3"
+    },
+    "Toolbar.Separator": {
+      sizingmargins: "5, 2, 2, 1",
+      imagefile: "HomeStead\\Separator.bmp",
+      bgtype: "imagefile",
+      imagecount: "1",
+      sizingtype: "tile",
+      transparent: "true",
+      transparentcolor: "#ff0000",
+      fillcolorhint: "#cac6af"
+    },
+    "Status.Pane": {
+      sizingmargins: "0, 2, 2, 2",
+      imagefile: "HomeStead\\StatusPane.bmp",
+      bgtype: "imagefile",
+      imagecount: "1",
+      sizingtype: "Tile",
+      transparent: "True",
+      transparentcolor: "#ff0000"
+    },
+    "Status.Gripper": {
+      contentmargins: "0,0,0,0",
+      imagefile: "HomeStead\\ResizeGrip2.bmp",
+      bgtype: "imagefile",
+      imagecount: "2",
+      sizingtype: "trueSize",
+      transparent: "True",
+      transparentcolor: "#ff0000",
+      fillcolorhint: "#b8b4a3",
+      valign: "Bottom"
+    },
+    "Progress.Bar": {
+      bgtype: "imagefile",
+      imagefile: "HomeStead\\ProgressTrack.bmp",
+      minsize: "10,10",
+      sizingmargins: "4, 4, 3, 3",
+      sizingtype: "tile",
+      fillcolorhint: "#ffffff",
+      bordercolorhint: "#686868",
+      normalsize: "100, 18",
+      sourceshrink: "true"
+    },
+    "Progress.Chunk": {
+      bgtype: "imagefile",
+      imagefile: "HomeStead\\ProgressChunk.bmp",
+      sizingmargins: "0, 0, 6, 5",
+      sizingtype: "tile",
+      fillcolorhint: "#e57e3f"
+    },
+    "Tab.Pane": {
+      bgtype: "imagefile",
+      imagefile: "HomeStead\\TabPaneEdge.bmp",
+      sizingmargins: "2, 4, 2, 4",
+      sizingtype: "stretch",
+      imagecount: "1",
+      fillcolorhint: "#fbfbfd",
+      bordercolorhint: "#919b9c"
+    },
+    "Tab.TabItem": {
+      sizingmargins: "6, 6, 6, 6",
+      contentmargins: "0, 0, 0, 0",
+      bgtype: "imagefile",
+      imagefile: "HomeStead\\tabItem.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      fillcolorhint: "#faf9e9",
+      bordercolorhint: "#a6a1a6",
+      accentcolorhint: "#e3914f"
+    },
+    "Tab.TabItemLeftEdge": {
+      sizingmargins: "6, 6, 6, 6",
+      contentmargins: "0, 0, 0, 0",
+      bgtype: "imagefile",
+      imagefile: "HomeStead\\tabItemLeft.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      fillcolorhint: "#faf9e9",
+      bordercolorhint: "#a6a1a6",
+      accentcolorhint: "#e3914f"
+    },
+    "Tab.TabItemRightEdge": {
+      sizingmargins: "6, 6, 6, 6",
+      contentmargins: "0, 0, 0, 0",
+      bgtype: "imagefile",
+      imagefile: "HomeStead\\tabItemRight.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      fillcolorhint: "#faf9e9",
+      bordercolorhint: "#a6a1a6",
+      accentcolorhint: "#e3914f"
+    },
+    "Tab.TabItemBothEdge": {
+      sizingmargins: "6, 6, 6, 6",
+      contentmargins: "0, 0, 0, 0",
+      bgtype: "imagefile",
+      imagefile: "HomeStead\\tabItemBoth.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      fillcolorhint: "#faf9e9",
+      bordercolorhint: "#a6a1a6",
+      accentcolorhint: "#e3914f"
+    },
+    "Tab.Body": {
+      bgtype: "imagefile",
+      stockimagefile: "HomeStead\\TabBackground.bmp",
+      fillcolorhint: "#fbfbfd",
+      imageselecttype: "Dpi",
+      truesizescalingtype: "Dpi",
+      truesizestretchmark: "50",
+      imagefile1: "HomeStead\\TabBackground.bmp",
+      imagefile2: "HomeStead\\TabBackground133.bmp",
+      mindpi1: "96",
+      mindpi2: "164"
+    },
+    "Header.HeaderItem": {
+      bgtype: "imagefile",
+      sizingmargins: "8, 8, 3, 4",
+      contentmargins: "3, 0, 0, 0",
+      imagefile: "HomeStead\\ListViewHeader.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      sizingtype: "tile",
+      transparent: "true",
+      transparentcolor: "#ff0000",
+      fillcolorhint: "#faf8f3",
+      accentcolorhint: "#e3914f"
+    },
+    "ExplorerBar.NormalGroupHead": {
+      bgtype: "ImageFile",
+      sizingtype: "Stretch",
+      imagefile: "HomeStead\\NormalGroupHead.bmp",
+      sizingmargins: "3, 106, 3, 1",
+      transparent: "true",
+      font: "Tahoma, 8, Bold",
+      textcolor: "#294600",
+      contentmargins: "8, 8, 7, 7",
+      fillcolorhint: "#ccdeb5"
+    },
+    "ExplorerBar.NormalGroupBackground": {
+      bgtype: "ImageFile",
+      fillcolor: "#eef6e4",
+      bordercolor: "#ffffff",
+      sizingtype: "Stretch",
+      imagefile: "HomeStead\\NormalGroupBackground.bmp",
+      sizingmargins: "3, 3, 3, 3",
+      font: "Tahoma, 8",
+      textcolor: "#345800",
+      contentmargins: "8, 8, 7, 7"
+    },
+    "ExplorerBar.NormalGroupCollapse": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagelayout: "Vertical",
+      imagefile: "HomeStead\\NormalGroupCollapse.bmp",
+      imagecount: "3",
+      transparent: "true",
+      offsettype: "TopRight",
+      offset: "-3, 1",
+      fillcolorhint: "#eef6e4",
+      bordercolorhint: "#ffffff"
+    },
+    "ExplorerBar.NormalGroupExpand": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagelayout: "Vertical",
+      imagefile: "HomeStead\\NormalGroupExpand.bmp",
+      imagecount: "3",
+      transparent: "true",
+      offsettype: "TopRight",
+      offset: "-3, 1",
+      fillcolorhint: "#eef6e4",
+      bordercolorhint: "#ffffff"
+    },
+    "ExplorerBar.SpecialGroupHead": {
+      bgtype: "ImageFile",
+      sizingtype: "Stretch",
+      imagefile: "HomeStead\\SpecialGroupHead.bmp",
+      sizingmargins: "3, 106, 3, 1",
+      transparent: "true",
+      font: "Tahoma, 8, Bold",
+      textcolor: "#ffffff",
+      fillcolor: "#91aa72",
+      contentmargins: "8, 8, 7, 7"
+    },
+    "ExplorerBar.SpecialGroupBackground": {
+      bgtype: "ImageFile",
+      sizingtype: "Stretch",
+      imagefile: "HomeStead\\SpecialGroupBackground.bmp",
+      sizingmargins: "3, 3, 3, 3",
+      font: "Tahoma, 8",
+      textcolor: "#265cc0",
+      contentmargins: "8, 8, 7, 7",
+      fillcolorhint: "#f7fcf2"
+    },
+    "ExplorerBar.SpecialGroupCollapse": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagelayout: "Vertical",
+      imagefile: "HomeStead\\SpecialGroupCollapse.bmp",
+      imagecount: "3",
+      transparent: "true",
+      offsettype: "TopRight",
+      offset: "-3, 1",
+      fillcolorhint: "#899d5a",
+      bordercolorhint: "#6f8b43"
+    },
+    "ExplorerBar.SpecialGroupExpand": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagelayout: "Vertical",
+      imagefile: "HomeStead\\SpecialGroupExpand.bmp",
+      imagecount: "3",
+      transparent: "true",
+      offsettype: "TopRight",
+      offset: "-3, 1",
+      fillcolorhint: "#899d5a",
+      bordercolorhint: "#6f8b43"
+    }
+  };
 
-  // src/ui/assets/luna-olive/scroll-down.png
-  var scroll_down_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAIAAAC0D9CtAAABOElEQVR4nJXQP0/CQBgG8PdqK6QJBkMY/ACkAwNJE2UwODCy+D34Tn4IJ+MqMJhOHTQxJkzyJylXAVvotXc9cxwpNJYK7/Q09/7Sew65eFTQynpJhyMmiqLxcKICgFbU+q/Plj3IB9eN26bZXgRYGACw7EHrrpVvei+9ptn+SYwcB08OgWrlSoYlcVJm9j371/hkkTJnKsq/HgAEdLUzznzKGQWQjG8C32QRnPlUrrGYpv4TUZot9nd4uDO+t05uJsP+p++tk00FTp04Pt0ApPuw1eE+lQzj+TgMCUJUGK4iRDkXpzJ4Ps4wAREt5d7fIE/FKMr2wKjVPz7fAIo5NYxaHQAuCpfIxaP3sXVjdI5p/2Q/NEodYUjE+sNHd/nl0WVICIOQxwiAiTLK9mE19bysV+/NbuDALyMzkKTN3TqoAAAAAElFTkSuQmCC";
+  // src/ui/assets/luna/silver.png
+  var silver_default = readCachedResourceUrl("atelier_silver_png");
 
-  // src/ui/assets/luna-olive/scroll-up-glyph.png
-  var scroll_up_glyph_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAMUlEQVR4nGNgIAf8////P7oYEzYF6ArhitAlkPlgRcgCjIyMjOgKGQkpwOtYfOLkAwBpDSvkYA0nRAAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/luna-olive/scroll-down-glyph.png
-  var scroll_down_glyph_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAL0lEQVR4nGNgoCr4////f3zijMgKGBkZGbFpZMImga4Rq050k5mwWYWNT5QnCAIANU0f/9ByL2IAAAAASUVORK5CYII=";
-
-  // src/ui/assets/luna-olive/scroll-thumb.png
-  var scroll_thumb_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAWCAIAAACQbVFOAAABIklEQVR4nNWTMUsDQRCF346XGBIwoCBYWaWysLKxS5s/ELDyT9iKla2dYCFWtlYi2NtIesVKDVyacIeQeHe7Nzsjdx4YqwSr+Bh2t/jgfVMs4ij03ukCiaMwAEBUe3i8H0+GaZok2VShzNZ778HM1jm72+n2un3rpKABjCfDdmuzWc9ardRAWLxAxdskm2Y2fX4d9Lr927ubin4fvWysTwJaBaDk1HPOzD5xzgIwJfORjOibFiNkBD8xpoSMYQBei7Nwri4l0epdRhUoRovyFVMpzBLzQ3+hZWm8ZWlM/qu3LGZSVXS29p7eBgH9rqKcWbxmO9v7ABq1NuIoPLs4mvspz69O4ig0cRRqsHZ5fezyTwGX680IERkEjXrz8OCU8vgLWpH/6q959vQAAAAASUVORK5CYII=";
-
-  // src/ui/assets/luna-olive/scroll-track.png
-  var scroll_track_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAMAAAAMs7fIAAADAFBMVEXX1cLj3tPl3tPl49fo5drq6Nzs7OPu7eXv7+zx7+Xx8ezz8ez08ez08+719O/29fD29u/29vH39/P5+PT5+ff6+vP7+/j7+/n9/fb9/fr+/vsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABTzL2NAAAAIElEQVR4nGNg5+bh5eMXEhYRExeXlJKSYmcYFRHCFxoAGtIUZJAaxE8AAAAASUVORK5CYII=";
-
-  // src/ui/assets/luna-olive/button-normal.png
-  var button_normal_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAXCAYAAAALHW+jAAACD0lEQVR4nK2Vz2oUQRDGv9qdZHbVGCOoOFGSGAW9SA5RT6J48OQxjyAIggg5eVIEiSi5iBCCB/Ud1DdQELwIOSiKSkx0FSVhdWV3509/Up3pYTUbnVlSQ9NNdfdvqr6a7pEkjvrbreZQEkcVkiVsYGG7OejG/X617sYiYrSVyl7oV6qrnsI+vfzw5d6z23j1+Tm+/VxCERvwd+JIcALTZ2cwPDE+II36yv7r85c+tuQHrkxdQDB2phBw9fsCrj24gSq24+b0Qx8KPHd5nMvvHpP81UNr2L3KILnNU900zeEDpwAY+1aCuSMkDfYEk06qUU8FtRMmsahiRpgwRBS2nKPquZHpAUgCJolh4si5Sh3AtXRd2nlMNEImMCbOfBnQgURYLES49hfQguxcgYIYgrqepkuEKUgX5Q+Qdh8p64EOZBcVAFJbRxAdGjpnkUoz1b5Lyi6ywhGaVMf1wD/7fECkdZTNTJmbl7J+LkwrvQGw4Fm2Z0+j02NrTTJgEoXZLbOmiPybpU8SI2m3EIfZ0fM9iBi9dZffvMauvbthSIsSkf9XODGIowi1xa/25gYQeOWy1z4cHMfskzs4f2wK+0ZG82Wr2ZCoLa5g/sV9HB05qe6DEkdhpf6+1px9dBULS097+qdMjJ3GzMU59G0duisktygZwCSAQwB2AOjrIqLOOXub9mXVTX+EABoAbv0GowJZNLTZ/JkAAAAASUVORK5CYII=";
-
-  // src/ui/assets/luna-olive/button-hover.png
-  var button_hover_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAXCAYAAAALHW+jAAACEUlEQVR4nJ2Vv4vUQBTHv5OMya56pxds3MoDFS2UBUVRELSxE6wsBMHOP+CwsBBrC6tr1OoK5VAQLGwsFUXBRrSwEKsFFVw43dPbncnMPHn5sclCTjP3IMyQzPvk+74zeRHWpJGajBesSTtEFGCT0Gq8q5xHcfdXORdCOL6CUOq4012TDPvwfvj9yeub+PT1LX6sD+ATc3GCw72TuHp+GUf60Zx01kQM2xMu4uml09hK3HnzDY9e3ED/2IqWfIOVMWxtfQNBtMML5vQfLJ3ai4uPVxGEMpLsG5c5krsBbCA5dwUAtQYOn9/DKEpKq/ZJNjR7Yk02kLMe+igfUl3e6MpKe5oPHkAimskFEEyBpPO3OJcrbUlEPZejAhYl+/hXrnUmbQKqmbe2wrlirW1SqNXsojZAIrhUQdRSapuiMnFTo1sCYRQgGoBOK1DmiZ+HzmiImoiq5HTCX7q/Qj0GCbH5Lnvwcovs7DGrgOxFUYYHEllec8mKe5tXySCX5TUrtKbQ5lczccnkpv22Ojb8gQeA0bo4BeLfLBQwq4EpD7GEEI67ru4sIJoMMXp4PfektnP/i0mcZJ0bQE+GoVSHeidw912Cy/Mv25dbiwc/L+DowTM83S9MqjuDL6Px/WdL+Dh4taV/Sn/xLG5dW8HO+XhZENF2JgM4DuAAAG7d2xpM5GdlfC7GkH3jHyGA3wBu/wUx7QrXEzwIYQAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/luna-olive/button-pressed.png
-  var button_pressed_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAXCAYAAAALHW+jAAACHElEQVR4nL1Vv2sUURD+5u3svjtDNBELOfFyR3JwEZQUQRuFVPbWFlqLNldZBSyM+KPRgL8abfIPJKmtFMRKsBAVFBJOJafGw8B5P3afzMve7R5n3L0r/GB2h/d2v5n55jGP/E7ba/5uTPqddsYYo7AHWs3Gga7v6Wy96xNRIKYcbulMdpuFrPr609fHL27h7eeXqP3axDAY1wcxmzuFytklHJmbHqed+o+j1x5e2ajVq7h4/BzypaJEldipCLeqP/Ho1RMc2n8YNypPNcuiZHZ1oYKp4gyIPSh2QtJ/wxiDfHkCl8fOY3H1OpTDHotuUmahdAysPWvKcQFSCWxBzy3MzqO2YqUqsAgqHrkM5bpQrAFHyJIydGI+dZ0sRxFjkX2KLSSA+gKrHqERoiCwuhD8dGQIZaEoeIJQw4Mj19gid59pYQaUjggDI3WH3UubeDDQvJiGkaUHWaNYVX0lRxYMSYr/0RQzeslILjkt/IEio6bQaAeHKICJkfY8mS5pJkw/GSxF7D/qZajYhcMMpVz7YVKWclgskYqpBmiWnGXqbte+I1eaBtvRFUbcq0PhPpECQWFr472d3ABy7DjcLOdO4t6zB6joC8iXT0MlzcLdFO3jW/Udbq/fxYmpM7IwQ512K1P/+KVxZ20Rbzafj3SnzBUXsHTpPtyxyWUyxuwTZgDzAEoAJgC4f5mwstfFh/AtU1bLRQhgB8DNP2aTrPBALGgzAAAAAElFTkSuQmCC";
-
-  // src/ui/assets/luna-olive/button-disabled.png
-  var button_disabled_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAXCAYAAAALHW+jAAAAhUlEQVR4nGNgoDJghDFOHdnxnxKDzGw8wGYxwgzj5xdkEBIRYeDm5iHJoJ8/fzC8evGC4ePH92BDmWAS5BgGAuzsHGC9MAA3kBzDsOllYqAyYBo1kGLARLkRqGDUQMoBExXMQAEj2cCfP3+QbchPJL1wA0Gl7tevX8gyDKQXBqhep1AdAAAd0ycoG7ackgAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/luna-olive/button-default.png
-  var button_default_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAXCAYAAAALHW+jAAACBElEQVR4nJ2Vv2sUURDHv7P7cnsXOTSWZ6ESBW0kEImVaJXWWtEmpbFKYSFiJSf+6AQVAyFg/oCgYB8wIJJCucJC0CKoAYsQDJy3+96MzNvbu1xyyr6bZdnHe28/b+Y7M7vkbFbp/GlPOJtVRSTCPyzttA8X40pS2ynGRMR6R7FJk2pt2yjs+8dvWy/XH+Hzj/f49XsTIVZPjuJs4wIWZps4NjVZN+xsRWGftjZwd+4WRrH7yy/wfK2JB9PLqdEJ9Wz++g1sp71Igmz+2lUsrrxCFJuKUd3yMB2EgCvTtyGQ0rDXG48BQiHVCaOC6oiFQUIQtgG+ib+lf37Nh6zmFKhgduVxArjB/VEfiNyzECBBYGG9I4X1gCzOa0FUXj91kfW9PZr3gAJd4DyOsjzW9A1GtEdDCxLxm8o7KOCuVAeB3QXdFAK0cMjrZD/QOUS+kwM01ID3lVk/KcjAXsLAkDkbDnT+CspJXofCw4GZrkp4yJmvjCFAEQvR1gtykf172rIHgNrLxalhhc2I+zPUAxYgm6XdVqL/s/RymuGB0k4MiFi/uoUtte5gFKvnjIaJY9M505jB29UW5mYujQRb+rCGc8cv6vAU2Syt7nz92X7y5h5am+9G+qdMnbyM5s1nGDs08ZREZFzJAM4DOA3gCICxISLqWmFfuk/NR6I/QgC7AB7+BUWiAaEU7TbEAAAAAElFTkSuQmCC";
-
-  // src/ui/assets/luna-olive/close-normal.png
-  var close_normal_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAADb0lEQVR4nK1VPYhdRRT+Zu59bkxhYYQVtLDRTdyNZSCFBBtBMI2InUgiihJQLKIGEUJMQJsIIpooYVGChYWNQRSxWBRsbMwSd6OCIqIuWuy+/bnvzsw5R75z99330md4jxnm55vvO+c7c3Fl6ZKxbTdiN6NdWbpkgYPmz9+w9vkiZLgOabZhqYXmBC0ZIUZAMthUpOtz6z1ygeQWJY3Q7L0d86fewb575+Ggf1w8g8G+WYSqhuwMUbaG0NQCJcNUYVK8hylsPFcSNCVo26A0W1jf2MBauBWPLi4h8sKyuY4wM4NwywAIlYOHqgJiDYQAxMoZB+9rhMBjsdtTdXMx1tj85y/s3RNRE1SaLcjmEHEwgKWR3245wXKehKEUqAk0Z8DMmbqCXeaoImJdeVQclACUrbHymN5z4qwv/nz6WQ8BQbW0folJAkSx8P6XvufqMw9ByZtKqoHPuXwji2YHMtr2C8btvtMfTAGSWXJmY0BvJgATaJOpOM4mZVqi5IJfz53oN+x/8zJMBMGU6cfBC1/3a1ePHe7WYDDyNZuAOnBqIW0LFUoU/PL68f7w/NufQVWw8N5X/dyPTx1yhdACM15qiGEK1BOzayEU6SwTDKuvPdmDLLz7RT9efvowDYEQBCEoIsTBwYRNx9Ry22VSCmdgan77yitPTIIF4NpzDyJEQ4AiBO4pHtfA2E6DMp5CliowU0RTuBUDcOCtT28Anb/wLWIMHSCBGUvl2S4UE1B6jqXpwAVK+WaYO3cZ47Z68mg/vv/i9wgxIDpjsixeys4W40QxOSw7hsDZCube+GgC+OpjntnVlx6eAH/4g2cdZMqQlQQwcT1T1jD/rKCUMXf24/7wysuPI+jEhNdfONKPDywuI/CxoX9J7Ab59Gk78mT1LxABT5KhQGkb6RRQyerzh/o9Psc1rzaZKlNKLiNIiqjM8NOLRz1JTJpLpPEtIygPdnFfOXYQlkcwUZfdhc0moJmV1DSo6Dg1xMxXKnQ3B/5YhgXRGSeXTPsRTHNBKYJSFLl0lqp3RorRbbPQ9f+AVlDvmfHnz5883bWW+1BRBb6tGUG6kHTgBFUMk6GevdtB/ZH+9/oyvjl1HBtrf2NQd28ohbMIKoL7RkHcBY8wCFVo5+nMRN5xFx45/wnu3P8AcO33727Kt2n8jSPe/2AtIEm9PvOnAAAAAElFTkSuQmCC";
-
-  // src/ui/assets/luna-olive/close-hover.png
-  var close_hover_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAADZElEQVR4nK2VTYscVRSGn3OrqrtnzDRIwFmKe3+AIIo73WfhwmwCwQQZhEERRELAQSMGjKIIDgREGCYIWQhZKCKShQtx5cY/IEgUkUxPf9X9OnJu1XS3bvVAw53quk+/97zvPcO9+7fVarZI+l/qbP+9+7dVbPHg5x/Z+v4IQkDaOfgFognxHkWQHLDSnJGcyntWorG8E4Ln4XBMvnTAE089h9gv+M/2yY89jroa/By3mEH0SPBIjpAiGFATxAA9WFILywV5MeP0dMpvssWThz9Qb48cwRRVQ7SqEBLqI1KUFUGmFex5vyIJpAS5RlwD9QDqGv/H7xivLpvCEtopMhhAu+wUeI+Li6JMUuiOnCKSfPdrIXaniP3frkLqqogoUPwSWc67o3nPo1cOyuPJ+y9DaMHaYDAfILZIzpy79W15Z7r3LKgCDnEd1BWlOSKhRWKvsq/xG4cQe0WmLBk8roBdazLOZVuU9qygpIDzc2S5LPCTD/Y4q/H1o+54oqgo5z78bvXd7NWnQQQtKg0oG9Csndt2NOtdDEzeu7TavHNwt2zeufnNGrj/DFQOrV0xSWqxVzagZo7ve5dDF52sTA4ursHvfrVan157Ht0alg9bDdp0JtX1hlKxeJhZse0yacHPlidl8s5LK1gB3rgAoxFsj2DUwLBBBpWZbx3aNMpMsshYfCISE2qOOhi/dcRm7bx5F90eoiNTOoBhDQOHVEJV6cbxLSrBlyxqDKgZk+M/gJNPLq/W4/0v0e1BB27qAkQyFflfxzeTLDJ9fMbXj9fAjy6Dc5wcXl2DXzmGpioqcRnXC1lB1WB2l73d88D47Tuc1eTGxT5SQAUnn2+Arx6bItCIU2tdWkOtnyX0Fv5+AlmdXrtQhof1mWQTyoZKZvLFuhUFZAPGhPXDorumZpBFyrkiavraC+AEqW1qgdqNISEm1YSRmHz6Yiek3EQPZm5JTA8NIYLdJhVybXFqjIRWrmzUOECGFerNZS3ZEaz3LeKX6GxBmHmCGW7Q+TLz1yPnGc4ekpNNGxtlFjozAJhXfQ4F1zgqC6M9z2ZOBN8SZ0um0wXLnV2MV+apu3KTXz9+Hf/nA7BB7Vy5guaoE0fV2Loz21RWFeSQaKqMJsW3nvnOLrt7t8o85adfvv5f/0cZ7283DIaZ7LHd7gAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/luna-olive/close-pressed.png
-  var close_pressed_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAADGUlEQVR4nKWVy2udRRTAf2e+G1uFqKApWisujNLqRty5k6JEsNWl4KuiC/8FcSe470ahiImv4sKND6IGxEdXLtxJiaXEhfhCFARpc3PvzDlHzsx3v9yE7HpgvjuZc+Z3HnNmwvqFVQ+5Ola/FpntX7+w6hKTv7d+4qNzZyn/bNF1git0yUjSMUqCOLgWxJ2kBc0Fy1MsK1hhMsksHjnG6dfeZGn5BBIe1l59mesnf7J4+DoWUkJQOhcSRpcSHWBukAteCj7NWJ6gkwmuSgkHRRndfBsrb33N6IbDifFfl1k6chOLh0YsOIhB8gB2CF6hGPhIMAMTQzEsOaaOiWBJsH//IHijam8KxUhF8ZIRL4g57uEBFCG51mjCjjxFSoEYqogpHU6SoNGgak2hO2M8Z+558JGq3Pp+HcFILnikb4ab1pSXTz5VbS598V5dx/sggFQ/EVUuEDWajJs7YPmhU+T/rpCvXqFsb1N2xujOZADWLFX3AAco4T1H8Qs2mXJx40NmcnzlaXQyxaYxMveuPDPoLq2v9QAQkX1QbbWMWkWreJ7y4yerg9GJU2dqyscfPzOsXf58jSRCSjECugtO8YkN5IxPp0iO+lrtzYsfv70LfuLFYb715Tt0SWpPBzDAB0RaavqicZolSlRPPew2P92NOOTnjXf7CFP9reD6d7MfoF3UtLZHuzVxwtGf4f2+J19iXu5+7AW6LlVYN+qBXYt0DzRFs+Nxbdpin848MCKcyV2PPo/UWgYwzUUqc5FKg7bomvL+OWDUMMx/+er9Ye3Ok88N0clBNZWIsu+1mM8D45Tb5gb49ZsPBt0dDz87wOK7J33xfsx5m/VhM98rv393fpi3zOaI9NfU1IbNUdXNz1ZbZL3H6IZYr13RkuK3b8/XOlbdoJyDuituzWWcPgfEN9tX39Zq4rMrX8s2mxPpb+8YNy4dAx2sG6SvcX3q+hdLzVF1tBhm1p69WCuOuXNo6SjBS/H+nX79HAu33o7WMuyXln6FqVHUyMXI2ZhmJWetawu3HOWBV96o7yk/bG5c0/+m/RK8/wFtCXiH875fIAAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/luna-olive/minimize-normal.png
-  var minimize_normal_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAACxElEQVR4nK2VvY4kNRSFP9tV3VqQYF+GmGQzkiUl5A0AiQheAIkcQpCQCInJNtmXWE1MOOxopruqfH/Qve6Z7hmxkKwll1Uu+9Q55x5XFQB3d95TK6WUKQCvrq5489drluWGw3rETOldET1S24Rs/bRBc5RNcuxmuC2svdN8x+cvvkqCJS5/vv6Nj+pz3Gc6dyx+oGtHdc3NJhbXAdQ73QQzw7qw6pHD4cDbm2tu/1Z++P4XaizctltgTykzlUYro091ptCoUywbfZ5n5joNra1QS9zXHMt8l9P59PZ45Pn+QKUgrGzaERFUgqmxiiXrYNe70IIxHVPBbVgzlbOvU3okGysH8MpmKyILGnMJtiAJtjyAHMNaVShOV6eUsKY+BgVnkSUlB0M3SUB3SUDt6wOgbJoFonTwGOsY5idM1xMLw3G2lJmA0qNKBIapo5GIBFxxHSksbRTQuz1lSvpXa03AYJlVx1FVzDuljBh56Qn4EG2NnBfkIul15K5nVALwvplJPjzPQNSinGZKKXi81kOdntlxYhoAq2woYfqU0s38/NbSMAbTQqWGZLWED+AkRn8M6uFbFyzydi7ixRKhtEZrjgzs0DwScFKjegatcem2jNyZZnGC+b3gdrkQmJnShpybSh7d6O76mKnI8LUyM8+NLz77lne1n379OmGDl+t4uW6XRDiB2pZZlBbMnr0T8Cwv/B6eaxfUFI34nXSlKu8dcc1wxwfiv5uwXd4Wy8Og+iSngubZPi6F3Qw///4dbYrAK5xCHvLcNvKIiKKhToRNw8+OuVFOZifosixMTMz7MN4oNUwepyjWxabIY/FI5AAPH0N2V0FU6SLsdvsz6L59zPXba+ZpYbczdvMH/+6ln2OzSGc5Log4agH44WP5Lz75kj9e/UiXjS5wx83/Fut+e2kwtfE1efnpN8PmLNR7/kf9A1rQGBuSVynYAAAAAElFTkSuQmCC";
-
-  // src/ui/assets/luna-olive/minimize-hover.png
-  var minimize_hover_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAACwUlEQVR4nK2VPY4cNxCFX5HsmZUBCwZ0BB1CoU6gwJEzZ4YBX8EnMKDMgBMdQgeQEwGOnOkEgi6gXck7092sP6OK7d3ehYVNxMGwe5rNj4+vqjgEAO7u+EqNiKgFUCD4cPkXzqdLzOsZZgJhgdgCKg3MfUyA5lU6j6sZ3BaszCg+4cXzX1MgRff+6i2+rU/gmCB+jcWu0ZWhMudk05hsAyQdrAI3hTCDbcHpdI1Pny/xz0fBzz+8RIkX1/UziC5Q6AhCRaGGVhqmdsz7UguojG9rB0y1DeUtpse7BYQJ5XDO5zl6ms/47tE1KgjiC9gYwh0icyrsqlBZUx0zg0IxQq3AdFhTUx5uocIrVj+BvKD7CuEzuK8bbIYGmJcbCKsDqmEyRA1EEWe6C3U4Fplzy6FQhRMIlwTyHtgjgAbQ8JWowg1o0z3oGpOUwWowX2ExKXKCO8wZ8TMUaR+LOFYg1IagosMOtrvQaNwXlFISmCoj6nCoxL2gQDKhnCSBZgMaVpoT9JaJtDfyMFIlFW5NdQRkXxX528eCpRAsPub5rO7ea9HF1juvqQzUcuu+KRngSJnhWaUKLYr/pAV4XPku1LZEplJR90vmVhoMAqoxZlDZBqKyN5t829kdKOuceVdti2gZqkId7XwKREMLp1NfbZQlPda4FyjV4WuNKVPDs6c/4kvtzd+/Rc3BArwBZWWo3VMq1qF9gUQ58sUXgbeWhKrhubJkgOMA2uKOcjPgNpLblgeQsgtJtEhBg+5yqo3HAtYFwTtMjj/f/Y5Ww5ZdlE3h1iGuMFGo9xQTOe1RIG43adWim89LRvl4pKxjyoNjHHkjNyXOSUQ9igvgPX3MbatCVMAiqPVwC71oj/Hp6gqtrZgmw+H46P+93AVjYcEyz5AoMBNcHL+5GctDOm5evf7lwQA91H76/o8Bje5r/0f9C0gwIeVNDw3PAAAAAElFTkSuQmCC";
-
-  // src/ui/assets/luna-olive/minimize-pressed.png
-  var minimize_pressed_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAB90lEQVR4nK1Vy27UQBCs7nGkTXa1ux/GDfEJXHJDkSIQB44gIhROfACftj+AUEgQYceNqtszHjsmCCm9sudhT01VdY9XAMDMDE8UIiIdAQ+HA15dnOP27rs/UAUEitQJX/JxzHeQ5AuhwyT7Iobtdo+3lx+doPD2/MUz/D7+QDpJSCKAClJKviAlQJNAOV9BCDpuVmK93uPz1Vd0HNzefcPpeoXV6gQpKUSJ2y5WB/YxwWXZrV/3N946KCg1lWsEYx+D1CITMAg9eCS0MXgC6MzIUBUmhhAfYZYfBe14S5Q7GFQAfazkZeEzQvISSyowkymoaMh2mc6OycIA1i4OwLDBnWn5V+CuslNBxxLSsIC/wq4FVF1OUmxgIyhrgxnnk1IyI5uRXWVGNUO3L6h9X5937qmYl8o0y1PPyoI0K87icOZ837fygzCzTDsfejgCctOlSGbIk0QNR69NzNzDlqHXbxM5T5V1ARCJKmAXb17jb/Hl+qrZWHjWfZPclK4Gm3jhfyK8n02WWi/Y84/Dv0FH8AlD1LM/jU/vP0yzzsNRbYq2763Kx6y8dL7byORhkRNgqJo6Lq3325La7XbI+ecMoCQuXmYdki0Xt0mpoAA26/3IlF/szWa36F1VR+DhOuaMI1mbecu5s9Mtzl++CyLDTk/6H/UHzBqlFEtog+8AAAAASUVORK5CYII=";
-
-  // src/ui/assets/luna-olive/maximize-normal.png
-  var maximize_normal_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAACp0lEQVR4nK2VvY4kNRSFP9tV3QIk2JchQyLZhAh4AAj2DVYbAi+AhBAJEuEGSBuSIZGR7EugiQmHHc10V9X9W11XTffMiGBWWku21fb18bnnHlcXgIgI3lMrpZQhAS8uLvjn39dM0xWH+Yi7IWKoHaltQBfZDlifddE+izvhE7MILXZ8/fR5J1hy+Ov173xcnxAxItwwxQExwWzuh109xxVIBHHF3XFRZjtyOBx4c3XJ9X/Gjz+8pGbgslwDe0oZqTRaWftQRwqNOmTY2sdxZKzDmmsr1JK/a5/LeNOX++718ciT/YFKQZlZTFBVTJOpM6t31slORGnJGMFNCV+lGcpZ16FrpAszB4jK4jNffPbNowvzy8sXlJLS1PugEEw69ZST4buVWwiHMj5gOsvUU3GCYHk30K2AIf6QKV2/WmvXLdurP39m0QWTGbVkI+hiSMyEWVqH589+JSyIKOgdp9cc0odplVvAfr9r3zyvQNaibCulrJVJ8MDO7NiYJsCcrAhKWbfd43xraTir1oVKbQ62pb1dosh90Egzi+Lpt3MR74QopTVaC051vH3ZZh3W7AxacxCfVt+5oXreTF7tbiAwMnQZThHFeo+wB5rqra65cat49EuS5Sl4u+E+LNiShPSB+X2rcktmH2yaKmZluySwrPiJybrWAUUxN6xn2O5oKoLujMGF9RMC3375HY9qxfvXyrJw5Q6oYv1tH6fCboTfXn1PG8DNwOLEPHyhPxE1zGdMlaV7VvBwNpfRQadpYmBg3Jf+jktNkRM0unp5KP1YIh25gqeOmbaYomaIKrvd/gy6b59w+eaScZjY7Zzd+OH/Zlrj7IxJhek4oRqYJ+BH9wv19NNn/PH3T4guiMINV4/TM33QYGjr1+Srz1+sMvdCvef/qLerEs03NpLvWQAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/luna-olive/maximize-hover.png
-  var maximize_hover_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAACpUlEQVR4nK1VO44UMRB9/vTMLBIIxBUQl9gALgASERcAIXEFElIkMiQSLkBGREaCREJAwAmAC7AfZqbdXT9Uds9vRbArUdLY3W3Xq1dVz54AAGZm+E8WQgjZARmMXydfsF6doB/WUGUwMVgLQswgGpsDpM48UptVYVowECFahwf3XlSCwYcfp59xPd2GoQPbEkWXGIUg3FdnFXfWBsQjSBimAiYCacFqtcTZ+Qn+/GY8e/wa0TcOwzlCWCCGOQISYsjIMaPL8/ocU0SI7ZfzDF3KjXl2d98bEdAhztb1e11d9WvcPFoiIYCtgJTANIK5rwxHEQgPlR0RIThjOFuGSitNqvSwA2UaMNgKwSJGG3Dn1n1c1j5+fYUQvM/hENRgKNzXlJ3hlSw4YyB3F0AHKjAhkCjUhithmkkrB+khqBuNBTFG6NTlbz/fY6QBRKVKzGtHI4NthAlD1fDw+CWgBrUA2WGiltd16FLZALqJtIbsn4r6bk2rMbZ0Hdy/pb192QdP3VmpQ4RG3rTBNWCXTANJIUGiYENNsZnpkKlOQhYRwHgvpm/wIBEhJaS0x2dzskVgLjnZgeaavvRVd0nbSdmlu+HXovtKRoZBJn5AcNY1hh4yFZnqSlzlVTe5a63fjnlMUwma29Z4IIheYMo6QsYC9uNIi5aVEYzDFEJraTZNi5VnexNyJWglNHFE3i7MtMlmcjy++wSXMz/GHlTr3bAFVTBICrQAs87w6fsb5ORl2euyCkxHsAmUBWJDJeP3ghlBTbeyyj7061K7PJ+Heo5DvTjalde0yX5Pus7Arg4bax1r2iJgYRAzUprtQBf5Bs5OT5HzgK5TzOZHU8xDi3vNKMQofQ9mT4axmF/brtVL2h/efXj+T6Cr2NNHbxuoD//7P+ovEJHgiQDDyfwAAAAASUVORK5CYII=";
-
-  // src/ui/assets/luna-olive/maximize-pressed.png
-  var maximize_pressed_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAB5klEQVR4nK2V3W4TMRCFz8xspZRESR6MO8QjcNO7qhJQIQQX/IkKiWfg0fICCEGLgOwanbFn7Ww3/EgdKbu2Z/35zHjsCACklBLuyEREOgJ3ux3OL85wffPFHaqAQGGd8CPv5/EOYj4RWgbZFklYr7d49vi9CxQ+Hjy8j1/7b7ATg4kAKjAzn2AGqAmU4yOE0LpY2HK5xcerT+jYub75jNPlAovFCcwUouS2k9XB3idc5rP14+dXfzsUDNXiV2Fso4QaYQIJwhz8wbomwSPw+auX/7wxH96+uzWmfBjDLQmiwv+1HMFEqWgO28OcZv8vphrAhJSkQvNmCDqWUFF69frNgYLIY4UA508uG38G15y6wuxhTmkBDBj7xeXfj/FEZMMw+pUPk+SlErs8tRZoTBXHio9tX7ZJW5f7WXByeAsLlRU4XTT6lhL6EO+OcvT8NB3JIYFh3FSv4dKemsZqUUqzhd2c8zlI1PcBVHmBHMnl+NEtnxxdvAv2tDwvLp/OoObhcXPq9JjOHb1x12PHyzVYy64CaUMIPhbK9OjRCBiGw368vV2crnSz2aDvv08AzSEYBvRFLSf3UTsNnPjVcluV8sZerTazORujI7j89n2PPVWn5G+O3Ttd4+zRiyykrHSn/1G/AZm3k3vQdCYVAAAAAElFTkSuQmCC";
-
-  // src/ui/assets/luna-olive/restore-normal.png
-  var restore_normal_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAACz0lEQVR4nK1VPYsUQRSs7p7ZRQX1zxibXGAiaGQiBoKRX4iCkYGBCAcGopgZeGgqipmZiX9CLjY8Pe52e+Z9yXu9537oYWLDTLPT3TX1qurNJgAwM8N/Giml1Dng7u4uvn3/ilr3MRvmUBUQCVjmyKUDj7Q4IDHzyDGTKkwrBiIUm+Dy1r0gmPz2+es7nM5nYdaDcIhqM5AQRIY4rKx+b0BEIGWoKpQYg8wxm83wc38PBz8E24/eIPvGcTwAMEVKPTIKSmpXl3skFOTOt7Wr73v0uWu1loSc/HeOOfWH8ThWD+ZznJ3OkJHAGDAKgZkh7EwVA2uwdnZEjOKMQVBhmDZpurTUtQuNeMSAGWAZow5grhB/xoorF24fa8qrtw9AYkjJpcnroIChco2SnaEpB6BZM+S4QVqBlGEKpH6D6UA1SlEYDGOU6YDMhJ2PT1oSeITQAPa1NODutZcwZ1magUa6yRShX845AC9t3TyW3fOdOwEWQB5v8TmBV5KeQ9ORIioO+K+RFtFqonlFXp0s2WHBVEPDEQIXvS2//bQdx4ia6yoDblx5ioSMXNaBgxhoHdQ8zMRQz9vSxJUtjFQ8SG3cufZyoVnrMIcV2QAlrZG7rGVDAo9+O3T0rh4dXuzcgrEgdwkmDI+omWxoyke6+sKR4hbfAGf5J/eWdAcMwqP7wRvh10VcijM7EQtXLz7806XfTOz3y4UYogJhL7+saEoEngg6JXhjvn7/uJ1WZ6TRvK0lG/Nx9Q1J42sl4h1QVphCorfnNWHSA1kMpQPUjVhk0sszHR0+9BSvjhmjCMwIaoq06P8ArbWiQ4d+mqKPU3aRHdQWJlDkMZknsoG7jl42CYNFQMyYTKZL0Gk5g72fe+i7islEMelP/l1LW8amMqHOK5gNog54at2orXPX8eHLMxCPIAYOsX+sSeujCxm70r4ml87fbzKHUf/5P+oXhKb2o5U3XFYAAAAASUVORK5CYII=";
-
-  // src/ui/assets/luna-olive/restore-hover.png
-  var restore_hover_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAC1UlEQVR4nK1VPY8URxB9/TG7B5IRklNLjgiRAwcmQ85NgITk0BFCcuTckgMkIogtWTjiDzgCiRDJDrAcO4AA+Q/47uB2Z6brC1X17e3ewWEH1GhnRtvdr16/etWTAMDMDB8pUkqpOiCD8c/+71iv9jHOa6gymBisE1KuIGp9ASSe3Kg/VWE6YSZCtgE3rv8YBJPfXh08wyflUxgGsB1h0iM0IQiPsVjFF2sH4gYShqmAiUA6YbU6wuHrfbz5l3Hn2wfIPnGeXyOlPeS0REJBThU1Vwx1Ge+5ZKTcf7UuMJTamVdf7nMzEgbkxTr+j9HVuMblC0coSGCbQEpgamAeg2ETgfAc7IgIyRnD2TJUujQl6GELyjRjthWSZTSbwbQGtTnAvvz8Fs6Lp3/dB4siJa9zOg1qMEw8xpadoTAFIIzxoSAZkVKBKVCHM6AzTTAhkCjUZqgXxT1BDX+8+BXUBCwN0iaIKhQzvvnqJ0ANlqXLQXoa1IPahJxzAF797CbOi8d/3gOk21rVotJqCbLFRMjrPnSrBMP/CLPu1QD1y9maoOzMqTFRCI1mKMx9EgPPXz4KrRtNkcxkxtdf/ICSCiSfBu5POg2qx0ZOuaDspoytVCgYaWcg9PTwYkah/fUMKMkYvivaO2UTKa4dnbrV8eT5XSgLSk3R0l2WrXR5kzB0JY4t9+wGCf3etVU5TrEB5JkgeoYpa7cLezvSXgxcu/Ldu1U6YeKsenIhDs2d0GY/9WRgodFynu/Z3790trEjRQZDjg8RZ77l1MebKMQ7K++AeiFIJugELAZDKopaXBaBG1COi2nawCahp1gLMt55ZgQ1PbFV9du4nqLKy2WKPk5xcPQjzwvlJ26c46Zgb11roWNsW7zbGMSMUhZb0L16CYcHB6h1xjAoFssL79dypxgTMaZxBLNvhrG3vLh1zeZT8vC3788tzP+N2zd/7qBRkI/8jXoLKAcEAGGhB1kAAAAASUVORK5CYII=";
-
-  // src/ui/assets/luna-olive/restore-pressed.png
-  var restore_pressed_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAACBElEQVR4nK1VwW7TQBB9M+NKKYmSfBg3xCdwqcShFLWNAHGCAgWVEx/Ap+UHEIIWAbEXvVmPvXESc+lIjnfHO2/fm5ndCACklBLuyUREKgKu12ucnp3g9u67f1AFBAqrhIt8nv0VxDwQ2jo5FkmYz5d4cf7BCQp/Hj1+iL+bn7Ajg4kAKjAzDzAD1ARKfwdC0H6zsOl0ic/XX1Fxcnv3DcfTCSaTI5gpRIlbBqsD+5zgsj9bv//88LeDglItnh6MY7RSQyaQIMzBiFVFgrcAnZkqLl69PBj86erdXr/yxyi3TVAA+nyQs0OWFQyYimbZLpP5UxYLXrSPb98UwdaBPLtcQbUES0hJetBcDEHFFlIZlXzz/uoA2wzc59QZ5i/M6X+tS5WiCV/TtMDIoCbJWyWqTAvZlEy5dJ9erGBFc3Jl9EFNf9OU8jPh5ODYk8PSJ3j6/Lwbh1lKqNtxLlR79Pw0DQCjGCXDLzfX2cc+Jst6u/oaO3rFC7B9OSyBSqbR32FVxAwLdLa6xJjlE8YbbnfzKgiXl0OclJDuBSxOXQbtwePmDAgdYxMsurbJd2/2NWz2fl6u09htV97uTUSAtmu2NuDbx2VLLRYL1PWvAUDIzIvZhywhg+vonQKc8LPpsmfKG3s2W4ymwIHbZ1PX2JB1Sv6m78HxHCdPXmci7U73+h/1DziIrGXszzabAAAAAElFTkSuQmCC";
-
-  // src/ui/assets/luna-olive/folder.png
-  var folder_default = "data:image/png;base64,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";
-
-  // src/ui/assets/luna-olive/data.png
-  var data_default = "data:image/png;base64,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";
-
-  // src/ui/assets/luna-olive/viewed.png
-  var viewed_default = "data:image/png;base64,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";
-
-  // src/ui/assets/luna-olive/history.png
-  var history_default = "data:image/png;base64,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";
-
-  // src/ui/assets/luna-olive/app.png
-  var app_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADMUlEQVR4nLWVS0hUURjHf+c+us2jx2gWGZGz0FWFsylMTEqj2vQk2lUEEUWvXUQUFQRSmww3ta2IQKJd0CYopHRRiW0KJXupWKHNTcfJmXPjzD13vJhBqf2Hc8/c75zzPf7f950rmBnqgDmTZD+BpzPUSw3QBHh/GE16TxEngQb9PzpJmQ04QAI4DWwBBpQiC7yEnrHwSOjZN6L2pIyQojxwBrig3yuBJHAL2AH067VFwJIUcBvoBmqDmNTLHaW2cH4JsDjsaSnQB2wATgEPgcvam4NAB3BER+C1gefpsUntacAr/p4Vo2goRCDhRA+swx+Pgc3AOeBrBC6WwRPgAJADFqozYyHPCkrCXIQWA7FIwncJ2yRcAbZK6H8Kj0agshFWAm3A9eDgfM2Z8uYL+vFYC9XiZEgoldAnYYOEYxIeSrikKEhNQdE+8NZMVUEpPPZPUCS0/hPL4d0H6BLQq5RriuoysGA13O7x613l0wXu+scsYF5BZFk55sXBHfZ51GgsUvQRvgvYBlwxYKsB/XXwKAaVPVNQ5JfKRB3V1EB3D9y5Bym/in6DYu4DsB44BDwAzurE7gtR1OiH3xYUkQcbvfp6PM/zx/PnExRZOgPHly799LWsrGFPZ+fbl/F4/GpJScll13UVJdeSyeQr27YP9Pb21gkhVqTTaeBHqFxsHCdCLmcxPj7GyMh40WudA3m4peXz+Z07R/PptIxlMploIpH4NjQ0VBqLxVzTNPOGYcjBwcFyx3Ey2Ww24nOvmlzBxbbHyeVGaG4+yt69b9i+3c+BjsC4UVvbvru8fM0mwxggkVC3AssikYia5wbeVFRUqKkgBOWl1CtxhLBpb++ko8NlLNQH2gCHXrx4vbaqahVdXV0IERTX38NxHFx3gNFRg/v3fzegNBb02rY9LQOWZWEYJqYpMsBHoEpd5UGZ3qyurn7GLMAwjCFgF3AReBNEQD6fN2fDgJRSXffvg1s5fEXNFrzwV64YgYJpmirEaeXA+MO5ooFoNFpoQ7VJbf5XCCEKBaKcnNJAa2vrQtWhw8PD0zYghCCbzaomKoYSjmm//kTOFKrNmgFVrv8fvwAWxReLASdSmAAAAABJRU5ErkJggg==";
+  // src/ui/assets/luna/silver/theme.json
+  var theme_default3 = {
+    globals: {
+      edgelightcolor: "#f1efe2",
+      edgehighlightcolor: "#ffffff",
+      edgeshadowcolor: "#aca899",
+      edgedkshadowcolor: "#716f64",
+      edgefillcolor: "#ece9d8"
+    },
+    SysMetrics: {
+      scrollbarwidth: "17",
+      scrollbarheight: "17",
+      window: "#ffffff",
+      menubar: "#e0e2eb",
+      menu: "#ffffff",
+      background: "#585768",
+      btnface: "#e0dfe3",
+      highlight: "#b2b4bf",
+      activecaption: "#c0c0c0",
+      captiontext: "#0e1010",
+      inactivecaption: "#ffffff",
+      inactivecaptiontext: "#a2a1a1",
+      gradientactivecaption: "#c8c8c8",
+      gradientinactivecaption: "#eeeff7",
+      highlighttext: "#000000",
+      menuhilight: "#bbb7c7",
+      hottracking: "#648bcb",
+      btnshadow: "#9d9da1",
+      graytext: "#aca899",
+      btnhighlight: "#ffffff",
+      dkshadow3d: "#716f64",
+      light3d: "#f1efe2",
+      captionfont: "Trebuchet MS, 10, bold",
+      captionbarheight: "25",
+      smallcaptionfont: "Tahoma, 8, bold",
+      smcaptionbarheight: "17",
+      smcaptionbarwidth: "17",
+      menufont: "Tahoma, 8",
+      statusfont: "Tahoma, 8",
+      msgboxfont: "Tahoma, 8",
+      icontitlefont: "Tahoma, 8",
+      flatmenus: "true",
+      cssname: "cpwebvw.css",
+      xmlname: "default.xml",
+      mincolordepth: "15"
+    },
+    "Button.Pushbutton": {
+      bgtype: "imagefile",
+      sizingmargins: "8, 8, 9, 9",
+      sizingtype: "Stretch",
+      contentmargins: "3, 3, 3, 3",
+      imagefile: "Metallic\\button.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      textcolor: "#000000",
+      fillcolorhint: "#f0f1f5",
+      bordercolorhint: "#003c74",
+      accentcolorhint: "#fac458",
+      minsize: "10, 5"
+    },
+    "Button.Checkbox": {
+      bgtype: "imagefile",
+      imagelayout: "vertical",
+      sizingtype: "TrueSize",
+      sizingmargins: "0, 0, 0, 0",
+      contentmargins: "0, 0, 0, 0",
+      imagecount: "12",
+      mirrorimage: "false",
+      fillcolorhint: "#21a121",
+      bordercolorhint: "#77775c",
+      accentcolorhint: "#fac458",
+      imageselecttype: "Dpi",
+      truesizescalingtype: "Dpi",
+      truesizestretchmark: "50",
+      uniformsizing: "true",
+      imagefile1: "Metallic\\CheckBox13.bmp",
+      imagefile2: "Metallic\\CheckBox16.bmp",
+      imagefile3: "Metallic\\CheckBox25.bmp",
+      mindpi1: "96",
+      mindpi2: "118",
+      mindpi3: "185"
+    },
+    "Button.Radiobutton": {
+      bgtype: "imagefile",
+      imagelayout: "vertical",
+      transparent: "true",
+      sizingtype: "TrueSize",
+      sizingmargins: "0, 0, 0, 0",
+      contentmargins: "0, 0, 0, 0",
+      imagecount: "8",
+      fillcolorhint: "#21a121",
+      bordercolorhint: "#77775c",
+      accentcolorhint: "#fac458",
+      imageselecttype: "Dpi",
+      truesizescalingtype: "Dpi",
+      truesizestretchmark: "50",
+      uniformsizing: "true",
+      imagefile1: "Metallic\\RadioButton13.bmp",
+      imagefile2: "Metallic\\RadioButton16.bmp",
+      imagefile3: "Metallic\\RadioButton25.bmp",
+      mindpi1: "96",
+      mindpi2: "118",
+      mindpi3: "185"
+    },
+    Edit: {
+      bgtype: "BorderFill",
+      bordersize: "1",
+      fillcolor: "#ffffff",
+      bordercolor: "#a5acb2"
+    },
+    ListView: {
+      bgtype: "BorderFill",
+      bordersize: "1",
+      fillcolor: "#ffffff",
+      bordercolor: "#7f9db9"
+    },
+    Window: {
+      bgtype: "ImageFile",
+      transparent: "true",
+      textshadowoffset: "1,1",
+      textshadowcolor: "#c7c2d1"
+    },
+    "Window.Caption": {
+      imagefile: "Metallic\\Framecaption.bmp",
+      sizingmargins: "28, 35, 9, 17",
+      contentmargins: "1, 1, 1, 1",
+      captionmargins: "4, 3, 0, 0",
+      sizingtype: "stretch",
+      imagelayout: "vertical",
+      imagecount: "2",
+      transparent: "True",
+      fillcolorhint: "#a4a3be"
+    },
+    "Window.FrameLeft": {
+      imagefile: "Metallic\\frameLeft.bmp",
+      sizingmargins: "1, 1, 0, 0",
+      sizingtype: "stretch",
+      imagelayout: "vertical",
+      imagecount: "2",
+      transparent: "FALSE",
+      borderonly: "FALSE"
+    },
+    "Window.FrameBottom": {
+      imagefile: "Metallic\\frameBottom.bmp",
+      sizingmargins: "5, 5, 1, 2",
+      sizingtype: "stretch",
+      imagelayout: "vertical",
+      imagecount: "2",
+      transparent: "FALSE",
+      borderonly: "FALSE"
+    },
+    "Button.GroupBox": {
+      textcolor: "#0046d5",
+      bgtype: "imagefile",
+      sizingmargins: "4, 4, 4, 4",
+      sizingtype: "Tile",
+      imagefile: "Metallic\\GroupBox.bmp",
+      borderonly: "true",
+      transparent: "true",
+      bordercolorhint: "#77775c",
+      normalsize: "9999, 9999"
+    },
+    Combobox: {
+      bgtype: "BorderFill",
+      bordersize: "1",
+      fillcolor: "#ffffff",
+      bordercolor: "#7f9db9"
+    },
+    "Combobox.DropDownButton": {
+      bgtype: "imagefile",
+      imagelayout: "vertical",
+      sizingtype: "Stretch",
+      imagefile: "Metallic\\ComboButton.bmp",
+      sizingmargins: "3, 3, 3, 3",
+      contentmargins: "0, 0, 0, 0",
+      imagecount: "4",
+      glyphtype: "ImageGlyph",
+      glyphimagefile: "Metallic\\ComboButtonGlyph.bmp",
+      glyphtransparent: "true",
+      fillcolorhint: "#f0f1f5",
+      bordercolorhint: "#ffffff"
+    },
+    "ScrollBar.ArrowBtn": {
+      bgtype: "ImageFile",
+      sizingmargins: "5, 5, 5, 5",
+      contentmargins: "0, 0, 3, 3",
+      sizingtype: "Stretch",
+      imagefile: "Metallic\\ScrollArrows.bmp",
+      imagecount: "16",
+      imagelayout: "Vertical",
+      glyphtype: "ImageGlyph",
+      glyphtransparent: "True",
+      fillcolorhint: "#f0f1f5",
+      bordercolorhint: "#ffffff",
+      imageselecttype: "size",
+      truesizescalingtype: "size",
+      sourceshrink: "True",
+      truesizestretchmark: "150",
+      uniformsizing: "true",
+      imagefile1: "Metallic\\ScrollArrowGlyphsSmall.bmp",
+      imagefile2: "Metallic\\ScrollArrowGlyphs.bmp",
+      minsize1: "7, 7",
+      minsize2: "9, 9",
+      normalsize: "7, 10"
+    },
+    "Scrollbar.ThumbBtnVert": {
+      bgtype: "ImageFile",
+      sizingmargins: "5, 5, 5, 5",
+      contentmargins: "0, 0, 4, 4",
+      imagefile: "Metallic\\ScrollThumbVertical.bmp",
+      imagecount: "4",
+      imagelayout: "vertical",
+      fillcolorhint: "#f0f1f5",
+      bordercolorhint: "#ffffff"
+    },
+    "Scrollbar.ThumbBtnHorz": {
+      bgtype: "ImageFile",
+      sizingmargins: "5, 5, 5, 5",
+      contentmargins: "4, 4, 0, 0",
+      imagefile: "Metallic\\ScrollThumbHorizontal.bmp",
+      imagecount: "4",
+      imagelayout: "Vertical",
+      fillcolorhint: "#f0f1f5",
+      bordercolorhint: "#ffffff"
+    },
+    "Scrollbar.GripperVert": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagefile: "Metallic\\ScrollThumbGripperVertical.BMP",
+      imagecount: "4",
+      transparent: "True",
+      imagelayout: "Vertical"
+    },
+    "Scrollbar.GripperHorz": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagefile: "Metallic\\ScrollThumbGripperHorizontal.BMP",
+      imagelayout: "vertical",
+      transparent: "True",
+      imagecount: "4"
+    },
+    "Scrollbar.LowerTrackVert": {
+      bgtype: "imagefile",
+      imagefile: "Metallic\\ScrollShaftVertical.bmp",
+      sizingmargins: "1, 1, 0, 0",
+      imagecount: "4",
+      imagelayout: "Vertical",
+      fillcolorhint: "#f0f1f5"
+    },
+    "Scrollbar.LowerTrackHorz": {
+      bgtype: "imagefile",
+      imagefile: "Metallic\\ScrollShaftHorizontal.bmp",
+      sizingmargins: "0, 0, 1, 1",
+      imagecount: "4",
+      imagelayout: "Vertical",
+      fillcolorhint: "#f0f1f5"
+    },
+    Toolbar: {
+      bgtype: "Borderfill",
+      bordersize: "0",
+      fillcolor: "#efefed",
+      textcolor: "#000000"
+    },
+    "Toolbar(Pressed)": {
+      textcolor: "#ffffff"
+    },
+    Status: {
+      sizingmargins: "50, 17, 5, 9",
+      imagefile: "Metallic\\StatusBackground.bmp",
+      bgtype: "imagefile",
+      imagecount: "1",
+      sizingtype: "Tile",
+      fillcolorhint: "#b1b7bb"
+    },
+    Progress: {
+      progresschunksize: "6",
+      progressspacesize: "2",
+      bgtype: "borderFill",
+      filltype: "Solid",
+      fillcolor: "#ebebe4",
+      bordersize: "1",
+      bordercolor: "#ebebe4"
+    },
+    ExplorerBar: {
+      bgtype: "BorderFill",
+      filltype: "VertGradient",
+      gradientratio1: "0",
+      gradientcolor1: "#e0e0df",
+      gradientratio2: "255",
+      gradientcolor2: "#a6a4ba",
+      bordersize: "0",
+      contentmargins: "12, 12, 12, 12"
+    },
+    "Toolbar.Button": {
+      sizingmargins: "4, 4, 4, 4",
+      contentmargins: "0, 0, 0, 0",
+      imagefile: "Metallic\\ToolbarButtons.bmp",
+      bgtype: "imagefile",
+      imagelayout: "vertical",
+      imagecount: "6",
+      sizingtype: "Stretch",
+      transparent: "true",
+      transparentcolor: "#ff00ff",
+      fillcolorhint: "#f0f1f5",
+      bordercolorhint: "#77775c"
+    },
+    "Toolbar.Separator": {
+      sizingmargins: "5, 2, 2, 1",
+      imagefile: "Metallic\\Separator.bmp",
+      bgtype: "imagefile",
+      imagecount: "1",
+      sizingtype: "tile",
+      transparent: "true",
+      transparentcolor: "#ff0000",
+      fillcolorhint: "#b1b7bb"
+    },
+    "Status.Pane": {
+      sizingmargins: "0, 2, 2, 2",
+      imagefile: "Metallic\\StatusPane.bmp",
+      bgtype: "imagefile",
+      imagecount: "1",
+      sizingtype: "Tile",
+      transparent: "True",
+      transparentcolor: "#ff0000",
+      fillcolorhint: "#77775c"
+    },
+    "Status.Gripper": {
+      contentmargins: "0,0,0,0",
+      imagefile: "Metallic\\ResizeGrip2.bmp",
+      bgtype: "imagefile",
+      imagecount: "2",
+      sizingtype: "trueSize",
+      transparent: "True",
+      transparentcolor: "#ff0000",
+      fillcolorhint: "#77775c",
+      valign: "Bottom"
+    },
+    "Progress.Bar": {
+      bgtype: "imagefile",
+      imagefile: "Metallic\\ProgressTrack.bmp",
+      minsize: "10,10",
+      sizingmargins: "4, 4, 3, 3",
+      sizingtype: "tile",
+      fillcolorhint: "#ffffff",
+      bordercolorhint: "#686868",
+      normalsize: "100, 18",
+      sourceshrink: "true"
+    },
+    "Progress.Chunk": {
+      bgtype: "imagefile",
+      imagefile: "Metallic\\ProgressChunk.bmp",
+      sizingmargins: "0, 0, 6, 5",
+      sizingtype: "tile"
+    },
+    "Tab.Pane": {
+      bgtype: "imagefile",
+      imagefile: "Metallic\\TabPaneEdge.bmp",
+      sizingmargins: "2, 4, 2, 4",
+      sizingtype: "stretch",
+      imagecount: "1",
+      fillcolorhint: "#f7f7f9",
+      bordercolorhint: "#919b9c"
+    },
+    "Tab.TabItem": {
+      sizingmargins: "6, 6, 6, 6",
+      contentmargins: "0, 0, 0, 0",
+      bgtype: "imagefile",
+      imagefile: "Metallic\\tabItem.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      fillcolorhint: "#f0f1f5",
+      bordercolorhint: "#929292",
+      accentcolorhint: "#ffc83c"
+    },
+    "Tab.TabItemLeftEdge": {
+      sizingmargins: "6, 6, 6, 6",
+      contentmargins: "0, 0, 0, 0",
+      bgtype: "imagefile",
+      imagefile: "Metallic\\tabItemLeft.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      fillcolorhint: "#f0f1f5",
+      bordercolorhint: "#f0f1f5",
+      accentcolorhint: "#ffc83c"
+    },
+    "Tab.TabItemRightEdge": {
+      sizingmargins: "6, 6, 6, 6",
+      contentmargins: "0, 0, 0, 0",
+      bgtype: "imagefile",
+      imagefile: "Metallic\\tabItemRight.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      fillcolorhint: "#f0f1f5",
+      bordercolorhint: "#f0f1f5",
+      accentcolorhint: "#ffc83c"
+    },
+    "Tab.TabItemBothEdge": {
+      sizingmargins: "6, 6, 6, 6",
+      contentmargins: "0, 0, 0, 0",
+      bgtype: "imagefile",
+      imagefile: "Metallic\\tabItemBoth.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      fillcolorhint: "#f0f1f5",
+      bordercolorhint: "#f0f1f5",
+      accentcolorhint: "#ffc83c"
+    },
+    "Tab.Body": {
+      bgtype: "imagefile",
+      stockimagefile: "Metallic\\TabBackground.bmp",
+      fillcolorhint: "#f7f7f9",
+      imageselecttype: "Dpi",
+      truesizescalingtype: "Dpi",
+      truesizestretchmark: "50",
+      imagefile1: "Metallic\\TabBackground.bmp",
+      imagefile2: "Metallic\\TabBackground133.bmp",
+      mindpi1: "96",
+      mindpi2: "164"
+    },
+    "Header.HeaderItem": {
+      bgtype: "imagefile",
+      sizingmargins: "8, 8, 3, 4",
+      contentmargins: "3, 0, 0, 0",
+      imagefile: "Metallic\\ListViewHeader.bmp",
+      imagecount: "5",
+      imagelayout: "vertical",
+      sizingtype: "tile",
+      transparent: "true",
+      transparentcolor: "#ff0000",
+      fillcolorhint: "#f0f1f5",
+      accentcolorhint: "#fcc247"
+    },
+    "ExplorerBar.NormalGroupHead": {
+      bgtype: "ImageFile",
+      sizingtype: "Stretch",
+      imagefile: "Metallic\\NormalGroupHead.bmp",
+      sizingmargins: "3, 106, 3, 1",
+      transparent: "true",
+      font: "Tahoma, 8, Bold",
+      textcolor: "#3e3c52",
+      contentmargins: "8, 8, 7, 7",
+      fillcolorhint: "#d1cfe5"
+    },
+    "ExplorerBar.NormalGroupBackground": {
+      bgtype: "ImageFile",
+      fillcolor: "#f2f0ff",
+      bordercolor: "#ffffff",
+      sizingtype: "Stretch",
+      imagefile: "Metallic\\NormalGroupBackground.bmp",
+      sizingmargins: "3, 3, 3, 3",
+      font: "Tahoma, 8",
+      textcolor: "#555367",
+      contentmargins: "8, 8, 7, 7"
+    },
+    "ExplorerBar.NormalGroupCollapse": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagelayout: "Vertical",
+      imagefile: "Metallic\\NormalGroupCollapse.bmp",
+      imagecount: "3",
+      transparent: "true",
+      offsettype: "TopRight",
+      offset: "-3, 1",
+      fillcolorhint: "#dbd9ef",
+      bordercolorhint: "#b1b7bb"
+    },
+    "ExplorerBar.NormalGroupExpand": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagelayout: "Vertical",
+      imagefile: "Metallic\\NormalGroupExpand.bmp",
+      imagecount: "3",
+      transparent: "true",
+      offsettype: "TopRight",
+      offset: "-3, 1",
+      fillcolorhint: "#dbd9ef",
+      bordercolorhint: "#b1b7bb"
+    },
+    "ExplorerBar.SpecialGroupHead": {
+      bgtype: "ImageFile",
+      sizingtype: "Stretch",
+      imagefile: "Metallic\\SpecialGroupHead.bmp",
+      sizingmargins: "3, 106, 3, 1",
+      transparent: "true",
+      font: "Tahoma, 8, Bold",
+      textcolor: "#ffffff",
+      fillcolor: "#3e3c52",
+      contentmargins: "8, 8, 7, 7"
+    },
+    "ExplorerBar.SpecialGroupBackground": {
+      bgtype: "ImageFile",
+      sizingtype: "Stretch",
+      imagefile: "Metallic\\SpecialGroupBackground.bmp",
+      sizingmargins: "3, 3, 3, 3",
+      font: "Tahoma, 8",
+      textcolor: "#265cc0",
+      contentmargins: "8, 8, 7, 7",
+      fillcolorhint: "#f2f0ff"
+    },
+    "ExplorerBar.SpecialGroupCollapse": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagelayout: "Vertical",
+      imagefile: "Metallic\\SpecialGroupCollapse.bmp",
+      imagecount: "3",
+      transparent: "true",
+      offsettype: "TopRight",
+      offset: "-3, 1",
+      fillcolorhint: "#737187",
+      bordercolorhint: "#545268"
+    },
+    "ExplorerBar.SpecialGroupExpand": {
+      bgtype: "ImageFile",
+      sizingtype: "TrueSize",
+      imagelayout: "Vertical",
+      imagefile: "Metallic\\SpecialGroupExpand.bmp",
+      imagecount: "3",
+      transparent: "true",
+      offsettype: "TopRight",
+      offset: "-3, 1",
+      fillcolorhint: "#737187",
+      bordercolorhint: "#545268"
+    }
+  };
 
   // src/ui/luna-assets.ts
-  var luna = { caption: caption_default, radio_normal: radio_normal_default, radio_checked: radio_checked_default, scroll_up: scroll_up_default, scroll_down: scroll_down_default, scroll_up_glyph: scroll_up_glyph_default, scroll_down_glyph: scroll_down_glyph_default, scroll_thumb: scroll_thumb_default, scroll_track: scroll_track_default, button_normal: button_normal_default, button_hover: button_hover_default, button_pressed: button_pressed_default, button_disabled: button_disabled_default, button_default: button_default_default, close_normal: close_normal_default, close_hover: close_hover_default, close_pressed: close_pressed_default, minimize_normal: minimize_normal_default, minimize_hover: minimize_hover_default, minimize_pressed: minimize_pressed_default, maximize_normal: maximize_normal_default, maximize_hover: maximize_hover_default, maximize_pressed: maximize_pressed_default, restore_normal: restore_normal_default, restore_hover: restore_hover_default, restore_pressed: restore_pressed_default, folder: folder_default, data: data_default, viewed: viewed_default, history: history_default, app: app_default };
+  var blueRects = { "button": [45, 601, 20, 115], "checkbox_96": [0, 601, 13, 156], "close_caption_button_144": [29, 0, 32, 256], "close_caption_button_96": [161, 0, 21, 168], "combo_button": [227, 601, 15, 64], "combo_glyph": [237, 758, 10, 28], "frame_bottom": [117, 841, 49, 10], "frame_caption": [23, 758, 66, 58], "frame_left": [243, 601, 5, 62], "frame_right": [249, 601, 5, 62], "group_box": [224, 819, 22, 20], "header_item": [80, 601, 18, 90], "maximize_caption_button_144": [62, 0, 32, 256], "maximize_caption_button_96": [183, 0, 21, 168], "minimize_caption_button_144": [95, 0, 32, 256], "minimize_caption_button_96": [205, 0, 21, 168], "progress_chunk": [106, 841, 10, 12], "progress_track": [247, 819, 9, 19], "radio_button_96": [66, 601, 13, 104], "restore_caption_button_144": [128, 0, 32, 256], "restore_caption_button_96": [227, 0, 21, 168], "scroll_arrow_glyphs": [14, 601, 9, 144], "scroll_arrows": [11, 0, 17, 272], "scroll_gripper_horizontal": [219, 758, 8, 32], "scroll_gripper_vertical": [228, 758, 8, 32], "scroll_shaft_horizontal": [191, 601, 17, 68], "scroll_shaft_vertical": [209, 601, 17, 68], "scroll_thumb_horizontal": [0, 758, 22, 60], "scroll_thumb_vertical": [175, 601, 15, 88], "status_background": [33, 841, 68, 15], "status_gripper": [0, 841, 32, 17], "status_pane": [102, 841, 3, 15], "tab_body": [0, 0, 10, 600], "tab_item": [99, 601, 18, 90], "tab_item_both": [118, 601, 18, 90], "tab_item_left": [137, 601, 18, 90], "tab_item_right": [156, 601, 18, 90], "tab_pane": [170, 758, 48, 48], "task_background": [0, 859, 111, 10], "task_collapse": [90, 758, 19, 57], "task_expand": [110, 758, 19, 57], "task_head": [0, 819, 111, 21], "task_special_background": [112, 859, 111, 10], "task_special_collapse": [130, 758, 19, 57], "task_special_expand": [150, 758, 19, 57], "task_special_head": [112, 819, 111, 21], "toolbar_button": [24, 601, 20, 138], "toolbar_separator": [224, 859, 8, 5] };
+  var oliveRects = { "button": [45, 601, 20, 115], "checkbox_96": [0, 601, 13, 156], "close_caption_button_144": [29, 0, 32, 256], "close_caption_button_96": [161, 0, 21, 168], "combo_button": [227, 601, 15, 64], "combo_glyph": [237, 758, 10, 28], "frame_bottom": [117, 841, 49, 10], "frame_caption": [23, 758, 66, 58], "frame_left": [243, 601, 5, 62], "frame_right": [249, 601, 5, 62], "group_box": [224, 819, 22, 20], "header_item": [80, 601, 18, 90], "maximize_caption_button_144": [62, 0, 32, 256], "maximize_caption_button_96": [183, 0, 21, 168], "minimize_caption_button_144": [95, 0, 32, 256], "minimize_caption_button_96": [205, 0, 21, 168], "progress_chunk": [106, 841, 10, 12], "progress_track": [247, 819, 9, 19], "radio_button_96": [66, 601, 13, 104], "restore_caption_button_144": [128, 0, 32, 256], "restore_caption_button_96": [227, 0, 21, 168], "scroll_arrow_glyphs": [14, 601, 9, 144], "scroll_arrows": [11, 0, 17, 272], "scroll_gripper_horizontal": [219, 758, 8, 32], "scroll_gripper_vertical": [228, 758, 8, 32], "scroll_shaft_horizontal": [191, 601, 17, 68], "scroll_shaft_vertical": [209, 601, 17, 68], "scroll_thumb_horizontal": [0, 758, 22, 60], "scroll_thumb_vertical": [175, 601, 15, 88], "status_background": [33, 841, 68, 15], "status_gripper": [0, 841, 32, 17], "status_pane": [102, 841, 3, 15], "tab_body": [0, 0, 10, 600], "tab_item": [99, 601, 18, 90], "tab_item_both": [118, 601, 18, 90], "tab_item_left": [137, 601, 18, 90], "tab_item_right": [156, 601, 18, 90], "tab_pane": [170, 758, 48, 48], "task_background": [0, 859, 111, 10], "task_collapse": [90, 758, 19, 57], "task_expand": [110, 758, 19, 57], "task_head": [0, 819, 111, 21], "task_special_background": [112, 859, 111, 10], "task_special_collapse": [130, 758, 19, 57], "task_special_expand": [150, 758, 19, 57], "task_special_head": [112, 819, 111, 21], "toolbar_button": [24, 601, 20, 138], "toolbar_separator": [224, 859, 8, 5] };
+  var silverRects = { "button": [45, 601, 20, 115], "checkbox_96": [0, 601, 13, 156], "close_caption_button_144": [29, 0, 32, 256], "close_caption_button_96": [161, 0, 21, 168], "combo_button": [227, 601, 15, 64], "combo_glyph": [237, 758, 10, 28], "frame_bottom": [117, 841, 49, 10], "frame_caption": [23, 758, 66, 58], "frame_left": [243, 601, 5, 62], "frame_right": [249, 601, 5, 62], "group_box": [224, 819, 22, 20], "header_item": [80, 601, 18, 90], "maximize_caption_button_144": [62, 0, 32, 256], "maximize_caption_button_96": [183, 0, 21, 168], "minimize_caption_button_144": [95, 0, 32, 256], "minimize_caption_button_96": [205, 0, 21, 168], "progress_chunk": [106, 841, 10, 12], "progress_track": [247, 819, 9, 19], "radio_button_96": [66, 601, 13, 104], "restore_caption_button_144": [128, 0, 32, 256], "restore_caption_button_96": [227, 0, 21, 168], "scroll_arrow_glyphs": [14, 601, 9, 144], "scroll_arrows": [11, 0, 17, 272], "scroll_gripper_horizontal": [219, 758, 8, 32], "scroll_gripper_vertical": [228, 758, 8, 32], "scroll_shaft_horizontal": [191, 601, 17, 68], "scroll_shaft_vertical": [209, 601, 17, 68], "scroll_thumb_horizontal": [0, 758, 22, 60], "scroll_thumb_vertical": [175, 601, 15, 88], "status_background": [33, 841, 68, 15], "status_gripper": [0, 841, 32, 17], "status_pane": [102, 841, 3, 15], "tab_body": [0, 0, 10, 600], "tab_item": [99, 601, 18, 90], "tab_item_both": [118, 601, 18, 90], "tab_item_left": [137, 601, 18, 90], "tab_item_right": [156, 601, 18, 90], "tab_pane": [170, 758, 48, 48], "task_background": [0, 859, 111, 10], "task_collapse": [90, 758, 19, 57], "task_expand": [110, 758, 19, 57], "task_head": [0, 819, 111, 21], "task_special_background": [112, 859, 111, 10], "task_special_collapse": [130, 758, 19, 57], "task_special_expand": [150, 758, 19, 57], "task_special_head": [112, 819, 111, 21], "toolbar_button": [24, 601, 20, 138], "toolbar_separator": [224, 859, 8, 5] };
+  var lunaSchemes = {
+    blue: { theme: theme_default, sheet: blue_default, rects: blueRects },
+    olive: { theme: theme_default2, sheet: olive_default, rects: oliveRects },
+    silver: { theme: theme_default3, sheet: silver_default, rects: silverRects }
+  };
 
-  // src/ui/assets/luna-olive/xp-text-regular.png
-  var xp_text_regular_default = readCachedResourceUrl("atelier_xp_text_regular_png");
-
-  // src/ui/assets/luna-olive/xp-text-bold.png
-  var xp_text_bold_default = readCachedResourceUrl("atelier_xp_text_bold_png");
-
-  // src/ui/assets/luna-olive/xp-text-regular.json
-  var xp_text_regular_default2 = readCachedResourceJson("atelier_xp_text_regular_json");
-
-  // src/ui/assets/luna-olive/xp-text-bold.json
-  var xp_text_bold_default2 = readCachedResourceJson("atelier_xp_text_bold_json");
-
-  // src/ui/pixel-text.ts
-  var fonts;
-  function loadFonts() {
-    return fonts ??= Promise.all([[xp_text_regular_default, xp_text_regular_default2], [xp_text_bold_default, xp_text_bold_default2]].map(([url, data]) => new Promise((resolve, reject) => {
-      if (!url || !data || !data.glyphs || typeof data.glyphs !== "object") {
-        reject(new Error("Pixel font resource unavailable"));
-        return;
-      }
-      const image = new Image();
-      image.onload = () => resolve({ image, glyphs: data.glyphs });
-      image.onerror = reject;
-      image.src = url;
-    })));
+  // src/ui/luna.ts
+  var lunaSchemeNames = { blue: "\u9ED8\u8BA4\uFF08\u84DD\uFF09", olive: "\u6A44\u6984\u7EFF", silver: "\u94F6\u8272" };
+  var isLunaScheme = (value2) => typeof value2 === "string" && Object.prototype.hasOwnProperty.call(lunaSchemes, value2);
+  var theme = (scheme) => lunaSchemes[scheme].theme;
+  var value = (scheme, section, key2, fallback2) => theme(scheme)[section]?.[key2] || fallback2;
+  var darkPalettes = {
+    blue: { face: "#23272f", window: "#191c22", ink: "#e8eaee", muted: "#a3a9b5", edge: "#56678a", line: "#3a3f4a", light3d: "#3b414d", shadow3d: "#14171c", dark3d: "#0b0d10", lift: "#b7c3d9", gradient1: "#26355a", gradient2: "#1c2744", taskFill: "#2a3550", taskText: "#c7d6f5", taskLink: "#a9c1f2", groupText: "#9cb8ff" },
+    olive: { face: "#2a2d22", window: "#1c1e16", ink: "#ecebdf", muted: "#b3b8a2", edge: "#76845a", line: "#3d4132", light3d: "#42473a", shadow3d: "#15170f", dark3d: "#0c0d08", lift: "#c8cfb0", gradient1: "#353c27", gradient2: "#282d1d", taskFill: "#343a28", taskText: "#d6dcbf", taskLink: "#c9d69f", groupText: "#c0d091" },
+    silver: { face: "#2a2a2f", window: "#1d1d21", ink: "#e9e9ee", muted: "#aeb0ba", edge: "#666b7a", line: "#3c3c44", light3d: "#44444c", shadow3d: "#151519", dark3d: "#0b0b0e", lift: "#c9ccd8", gradient1: "#33343e", gradient2: "#27272f", taskFill: "#34343d", taskText: "#d9dae3", taskLink: "#c0c4d8", groupText: "#c6cadb" }
+  };
+  var dim = (hex, factor = 0.7) => "#" + [1, 3, 5].map((at) => Math.round(parseInt(hex.slice(at, at + 2), 16) * factor).toString(16).padStart(2, "0")).join("");
+  function lunaTokens(scheme, dark) {
+    const sys = (key2, fallback2) => value(scheme, "SysMetrics", key2, fallback2);
+    const light = {
+      face: sys("btnface", "#ece9d8"),
+      window: sys("window", "#ffffff"),
+      ink: "#000000",
+      muted: sys("dkshadow3d", "#716f64"),
+      edge: value(scheme, "Edit", "bordercolor", "#7f9db9"),
+      line: sys("btnshadow", "#aca899"),
+      light3d: sys("btnhighlight", "#ffffff"),
+      shadow3d: sys("btnshadow", "#aca899"),
+      dark3d: sys("dkshadow3d", "#716f64"),
+      gradient1: value(scheme, "ExplorerBar", "gradientcolor1", "#8caae6"),
+      gradient2: value(scheme, "ExplorerBar", "gradientcolor2", "#6487dc"),
+      taskFill: value(scheme, "ExplorerBar.NormalGroupBackground", "fillcolor", "#d6dff7"),
+      taskText: value(scheme, "ExplorerBar.NormalGroupHead", "textcolor", "#215dc6"),
+      taskLink: value(scheme, "ExplorerBar.NormalGroupBackground", "textcolor", "#265cc0"),
+      groupText: value(scheme, "Button.GroupBox", "textcolor", "#0046d5")
+    };
+    const base = dark ? darkPalettes[scheme] : light;
+    const caption = sys("activecaption", "#0054e3"), inactive = sys("inactivecaption", "#7a96df");
+    return {
+      ...Object.fromEntries(Object.entries(base).filter(([key2]) => key2 !== "lift")),
+      graytext: dark ? dim(sys("graytext", "#aca899")) : sys("graytext", "#aca899"),
+      highlight: sys("highlight", "#316ac5"),
+      "highlight-ink": sys("highlighttext", "#ffffff"),
+      // DrawFocusRect inverts the pixels under its dots.
+      "highlight-xor": "#" + (16777215 ^ parseInt(sys("highlight", "#316ac5").slice(1), 16)).toString(16).padStart(6, "0"),
+      caption: dark ? dim(caption) : caption,
+      "caption-ink": sys("captiontext", "#ffffff"),
+      "inactive-caption": dark ? dim(inactive) : inactive,
+      "inactive-caption-ink": sys("inactivecaptiontext", "#d8e4f8"),
+      "caption-shadow": value(scheme, "Window", "textshadowcolor", "#0a1883"),
+      "special-text": value(scheme, "ExplorerBar.SpecialGroupHead", "textcolor", "#ffffff"),
+      info: dark ? "#3a3826" : "#ffffe1",
+      "info-ink": dark ? "#f2efd8" : "#000000",
+      // Silver's InactiveCaptionText; on the dimmed dark caption it needs to be dark.
+      "grey-caption-ink": dark ? "#36363c" : "#a2a1a1",
+      danger: dark ? "#ff9e94" : "#a33024"
+    };
   }
-  function observePixelLabels(root, selector = "button,h1,h2,h3,summary,.luna-breadcrumb,.lf-check") {
-    let disposed = false, queued = false, loaded;
-    const render = () => {
-      queued = false;
-      if (disposed || !loaded) return;
-      const targets = [...root.querySelectorAll(selector)];
-      if (root instanceof HTMLElement && root.matches(selector)) targets.unshift(root);
-      for (const target of targets) {
-        if (target.closest("[data-atelier-plain]")) continue;
-        const style = getComputedStyle(target), font = loaded[Number.parseInt(style.fontWeight) >= 600 ? 1 : 0];
-        const dpr = window.devicePixelRatio || 1;
-        const scale = Math.max(1, Math.round(12 * dpr / 12)), unit = scale / dpr;
-        for (const child of [...target.childNodes]) {
-          const existing = child instanceof HTMLElement && child.classList.contains("atelier-pixel-label") ? child : null;
-          if (child.nodeType !== Node.TEXT_NODE && !existing) continue;
-          const text2 = child.textContent || "";
-          if (!text2.trim() || text2.length > 80 || /[\r\n]/.test(text2)) continue;
-          const glyphs = [...text2].map((char) => font.glyphs[char.codePointAt(0)]);
-          if (glyphs.some((glyph) => !glyph)) continue;
-          const key2 = `${text2}|${scale}|${dpr}|${font === loaded[1]}`;
-          if (existing?.dataset.pixelKey === key2) continue;
-          const width = glyphs.reduce((sum, glyph) => sum + glyph[2], 0);
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = 12;
-          const context = canvas.getContext("2d");
-          if (!context) return;
-          let x = 0;
-          for (const [left, top, advance] of glyphs) {
-            context.drawImage(font.image, left, top, advance, 12, x, 0, advance, 12);
-            x += advance;
-          }
-          const label = existing || document.createElement("span");
-          label.className = "atelier-pixel-label";
-          label.textContent = text2;
-          label.dataset.pixelKey = key2;
-          label.style.cssText = `display:inline-block;position:relative;vertical-align:middle;font-size:0;line-height:0;flex-shrink:0;width:${width * unit}px;height:${12 * unit}px;--atelier-mask:url("${canvas.toDataURL()}")`;
-          if (!existing) child.replaceWith(label);
+  var margins = (scheme, section, fallback2) => {
+    const parsed = value(scheme, section, "sizingmargins", "").split(",").map(Number);
+    return parsed.length === 4 && parsed.every(Number.isFinite) ? parsed : fallback2;
+  };
+  function crop(image3, x, y, width2, height) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width2;
+    canvas.height = height;
+    canvas.getContext("2d").drawImage(image3, x, y, width2, height, 0, 0, width2, height);
+    return canvas;
+  }
+  var state = (image3, index, count2, horizontal = false) => horizontal ? crop(image3, index * image3.width / count2, 0, image3.width / count2, image3.height) : crop(image3, 0, index * image3.height / count2, image3.width, image3.height / count2);
+  function overlay(background, glyph) {
+    background.getContext("2d").drawImage(glyph, Math.floor((background.width - glyph.width) / 2), Math.floor((background.height - glyph.height) / 2));
+    return background;
+  }
+  function parts(scheme, dpr) {
+    const hiDpi = dpr >= 1.5;
+    const caption = (name) => ({ source: `${name}_caption_button_${hiDpi ? 144 : 96}`, states: 8, kind: "chrome", sourceScale: hiDpi ? 1.5 : 1 });
+    return {
+      caption: { source: "frame_caption", states: 2, margins: margins(scheme, "Window.Caption", [28, 35, 9, 17]), kind: "chrome" },
+      // Left, right and bottom edges in one image, for one border-image.
+      frame: { source: (load, index) => {
+        const left = state(load("frame_left"), index, 2), right = state(load("frame_right"), index, 2), bottom = state(load("frame_bottom"), index, 2);
+        const canvas = document.createElement("canvas");
+        canvas.width = bottom.width;
+        canvas.height = left.height + bottom.height;
+        const context = canvas.getContext("2d");
+        context.drawImage(left, 0, 0);
+        context.drawImage(right, bottom.width - right.width, 0);
+        context.drawImage(bottom, 0, left.height);
+        return canvas;
+      }, states: 2, margins: [5, 5, 0, 5], kind: "chrome" },
+      minimize: caption("minimize"),
+      maximize: caption("maximize"),
+      restore: caption("restore"),
+      close: caption("close"),
+      button: { source: "button", states: 5, margins: margins(scheme, "Button.Pushbutton", [8, 8, 9, 9]), kind: "face" },
+      checkbox: { source: "checkbox_96", states: 12, kind: "face" },
+      radio: { source: "radio_button_96", states: 8, kind: "face" },
+      arrow: { source: (load, index) => overlay(state(load("scroll_arrows"), index, 16), state(load("scroll_arrow_glyphs"), index, 16)), states: 16, kind: "face" },
+      "thumb-v": { source: "scroll_thumb_vertical", states: 4, margins: margins(scheme, "Scrollbar.ThumbBtnVert", [5, 5, 5, 5]), kind: "face" },
+      "thumb-h": { source: "scroll_thumb_horizontal", states: 4, margins: margins(scheme, "Scrollbar.ThumbBtnHorz", [5, 5, 5, 5]), kind: "face" },
+      "gripper-v": { source: "scroll_gripper_vertical", states: 4, kind: "face" },
+      "gripper-h": { source: "scroll_gripper_horizontal", states: 4, kind: "face" },
+      "shaft-v": { source: "scroll_shaft_vertical", states: 4, margins: margins(scheme, "Scrollbar.LowerTrackVert", [1, 1, 0, 0]), kind: "face" },
+      "shaft-h": { source: "scroll_shaft_horizontal", states: 4, margins: margins(scheme, "Scrollbar.LowerTrackHorz", [0, 0, 1, 1]), kind: "face" },
+      combo: { source: (load, index) => overlay(state(load("combo_button"), index, 4), state(load("combo_glyph"), index, 4)), states: 4, kind: "face" },
+      "group-box": { source: "group_box", states: 1, margins: margins(scheme, "Button.GroupBox", [4, 4, 4, 4]), kind: "face" },
+      tool: { source: "toolbar_button", states: 6, margins: margins(scheme, "Toolbar.Button", [4, 4, 4, 4]), kind: "face" },
+      status: { source: "status_background", states: 1, margins: margins(scheme, "Status", [50, 17, 5, 9]), kind: "face" },
+      "status-pane": { source: "status_pane", states: 1, margins: margins(scheme, "Status.Pane", [0, 2, 2, 2]), kind: "face" },
+      gripper: { source: "status_gripper", states: 2, horizontal: true, kind: "face" },
+      "progress-track": { source: "progress_track", states: 1, margins: margins(scheme, "Progress.Bar", [4, 4, 3, 3]), kind: "face" },
+      // ProgressChunkSize 6 + ProgressSpaceSize 2: one repeating 8 px tile.
+      "progress-chunk": { source: (load) => {
+        const chunk = load("progress_chunk"), canvas = document.createElement("canvas");
+        const size = Number(value(scheme, "Progress", "progresschunksize", "6")), space = Number(value(scheme, "Progress", "progressspacesize", "2"));
+        canvas.width = size + space;
+        canvas.height = chunk.height;
+        canvas.getContext("2d").drawImage(chunk, Math.floor((chunk.width - size) / 2), 0, size, chunk.height, 0, 0, size, chunk.height);
+        return canvas;
+      }, states: 1, kind: "chrome" },
+      tab: { source: "tab_item", states: 5, margins: margins(scheme, "Tab.TabItem", [6, 6, 6, 6]), kind: "face" },
+      "tab-left": { source: "tab_item_left", states: 5, margins: margins(scheme, "Tab.TabItemLeftEdge", [6, 6, 6, 6]), kind: "face" },
+      "tab-pane": { source: "tab_pane", states: 1, margins: margins(scheme, "Tab.Pane", [2, 4, 2, 4]), kind: "face" },
+      "tab-body": { source: "tab_body", states: 1, kind: "face" },
+      header: { source: "header_item", states: 5, margins: margins(scheme, "Header.HeaderItem", [8, 8, 3, 4]), kind: "face" },
+      "task-head": { source: "task_head", states: 1, margins: margins(scheme, "ExplorerBar.NormalGroupHead", [3, 106, 3, 1]), kind: "face" },
+      "task-body": { source: "task_background", states: 1, margins: margins(scheme, "ExplorerBar.NormalGroupBackground", [3, 3, 3, 3]), kind: "face" },
+      "task-collapse": { source: "task_collapse", states: 3, kind: "face" },
+      "task-expand": { source: "task_expand", states: 3, kind: "face" },
+      "special-head": { source: "task_special_head", states: 1, margins: margins(scheme, "ExplorerBar.SpecialGroupHead", [3, 106, 3, 1]), kind: "chrome" },
+      "special-body": { source: "task_special_background", states: 1, margins: margins(scheme, "ExplorerBar.SpecialGroupBackground", [3, 3, 3, 3]), kind: "face" },
+      "special-collapse": { source: "task_special_collapse", states: 3, kind: "chrome" },
+      "special-expand": { source: "task_special_expand", states: 3, kind: "chrome" }
+    };
+  }
+  function axis(size, first2, last, scale) {
+    const center = Math.max(0, size - first2 - last);
+    const a = first2 ? Math.max(1, Math.round(first2 * scale)) : 0, b = last ? Math.max(1, Math.round(last * scale)) : 0;
+    const middle = center ? Math.max(1, Math.round(center * scale)) : 0, map = [];
+    for (let p2 = 0; p2 < a; p2++) map.push(Math.floor(p2 * first2 / a));
+    for (let p2 = 0; p2 < middle; p2++) map.push(first2 + Math.floor(p2 * center / middle));
+    for (let p2 = 0; p2 < b; p2++) map.push(size - last + Math.floor(p2 * last / b));
+    return { map, a, b };
+  }
+  function render(source, part, scale, dark) {
+    const [left, right, top, bottom] = part.margins ?? [0, 0, 0, 0];
+    const x = axis(source.width, left, right, scale), y = axis(source.height, top, bottom, scale);
+    const input = source.getContext("2d").getImageData(0, 0, source.width, source.height).data;
+    const canvas = document.createElement("canvas");
+    canvas.width = x.map.length;
+    canvas.height = y.map.length;
+    const context = canvas.getContext("2d"), output = context.createImageData(canvas.width, canvas.height);
+    const rgb = (hex) => [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16));
+    const [face, lift] = dark ? [rgb(dark.face), rgb(dark.lift)] : [[0, 0, 0], [0, 0, 0]];
+    for (let row = 0; row < y.map.length; row++) for (let column = 0; column < x.map.length; column++) {
+      const from = (y.map[row] * source.width + x.map[column]) * 4, to = (row * canvas.width + column) * 4;
+      let r = input[from], g = input[from + 1], b = input[from + 2];
+      if (dark && part.kind === "chrome") {
+        r *= 0.7;
+        g *= 0.7;
+        b *= 0.7;
+      } else if (dark) {
+        const luma = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255, mix = (index, channel) => face[index] + (1 - luma) * (lift[index] - face[index]) + (channel - luma * 255) * 0.6;
+        [r, g, b] = [mix(0, r), mix(1, g), mix(2, b)];
+      }
+      output.data[to] = r;
+      output.data[to + 1] = g;
+      output.data[to + 2] = b;
+      output.data[to + 3] = input[from + 3];
+    }
+    context.putImageData(output, 0, 0);
+    return { url: canvas.toDataURL("image/png"), width: canvas.width, height: canvas.height, edges: [y.a, x.b, y.b, x.a] };
+  }
+  var images = /* @__PURE__ */ new Map();
+  function decode(url) {
+    return images.get(url) ?? images.set(url, new Promise((resolve, reject) => {
+      const image3 = new Image();
+      image3.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = image3.naturalWidth;
+        canvas.height = image3.naturalHeight;
+        canvas.getContext("2d").drawImage(image3, 0, 0);
+        resolve(canvas);
+      };
+      image3.onerror = reject;
+      image3.src = url;
+    })).get(url);
+  }
+  var px = (value2) => `${+value2.toFixed(4)}px`;
+  var rendered = /* @__PURE__ */ new Map();
+  function lunaImageVars(scheme, dark, dpr) {
+    const key2 = `${scheme}|${dark}|${dpr}`;
+    if (rendered.has(key2)) return rendered.get(key2);
+    const work = (async () => {
+      if (/jsdom/i.test(navigator.userAgent) || !document.createElement("canvas").getContext?.("2d")) return "";
+      const loader = async (which) => {
+        const { sheet, rects } = lunaSchemes[which], packed = await decode(sheet);
+        return (name) => crop(packed, ...rects[name]);
+      };
+      const load = await loader(scheme);
+      const vars = [];
+      for (const [name, part] of Object.entries(parts(scheme, dpr))) {
+        const scale = dpr / (part.sourceScale ?? 1);
+        for (let index = 0; index < part.states; index++) {
+          const source = typeof part.source === "function" ? part.source(load, index) : state(load(part.source), index, part.states, part.horizontal);
+          const image3 = render(source, part, scale, dark && darkPalettes[scheme]);
+          vars.push(`--xp-${name}-${index}:url("${image3.url}")`);
+          if (index) continue;
+          const [top, right, bottom, left] = image3.edges;
+          vars.push(
+            `--xp-${name}-slice:${top} ${right} ${bottom} ${left}`,
+            `--xp-${name}-edge:${[top, right, bottom, left].map((edge) => px(edge / dpr)).join(" ")}`,
+            `--xp-${name}-t:${px(top / dpr)}`,
+            `--xp-${name}-r:${px(right / dpr)}`,
+            `--xp-${name}-b:${px(bottom / dpr)}`,
+            `--xp-${name}-l:${px(left / dpr)}`,
+            `--xp-${name}-w:${px(image3.width / dpr)}`,
+            `--xp-${name}-h:${px(image3.height / dpr)}`
+          );
         }
       }
+      const silver = scheme === "silver" ? load : await loader("silver"), grey = parts("silver", dpr);
+      for (const [name, part] of [["grey-caption", grey.caption], ["grey-frame", grey.frame]]) {
+        const source = typeof part.source === "function" ? part.source(silver, 1) : state(silver(part.source), 1, part.states, part.horizontal);
+        vars.push(`--xp-${name}:url("${render(source, part, dpr / (part.sourceScale ?? 1), dark && darkPalettes.silver).url}")`);
+      }
+      vars.push("--xp-fallback:transparent", "--xp-fallback-caption:transparent");
+      return vars.join(";");
+    })().catch(() => "");
+    rendered.set(key2, work);
+    return work;
+  }
+
+  // src/ui/assets/fonts/xp-simsun-12.woff
+  var xp_simsun_12_default = readCachedResourceUrl("atelier_xp_simsun_12_woff");
+
+  // src/ui/assets/fonts/xp-simsun-12-bold.woff
+  var xp_simsun_12_bold_default = readCachedResourceUrl("atelier_xp_simsun_12_bold_woff");
+
+  // src/ui/assets/fonts/xp-simsun-15.woff
+  var xp_simsun_15_default = readCachedResourceUrl("atelier_xp_simsun_15_woff");
+
+  // src/ui/assets/fonts/xp-simsun-15-bold.woff
+  var xp_simsun_15_bold_default = readCachedResourceUrl("atelier_xp_simsun_15_bold_woff");
+
+  // src/ui/assets/fonts/xp-simsun-18.woff
+  var xp_simsun_18_default = readCachedResourceUrl("atelier_xp_simsun_18_woff");
+
+  // src/ui/assets/fonts/xp-simsun-18-bold.woff
+  var xp_simsun_18_bold_default = readCachedResourceUrl("atelier_xp_simsun_18_bold_woff");
+
+  // src/ui/xp-font.ts
+  var strikes = { 12: [xp_simsun_12_default, xp_simsun_12_bold_default], 15: [xp_simsun_15_default, xp_simsun_15_bold_default], 18: [xp_simsun_18_default, xp_simsun_18_bold_default] };
+  function xpTextFor(points, dpr, available = Object.keys(strikes).map(Number)) {
+    const base = Math.round(points * 96 / 72), target = points * 96 / 72 * dpr;
+    let best = { strike: available.includes(base) ? base : available[0], factor: Math.max(1, Math.round(dpr)) };
+    if (Math.abs(dpr - Math.round(dpr)) > 1e-6 || !available.includes(base)) {
+      let error = Infinity;
+      for (const strike of available) for (let factor = 1; factor <= 8; factor++) {
+        const miss = Math.abs(strike * factor - target);
+        if (miss < error - 1e-6 || Math.abs(miss - error) <= 1e-6 && factor < best.factor) {
+          error = miss;
+          best = { strike, factor };
+        }
+      }
+    }
+    const device = best.strike * best.factor;
+    return { ...best, size: device / dpr, line: Math.round(best.strike * 4 / 3) * best.factor / dpr };
+  }
+  var crispId = "atelier-xp-crisp";
+  var crispThreshold = "0 0 1";
+  var xpCrispFilter = `url(#${crispId})`;
+  function ensureCrispFilter(scope) {
+    if (scope.getElementById(crispId)) return;
+    const svg = "http://www.w3.org/2000/svg", make = (tag, attributes) => {
+      const element2 = document.createElementNS(svg, tag);
+      for (const [name, value2] of Object.entries(attributes)) element2.setAttribute(name, value2);
+      return element2;
+    };
+    const host = make("svg", { width: "0", height: "0", "aria-hidden": "true", style: "position:absolute;width:0;height:0;overflow:hidden" });
+    const filter = host.appendChild(make("filter", { id: crispId, x: "0", y: "0", width: "100%", height: "100%", "color-interpolation-filters": "sRGB" }));
+    filter.appendChild(make("feComponentTransfer", {})).appendChild(make("feFuncA", { type: "discrete", tableValues: crispThreshold }));
+    (scope instanceof Document ? scope.body ?? scope.documentElement : scope).append(host);
+  }
+  function xpFontCss(dpr) {
+    const faces = Object.entries(strikes).flatMap(([strike, [regular, bold]]) => [[regular, 400], [bold, 700]].filter(([url]) => url).map(([url, weight]) => `@font-face{font-family:"Atelier XP ${strike}";src:url("${url}") format("woff");font-weight:${weight};font-display:block}`));
+    const body2 = xpTextFor(9, dpr), caption = xpTextFor(10, dpr);
+    const family = (text2) => `"Atelier XP ${text2.strike}",SimSun,"NSimSun",monospace`;
+    return { faces: faces.join("\n"), vars: `--xp-font:${family(body2)};--xp-font-size:${body2.size}px;--xp-line:${body2.line}px;--xp-caption-font:${family(caption)};--xp-caption-size:${caption.size}px;--xp-dot:${body2.factor / dpr}px;--xp-crisp:${xpCrispFilter}` };
+  }
+  var fallback = /[^\u0000-\u007e\u00a0-\u024f\u2000-\u206f\u2e80-\u9fff\uff00-\uffef]/u;
+  var graphemes;
+  function crispPieces(text2) {
+    if (!fallback.test(text2)) return [text2];
+    const Segmenter = Intl.Segmenter;
+    graphemes ??= typeof Segmenter === "function" ? new Segmenter(void 0, { granularity: "grapheme" }) : null;
+    const pieces = [];
+    let run = "";
+    for (const piece of graphemes ? Array.from(graphemes.segment(text2), (part) => part.segment) : Array.from(text2)) {
+      if (!fallback.test(piece)) {
+        run += piece;
+        continue;
+      }
+      if (run) pieces.push(run);
+      pieces.push(piece);
+      run = "";
+    }
+    if (run) pieces.push(run);
+    return pieces;
+  }
+  function gridOffset(element2, left, top, dpr) {
+    const x = (left - Number(element2.dataset.snapX || 0)) * dpr, y = (top - Number(element2.dataset.snapY || 0)) * dpr;
+    return [(Math.round(x) - x) / dpr, (Math.round(y) - y) / dpr];
+  }
+  var moved = (element2, x, y) => {
+    if (Math.abs(x - Number(element2.dataset.snapX || 0)) < 1e-3 && Math.abs(y - Number(element2.dataset.snapY || 0)) < 1e-3) return false;
+    element2.dataset.snapX = String(x);
+    element2.dataset.snapY = String(y);
+    return true;
+  };
+  var skip = /* @__PURE__ */ new Set(["SCRIPT", "STYLE", "TEXTAREA", "INPUT", "SELECT", "OPTION", "svg", "CANVAS"]);
+  function observeCrispText(root3, selector) {
+    let queued = false, snapping = 0, disposed = false;
+    const tree = root3 instanceof ShadowRoot ? root3 : root3.getRootNode();
+    ensureCrispFilter(tree instanceof ShadowRoot ? tree : document);
+    const wrap = (node3) => {
+      const parent = node3.parentElement;
+      if (!parent || !node3.data.trim() || skip.has(parent.tagName) || parent.classList.contains("xp-text")) return;
+      if (parent.closest("[data-atelier-plain]") || selector && !parent.closest(selector)) return;
+      const pieces = crispPieces(node3.data);
+      const spans = pieces.map((piece) => Object.assign(document.createElement("span"), { className: fallback.test(piece) ? "xp-text xp-fallback" : "xp-text" }));
+      if (spans.length === 1) {
+        node3.replaceWith(spans[0]);
+        spans[0].appendChild(node3);
+        return;
+      }
+      spans.forEach((span, index) => {
+        span.textContent = pieces[index];
+      });
+      node3.replaceWith(...spans);
+    };
+    const targets = () => !selector ? [root3] : [...root3 instanceof Element && root3.matches(selector) ? [root3] : [], ...root3.querySelectorAll(selector)];
+    const snap = () => {
+      snapping = 0;
+      if (disposed) return;
+      const dpr = window.devicePixelRatio || 1;
+      const spans = targets().flatMap((target) => [...target.querySelectorAll(".xp-text")]);
+      const moves = spans.map((span) => {
+        const rects = span.getClientRects();
+        if (!rects.length) return null;
+        return [span, ...gridOffset(span, rects[rects.length - 1].left, rects[0].top, dpr)];
+      });
+      for (const move of moves) {
+        if (!move || !moved(...move)) continue;
+        const [span, x, y] = move;
+        span.style.left = `${x}px`;
+        span.style.top = `${y}px`;
+      }
+    };
+    const resnap = () => {
+      if (!snapping && !disposed) snapping = window.requestAnimationFrame(snap);
+    };
+    const scan = () => {
+      queued = false;
+      if (disposed) return;
+      const nodes = [];
+      for (const target of targets()) {
+        const walker = document.createTreeWalker(target, NodeFilter.SHOW_TEXT);
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+      }
+      nodes.forEach(wrap);
+      resnap();
     };
     const schedule2 = () => {
       if (!queued && !disposed) {
         queued = true;
-        window.requestAnimationFrame(render);
+        queueMicrotask(scan);
       }
     };
+    const relevant = (node3) => {
+      const element2 = node3 instanceof Element ? node3 : node3.parentElement;
+      if (!element2) return false;
+      return !selector || !!element2.closest(selector) || node3 instanceof Element && !!node3.querySelector(selector);
+    };
     const observer = new MutationObserver((records2) => {
-      if (records2.some((record) => {
-        const target = record.target instanceof Element ? record.target : record.target.parentElement;
-        return target?.closest(selector) || [...record.addedNodes].some((node) => node instanceof Element && (node.matches(selector) || node.querySelector(selector)));
-      })) schedule2();
+      if (records2.some((record) => record.type === "characterData" ? relevant(record.target) : [...record.addedNodes, ...record.removedNodes].some((node3) => node3.nodeType === Node.TEXT_NODE ? relevant(record.target) : relevant(node3) || relevant(record.target)))) schedule2();
     });
-    observer.observe(root, { childList: true, subtree: true, characterData: true });
-    window.addEventListener("resize", schedule2);
-    void loadFonts().then((value) => {
-      loaded = value;
-      schedule2();
-    }).catch(() => {
-    });
+    observer.observe(root3, { childList: true, subtree: true, characterData: true });
+    const host = root3 instanceof ShadowRoot ? root3.host : root3;
+    const sizes = typeof ResizeObserver === "function" ? new ResizeObserver(resnap) : null;
+    sizes?.observe(host);
+    window.addEventListener("resize", resnap);
+    document.fonts?.addEventListener?.("loadingdone", resnap);
+    scan();
     return () => {
       disposed = true;
       observer.disconnect();
-      window.removeEventListener("resize", schedule2);
+      sizes?.disconnect();
+      window.removeEventListener("resize", resnap);
+      document.fonts?.removeEventListener?.("loadingdone", resnap);
     };
   }
-  var pixelLabelCss = `.atelier-pixel-label::after{content:"";position:absolute;inset:0;background:currentColor;mask:var(--atelier-mask) 0 0/100% 100% no-repeat;-webkit-mask:var(--atelier-mask) 0 0/100% 100% no-repeat;image-rendering:pixelated;pointer-events:none}`;
+
+  // src/ui/xp-css.ts
+  var image = (part, state2, fill = true) => `border-image-source:var(--xp-${part}-${state2});border-image-slice:var(--xp-${part}-slice)${fill ? " fill" : ""};border-image-width:var(--xp-${part}-edge);border-image-repeat:stretch`;
+  var xpFont = "font:var(--xp-font-size)/var(--xp-line) var(--xp-font)";
+  function xpButtonCss(selector, important = false) {
+    const i = important ? "!important" : "";
+    return `${selector}{${xpFont}${i};color:var(--xp-ink)${i};box-sizing:border-box${i};display:inline-flex;align-items:center;justify-content:center;gap:4px;cursor:default;min-height:23px;padding:2px 9px${i};margin:0;border:0 solid transparent${i};border-radius:0${i};box-shadow:none${i};text-decoration:none${i};text-shadow:none${i};white-space:nowrap;background:var(--xp-fallback,var(--xp-face))${i};${image("button", 0).split(";").map((rule) => rule + i).join(";")};image-rendering:pixelated;outline:none}
+${selector}:hover{border-image-source:var(--xp-button-1)${i}}
+${selector}:is(:active,[aria-pressed=true],.btnIsView){border-image-source:var(--xp-button-2)${i}}
+${selector}:focus-visible{border-image-source:var(--xp-button-4)${i};outline:1px dotted var(--xp-ink)${i};outline-offset:-4px${i}}
+${selector}:disabled{border-image-source:var(--xp-button-3)${i};color:var(--xp-graytext)${i}}
+${selector}.xp-default{border-image-source:var(--xp-button-4)${i}}`;
+  }
+  function xpFieldCss(selector) {
+    return `${selector}{${xpFont};color:var(--xp-ink);background:var(--xp-window);border:1px solid var(--xp-edge);border-radius:0;box-shadow:none;outline:none;padding:2px 3px;margin:0;box-sizing:border-box;filter:var(--xp-crisp)}
+${selector}:is(:disabled,[readonly]){background:var(--xp-face)}${selector}:disabled{color:var(--xp-graytext)}
+${selector}::placeholder{color:var(--xp-graytext);opacity:1}`;
+  }
+  function xpSelectCss(selector) {
+    return `${selector}{appearance:none;-webkit-appearance:none;padding-right:calc(var(--xp-combo-w,15px) + 4px);background:var(--xp-combo-0) right 1px center/var(--xp-combo-w,15px) calc(100% - 2px) no-repeat,var(--xp-window);image-rendering:pixelated}
+${selector}:hover{background-image:var(--xp-combo-1)}${selector}:active{background-image:var(--xp-combo-2)}${selector}:disabled{background-image:var(--xp-combo-3)}`;
+  }
+  function xpCheckCss(selector, part) {
+    const checked = part === "checkbox" ? 4 : 4;
+    return `${selector}{appearance:none;-webkit-appearance:none;flex:none;width:var(--xp-${part}-w,13px);height:var(--xp-${part}-h,13px);margin:0 4px 0 0;padding:0;border:0;border-radius:0;vertical-align:middle;background:var(--xp-${part}-0) center/100% 100% no-repeat;image-rendering:pixelated;outline-offset:1px}
+${selector}:hover{background-image:var(--xp-${part}-1)}${selector}:active{background-image:var(--xp-${part}-2)}${selector}:disabled{background-image:var(--xp-${part}-3)}
+${selector}:checked{background-image:var(--xp-${part}-${checked})}${selector}:checked:hover{background-image:var(--xp-${part}-${checked + 1})}${selector}:checked:active{background-image:var(--xp-${part}-${checked + 2})}${selector}:checked:disabled{background-image:var(--xp-${part}-${checked + 3})}
+${part === "checkbox" ? `${selector}:indeterminate{background-image:var(--xp-checkbox-8)}` : ""}`;
+  }
+  function xpScrollbarCss(scope) {
+    const s = scope.split(",").flatMap((part) => [`${part.trim()}::-webkit-scrollbar`, `${part.trim()} ::-webkit-scrollbar`]);
+    const pseudo = (name) => scope.split(",").flatMap((part) => [`${part.trim()}::-webkit-scrollbar-${name}`, `${part.trim()} ::-webkit-scrollbar-${name}`]).join(",");
+    const button4 = (axis2, edge, direction, from) => {
+      const sel = pseudo(`button:${axis2}:${edge}:${direction}`);
+      return `${sel}{display:block;width:var(--xp-arrow-w,17px);height:var(--xp-arrow-h,17px);background:var(--xp-arrow-${from}) center/100% 100% no-repeat}
+${pseudo(`button:${axis2}:${edge}:${direction}:hover`)}{background-image:var(--xp-arrow-${from + 1})}${pseudo(`button:${axis2}:${edge}:${direction}:active`)}{background-image:var(--xp-arrow-${from + 2})}`;
+    };
+    return `${s.join(",")}{width:var(--xp-arrow-w,17px);height:var(--xp-arrow-h,17px);image-rendering:pixelated}
+${pseudo("button")}{display:none}
+${button4("vertical", "start", "decrement", 0)}${button4("vertical", "end", "increment", 4)}${button4("horizontal", "start", "decrement", 8)}${button4("horizontal", "end", "increment", 12)}
+${pseudo("track:vertical")}{${image("shaft-v", 0)}}${pseudo("track:horizontal")}{${image("shaft-h", 0)}}
+${pseudo("thumb:vertical")}{${image("thumb-v", 0)};background:var(--xp-gripper-v-0) center/var(--xp-gripper-v-w) var(--xp-gripper-v-h) no-repeat}
+${pseudo("thumb:vertical:hover")}{border-image-source:var(--xp-thumb-v-1);background-image:var(--xp-gripper-v-1)}${pseudo("thumb:vertical:active")}{border-image-source:var(--xp-thumb-v-2);background-image:var(--xp-gripper-v-2)}
+${pseudo("thumb:horizontal")}{${image("thumb-h", 0)};background:var(--xp-gripper-h-0) center/var(--xp-gripper-h-w) var(--xp-gripper-h-h) no-repeat}
+${pseudo("thumb:horizontal:hover")}{border-image-source:var(--xp-thumb-h-1);background-image:var(--xp-gripper-h-1)}${pseudo("thumb:horizontal:active")}{border-image-source:var(--xp-thumb-h-2);background-image:var(--xp-gripper-h-2)}
+${pseudo("corner")}{background:var(--xp-face)}`;
+  }
+  var ui = "[data-bili-blocker-ui]";
+  var xpComponentCss = `
+.xp-text{position:relative;filter:var(--xp-crisp)}
+${ui},${ui} *,${ui} *::before,${ui} *::after{transition:none!important;animation-duration:0s!important;scroll-behavior:auto!important}
+${ui} ::selection{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
+${ui} :focus-visible{outline:1px dotted var(--xp-ink);outline-offset:-3px}
+${ui} img{image-rendering:pixelated}
+${xpButtonCss(":is(.xp-button,.luna-button,.lf-button,.luna-history button)")}
+${xpFieldCss(`.xp-field,${ui} :is(input:not([type]),input[type=text],input[type=search],input[type=number],input[type=url],input[type=password],textarea,select)`)}
+${xpSelectCss(`select.xp-field,${ui} :is(select,select.xp-field)`)}
+${xpCheckCss(`.xp-check,${ui} input[type=checkbox]`, "checkbox")}
+${xpCheckCss(`.xp-radio,${ui} input[type=radio]`, "radio")}
+${xpScrollbarCss(ui)}
+/* Only the caption has rounded corners, and they are see-through. Nothing
+   may paint behind them: the face starts below the caption, and the side
+   frames start there too (an empty top slice the height of the caption). */
+.xp-window{box-sizing:border-box;display:flex;flex-direction:column;min-width:0;color:var(--xp-ink);background:linear-gradient(var(--xp-face),var(--xp-face)) 0 var(--xp-caption-h,29px)/100% 100% no-repeat;border:0 solid var(--xp-caption);border-width:var(--xp-frame-edge,0 4px 4px 4px);${image("frame", 0, false)};border-image-width:var(--xp-caption-h,29px) var(--xp-frame-r,4px) var(--xp-frame-b,4px) var(--xp-frame-l,4px);image-rendering:pixelated}
+.xp-window[data-inactive]{border-image-source:var(--xp-frame-1)}
+.xp-caption{position:relative;box-sizing:border-box;flex:none;display:flex;align-items:center;gap:3px;min-height:var(--xp-caption-h,29px);margin:0 calc(-1 * var(--xp-frame-r,4px)) 0 calc(-1 * var(--xp-frame-l,4px));padding:3px 5px 2px 6px;color:var(--xp-caption-ink);background:var(--xp-fallback-caption,var(--xp-caption));${image("caption", 0)};image-rendering:pixelated;user-select:none}
+.xp-window[data-inactive]>.xp-caption{border-image-source:var(--xp-caption-1);color:var(--xp-inactive-caption-ink);background:var(--xp-fallback-caption,var(--xp-inactive-caption))}
+.xp-caption :is(h1,h2,.xp-caption-title){flex:1;min-width:0;margin:0;padding:0;font:bold var(--xp-caption-size)/var(--xp-line) var(--xp-caption-font);color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:var(--xp-dot) var(--xp-dot) var(--xp-caption-shadow)}
+.xp-window[data-inactive]>.xp-caption :is(h1,h2,.xp-caption-title){text-shadow:none}
+.xp-caption img{flex:none;width:16px;height:16px;object-fit:contain}
+.xp-caption-button{--n:var(--xp-close-0);--h:var(--xp-close-1);--p:var(--xp-close-2);flex:none;width:var(--xp-close-w,21px);height:var(--xp-close-h,21px);padding:0;margin:0;border:0;border-radius:0;background:var(--n) center/100% 100% no-repeat;image-rendering:pixelated;cursor:default}
+.xp-caption-button:hover{background-image:var(--h)}.xp-caption-button:active{background-image:var(--p)}
+${["minimize", "maximize", "restore", "close"].map((kind) => `.xp-caption-button[data-kind=${kind}]{--n:var(--xp-${kind}-0);--h:var(--xp-${kind}-1);--p:var(--xp-${kind}-2)}.xp-window[data-inactive] .xp-caption-button[data-kind=${kind}]{--n:var(--xp-${kind}-4);--h:var(--xp-${kind}-5);--p:var(--xp-${kind}-6)}`).join("")}
+.xp-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:1px;padding:2px;background:var(--xp-face);border-bottom:1px solid var(--xp-line);box-shadow:0 1px var(--xp-light3d)}
+.xp-tool{${xpFont};color:var(--xp-ink);display:inline-flex;align-items:center;gap:4px;min-height:22px;padding:2px 7px;margin:0;border:0 solid transparent;border-radius:0;background:transparent;box-shadow:none;cursor:default;white-space:nowrap;image-rendering:pixelated}
+.xp-tool:hover{${image("tool", 1)}}.xp-tool:active{${image("tool", 2)}}
+.xp-tool[aria-pressed=true]{${image("tool", 4)}}.xp-tool[aria-pressed=true]:hover{border-image-source:var(--xp-tool-5)}
+.xp-tool:disabled{color:var(--xp-graytext);border-image:none}
+.xp-tool-separator{flex:none;align-self:stretch;width:0;margin:2px 3px;border-left:1px solid var(--xp-shadow3d);border-right:1px solid var(--xp-light3d)}
+.xp-tabs{display:flex;align-items:flex-end;flex-wrap:wrap;padding:2px 2px 0;position:relative;z-index:1;margin-bottom:-1px}
+.xp-tab{${xpFont};color:var(--xp-ink);position:relative;top:2px;display:inline-flex;align-items:center;gap:4px;min-height:19px;padding:1px 7px 2px;margin:0;border:0 solid transparent;border-radius:0;background:var(--xp-fallback,var(--xp-face));${image("tab", 0)};image-rendering:pixelated;cursor:default;white-space:nowrap}
+.xp-tab:first-child{border-image-source:var(--xp-tab-left-0)}
+.xp-tab:hover{border-image-source:var(--xp-tab-1)}.xp-tab:first-child:hover{border-image-source:var(--xp-tab-left-1)}
+.xp-tab:is([aria-selected=true],[aria-current=page]){top:0;padding-bottom:4px;margin:0 -2px;z-index:2;border-image-source:var(--xp-tab-2)}
+.xp-tab:first-child:is([aria-selected=true],[aria-current=page]){margin-left:0;border-image-source:var(--xp-tab-left-2)}
+.xp-tab:focus-visible{outline-offset:-4px}
+.xp-tabpanel{position:relative;background:var(--xp-tab-body-0) left top/100% var(--xp-tab-body-h) no-repeat,var(--xp-window);border:0 solid var(--xp-edge);${image("tab-pane", 0, false)};border-width:1px;image-rendering:pixelated}
+.xp-status{display:flex;align-items:stretch;gap:2px;flex:none;min-height:22px;padding:2px 3px 1px;background:var(--xp-face);border-top:1px solid var(--xp-light3d);color:var(--xp-ink)}
+.xp-status-pane{flex:1;min-width:0;display:flex;align-items:center;padding:0 4px;border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xp-status-pane:empty{visibility:hidden}
+.xp-progress{position:relative;box-sizing:border-box;overflow:hidden;flex:none;width:120px;height:var(--xp-progress-track-h,19px);background:var(--xp-fallback,var(--xp-window));border:0 solid var(--xp-edge);${image("progress-track", 0)};image-rendering:pixelated}
+.xp-progress>i{position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 6px) * var(--value,0));background:var(--xp-progress-chunk-0) left top/var(--xp-progress-chunk-w) 100% repeat-x;image-rendering:pixelated}
+.xp-progress[data-marquee]>i{width:calc(var(--xp-progress-chunk-w,8px) * 5);animation:xp-marquee 2.4s steps(24,end) infinite!important;animation-duration:2.4s!important}
+@keyframes xp-marquee{from{left:calc(var(--xp-progress-chunk-w,8px) * -5)}to{left:100%}}
+.xp-groupbox{position:relative;margin:10px 0 0;padding:12px 9px 9px;border:0 solid var(--xp-line);border-width:var(--xp-group-box-edge,1px);${image("group-box", 0, false)};image-rendering:pixelated}
+.xp-groupbox>:is(legend,h3,.xp-groupbox-title):first-child{position:absolute;top:calc(var(--xp-line) / -2);left:6px;margin:0;padding:0 2px;background:var(--xp-face);color:var(--xp-group-text);font-weight:normal}
+.xp-taskpane{box-sizing:border-box;display:flex;flex-direction:column;gap:15px;padding:12px;overflow:auto;background:linear-gradient(var(--xp-gradient1),var(--xp-gradient2))}
+.xp-task-head{${xpFont};font-weight:bold;box-sizing:border-box;width:100%;display:flex;align-items:center;justify-content:space-between;gap:4px;min-height:var(--xp-task-head-h,25px);padding:0 1px 0 11px;margin:0;color:var(--xp-task-text);border:0 solid transparent;border-radius:0;background:var(--xp-fallback,var(--xp-window));${image("task-head", 0)};image-rendering:pixelated;cursor:default;text-align:left}
+.xp-task-head::after{content:"";flex:none;width:var(--xp-task-collapse-w,19px);height:var(--xp-task-collapse-h,19px);background:var(--xp-task-collapse-0) center/100% 100% no-repeat}
+.xp-task-head:hover{color:var(--xp-task-link)}.xp-task-head:hover::after{background-image:var(--xp-task-collapse-1)}
+.xp-task-group[data-collapsed] .xp-task-head::after{background-image:var(--xp-task-expand-0)}.xp-task-group[data-collapsed] .xp-task-head:hover::after{background-image:var(--xp-task-expand-1)}
+.xp-task-group[data-special] .xp-task-head{color:var(--xp-special-text);border-image-source:var(--xp-special-head-0)}
+.xp-task-group[data-special] .xp-task-head::after{background-image:var(--xp-special-collapse-0)}.xp-task-group[data-special] .xp-task-head:hover::after{background-image:var(--xp-special-collapse-1)}
+.xp-task-body{display:flex;flex-direction:column;gap:2px;padding:9px 10px 10px;color:var(--xp-task-link);background:var(--xp-fallback,var(--xp-task-fill));border:0 solid transparent;${image("task-body", 0)};image-rendering:pixelated}
+.xp-task-group[data-special] .xp-task-body{border-image-source:var(--xp-special-body-0)}
+.xp-task-group[data-collapsed] .xp-task-body{display:none}
+.xp-task-link{${xpFont};display:flex;align-items:center;gap:6px;width:100%;padding:2px 0;margin:0;border:0;background:none;color:var(--xp-task-link);text-align:left;cursor:pointer;text-decoration:none}
+.xp-task-link:hover{text-decoration:underline;color:var(--xp-highlight)}.xp-task-link[aria-current=page]{font-weight:bold}
+.xp-task-link img{width:16px;height:16px;flex:none}
+.xp-menu{box-sizing:border-box;padding:2px;background:var(--xp-window);color:var(--xp-ink);border:1px solid var(--xp-shadow3d);box-shadow:2px 2px 2px #0006}
+.xp-menu-item{${xpFont};display:flex;align-items:center;gap:6px;width:100%;min-height:22px;padding:2px 18px 2px 4px;margin:0;border:0;border-radius:0;background:transparent;color:inherit;text-align:left;cursor:default}
+.xp-menu-item:is(:hover,:focus){background:var(--xp-highlight);color:var(--xp-highlight-ink);outline:none}
+.xp-menu-separator{height:0;margin:3px 1px;border-top:1px solid var(--xp-shadow3d);border-bottom:1px solid var(--xp-light3d)}
+.xp-tooltip{position:fixed;z-index:2147483647;box-sizing:border-box;max-width:min(420px,calc(100vw - 16px));padding:1px 4px 2px;${xpFont};color:var(--xp-info-ink);background:var(--xp-info);border:1px solid var(--xp-ink);box-shadow:2px 2px 2px #0005;white-space:pre-wrap;overflow-wrap:anywhere;pointer-events:none}
+`;
+  var xpControlCss = `.xp-text{position:relative;filter:var(--xp-crisp)}
+${xpButtonCss(".atelier-control", true)}
+.atelier-control:hover,.atelier-control:active{transition:none!important}
+.atelier-control[data-confirm-block=true]{color:var(--xp-danger)!important}
+.btnView.atelier-control,.bili-blocker-inline-action.atelier-control{width:auto!important;min-width:40px;height:auto!important;min-height:21px;padding:1px 6px!important;line-height:var(--xp-line)!important}`;
 
   // src/ui/appearance.ts
   var key = "BiliAtelier_UI";
@@ -10956,6 +12906,8 @@
     const stored = typeof GM_getValue === "function" ? GM_getValue(key, {}) : {};
     return {
       theme: ["page", "light", "dark"].includes(stored?.theme) ? stored.theme : "page",
+      // Olive used to be the only scheme, never a choice; everyone starts on XP's default blue.
+      scheme: isLunaScheme(stored?.scheme) ? stored.scheme : "blue",
       edge: stored?.edge === "left" ? "left" : "right",
       y: Number.isFinite(stored?.y) ? Math.max(0, Math.min(1, stored.y)) : 0.72
     };
@@ -10965,75 +12917,82 @@
     window.dispatchEvent(new Event(appearanceChanged));
   }
   function pageIsDark() {
-    for (const node of [document.documentElement, document.body]) {
-      if (!node) continue;
-      const theme = `${node.className} ${node.getAttribute("data-theme") || ""} ${node.getAttribute("theme") || ""}`;
-      if (/(?:^|[\s_-])(?:dark|night)(?:$|[\s_-])/i.test(theme)) return true;
-      if (/(?:^|[\s_-])light(?:$|[\s_-])/i.test(theme)) return false;
+    for (const node3 of [document.documentElement, document.body]) {
+      if (!node3) continue;
+      const theme2 = `${node3.className} ${node3.getAttribute("data-theme") || ""} ${node3.getAttribute("theme") || ""}`;
+      if (/(?:^|[\s_-])(?:dark|night)(?:$|[\s_-])/i.test(theme2)) return true;
+      if (/(?:^|[\s_-])light(?:$|[\s_-])/i.test(theme2)) return false;
     }
-    for (const node of [document.body, document.documentElement]) {
-      if (!node) continue;
-      const components = getComputedStyle(node).backgroundColor.match(/[\d.]+/g)?.map(Number);
+    for (const node3 of [document.body, document.documentElement]) {
+      if (!node3) continue;
+      const components = getComputedStyle(node3).backgroundColor.match(/[\d.]+/g)?.map(Number);
       if (components?.length >= 3 && (components.length < 4 || components[3] > 0.5))
         return components[0] * 0.2126 + components[1] * 0.7152 + components[2] * 0.0722 < 128;
     }
     return window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
   }
-  var sharedControlCss = `${pixelLabelCss}
-.atelier-control{font:12px/1.4 Tahoma,SimSun,sans-serif!important;color:var(--atelier-ink)!important;box-sizing:border-box!important;cursor:pointer;border:1px solid var(--atelier-edge)!important;border-image:none!important;border-radius:2px!important;background:var(--atelier-button)!important;box-shadow:inset 1px 1px var(--atelier-highlight),inset -1px -1px var(--atelier-shadow)!important;padding:3px 7px!important;min-height:24px;vertical-align:middle;white-space:nowrap;text-decoration:none!important}
-.atelier-control:hover{background:var(--atelier-hover)!important;border-color:var(--atelier-accent)!important}
-.atelier-control:active,.atelier-control[aria-pressed=true],.atelier-control[data-view="1"]{background:var(--atelier-selected)!important;box-shadow:inset 1px 1px var(--atelier-shadow)!important}
-.atelier-control:focus-visible{outline:1px dotted var(--atelier-ink)!important;outline-offset:-4px}
-.atelier-control:disabled{opacity:.55;cursor:default}
-.atelier-control[data-confirm-block=true]{color:var(--atelier-danger)!important;border-color:var(--atelier-danger)!important}
-.btnView.atelier-control,.bili-blocker-inline-action.atelier-control{width:auto!important;min-width:40px;height:auto!important;min-height:22px;padding:2px 5px!important;display:inline-flex;align-items:center;justify-content:center;line-height:1.2!important}
-`;
+  var sharedControlCss = xpControlCss;
+  function appearanceState() {
+    const { theme: theme2, scheme } = readUiPreferences();
+    return { scheme, dark: theme2 === "dark" || theme2 === "page" && pageIsDark(), dpr: window.devicePixelRatio || 1 };
+  }
   var started3 = false;
   function ensureAppearance() {
     if (started3) return;
     started3 = true;
-    const theme = document.createElement("style");
-    theme.id = "atelier-appearance";
-    const controls = document.createElement("style");
-    controls.textContent = sharedControlCss;
-    (document.head || document.documentElement).append(theme, controls);
+    const styles = ["atelier-appearance", "atelier-fonts", "atelier-controls"].map((id) => {
+      const style = document.createElement("style");
+      style.id = id;
+      return style;
+    });
+    const [theme2, fonts, controls] = styles;
+    controls.textContent = `${xpComponentCss}
+${xpControlCss}`;
+    (document.head || document.documentElement).append(...styles);
+    ensureCrispFilter(document);
+    let current2 = "", fontDpr = 0;
     const update = () => {
-      const mode = readUiPreferences().theme, dark = mode === "dark" || mode === "page" && pageIsDark();
-      const colors = dark ? {
-        surface: "#202319",
-        panel: "#303426",
-        field: "#191d15",
-        ink: "#f1f0e6",
-        muted: "#bec5ac",
-        edge: "#758060",
-        highlight: "#66734c",
-        shadow: "#11170c",
-        accent: "#c0cf8b",
-        selected: "#455226",
-        hover: "#424b30",
-        button: "linear-gradient(#424c32,#303725)",
-        danger: "#ffb1a5",
-        caption: "#394425"
-      } : {
-        surface: "#f4f3e9",
-        panel: "#ece9d8",
-        field: "#ffffff",
-        ink: "#202016",
-        muted: "#62664e",
-        edge: "#9ca486",
-        highlight: "#ffffff",
-        shadow: "#a5ad90",
-        accent: "#637231",
-        selected: "#dce3c1",
-        hover: "#f7f8dc",
-        button: `#ece9d8 url("${luna.button_normal}") center/100% 100%`,
-        danger: "#a33024",
-        caption: "#637231"
+      const { scheme, dark, dpr } = appearanceState(), key2 = `${scheme}|${dark}|${dpr}`;
+      if (key2 === current2) return;
+      current2 = key2;
+      const font = xpFontCss(dpr);
+      if (fontDpr !== dpr) {
+        fonts.textContent = font.faces;
+        fontDpr = dpr;
+      }
+      const tokens = lunaTokens(scheme, dark);
+      const aliases2 = {
+        surface: "var(--xp-window)",
+        panel: "var(--xp-face)",
+        field: "var(--xp-window)",
+        ink: "var(--xp-ink)",
+        muted: "var(--xp-muted)",
+        edge: "var(--xp-line)",
+        highlight: "var(--xp-light3d)",
+        shadow: "var(--xp-shadow3d)",
+        accent: "var(--xp-caption)",
+        selected: "color-mix(in srgb,var(--xp-highlight) 24%,var(--xp-window))",
+        hover: "color-mix(in srgb,var(--xp-highlight) 9%,var(--xp-window))",
+        button: "var(--xp-face)",
+        danger: "var(--xp-danger)",
+        caption: "var(--xp-caption)",
+        dark: String(Number(dark))
       };
-      theme.textContent = `:root{${Object.entries(colors).map(([name, value]) => `--atelier-${name}:${value}`).join(";")};--atelier-dark:${Number(dark)}}`;
+      const base = `${Object.entries(tokens).map(([name, value2]) => `--xp-${name.replace(/[A-Z]/g, (letter) => "-" + letter.toLowerCase())}:${value2}`).join(";")};${Object.entries(aliases2).map(([name, value2]) => `--atelier-${name}:${value2}`).join(";")};${font.vars};color-scheme:${dark ? "dark" : "light"}`;
+      theme2.textContent = `:root{${base}}`;
+      void lunaImageVars(scheme, dark, dpr).then((images2) => {
+        if (current2 === key2 && images2) theme2.textContent = `:root{${base};${images2}}`;
+      });
+      watchScale(dpr);
+    };
+    let scale;
+    const watchScale = (dpr) => {
+      scale?.removeEventListener("change", update);
+      scale = window.matchMedia?.(`(resolution: ${dpr}dppx)`);
+      scale?.addEventListener("change", update);
     };
     const observer = new MutationObserver(update);
-    for (const root of [document.documentElement, document.body]) if (root) observer.observe(root, { attributes: true, attributeFilter: ["class", "style", "data-theme", "theme"] });
+    for (const root3 of [document.documentElement, document.body]) if (root3) observer.observe(root3, { attributes: true, attributeFilter: ["class", "style", "data-theme", "theme"] });
     document.addEventListener("DOMContentLoaded", () => {
       if (document.body) observer.observe(document.body, { attributes: true, attributeFilter: ["class", "style", "data-theme", "theme"] });
       update();
@@ -11052,109 +13011,104 @@
     style.id = "bili-atelier-luna-style";
     const id = `#${atelierPanelId}`;
     style.textContent = `
-${id}{all:initial;position:fixed;z-index:2147483600;inset:32px 0 auto;margin:auto;width:min(1000px,calc(100vw - 48px));height:min(720px,calc(100vh - 64px));display:flex;flex-direction:column;color:var(--atelier-ink);background:var(--atelier-panel);border:2px solid var(--atelier-accent);border-radius:3px;box-shadow:1px 2px 8px #0005;font:13px/1.5 Tahoma,"Microsoft YaHei",sans-serif;isolation:isolate}
+${id}{position:fixed;z-index:2147483600;inset:32px 0 auto;margin:auto;width:min(1000px,calc(100vw - 48px));height:min(720px,calc(100vh - 64px));isolation:isolate;${xpFont};color:var(--xp-ink);text-align:left;letter-spacing:normal;text-transform:none;white-space:normal}
 ${id},${id} *{box-sizing:border-box}${id} [hidden]{display:none!important}
-${id} :is(h1,h2,h3,p){margin:0;padding:0;color:inherit;font:inherit}${id} h2,${id} h3{font-weight:bold}
-${id} :is(button,input,textarea,select){font:inherit;color:inherit;letter-spacing:normal}${id} button{cursor:pointer}
-${id} img{display:block;object-fit:contain;image-rendering:pixelated;flex-shrink:0}
-${id} .luna-caption{position:relative;isolation:isolate;flex-shrink:0;min-height:34px;padding:3px 5px 3px 8px;display:flex;align-items:center;gap:8px;color:#fff;user-select:none}
-/* Native caption slices: left 28px, center 3px, right 35px. Only the center stretches horizontally. */
-${id} .luna-caption::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;border-style:solid;border-width:0 35px 0 28px;border-image:url("${luna.caption}") 0 35 0 28 fill / 0 35px 0 28px / 0 stretch;filter:brightness(.8)}
-${id} .luna-caption h1{font:bold 12px Tahoma,SimSun,serif;flex:1}
-${id} .luna-caption-actions{display:flex;gap:3px}
-${id} .luna-caption-button{width:24px;height:24px;padding:0;border:0;border-radius:0;background:var(--normal) center/100% 100% no-repeat;image-rendering:pixelated}
-${id} .luna-caption-button:hover{background-image:var(--hover)}${id} .luna-caption-button:active{background-image:var(--pressed)}
-${id} .luna-layout{display:grid;grid-template-columns:150px minmax(0,1fr);flex:1;min-height:0;padding:5px;gap:5px}
-${id} .luna-sidebar{display:flex;flex-direction:column;min-height:0;background:var(--atelier-field);border:1px solid var(--atelier-edge)}
-${id} .luna-sidebar-title{font-weight:bold;padding:8px 10px;background:var(--atelier-panel);border-bottom:1px solid var(--atelier-edge)}
-${id} .luna-nav{padding:5px;overflow:auto;flex:1}
-${id} .luna-nav-button{width:100%;display:flex;align-items:center;gap:7px;min-height:38px;padding:6px;margin:2px 0;border:1px solid transparent;border-radius:2px;background:transparent;text-align:left;white-space:normal}
-${id} .luna-nav-button:hover{background:var(--atelier-hover);border-color:var(--atelier-edge)}
-${id} .luna-nav-button[aria-current=page]{background:var(--atelier-selected);border-color:var(--atelier-accent);font-weight:bold}
-${id} .luna-main{min-width:0;min-height:0;display:flex;flex-direction:column;border:1px solid var(--atelier-edge);background:var(--atelier-surface)}
-${id} .luna-breadcrumb{display:flex;align-items:center;gap:7px;padding:7px 10px;min-height:34px;flex-shrink:0;background:var(--atelier-panel);font-weight:bold}
-${id} .luna-section-tabs{display:flex;gap:2px;padding:0 7px;border-bottom:1px solid var(--atelier-edge);background:var(--atelier-panel);flex-shrink:0;overflow-x:auto}
-${id} .luna-section-tab{border:1px solid var(--atelier-edge);border-bottom:0;border-radius:2px 2px 0 0;padding:6px 9px;background:var(--atelier-panel);white-space:nowrap}
-${id} .luna-section-tab[aria-current=page]{background:var(--atelier-surface);box-shadow:inset 0 2px var(--atelier-accent);font-weight:bold}
-${id} .luna-content{padding:12px;overflow:auto;flex:1;min-height:0}
-${id} .luna-content h2{font-size:14px;margin-bottom:6px}${id} .luna-description{color:var(--atelier-muted);margin-bottom:12px}
-${id} .luna-rule-tabs{display:flex;flex-wrap:wrap;gap:2px;padding-top:6px}
-${id} .luna-rule-tab{border:1px solid var(--atelier-edge);border-bottom:0;border-radius:2px 2px 0 0;background:var(--atelier-panel);padding:5px 9px;display:flex;align-items:center;gap:5px}
-${id} .luna-rule-tab[aria-selected=true]{background:var(--atelier-field);box-shadow:inset 0 2px var(--atelier-accent);font-weight:bold}
-${id} .luna-editor{width:100%;display:block;padding:8px;margin:0;resize:vertical;min-height:140px;height:clamp(170px,36vh,380px);border:1px solid var(--atelier-edge);border-radius:0;background:var(--atelier-field);color:var(--atelier-ink);line-height:1.65;box-shadow:inset 1px 1px var(--atelier-shadow);overflow-y:scroll}
-${id} :is(textarea,input,select):focus{outline:1px solid var(--atelier-accent);outline-offset:-2px}
-${id} *{scrollbar-width:thin;scrollbar-color:var(--atelier-edge) var(--atelier-panel)}
-${id} .luna-hint{color:var(--atelier-muted);font-size:12px;margin:6px 0}
-${id} .luna-footer{flex-shrink:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px;padding:6px 9px;border-top:1px solid var(--atelier-edge);background:var(--atelier-panel)}
-${id} .luna-status{margin-right:auto;font-size:12px;color:var(--atelier-muted)}${id} .luna-status[data-dirty=true]{color:var(--atelier-danger)}
-${id} :is(.luna-button,.luna-history button){display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:28px;min-width:64px;padding:4px 10px;background:var(--atelier-button);border:1px solid var(--atelier-edge);border-radius:2px;box-shadow:inset 1px 1px var(--atelier-highlight),inset -1px -1px var(--atelier-shadow)}
-${id} .luna-button-primary{border-color:var(--atelier-accent);font-weight:bold}
-${id} :is(.luna-button,.luna-history button):hover{background:var(--atelier-hover)}
-${id} :is(.luna-button,.luna-history button):active{background:var(--atelier-selected);box-shadow:inset 1px 1px var(--atelier-shadow)}
-${id} :is(button,a):focus-visible{outline:1px dotted var(--atelier-ink);outline-offset:-4px}${id} button:disabled{cursor:default;opacity:.5}
-${id} .luna-data-group{border-top:1px solid var(--atelier-edge);padding:12px 0}${id} .luna-data-group h3{font-weight:bold;margin-bottom:4px}
+${id} :is(h1,h2,h3,p){margin:0;padding:0;color:inherit;font:inherit}${id} :is(h2,h3){font-weight:bold}
+${id} :is(button,input,textarea,select){letter-spacing:normal}
+${id} .xp-caption h1{font:bold var(--xp-caption-size)/var(--xp-line) var(--xp-caption-font)}
+${id} img{display:block;object-fit:contain;flex-shrink:0}
+${id} .luna-caption-actions{display:flex;gap:2px;align-items:center}
+${id} .luna-layout{display:grid;grid-template-columns:202px minmax(0,1fr);flex:1;min-height:0}
+${id} .luna-sidebar{min-height:0}
+${id} .luna-main{min-width:0;min-height:0;display:flex;flex-direction:column;background:var(--xp-face);padding:6px 8px 0}
+${id} .luna-breadcrumb{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-bottom:8px;color:var(--xp-muted)}
+${id} .luna-address{flex:1;min-width:0;display:flex;align-items:center;gap:5px;min-height:22px;padding:1px 4px;background:var(--xp-window);color:var(--xp-ink);border:1px solid var(--xp-edge)}
+${id} .luna-address img{width:16px;height:16px}
+${id} .luna-content{padding:12px 14px;overflow:auto;flex:1;min-height:0;background:var(--xp-window);border:1px solid var(--xp-edge)}
+${id} .luna-content.xp-tabpanel{border-width:1px}
+${id} .luna-content h2{margin-bottom:6px}${id} .luna-description{color:var(--xp-muted);margin-bottom:12px}
+${id} .luna-rule-tabs{display:flex;flex-wrap:wrap;gap:4px 18px;padding:2px 0 8px}
+${id} .luna-rule-tab{display:inline-flex;align-items:center;gap:5px;min-height:20px;padding:0 2px;margin:0;border:0;background:none;color:inherit;cursor:default}
+${id} .luna-radio{flex:none;width:var(--xp-radio-w,13px);height:var(--xp-radio-h,13px);background:var(--xp-radio-0) center/100% 100% no-repeat;image-rendering:pixelated}
+${id} .luna-rule-tab:hover .luna-radio{background-image:var(--xp-radio-1)}${id} .luna-rule-tab[aria-selected=true] .luna-radio{background-image:var(--xp-radio-4)}${id} .luna-rule-tab[aria-selected=true]:hover .luna-radio{background-image:var(--xp-radio-5)}
+${id} .luna-editor{width:100%;display:block;resize:vertical;min-height:140px;height:clamp(170px,36vh,380px);overflow-y:scroll}
+${id} .luna-hint{color:var(--xp-muted);margin:6px 0}
+${id} .luna-footer{flex-shrink:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px;padding:8px 0}
+${id} :is(.luna-button,.luna-history button){min-width:75px}
+${id} .luna-status[data-dirty=true]{color:var(--xp-danger)}
+${id} .luna-data-group{margin-top:16px}${id} .xp-groupbox>h3:first-child{color:var(--xp-group-text);font-weight:normal}${id} .xp-tabpanel .xp-groupbox>h3:first-child{background:var(--xp-window)}${id} .luna-data-group>.luna-hint{margin-top:0}
 ${id} .luna-button-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-${id} .luna-viewed-list{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.65 Tahoma,SimSun,serif;padding:10px;margin:10px 0;max-height:35vh;overflow:auto;background:var(--atelier-field);border:1px solid var(--atelier-edge)}
+${id} .luna-viewed-list{white-space:pre-wrap;overflow-wrap:anywhere;${xpFont};padding:6px;margin:10px 0;max-height:35vh;overflow:auto;background:var(--xp-window);border:1px solid var(--xp-edge)}
 ${id} .luna-history .bili-blocker-history-header{display:flex;justify-content:flex-end;gap:7px;margin-bottom:8px}
 ${id} .luna-history .bili-blocker-history-header>div:first-child{margin-right:auto}${id} .luna-history .bili-blocker-history-actions{display:flex;gap:5px}
-${id} .luna-history .bili-blocker-history-item{padding:10px 0;border-top:1px solid var(--atelier-edge);overflow-wrap:anywhere}
-${id} .luna-history .bili-blocker-history-type-badge{display:inline-block;color:var(--atelier-accent);font-weight:bold;margin-bottom:3px}
-${id} .luna-history .bili-blocker-history-meta{color:var(--atelier-muted);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
-${id} .luna-history .bili-blocker-history-summary{margin:4px 0;font-weight:bold}${id} .luna-history .bili-blocker-history-detail{font-size:12px;color:var(--atelier-muted)}
+${id} .luna-history .bili-blocker-history-item{padding:8px 0;border-top:1px solid var(--xp-line);overflow-wrap:anywhere}
+${id} .luna-history .bili-blocker-history-type-badge{display:inline-block;color:var(--xp-group-text);font-weight:bold;margin-bottom:3px}
+${id} .luna-history .bili-blocker-history-meta{color:var(--xp-muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+${id} .luna-history .bili-blocker-history-summary{margin:4px 0;font-weight:bold}${id} .luna-history .bili-blocker-history-detail{color:var(--xp-muted)}
 ${id} .luna-history .bili-blocker-history-footer{margin-top:6px;text-align:right}
-${id} .atelier-appearance-options{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}${id} .atelier-appearance-options label{display:flex;gap:5px;align-items:center;padding:7px;border:1px solid var(--atelier-edge)}
-${id} input[type=radio],${id} input[type=checkbox]{accent-color:var(--atelier-accent)}
-${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw - 24px));height:auto;margin:0}${id}[data-minimized=true] .luna-layout{display:none}
-#atelier-launcher{position:fixed;z-index:2147483500;width:44px;height:44px;isolation:isolate;color:var(--atelier-ink);font:12px/1.5 Tahoma,SimSun,sans-serif}
-#atelier-launcher [hidden]{display:none!important}#atelier-launcher .atelier-launcher-button{width:44px;height:44px;padding:4px;border:1px solid var(--atelier-edge);border-radius:3px;background:var(--atelier-button);box-shadow:inset 1px 1px var(--atelier-highlight),1px 2px 4px #0004;cursor:pointer;touch-action:none}
-#atelier-launcher img{width:24px;height:24px;image-rendering:pixelated;object-fit:contain}#atelier-launcher .atelier-launcher-button img{width:32px;height:32px}
-#atelier-launcher button:focus-visible{outline:2px dotted var(--atelier-accent);outline-offset:-4px}
-#atelier-launcher .atelier-menu-check{width:24px;height:24px;flex-shrink:0;display:grid;place-items:center}#atelier-launcher .atelier-menu-check.checked::after{content:"\u2713"}
-.atelier-quick-menu{position:absolute;bottom:0;right:50px;width:184px;padding:3px;background:var(--atelier-panel);border:2px solid var(--atelier-edge);box-shadow:2px 3px 6px #0005}
-#atelier-launcher[data-edge=left] .atelier-quick-menu{right:auto;left:50px}#atelier-launcher .atelier-quick-menu h2{font:bold 12px Tahoma,SimSun,serif;color:#fff;background:var(--atelier-caption);margin:0 0 3px;padding:7px}
-#atelier-launcher .atelier-quick-menu button{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:6px;border:1px solid transparent;background:transparent;color:inherit;text-align:left;cursor:pointer}
-#atelier-launcher .atelier-quick-menu button:hover,#atelier-launcher .atelier-quick-menu button:focus{background:var(--atelier-selected);border-color:var(--atelier-edge)}
-.atelier-dialog{z-index:2147483647;position:fixed;inset:0;margin:auto;width:min(510px,calc(100vw - 32px));max-height:calc(100vh - 40px);padding:0;border:2px solid var(--atelier-accent);border-radius:3px;background:var(--atelier-surface);color:var(--atelier-ink);box-shadow:2px 4px 12px #0006;font:13px/1.5 Tahoma,"Microsoft YaHei",sans-serif;box-sizing:border-box;overflow:auto}
-.atelier-dialog::backdrop{background:#0005}.atelier-dialog h2{font:bold 12px Tahoma,SimSun,serif;background:var(--atelier-caption);color:white;padding:9px;margin:0}
-.atelier-dialog-body{padding:14px}.atelier-dialog p{white-space:pre-wrap;margin:0 0 10px;overflow-wrap:anywhere}.atelier-dialog :is(input,textarea){width:100%;box-sizing:border-box;padding:8px;border:1px solid var(--atelier-edge);background:var(--atelier-field);color:var(--atelier-ink);font:13px/1.5 Tahoma,"Microsoft YaHei",sans-serif}
-.atelier-dialog textarea{height:220px;resize:vertical}.atelier-dialog-actions{display:flex;justify-content:flex-end;gap:6px;padding:8px;border-top:1px solid var(--atelier-edge);background:var(--atelier-panel)}.atelier-dialog-choices{display:flex;flex-direction:column;gap:6px}.atelier-dialog-choices button{text-align:left;white-space:normal}
-@media(max-width:640px){${id}{inset:6px;width:calc(100vw - 12px);height:calc(100vh - 12px)}${id} .luna-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}${id} .luna-sidebar-title{display:none}${id} .luna-nav{display:flex;gap:3px;padding:3px}${id} .luna-nav-button{width:auto;min-width:110px;flex-shrink:0;min-height:32px;margin:0}${id} .luna-nav-button img{width:20px;height:20px}${id} .luna-content{padding:9px}${id} .luna-status{width:100%}}
+${id} .luna-history button{${xpFont}}
+${id} .atelier-appearance{display:flex;flex-direction:column;gap:10px;max-width:420px}${id} .atelier-appearance>button{align-self:flex-start}
+${id} .atelier-appearance-preview{position:relative;height:190px;padding:12px;background:var(--xp-window);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d);box-shadow:inset 1px 1px var(--xp-dark3d);overflow:hidden}
+${id} .atelier-appearance-preview .xp-window{position:absolute}
+${id} .atelier-appearance-preview .preview-inactive{left:12px;top:12px;width:250px;height:118px}
+${id} .atelier-appearance-preview .preview-active{left:34px;top:40px;width:260px;height:118px}
+${id} .atelier-appearance-preview .preview-message{left:150px;top:96px;width:180px}
+${id} .atelier-appearance-preview .preview-body{flex:1;margin:4px;padding:4px;background:var(--xp-window);border:1px solid var(--xp-edge)}
+${id} .atelier-appearance-preview .preview-message .preview-body{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:8px}
+${id} .atelier-appearance-row{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;gap:8px}
+${id}[data-maximized=true]{inset:0;width:auto;height:auto;box-shadow:none}${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw - 24px));height:auto;margin:0}${id}[data-minimized=true] :is(.luna-layout,.xp-status){display:none}
+#atelier-launcher{position:fixed;z-index:2147483500;width:44px;height:44px;isolation:isolate;color:var(--xp-ink);${xpFont}}
+#atelier-launcher [hidden]{display:none!important}#atelier-launcher .atelier-launcher-button{width:44px;height:44px;min-width:0;padding:4px;touch-action:none;box-shadow:1px 2px 4px #0004}
+#atelier-launcher img{width:16px;height:16px;object-fit:contain}#atelier-launcher .atelier-launcher-button img{width:32px;height:32px}
+#atelier-launcher .atelier-menu-check{width:16px;height:16px;flex-shrink:0;display:grid;place-items:center}#atelier-launcher .atelier-menu-check.checked::after{content:"\u2713"}
+.atelier-quick-menu{position:absolute;bottom:0;right:50px;width:190px}
+#atelier-launcher[data-edge=left] .atelier-quick-menu{right:auto;left:50px}
+#atelier-launcher .atelier-quick-menu h2{${xpFont};font-weight:bold;color:var(--xp-caption-ink);background:linear-gradient(90deg,var(--xp-caption),var(--xp-inactive-caption));margin:0 0 2px;padding:3px 6px}
+.atelier-dialog{z-index:2147483647;position:fixed;inset:0;margin:auto;width:min(420px,calc(100vw - 32px));max-height:calc(100vh - 40px);padding:0;${xpFont};overflow:visible}
+.atelier-dialog[open]{display:flex}
+.atelier-dialog::backdrop{background:transparent}
+.atelier-dialog-body{padding:12px 12px 6px;overflow:auto;min-height:0}.atelier-dialog p{white-space:pre-wrap;margin:0 0 10px;overflow-wrap:anywhere}
+.atelier-dialog :is(input,textarea){width:100%}
+.atelier-dialog textarea{height:220px;resize:vertical}
+.atelier-dialog-actions{display:flex;justify-content:center;gap:6px;padding:6px 12px 12px}.atelier-dialog-actions .atelier-control{min-width:75px}
+.atelier-dialog-choices{display:flex;flex-direction:column;gap:6px}.atelier-dialog-choices button{justify-content:flex-start;white-space:normal}
+@media(max-width:640px){${id}{inset:6px;width:calc(100vw - 12px);height:calc(100vh - 12px)}${id} .luna-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}${id} .luna-sidebar{flex-direction:row;padding:6px;overflow:auto}${id} .luna-sidebar .xp-task-group{min-width:100%}${id} .luna-sidebar .xp-task-body{flex-direction:row;flex-wrap:wrap;gap:4px 12px}${id} .luna-sidebar .xp-task-link{width:auto}${id} .luna-content{padding:9px}}
 `;
     (document.head || document.documentElement).appendChild(style);
   }
 
   // src/ui/page-controls.ts
   var roots = /* @__PURE__ */ new WeakSet();
-  function ensurePageControls(root = document) {
+  function ensurePageControls(root3 = document) {
     ensureLunaTheme();
-    if (root instanceof ShadowRoot && !root.querySelector("style[data-atelier-page-controls]")) {
+    if (root3 instanceof ShadowRoot && !root3.querySelector("style[data-atelier-page-controls]")) {
       const style = document.createElement("style");
       style.setAttribute("data-atelier-page-controls", "");
       style.textContent = sharedControlCss;
-      root.append(style);
+      root3.append(style);
     }
-    if (roots.has(root)) return;
-    roots.add(root);
-    observePixelLabels(root instanceof Document ? root.documentElement : root, ".atelier-control");
+    if (roots.has(root3)) return;
+    roots.add(root3);
+    observeCrispText(root3 instanceof Document ? root3.documentElement : root3, ".atelier-control");
   }
-  function styleAtelierAction(button3) {
-    button3.classList.add("atelier-control");
-    const root = button3.getRootNode();
-    ensurePageControls(root instanceof ShadowRoot ? root : document);
+  function styleAtelierAction(button4) {
+    button4.classList.add("atelier-control");
+    const root3 = button4.getRootNode();
+    ensurePageControls(root3 instanceof ShadowRoot ? root3 : document);
   }
-  function placeVideoUpAction(root, button3, kind) {
-    const container = root instanceof HTMLElement ? root : root instanceof ShadowRoot ? root.host : null;
+  function placeVideoUpAction(root3, button4, kind) {
+    const container = root3 instanceof HTMLElement ? root3 : root3 instanceof ShadowRoot ? root3.host : null;
     if (!container?.matches(".up-panel-container")) return false;
-    const message = root.querySelector('.message,a[href*="message.bilibili.com"]');
+    const message = root3.querySelector('.message,a[href*="message.bilibili.com"]');
     if (!message) return false;
-    const block = root.querySelector(".bili-blocker-profile-action");
+    const block = root3.querySelector(".bili-blocker-profile-action");
     const anchor = kind === "follow" && block?.parentElement === message.parentElement && message.nextElementSibling === block ? block : message;
-    if (anchor.nextElementSibling !== button3) anchor.insertAdjacentElement("afterend", button3);
-    button3.style.margin = "0 0 0 8px";
-    button3.style.flex = "0 0 auto";
+    if (anchor.nextElementSibling !== button4) anchor.insertAdjacentElement("afterend", button4);
+    button4.style.margin = "0 0 0 8px";
+    button4.style.flex = "0 0 auto";
     if (kind === "block") {
-      const follow = root.querySelector(".atelier-local-follow-action");
-      if (follow && button3.nextElementSibling !== follow) button3.insertAdjacentElement("afterend", follow);
+      const follow = root3.querySelector(".atelier-local-follow-action");
+      if (follow && button4.nextElementSibling !== follow) button4.insertAdjacentElement("afterend", follow);
     }
     return true;
   }
@@ -11169,14 +13123,14 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
       return this.status === 412 || this.status === 429;
     }
   };
-  var paths = /* @__PURE__ */ new Set(["/x/web-interface/card", "/x/web-interface/nav", "/x/polymer/web-dynamic/v1/feed/space"]);
-  function localFollowApiUrl(value) {
-    const url = new URL(value);
+  var paths = /* @__PURE__ */ new Set(["/x/web-interface/card", "/x/web-interface/nav", "/x/polymer/web-dynamic/v1/portal", "/x/polymer/web-dynamic/v1/feed/space", "/x/polymer/web-dynamic/v1/feed/all", "/x/relation/followings", "/x/v2/reply/main", "/x/v2/reply/reply", "/x/v2/reply/report/metadata", "/x/emote/user/panel/web"]);
+  function localFollowApiUrl(value2) {
+    const url = new URL(value2);
     if (url.protocol !== "https:" || url.hostname !== "api.bilibili.com" || url.port || url.username || url.password || !paths.has(url.pathname)) throw new Error("\u65E0\u6548\u7684\u672C\u5730\u5173\u6CE8\u53EA\u8BFB\u63A5\u53E3");
     return url.href;
   }
-  var localFollowGmRequest = (value, signal) => new Promise((resolve, reject) => {
-    const url = localFollowApiUrl(value);
+  var localFollowGmRequest = (value2, signal) => new Promise((resolve, reject) => {
+    const url = localFollowApiUrl(value2);
     let done = false, request2;
     const finish = (error, data) => {
       if (done) return;
@@ -11220,6 +13174,7 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
       finish(error);
     }
   });
+  var localFollowFeatures = "itemOpusStyle,listOnlyfans,opusBigCover,onlyfansVote,decorationCard,onlyfansAssetsV2,forwardListHidden,ugcDelete,onlyfansQaCard";
   function localFollowMd5(text2) {
     const bytes = new TextEncoder().encode(text2), length = Math.ceil((bytes.length + 9) / 64) * 64;
     const data = new Uint8Array(length);
@@ -11275,30 +13230,715 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
       if (normalizeLocalUid(card?.mid) !== uid || typeof card?.name !== "string" || !card.name.trim()) throw new Error("\u672A\u53D6\u5F97\u8BE5\u8D26\u53F7\u7684\u6709\u6548\u8D44\u6599");
       return { uid, name: card.name.trim(), face: safeLocalFace(card.face) };
     }
-    async dynamic(uid, signal) {
-      if (!normalizeLocalUid(uid)) throw new Error("\u65E0\u6548\u8D26\u53F7");
+    /** One lookup serves every concurrent read. It owns its signal, so one
+     * read's timeout or stop never fails the others; a failed lookup is
+     * forgotten and the next read tries again. */
+    async signingKey(signal) {
       const day = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
-      if (!this.key || this.keyDay !== day) {
-        const raw = await this.request("https://api.bilibili.com/x/web-interface/nav", signal);
-        const images = raw?.data?.wbi_img;
-        const pieces = [images?.img_url, images?.sub_url].map((value) => {
-          try {
-            return new URL(value).pathname.split("/").pop()?.split(".")[0] ?? "";
-          } catch {
-            return "";
-          }
-        }).join("");
-        if (!/^[0-9a-f]{64}$/i.test(pieces)) throw new LocalFollowReadError("\u672A\u53D6\u5F97\u516C\u5F00\u7B7E\u540D\u4FE1\u606F", [412, 429].includes(Math.abs(Number(raw?.code))) ? Math.abs(Number(raw.code)) : 0);
-        this.key = mixin.map((index) => pieces[index]).join("");
-        this.keyDay = day;
-      }
+      if (this.key && this.keyDay === day) return this.key;
+      const lookup = this.keyLookup ??= this.lookupKey(day).finally(() => {
+        this.keyLookup = void 0;
+      });
+      return await Promise.race([lookup, new Promise((_, reject) => {
+        const stop = () => reject(new DOMException("\u68C0\u67E5\u5DF2\u53D6\u6D88", "AbortError"));
+        if (signal.aborted) stop();
+        else signal.addEventListener("abort", stop, { once: true });
+      })]);
+    }
+    async lookupKey(day) {
+      const raw = await this.request("https://api.bilibili.com/x/web-interface/nav", new AbortController().signal);
+      const images2 = raw?.data?.wbi_img;
+      const pieces = [images2?.img_url, images2?.sub_url].map((value2) => {
+        try {
+          return new URL(value2).pathname.split("/").pop()?.split(".")[0] ?? "";
+        } catch {
+          return "";
+        }
+      }).join("");
+      if (!/^[0-9a-f]{64}$/i.test(pieces)) throw new LocalFollowReadError("\u672A\u53D6\u5F97\u516C\u5F00\u7B7E\u540D\u4FE1\u606F", [412, 429].includes(Math.abs(Number(raw?.code))) ? Math.abs(Number(raw.code)) : 0);
+      this.key = mixin.map((index) => pieces[index]).join("");
+      this.keyDay = day;
+      return this.key;
+    }
+    async dynamic(uid, signal, offset = "") {
+      if (!normalizeLocalUid(uid)) throw new Error("\u65E0\u6548\u8D26\u53F7");
+      const key2 = await this.signingKey(signal);
       if (signal.aborted) throw new DOMException("\u68C0\u67E5\u5DF2\u53D6\u6D88", "AbortError");
-      const query = localFollowWbiQuery({ host_mid: uid, offset: "", timezone_offset: String((/* @__PURE__ */ new Date()).getTimezoneOffset()), platform: "web", web_location: "333.1387" }, this.key);
+      const query = localFollowWbiQuery({ host_mid: uid, offset, timezone_offset: String((/* @__PURE__ */ new Date()).getTimezoneOffset()), platform: "web", features: localFollowFeatures, web_location: "333.1387" }, key2);
       const data = successful(await this.request(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?${query}`, signal));
       if (!Array.isArray(data.items)) throw new LocalFollowReadError("\u52A8\u6001\u9875\u683C\u5F0F\u65E0\u6548\uFF0C\u4FDD\u7559\u5DF2\u6709\u8BB0\u5F55");
       return data;
     }
+    /** Reads an account-feed page with the page's own parameters. A changed
+     * offset invalidates any WBI signature, so the query is signed again. */
+    async online(nativeUrl, offset, signal) {
+      const url = new URL(nativeUrl);
+      url.searchParams.set("offset", offset);
+      let href = url.href;
+      if (url.searchParams.has("w_rid")) {
+        const params = {};
+        for (const [name, value2] of url.searchParams) if (name !== "w_rid" && name !== "wts") params[name] = value2;
+        href = `${url.origin}${url.pathname}?${localFollowWbiQuery(params, await this.signingKey(signal))}`;
+      }
+      const data = successful(await this.request(localFollowApiUrl(href), signal));
+      if (!Array.isArray(data.items)) throw new LocalFollowReadError("\u52A8\u6001\u9875\u683C\u5F0F\u65E0\u6548");
+      return data;
+    }
   };
+
+  // src/core/config.ts
+  var config = {
+    viewedMarker: {
+      enabled: true,
+      fastVideoMainMark: true,
+      fullVideoPageScan: false
+    },
+    commentLocation: {
+      enabled: true,
+      patchSourceScripts: true,
+      domFallback: true,
+      videoPageHeaderGate: true,
+      videoPageHeaderGateTimeoutMs: 3e3
+    },
+    blocker: {
+      enabled: true
+    },
+    debug: false
+  };
+
+  // src/ui/assets/xp-icons/atelier-icon.png
+  var atelier_icon_default = readCachedResourceUrl("atelier_atelier_icon_png");
+
+  // src/ui/assets/xp-icons/nav-users.png
+  var nav_users_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/nav-control-panel.png
+  var nav_control_panel_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/nav-recent-documents.png
+  var nav_recent_documents_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAheSURBVFhHnVdrbJPXGX5sJyGJ48S52k4ISXMnJpQBK0mBlraMAV2nCE2bWm2TOoFgG5M6mDZtUke6aWItQ9v404kfYyxqQWXqOhLBOokmgw5KgyGYy4gbmlsTx4kdcnFsx7dvz3uSMFgJCXulx+fz53Pe++VY9+aFsGZN0xCPRhGPRBAjopEwYmGu4bB6J9/jkShi0Qi0WBz3UqrRiB3f+EIZHweJSfXyEUgpsKs2EfF4/C5isdh9z7PQNO3ub7NrvyeAtm5/cM+LtRvJr50IKM4LJVHgUSgW17RwVNNCEU3z86jT5dXOTmrankMXgmRXS6QqxgskvXyQr/oyH8W5TSIga/Se5xEfeSyrTf72/rMt3LacWLASC1ZgLuExPoyOAX20f7B6ffLzr555JCX0GuM4nwJzCpeVD829QMtABOc776DFUJH85HeOLVgJvTaTXHPRQ4VzNaanon7iQ/wq6SM0ZNzCT2yDWJ+bl8yjawmrYvIQ0ksmz6XAfMIjXNPNaVi78Qls2LwGz219Ak+tXw2rtVKOFxBp8vAw0kv9P0iBhQjngqis+iToDElISTLAmAAsWqRY6GbwUNL97n2vtvMpI5KTk3HYMfN2ITTajai3E3lJAeRmZSDMpiW9wePxwOuN4cyZ5jan8+Of9/f3Sz6ECdH3c6Q7eGpQ+94zGUoB98T0LrFSWccPRogemrZaMOFzY8DlwNLKchQXFyPCTul2uxEMBjE1NYXMzEyEQiEMDAzA4XAEnU7nH44fP/5rsrtDRIj7SHfgb/3a97+UiZSUlPk94HOhxuRDXV0dent7cf3WJ+geDkGflkPro9CxqKfGvTAEvbBmmmCz2dDZ2YmWlpZ/NjY27iAH1gumFK8Z0r3+bo+2+8s5SE5JRf/4gy2figGOay6sXQJl9fnz5+Hym1CxtAaVliRkpwBJjc8gvHIHOsteQh+bcc9lB7zOc6ipLMXo6CiamprOnzhxYjvZf0rcVcLw3LbdDatLjTAkJOEs9Rv0Ax5iiGPFQwzw+XaPG/YUN6qrq4URgqYy1D9N4bkGmJLIRNoZE9FgXYlEcw6CLMJ0Sz7SipfDee4DZKUbJTSF0Wi0qKur6yJ3M9igWTNVwPauLLUYgTy2jlyuObISiWRuGr2GVatW4dKlS9xQgxeerFCC76PlLyGYV4VuPornLv29GWca34R923ZcZajS09Nht9s3Wa3WrdySTagK0asxS3eL25X1YvmMB/qpp9fjxsqlRRgcHMT1kUXYtKYCrLa7xKNq/H1G9BFi1sVTzTj+egNGhv1ITEiFfevXVS6UlZUnFRUVfZNbSghpVtDLjI9rHK/kdK/lEtdECop6bqhkcrlcKub3Ws6UUZcAziKlhAi/0NyMo681oKLuBdS/sg/V7IWW0moEND3MZgtzqKSK2yoIMyEe4CUkNh0CSTxZ+VWtAVZvXmoMer0eXcz24uz/Sp+1XNaQvCC1UvifGqaFb/vhPqTSiCDTLYOGFK9ag/FxP0pKqo1ms/lxbs8kdMwB8YCmOtowOXoJHyebIBjljrCfB8cRS81F+ogDwQm3EjZKyAVAlGhrbcX+l1/GsTfeQHZhBb64+SvwdHKvfwK8WOGxgXaUj/awT8RhMmVKzynkMfFAol6uYLxkqMTJosaZjIx5BkKSPF6vV9W56cpBpHQ0qffcrrqKrF0Mz5YtW5CdnQ1fnwtv7duJIz/biY52l9qQe/Q15L/zW/IZQk5OobR+cSUDjYSEGJNQRqr0drFaFBGSEAiNjY2p2tfpJ/DxpreRwWOiusRfFJC42zdswLGDh2GuWIf6X+yllTxPflMMYVoi8+SXf8VN5xXYLt5iT/Dyt7hUgKSyfjoHZsqwhJwfY2SWZEzDSD3HQxp0Oh2mvD0IMyTSQTyEuD/CM9Qf2YsrsH3/b1D/g72sd/qVQiWpmToo4DyUDun+tANZWTb4/QEEAoHZPhCf7gOULjnQNsCOR7QztZ2UMkkLhkMJKgdMjPbYSIhxZBfhcYGf5coRoN4xlVRDoq4I8J14oJrVnsJ3Iq3XeRNFRcs4H1pDk5OTw3wl6RNVSTibAytYMsstwDKiOpfap3O0WirB7gWLxYLetnPUXvSeFhrk8ySVCFEgByFoCyb5ToQvYRhqqADzDm1OB8yGLCo9gZs3L0vljhCSx5G7HlCXC85xk4CuTyOkM5oWV8PV52MNm2HwdcHT/ZkSYJQIUmlxtYRBrA6yHhPogSqGoc5Ghfjb1bEJfPTOe9i48Vs4ffrP0tBu8KQMJZmOGhXgnX8mB2brX3VGQp7zqERKxbMyWrHYZsGNdw9jsLsXfnqglDljz6K13LP0/d/j6UA7vsq/KI/Te36G5DKFH/rRXjxb9yJHdjdOnvzjbY7tDgr+hBAPyCxgH6CkBwmX5yyWY87iMoSstejr64O9qhK3Th7F1X/8BR3Dk+hjy5bYVx5vwKL2VnQzBC4KP9nuwOGfvoqvPf8KkzEBBw7sGuYI/5Ay5c/LbUL1L92u3Ue01StWMENpygLI6TyCgoIC+Hw+uIe8SLbmw5Sdw2jIP6kYAuNjGHL1wF6+BuvWbcP16xdw6NCeAafzygc8foGQVUay3JKg++6Pm2jro5Hf/R5baiFKS5fBYEjEyMg4rUxkV1mE/PxyZGRY0N3twqlTR6Lnzp3u5LXsXzzWRogHOgmpZkXSEEqJzYT8wVwwVVVV1dhs+eWFhcW2goKSxISEZFZCHMPDbnR0XLtz+/a/B4aGhq7zyibudhKXic/fiAimkLq/z3uF/h9i40Y+wXsSmHbqu/ATEvfKkOwhRIHZrJfmeR/NHvh/iBdwpTR7pjJCvs/yky4nHYN/2sBOMdetGPgPuh2r2SQDvJ0AAAAASUVORK5CYII=";
+
+  // src/ui/assets/xp-icons/nav-computer.png
+  var nav_computer_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/app.png
+  var app_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADMUlEQVR4nLWVS0hUURjHf+c+us2jx2gWGZGz0FWFsylMTEqj2vQk2lUEEUWvXUQUFQRSmww3ta2IQKJd0CYopHRRiW0KJXupWKHNTcfJmXPjzD13vJhBqf2Hc8/c75zzPf7f950rmBnqgDmTZD+BpzPUSw3QBHh/GE16TxEngQb9PzpJmQ04QAI4DWwBBpQiC7yEnrHwSOjZN6L2pIyQojxwBrig3yuBJHAL2AH067VFwJIUcBvoBmqDmNTLHaW2cH4JsDjsaSnQB2wATgEPgcvam4NAB3BER+C1gefpsUntacAr/p4Vo2goRCDhRA+swx+Pgc3AOeBrBC6WwRPgAJADFqozYyHPCkrCXIQWA7FIwncJ2yRcAbZK6H8Kj0agshFWAm3A9eDgfM2Z8uYL+vFYC9XiZEgoldAnYYOEYxIeSrikKEhNQdE+8NZMVUEpPPZPUCS0/hPL4d0H6BLQq5RriuoysGA13O7x613l0wXu+scsYF5BZFk55sXBHfZ51GgsUvQRvgvYBlwxYKsB/XXwKAaVPVNQ5JfKRB3V1EB3D9y5Bym/in6DYu4DsB44BDwAzurE7gtR1OiH3xYUkQcbvfp6PM/zx/PnExRZOgPHly799LWsrGFPZ+fbl/F4/GpJScll13UVJdeSyeQr27YP9Pb21gkhVqTTaeBHqFxsHCdCLmcxPj7GyMh40WudA3m4peXz+Z07R/PptIxlMploIpH4NjQ0VBqLxVzTNPOGYcjBwcFyx3Ey2Ww24nOvmlzBxbbHyeVGaG4+yt69b9i+3c+BjsC4UVvbvru8fM0mwxggkVC3AssikYia5wbeVFRUqKkgBOWl1CtxhLBpb++ko8NlLNQH2gCHXrx4vbaqahVdXV0IERTX38NxHFx3gNFRg/v3fzegNBb02rY9LQOWZWEYJqYpMsBHoEpd5UGZ3qyurn7GLMAwjCFgF3AReBNEQD6fN2fDgJRSXffvg1s5fEXNFrzwV64YgYJpmirEaeXA+MO5ooFoNFpoQ7VJbf5XCCEKBaKcnNJAa2vrQtWhw8PD0zYghCCbzaomKoYSjmm//kTOFKrNmgFVrv8fvwAWxReLASdSmAAAAABJRU5ErkJggg==";
+
+  // src/ui/assets/xp-icons/history.png
+  var history_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/folder.png
+  var folder_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/up.png
+  var up_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADgElEQVR42s2VXWhbZRjHfzlvmo/TpjlLGjeDLf3akM4O1wbGxEpx80YEOwoOQViH2gqCbOiloOCVeCF6IdQL227CLmRU8EJhzma2m462EF2r27SsrsE0sSWn+TznJCfxol9rk7ULKvjCe/M87/v/P/8/7/O88B8vUfGNfnro5Ac6iTJNaLfjlgrBFQR33Iftij5voi3lg8BpPmX+31HQyQWlzfG4y2PnkSY3ex5yNGbiub5ce0Fnmh//mYJ+ehx11tG6dhmPLGMXAq/TiWTCHzcTzM7EQmtqQpUr6EeRrJYx3+Fqh7emegPcLgQ+Vw2NDQp+f+0+VdVfSz9qWJgmuH5VesD6h5T9DqWutpqiVqRW2LALgUeWqZIkIpEks7N/YbdbAd6hn6H7WjQ1iOL1Pxm/N9b01QTCKalmthACaGh2dx97upkqScJisXD16iIzb4TL2m3dHnB7D8VdB15GaexC2GTgT9JHTea+6R0+9FL4LID0Zqq4FM3g97uQZXlH6SUEkrDhbekAcXkjJntaqD/y/pm50Q/PAHzvbmVkcRJZlhFCVEZgkapAurEtOIfSoqC0vgpAMzByYRIhBLJzVcHcaKC4fjwemzoRGODLsgTFQg4KiTK1LANgGlkWxs5hGAVk56YC35EPAHA93E3oM+coaJayBKapw4qA4nIJRWZlkdjNK9Qfv4TtYhdCCJyycw34CQCSkcs7W1QwNUgnwUyhLv2OGru1JV9//BLCNo4FcMpOhBCYqg1YWrXq6+cw89qe+xKYeQ0yKTLqHZIFP43PfgJEgAyQBcY3u1QIQqEFTrY+BixjJCMABAZQdyDIgJFlOTLD3mPvAhdLrBoeG9sYBNeCt/j4xdeBFL988TxmXmva8ipLLdIxchq5Kg+2ahNyuZL93sR3vHCyi/Pnx3n7qWdQHFZM4y6STR4ODGydrNZyBLqRpqahB/TbYOpbq5+cZG+9wuDgt/T49tPX0QHxFW583oeZ1z7atQ8KhRzpZBhP21uQLrVn5Pp1fo1EGOrtpaetDTQNIxFd9z60KwFAOhtnn9WEeLokd+rgQc51d2LN3OV2cIJMIoqZ1+aB0w/UyQA231FI/Ay6jpnXSaphkithUuoC7ckosQghIAj8BAS3+74rgffAKeavvUIy/huGlmAN7AqsAt/7DCv+k6cGWZ8pZ4FQYGDz8/hfrr8BOS1Vngza8EsAAAAASUVORK5CYII=";
+
+  // src/ui/assets/xp-icons/up-16.png
+  var up_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACQ0lEQVR42o2TT0gUURzHP5O7zs7k6tQoKVSuqWgLitTWoT9gRVAQlOcudigL79EhqA4hdMkORnQIPHayJOrQwS0TpVxckXJTJ9eUTTZHZ3dnt3HdcbvolrpJv9N7vN/38z7vB09gu7rGQ6AJuMJTwvlaCrYJN4tKwZMy707PSsxutRuzywQY2twm/COs7HAKIxVH3J5ytQjFITIbijMxrgfXbILbGxymY3eNfG7vvmLKZJldskR9dSkul7M8Gk1et5tWBQL4ARzrGa3Hl11fV78ZxlrIoC0tUnJIRKl04XQ6GRj4HlbKXB4Jxx0D624OoPX4siXeqyieoyQyOhq3cjLntWkO1uxBkiSAsHHfqvpbNmeg1jaC8BGlEJRLDwAVSLJ0+yySJCFLMooDxdj02hyA9DQI6bXNZwC+ve6majWLLMkkkyucrG1u6uwxswDVLcPCRkB8CTs9Tyo2j6mHWbYsSrztyNozRFFkYlLndMNFDpxpZ+LVBf9Wg5hJRBvEXXeDCu8JIA7ozCS/Isn7CQRm6LhcT+JHL4nI+0dbAPZyGoobUTwC0AtAWNdxqy5GR+c47irFU5Rm6kNX2NfGiy2AxYUxVG87JD7lpLr9fiwrw+jbSfpaW0npI8RmB+/lHWImk0aWRTB/5Q47+/tprqzkccsx7MgY8z+nDPhz+8YZuOshHoJUgoQxh2nM8rxBRLVDRIZCYcAPvPS1YeQFFCp1jPfdJGVGAYKAX4V3QNDXlv8nbgDEvnSRMqOn1gIG/1m/AexC1pfIkDVeAAAAAElFTkSuQmCC";
+
+  // src/ui/atelier-assets.ts
+  var atelierIcons = { tv: atelier_icon_default || app_default, app: app_default, folder: folder_default, following: nav_users_default, settings: nav_control_panel_default, viewed: nav_recent_documents_default, data: nav_computer_default, video: history_default, up: up_default, up16: up_16_default };
+
+  // src/ui/assets/xp-shell/shell32-32.png
+  var shell32_32_default = readCachedResourceUrl("atelier_shell32_32_png");
+
+  // src/ui/assets/xp-shell/shell32-16.png
+  var shell32_16_default = readCachedResourceUrl("atelier_shell32_16_png");
+
+  // src/ui/assets/xp-shell/folder-32.png
+  var folder_32_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEpElEQVR42u2XXWgcVRTHf3dnd2Pirt0mqU1aaVILtRQDtVjoQ4nYR7G+lYIo4rtWFIX6JPrWBxGlIBS0Qu1DhYKgT0KxFUlrm9Y0NTVNk3Q3m93t7M5+ZGeyHzNz5/qws5Am2SQ1EQQ9MAy7M8z5nf/8z7l34P/4r4dYy/WhU/TbLrtqNtrIJLdOnMYAJKDWCxBc7s/fvuSTjq2Dh0Oh0EBH18ATwXCMcLSPcLSf7ssfTg5evfrqL6OMAdUWEMsVptakwNApdvbufX26/4XPgHkQun9nBlQPFQO+Onnkp+OfZt8HJgC7qVBAsN/16Io9uefQY9GdsfZI115pz3Hu/A9HPjrD5cYD8VYEGD6z9ey+o8OvaY83718UcpD8xCXu3Ph+YnME1bV9/zNaeBPtnQNo4U10dPcADogiiBLJK19z/uyFn7d3q7hR5tzxLxgC6k0Qsbj6/gMfTPfuPwbBGy3eWgjc5xtnYQA2lcIfSMfAyoxQNw1sK0/dNGmL7Ka9ax/BthhaOMalC+9ePvYx7wD3gMoSD9guuyJbDkAgvoJtHKR3keTQd1TzWbTwU4SjfbRF+2jvfINIb4xo7yFfXxfyw9C+A7M0xZ8JEQ0ExLOe56Wb/nkIoGajoVyQAVCyJUL80jd0dL5M/+AJEPWGv4TjN4YH6AuqSkJ4E9X8TZJZ3MVFP/TD8xB4NtjCfzDY80Xq8wUsfZK6VaRaTBHpfYXe596DwMxiTy0TdkM122DWwATMhkkaXbGkDS39Ch2RPSRHv6U6Z6K1bSHac4hw9AiRbTuI9hyEwDxoE2tIDlAD6lTyo8QfiJIQogmwVAG9SAIlycfHaYsdpv/FtyBQAmH7RxX4/RFHjQPYSLvIvVkKnifLLQHePMlU+iUXabtE+g5C6PoGDNs64JCcHq8JIWzAAtxWk9BtGAlfXnODAGz0XLkCmuWbQrUCUHUrjXQtIjtcUPb68yuJmblGriQqSqmyD9B6LbCrDwDo2NwNbn79AJ4HOGRLWAs6oDWAI0PjoUB9jxbsAMfZEAArPcLELHlgblUFlArMoTzwXFDu+gGkBCRWhYoP4KzkAQSeqpgz4DngbowCZuYON++J7OIZsCxAKTdC59bdIHM+/UZ4APJlMS+lXN2EAFooAtIB294QgLHJtAVazV8B5YoAVpUrW1AHke7fVsAszGAVZzALCe7fT9Su3xVpIOevgCtvyYIaEqXAra6pC+xamYqVxSwlsYpJxid1605CGCOTZG7fF/pkStMBXSl1GyivChAQqPbY01AvgLu0CypWjup8DnNuFrOUZHSiXByLC2P4LqmLN0VCCM0EDKVURgiRllIaQB4o+l2gVvVAMNTe8IDjYJpprLkUlYpBfGa2Np2ul29Pi+y1cVLXx0VKCM1SSulAWgiRklLq/ryv+Ed98fhdEaBmM2PmRjFTvzI2kbASupi7NYU+NCaSU2mhg1ZQShlA2vO8DGD4E66ZsLZgnVaP/F3w+dsMFMri6OkfA7FsCQ3IK6WyCxIW/N1qdUGFaq0J17J/bwO2aZq2TUpZ899bs7rqgj5W8M98GYnGlpegP7XcjUz4r4u/AFjoaaL+ecRWAAAAAElFTkSuQmCC";
+
+  // src/ui/assets/xp-shell/folder-16.png
+  var folder_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABa0lEQVR42qWTPUsDQRCGn8seHGpjpQiCGLCwESEgamlhJ1iYvxAQtLCwE/wqLQQLIWJpqQiCFhYWFoKQSkvBdGr6XO6Sy+xY3CXRREzEgWF3YffZd2bfhX+G02WtPQMK+YyqKtZarLXMrT2lgRJQ6SojOfwt7g8nFZgF+pOL2jNWUMhnNJMrACdt2Bx3BxOICCLSVCYiLO+X0sAHELiqCuERiLQBDlnYfOlQe7k1hDFmRUQugKLzeDytM9ksRBEP5+c/lhhFEfV6vZmqcW+Xdt7SrrUWfJ+Hqyvm15+7v9v7Loxsc7YxgDFmJQaUy3ie90MfOqNaLOKNnCBxyWOuiEAYNmURhr8CgiDAA6y1AI6bTKjVavGOcrkrYLAFwE2ktAC+/yugUol9FQNSLUC1Wu1ZAdAoWR1g/Hpv9LVhksb41UBfjWStRVVZPU3dOI7z6CRWnTLGLALDf/iIJRG5bXi6Pznc9wdAAJQ+AbIh5wdr34zIAAAAAElFTkSuQmCC";
+
+  // src/ui/xp-shell-icons.ts
+  var shellIconIds = [
+    4,
+    5,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    28,
+    29,
+    32,
+    33,
+    35,
+    37,
+    39,
+    40,
+    41,
+    44,
+    45,
+    46,
+    47,
+    48,
+    134,
+    137,
+    138,
+    139,
+    140,
+    141,
+    146,
+    151,
+    152,
+    154,
+    155,
+    156,
+    157,
+    160,
+    165,
+    167,
+    168,
+    169,
+    170,
+    172,
+    173,
+    175,
+    178,
+    196,
+    197,
+    198,
+    199,
+    200,
+    210,
+    222,
+    224,
+    225,
+    227,
+    229,
+    230,
+    233,
+    235,
+    236,
+    237,
+    238,
+    239,
+    240,
+    242,
+    244,
+    245,
+    248,
+    249,
+    250,
+    252,
+    254,
+    256,
+    257,
+    258,
+    259,
+    263,
+    267,
+    268,
+    269,
+    270,
+    271,
+    272,
+    273,
+    274,
+    275,
+    276,
+    277,
+    278,
+    279,
+    281,
+    283,
+    289,
+    291,
+    292,
+    293,
+    294,
+    295,
+    296,
+    297,
+    298,
+    299,
+    300,
+    301,
+    302,
+    303,
+    304,
+    305,
+    306,
+    307,
+    308,
+    309,
+    310,
+    311,
+    312,
+    313,
+    314,
+    315,
+    316,
+    317,
+    318,
+    319,
+    321,
+    322,
+    323,
+    324,
+    325,
+    326,
+    327,
+    328,
+    329,
+    330,
+    331,
+    338,
+    512,
+    1001,
+    1004,
+    1011
+  ];
+  var shellFolderIcon = 4;
+  var shellIconColumns = 16;
+  var shellIconSheets = { 32: shell32_32_default, 16: shell32_16_default };
+  var shellFolderImages = { 32: folder_32_default, 16: folder_16_default };
+
+  // src/ui/shell-icon.ts
+  var shellIconsAvailable = () => !!shellIconSheets[32] && !!shellIconSheets[16];
+  function ensureStyle() {
+    if (document.getElementById("atelier-shell-icons")) return;
+    const style = document.createElement("style");
+    style.id = "atelier-shell-icons";
+    style.textContent = `.xp-shell-icon{display:inline-block;flex:none;background-repeat:no-repeat;image-rendering:pixelated;vertical-align:middle}
+.xp-shell-16{width:16px;height:16px;background-image:url("${shellIconSheets[16]}")}
+.xp-shell-32{width:32px;height:32px;background-image:url("${shellIconSheets[32]}")}`;
+    (document.head || document.documentElement).append(style);
+  }
+  function shellIcon(id, size) {
+    ensureStyle();
+    const index = shellIconIds.indexOf(id ?? shellFolderIcon);
+    if (!shellIconsAvailable() || index < 0) {
+      const image3 = document.createElement("img");
+      image3.className = "xp-shell-icon";
+      image3.alt = "";
+      image3.width = image3.height = size;
+      image3.src = shellFolderImages[size];
+      image3.dataset.icon = String(shellFolderIcon);
+      return image3;
+    }
+    const icon2 = document.createElement("span");
+    icon2.className = `xp-shell-icon xp-shell-${size}`;
+    icon2.dataset.icon = String(id ?? shellFolderIcon);
+    icon2.style.backgroundPosition = `${-(index % shellIconColumns) * size}px ${-Math.floor(index / shellIconColumns) * size}px`;
+    return icon2;
+  }
+
+  // src/core/logger.ts
+  function debugLog(...args) {
+    if (config.debug) {
+      console.debug("[BiliToolkit]", ...args);
+    }
+  }
+  function warnLog(...args) {
+    console.warn("[BiliToolkit]", ...args);
+  }
+
+  // src/modules/blocker/history.ts
+  var historyChangedEvent = "bili-atelier-block-history-changed";
+  var historyStorageKey = "BiliAtelier_BlockHistory";
+  var historyLimit = 200;
+  function summarizeBlockedItem(item) {
+    return item.title || item.content || item.liveTitle || item.name || item.bv || item.roomId || item.partition || "\u672A\u77E5\u5185\u5BB9";
+  }
+  function detailBlockedItem(item) {
+    const parts2 = [];
+    if (item.name) {
+      parts2.push(`\u7528\u6237\uFF1A${item.name}`);
+    }
+    if (item.uid !== void 0) {
+      parts2.push(`UID\uFF1A${item.uid}`);
+    }
+    if (item.bv) {
+      parts2.push(`BV\uFF1A${item.bv}`);
+    }
+    if (item.roomId) {
+      parts2.push(`\u76F4\u64AD\u95F4\uFF1A${item.roomId}`);
+    }
+    return parts2.join(" / ");
+  }
+  function readBlockHistory() {
+    const value2 = GM_getValue(historyStorageKey, []);
+    if (!Array.isArray(value2)) {
+      return [];
+    }
+    return value2.filter((entry) => entry && typeof entry === "object" && typeof entry.id === "string").slice(0, historyLimit);
+  }
+  function writeBlockHistory(history) {
+    GM_setValue(historyStorageKey, history.slice(0, historyLimit));
+  }
+  function notifyBlockHistoryChanged() {
+    document.dispatchEvent(new CustomEvent(historyChangedEvent));
+  }
+  function decisionRuleReferences(decision) {
+    if (decision.linkedRules?.length) {
+      return decision.linkedRules;
+    }
+    if (decision.ruleKey && decision.ruleValue !== void 0) {
+      return [{ key: decision.ruleKey, value: decision.ruleValue }];
+    }
+    return [];
+  }
+  function ruleIdentity(rules) {
+    return rules.map((rule) => `${rule.key}=${String(rule.value)}`).sort().join("&");
+  }
+  function createHistoryId(item, decision) {
+    const identity = ruleIdentity(decisionRuleReferences(decision));
+    if (identity) {
+      return [item.kind, identity].join("|");
+    }
+    return [
+      item.kind,
+      decision.ruleKey || decision.type,
+      String(decision.ruleValue ?? decision.matching)
+    ].join("|");
+  }
+  function entryRuleReferences(entry) {
+    if (entry.linkedRules?.length) {
+      return entry.linkedRules;
+    }
+    if (entry.ruleKey && entry.ruleValue !== void 0) {
+      return [{ key: entry.ruleKey, value: entry.ruleValue }];
+    }
+    return [];
+  }
+  function entryMatchesRule(entry, ruleKey, normalizedValue) {
+    return entryRuleReferences(entry).some((rule) => {
+      return rule.key === ruleKey && String(rule.value) === normalizedValue;
+    });
+  }
+  function isDuplicateHistoryEntry(entry, kind, id, rules) {
+    if (entry.id === id) {
+      return true;
+    }
+    if (entry.kind !== kind || rules.length === 0) {
+      return false;
+    }
+    const existingRules = entryRuleReferences(entry);
+    return existingRules.some((existingRule) => {
+      return rules.some((rule) => existingRule.key === rule.key && String(existingRule.value) === String(rule.value));
+    });
+  }
+  function recordBlockHistory(item, decision) {
+    const id = createHistoryId(item, decision);
+    const history = readBlockHistory();
+    const rules = decisionRuleReferences(decision);
+    if (history.some((entry2) => isDuplicateHistoryEntry(entry2, item.kind, id, rules))) {
+      return;
+    }
+    const entry = {
+      id,
+      timestamp: Date.now(),
+      kind: item.kind,
+      type: decision.type,
+      matching: decision.matching,
+      ruleKey: decision.ruleKey,
+      ruleValue: decision.ruleValue,
+      linkedRules: decision.linkedRules,
+      uid: item.uid,
+      name: item.name,
+      title: item.title?.slice(0, 160),
+      content: item.content?.slice(0, 220),
+      bv: item.bv,
+      liveTitle: item.liveTitle?.slice(0, 160),
+      roomId: item.roomId,
+      partition: item.partition,
+      summary: summarizeBlockedItem(item).slice(0, 140),
+      detail: detailBlockedItem(item),
+      url: location.href
+    };
+    writeBlockHistory([entry, ...history]);
+    notifyBlockHistoryChanged();
+  }
+  function removeHistoryByRules(rules) {
+    writeBlockHistory(readBlockHistory().filter((entry) => {
+      return !rules.some((rule) => entryMatchesRule(entry, rule.key, String(rule.value)));
+    }));
+  }
+
+  // src/modules/blocker/decision.ts
+  function isWhiteUid(uid, rules) {
+    return uid !== void 0 && exactMatch(rules.precise_uid_white, uid) !== null;
+  }
+  function readRuleSnapshotWithHistoryAliases() {
+    const rules = readRuleSnapshot();
+    const preciseNameAliases = new Set(rules.precise_name.map((item) => String(item)));
+    for (const entry of readBlockHistory()) {
+      if (entry.kind !== "comment" || entry.uid === void 0 || !entry.name || exactMatch(rules.precise_uid, entry.uid) === null) {
+        continue;
+      }
+      preciseNameAliases.add(entry.name);
+    }
+    return {
+      ...rules,
+      precise_name: Array.from(preciseNameAliases)
+    };
+  }
+  function blockUser(uid, name, rules) {
+    if (uid !== void 0) {
+      const uidMatch = exactMatch(rules.precise_uid, uid);
+      if (uidMatch) {
+        return { type: "\u7CBE\u786E UID", matching: uidMatch.matching, ruleKey: "precise_uid", ruleValue: uidMatch.matching };
+      }
+    }
+    const nameMatch = blockExactFuzzyRegex(name, {
+      exactRules: rules.precise_name,
+      fuzzyRules: rules.name,
+      regexRules: rules.nameCanonical,
+      options: { caseInsensitive: true },
+      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u7528\u6237\u540D\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
+    });
+    if (nameMatch) {
+      const ruleKey = nameMatch.kind === "exact" ? "precise_name" : nameMatch.kind === "regex" ? "nameCanonical" : "name";
+      return { type: `\u7528\u6237\u540D${nameMatch.kind}`, matching: nameMatch.matching, ruleKey, ruleValue: nameMatch.matching };
+    }
+    return null;
+  }
+  function decideVideo(item, rules) {
+    if (isWhiteUid(item.uid, rules)) {
+      return null;
+    }
+    const userDecision = blockUser(item.uid, item.name, rules);
+    if (userDecision) {
+      return userDecision;
+    }
+    const titleMatch = blockExactFuzzyRegex(item.title, {
+      fuzzyRules: rules.title,
+      regexRules: rules.titleCanonical,
+      options: { caseInsensitive: true },
+      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u6807\u9898\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
+    });
+    if (titleMatch) {
+      const ruleKey = titleMatch.kind === "regex" ? "titleCanonical" : "title";
+      return { type: `\u6807\u9898${titleMatch.kind}`, matching: titleMatch.matching, ruleKey, ruleValue: titleMatch.matching };
+    }
+    return null;
+  }
+  function decideComment(item, rules) {
+    if (isWhiteUid(item.uid, rules)) {
+      return null;
+    }
+    const userDecision = blockUser(item.uid, item.name, rules);
+    if (userDecision) {
+      return userDecision;
+    }
+    const commentMatch = blockExactFuzzyRegex(item.content, {
+      fuzzyRules: rules.commentOn,
+      regexRules: rules.commentOnCanonical,
+      options: { caseInsensitive: true },
+      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u8BC4\u8BBA\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
+    });
+    if (commentMatch) {
+      const ruleKey = commentMatch.kind === "regex" ? "commentOnCanonical" : "commentOn";
+      return { type: `\u8BC4\u8BBA${commentMatch.kind}`, matching: commentMatch.matching, ruleKey, ruleValue: commentMatch.matching };
+    }
+    return null;
+  }
+  function decideLive(item, rules) {
+    if (isWhiteUid(item.uid, rules)) {
+      return null;
+    }
+    const userDecision = blockUser(item.uid, item.name, rules);
+    if (userDecision) {
+      return userDecision;
+    }
+    if (item.roomId) {
+      const roomMatch = exactMatch(rules.precise_liveRoomId, item.roomId);
+      if (roomMatch) {
+        return {
+          type: "\u7CBE\u786E\u76F4\u64AD\u95F4 ID",
+          matching: roomMatch.matching,
+          ruleKey: "precise_liveRoomId",
+          ruleValue: roomMatch.matching
+        };
+      }
+    }
+    if (item.partition) {
+      const partitionMatch = exactMatch(rules.precise_partition, item.partition);
+      if (partitionMatch) {
+        return {
+          type: "\u7CBE\u786E\u76F4\u64AD\u5206\u533A",
+          matching: partitionMatch.matching,
+          ruleKey: "precise_partition",
+          ruleValue: partitionMatch.matching
+        };
+      }
+    }
+    const titleMatch = blockExactFuzzyRegex(item.liveTitle, {
+      fuzzyRules: rules.liveTitle,
+      regexRules: rules.liveTitleCanonical,
+      options: { caseInsensitive: true },
+      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u76F4\u64AD\u6807\u9898\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
+    });
+    if (titleMatch) {
+      const ruleKey = titleMatch.kind === "regex" ? "liveTitleCanonical" : "liveTitle";
+      return { type: `\u76F4\u64AD\u6807\u9898${titleMatch.kind}`, matching: titleMatch.matching, ruleKey, ruleValue: titleMatch.matching };
+    }
+    return null;
+  }
+  function decideDynamic(item, rules) {
+    if (isWhiteUid(item.uid, rules)) {
+      return null;
+    }
+    const userDecision = blockUser(item.uid, item.name, rules);
+    if (userDecision) {
+      return userDecision;
+    }
+    const textMatch = blockExactFuzzyRegex(item.content, {
+      fuzzyRules: rules.dynamic,
+      regexRules: rules.dynamicCanonical,
+      options: { caseInsensitive: true },
+      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u52A8\u6001\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
+    });
+    if (textMatch) {
+      const ruleKey = textMatch.kind === "regex" ? "dynamicCanonical" : "dynamic";
+      return { type: `\u52A8\u6001${textMatch.kind}`, matching: textMatch.matching, ruleKey, ruleValue: textMatch.matching };
+    }
+    const titleMatch = blockExactFuzzyRegex(item.title, {
+      fuzzyRules: rules.title,
+      regexRules: rules.titleCanonical,
+      options: { caseInsensitive: true },
+      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u6807\u9898\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
+    });
+    if (titleMatch) {
+      const ruleKey = titleMatch.kind === "regex" ? "titleCanonical" : "title";
+      return { type: `\u6807\u9898${titleMatch.kind}`, matching: titleMatch.matching, ruleKey, ruleValue: titleMatch.matching };
+    }
+    return null;
+  }
+  function decideBlockableItem(item, rules) {
+    if (item.kind === "video") {
+      return decideVideo(item, rules);
+    }
+    if (item.kind === "dynamic") {
+      return decideDynamic(item, rules);
+    }
+    if (item.kind === "comment") {
+      return decideComment(item, rules);
+    }
+    return decideLive(item, rules);
+  }
+  function getManualChoices(item) {
+    const choices = [];
+    if (item.uid !== void 0) {
+      choices.push({ label: `\u5C4F\u853D UID ${item.uid}`, key: "precise_uid", value: item.uid });
+    }
+    if (item.name) {
+      choices.push({ label: `\u5C4F\u853D\u7528\u6237\u540D ${item.name}`, key: "precise_name", value: item.name });
+    }
+    if (item.title) {
+      choices.push({ label: `\u5C4F\u853D\u6807\u9898\u5173\u952E\u8BCD ${item.title.slice(0, 30)}`, key: "title", value: item.title });
+    }
+    if (item.content) {
+      choices.push({ label: `\u5C4F\u853D\u8BC4\u8BBA\u5173\u952E\u8BCD ${item.content.slice(0, 30)}`, key: "commentOn", value: item.content });
+    }
+    if (item.liveTitle) {
+      choices.push({ label: `\u5C4F\u853D\u76F4\u64AD\u6807\u9898 ${item.liveTitle.slice(0, 30)}`, key: "liveTitle", value: item.liveTitle });
+    }
+    if (item.roomId) {
+      choices.push({ label: `\u5C4F\u853D\u76F4\u64AD\u95F4 ${item.roomId}`, key: "precise_liveRoomId", value: item.roomId });
+    }
+    if (item.partition) {
+      choices.push({ label: `\u5C4F\u853D\u76F4\u64AD\u5206\u533A ${item.partition}`, key: "precise_partition", value: item.partition });
+    }
+    return choices;
+  }
+  function getCommentUserBlockChoices(item) {
+    const choices = [];
+    if (item.uid !== void 0) {
+      choices.push({ key: "precise_uid", value: item.uid });
+    }
+    if (item.name) {
+      choices.push({ key: "precise_name", value: item.name });
+    }
+    return choices;
+  }
+  function getVideoOwnerBlockChoices(item) {
+    const choices = [];
+    if (item.uid !== void 0) {
+      choices.push({ key: "precise_uid", value: item.uid });
+    }
+    if (item.name) {
+      choices.push({ key: "precise_name", value: item.name });
+    }
+    return choices;
+  }
+  function getLiveOwnerBlockChoices(item) {
+    const choices = [];
+    if (item.uid !== void 0) {
+      choices.push({ key: "precise_uid", value: item.uid });
+    }
+    if (item.name) {
+      choices.push({ key: "precise_name", value: item.name });
+    }
+    if (choices.length === 0 && item.roomId) {
+      choices.push({ key: "precise_liveRoomId", value: item.roomId });
+    }
+    return choices;
+  }
+
+  // src/modules/local-following/concurrent.ts
+  var localReadLimit = 32;
+  var localReadTimeout = 8e3;
+  var LocalReadTimeout = class extends Error {
+    constructor(timeout) {
+      super(`\u8BFB\u53D6\u8D85\u65F6\uFF08${Math.round(timeout / 1e3)} \u79D2\uFF09`);
+      this.timeout = timeout;
+    }
+  };
+  async function runConcurrentReads(options) {
+    const queue = [...options.keys], active = /* @__PURE__ */ new Set();
+    const timeout = options.timeout ?? localReadTimeout;
+    let stopped = false;
+    const stopAll = () => {
+      stopped = true;
+      queue.length = 0;
+      for (const controller of active) controller.abort();
+    };
+    if (options.batch.aborted) stopAll();
+    else options.batch.addEventListener("abort", stopAll, { once: true });
+    const worker = async () => {
+      while (!stopped && queue.length) {
+        const key2 = queue.shift(), controller = new AbortController();
+        active.add(controller);
+        let timedOut = false;
+        const timer2 = setTimeout(() => {
+          timedOut = true;
+          controller.abort();
+        }, timeout);
+        const aborted = new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError")), { once: true }));
+        try {
+          const value2 = await Promise.race([options.read(key2, controller.signal), aborted]);
+          if (!stopped && !controller.signal.aborted) options.onValue(key2, value2);
+        } catch (error) {
+          if (timedOut && !stopped) {
+            if (options.onError(key2, new LocalReadTimeout(timeout))) stopAll();
+          } else if (!stopped && !controller.signal.aborted && options.onError(key2, error)) stopAll();
+        } finally {
+          clearTimeout(timer2);
+          active.delete(controller);
+        }
+      }
+    };
+    const workers = Math.min(options.limit ?? localReadLimit, queue.length);
+    await Promise.all(Array.from({ length: workers }, worker));
+    options.batch.removeEventListener("abort", stopAll);
+  }
 
   // src/modules/local-following/index.ts
   var localFollowUpdateTypes = { video: "\u6295\u7A3F", post: "\u6587\u5B57\uFF0F\u56FE\u6587", article: "\u4E13\u680F", repost: "\u8F6C\u53D1", live: "\u76F4\u64AD", audio: "\u97F3\u9891" };
@@ -11320,8 +13960,8 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
     const followed = new Set(localFollowSnapshot().accounts.map((account) => account.uid));
     const updates = /* @__PURE__ */ new Map();
     for (const item of data.items) {
-      const kind = kinds[item?.type], author = item?.modules?.module_author;
-      const uid = normalizeLocalUid(author?.mid), seconds = Number(author?.pub_ts);
+      const kind = kinds[item?.type], author2 = item?.modules?.module_author;
+      const uid = normalizeLocalUid(author2?.mid), seconds = Number(author2?.pub_ts);
       if (!kind || !uid || onlyUid && uid !== onlyUid || !followed.has(uid) || !Number.isSafeInteger(seconds) || seconds <= 0 || !Number.isSafeInteger(seconds * 1e3)) continue;
       const record = updates.get(uid) ?? {};
       record[kind] = Math.max(record[kind] ?? 0, seconds * 1e3);
@@ -11330,7 +13970,7 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
     for (const [uid, record] of updates) writeLocalFollowCache(uid, { updates: record });
   }
   function latestLocalFollowUpdate(cache, types) {
-    const times = types.map((kind) => cache.updates?.[kind]).filter((value) => Number.isSafeInteger(value) && value > 0);
+    const times = types.map((kind) => cache.updates?.[kind]).filter((value2) => Number.isSafeInteger(value2) && value2 > 0);
     return times.length ? Math.max(...times) : void 0;
   }
   var names = new Intl.Collator("zh-CN-u-co-pinyin", { sensitivity: "base", numeric: true });
@@ -11338,12 +13978,12 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
     const caches = new Map(accounts.map((account) => [account.uid, readLocalFollowCache(account.uid)]));
     const term = query.trim().toLocaleLowerCase();
     const name = (account) => caches.get(account.uid)?.name || account.name;
-    const value = (account) => sort === "added" ? account.addedAt : sort === "viewed" ? caches.get(account.uid)?.viewedAt : latestLocalFollowUpdate(caches.get(account.uid), types);
+    const value2 = (account) => sort === "added" ? account.addedAt : sort === "viewed" ? caches.get(account.uid)?.viewedAt : latestLocalFollowUpdate(caches.get(account.uid), types);
     return accounts.filter((account) => !term || account.uid.includes(term) || name(account).toLocaleLowerCase().includes(term)).sort((a, b) => {
       let result;
       if (sort === "name") result = names.compare(name(a), name(b)) * (ascending ? 1 : -1);
       else {
-        const left = value(a), right = value(b);
+        const left = value2(a), right = value2(b);
         result = left == null ? right == null ? 0 : 1 : right == null ? -1 : (left - right) * (ascending ? 1 : -1);
       }
       return result || a.uid.length - b.uid.length || a.uid.localeCompare(b.uid);
@@ -11351,9 +13991,10 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
   }
   var LocalFollowChecker = class {
     constructor(api = new LocalFollowApi(), changed = () => {
-    }) {
+    }, limits = {}) {
       this.api = api;
       this.changed = changed;
+      this.limits = limits;
       this.state = { running: false, total: 0, completed: 0, failed: 0, message: "\u4EC5\u663E\u793A\u672C\u673A\u5DF2\u83B7\u53D6\u7684\u53D1\u5E03\u8BB0\u5F55" };
     }
     cancel() {
@@ -11363,32 +14004,34 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
       if (this.state.running) return "skipped";
       const abort = this.abort = new AbortController();
       const queue = [...new Set(uids)].filter((uid) => normalizeLocalUid(uid));
-      this.state = { running: true, total: queue.length, completed: 0, failed: 0, message: "\u6B63\u5728\u8BFB\u53D6\u539F\u59CB\u52A8\u6001\u7B2C\u4E00\u9875" };
+      this.state = { running: true, total: queue.length, completed: 0, failed: 0, message: "\u6B63\u5728\u540C\u65F6\u8BFB\u53D6\u5404\u8D26\u53F7\u539F\u59CB\u52A8\u6001\u7B2C\u4E00\u9875" };
       this.changed(this.state);
       try {
-        for (const uid of queue) {
-          if (abort.signal.aborted) break;
-          if (!localFollowSnapshot().accounts.some((account) => account.uid === uid)) continue;
-          this.state.currentUid = uid;
-          this.changed(this.state);
-          try {
-            const raw = await this.api.dynamic(uid, abort.signal);
-            if (abort.signal.aborted) break;
+        await runConcurrentReads({
+          ...this.limits,
+          keys: queue,
+          batch: abort.signal,
+          // Removed accounts need no request; no implicit re-add.
+          read: async (uid, signal) => localFollowSnapshot().accounts.some((account) => account.uid === uid) ? await this.api.dynamic(uid, signal) : null,
+          onValue: (uid, raw) => {
+            if (!raw) return;
             observeLocalFollowDynamics(raw, uid);
             writeLocalFollowCache(uid, { checkedAt: Date.now(), checkError: "" });
             this.state.completed++;
-          } catch (error) {
-            if (abort.signal.aborted) break;
+            this.changed(this.state);
+          },
+          onError: (uid, error) => {
             this.state.failed++;
             const message = error instanceof Error ? error.message : "\u8BFB\u53D6\u5931\u8D25";
             writeLocalFollowCache(uid, { checkError: message });
+            this.changed(this.state);
             if (error instanceof LocalFollowReadError && error.stopsBatch) {
               this.state.message = `${message}\uFF1B\u5DF2\u505C\u6B62\u6574\u6279\uFF0C\u8BF7\u7A0D\u540E\u624B\u52A8\u68C0\u67E5`;
-              break;
+              return true;
             }
+            return false;
           }
-          this.changed(this.state);
-        }
+        });
         if (abort.signal.aborted) this.state.message = "\u68C0\u67E5\u5DF2\u53D6\u6D88\uFF0C\u672A\u53D1\u9001\u5269\u4F59\u8BF7\u6C42";
         else if (!this.state.message.includes("\u505C\u6B62\u6574\u6279")) this.state.message = `\u672C\u8F6E\u6210\u529F ${this.state.completed}\uFF0C\u5931\u8D25 ${this.state.failed}\uFF1B\u65F6\u95F4\u4EC5\u4EE3\u8868\u5DF2\u83B7\u53D6\u8BB0\u5F55`;
       } finally {
@@ -11400,6 +14043,1435 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
       return abort.signal.aborted ? "cancelled" : this.state.failed ? this.state.completed ? "partial" : "error" : this.state.completed ? "success" : "skipped";
     }
   };
+
+  // src/modules/local-following/feed.ts
+  var localFeedFreshFor = 15 * 60 * 1e3;
+  var localFeedCacheLimit = 300;
+  var pageWidth = 3;
+  var maxRounds = 5;
+  var sliceLimit = 30;
+  var tokenPrefix = "atelier:";
+  var typeKinds = {
+    video: /* @__PURE__ */ new Set(["DYNAMIC_TYPE_AV", "DYNAMIC_TYPE_UGC_SEASON"]),
+    pgc: /* @__PURE__ */ new Set(["DYNAMIC_TYPE_PGC", "DYNAMIC_TYPE_PGC_UNION"]),
+    article: /* @__PURE__ */ new Set(["DYNAMIC_TYPE_ARTICLE"])
+  };
+  var time = (raw) => {
+    const value2 = Number(raw?.modules?.module_author?.pub_ts);
+    return Number.isSafeInteger(value2) && value2 > 0 ? value2 : 0;
+  };
+  var author = (raw) => String(raw?.modules?.module_author?.mid ?? "");
+  var localFeedPinned = (raw) => raw?.modules?.module_tag?.text === "\u7F6E\u9876";
+  var newestFirst = (a, b) => time(b.raw) - time(a.raw) || (b.id < a.id ? -1 : b.id > a.id ? 1 : 0);
+  function parseLocalFeedPrefs(value2) {
+    const raw = value2;
+    return { view: ["online", "local", "mixed"].includes(raw?.view) ? raw.view : "online", group: typeof raw?.group === "string" ? raw.group : "", native: raw?.native === true };
+  }
+  var LocalFeedEngine = class {
+    constructor(deps) {
+      this.deps = deps;
+      /** Account feeds already read on this page: a new list (another folder, view
+       * or tab) reuses them until they are 15 minutes old or 刷新 forces a read,
+       * as the Android app does, instead of waiting on the network each time. */
+      this.onlineRead = /* @__PURE__ */ new Set();
+      this.authors = /* @__PURE__ */ new Map();
+      this.status = "";
+      const raw = deps.load();
+      this.cache = raw?.version === 2 && Array.isArray(raw.entries) && raw.cursors && typeof raw.cursors === "object" ? { version: 2, entries: raw.entries.filter((entry) => typeof entry?.id === "string" && entry.raw && typeof entry.raw === "object"), cursors: raw.cursors } : { version: 2, entries: [], cursors: {} };
+    }
+    now() {
+      return (this.deps.now ?? Date.now)();
+    }
+    /** The accounts in the open folder (`group`), or every account at the root. */
+    members() {
+      const { group } = this.deps.prefs();
+      return this.deps.directory().accounts.filter((account) => !group || (group === "ungrouped" ? !account.groupIds.length : account.groupIds.includes(group)));
+    }
+    /** Local sources the current group covers; generation keeps a removed and
+     * re-added relation from inheriting old cursors or provenance. */
+    localSources() {
+      return this.members().map((account) => {
+        const generation = [...account.generations].sort().join(",");
+        return { key: `local:${account.uid}:${generation}`, uid: account.uid, generation };
+      });
+    }
+    scope(type) {
+      const view = this.deps.prefs().view;
+      return [...view !== "local" && this.deps.loggedIn ? [{ key: `online:${type}` }] : [], ...view !== "online" ? this.localSources() : []];
+    }
+    prune() {
+      const live = new Map(this.deps.directory().accounts.map((account) => [account.uid, [...account.generations].sort().join(",")]));
+      this.cache.entries = this.cache.entries.flatMap((entry) => {
+        const local = Object.fromEntries(Object.entries(entry.local ?? {}).filter(([uid, generation]) => live.get(uid) === generation));
+        return entry.online || Object.keys(local).length ? [{ ...entry, local }] : [];
+      });
+      for (const key2 of Object.keys(this.cache.cursors)) {
+        const [kind, uid, generation] = key2.split(":");
+        if (kind === "local" && live.get(uid) !== generation) delete this.cache.cursors[key2];
+      }
+    }
+    stale(source) {
+      const at = this.cache.cursors[source.key]?.fetchedAt, now = this.now();
+      return at === void 0 || at > now || now - at >= localFeedFreshFor;
+    }
+    line(type) {
+      let line;
+      for (const source of this.scope(type)) {
+        const cursor = this.cache.cursors[source.key];
+        if (cursor?.hasMore && cursor.frontier !== void 0 && (line === void 0 || cursor.frontier > line)) line = cursor.frontier;
+      }
+      return line;
+    }
+    visible(type, line) {
+      const { view, group } = this.deps.prefs(), kinds2 = typeKinds[type];
+      const uids = new Set(this.localSources().map((source) => source.uid));
+      return this.cache.entries.filter((entry) => {
+        const local = Object.keys(entry.local).some((uid) => uids.has(uid));
+        if (!(view !== "local" && entry.online) && !(view !== "online" && local)) return false;
+        if (group && view !== "online" && !uids.has(author(entry.raw))) return false;
+        if (kinds2 && !kinds2.has(entry.raw?.type)) return false;
+        return line === void 0 || time(entry.raw) >= line;
+      }).sort(newestFirst);
+    }
+    /** Reads sources concurrently and commits their pages together. */
+    async read(sources, fromTop, nativeUrl, signal) {
+      const pages = [];
+      let failed = 0, stopped = false, first2 = "";
+      const failedKeys = [];
+      const previous = (source) => fromTop ? "" : this.cache.cursors[source.key]?.offset ?? "";
+      await runConcurrentReads({
+        keys: sources,
+        batch: signal,
+        limit: this.deps.limit,
+        timeout: this.deps.timeout,
+        read: (source, readSignal) => source.uid ? this.deps.api.dynamic(source.uid, readSignal, previous(source)) : this.deps.api.online(nativeUrl, previous(source), readSignal),
+        onValue: (source, data) => {
+          pages.push([source, data, previous(source)]);
+          if (source.uid) (this.deps.observe ?? observeLocalFollowDynamics)(data, source.uid);
+        },
+        onError: (source, error) => {
+          failed++;
+          failedKeys.push(source.key);
+          first2 ||= error instanceof Error ? error.message : "\u8BFB\u53D6\u5931\u8D25";
+          if (error instanceof LocalFollowReadError && error.stopsBatch) {
+            stopped = true;
+            return true;
+          }
+          return false;
+        }
+      });
+      const byId = new Map(this.cache.entries.map((entry) => [entry.id, entry]));
+      const now = this.now();
+      for (const [source, data, offsetBefore] of pages) {
+        const items = data.items.filter((raw) => raw && typeof raw.id_str === "string" && raw.id_str && (!source.uid || author(raw) === source.uid));
+        const supplied = (raw) => {
+          const entry = byId.get(raw.id_str);
+          return !!entry && (source.uid ? entry.local[source.uid] === source.generation : entry.online);
+        };
+        const frontier2 = items.filter((raw) => !localFeedPinned(raw)).map(time).filter(Boolean).reduce((oldest, value2) => oldest === void 0 || value2 < oldest ? value2 : oldest, void 0);
+        const old = this.cache.cursors[source.key], offset = typeof data.offset === "string" ? data.offset : String(data.offset ?? "");
+        const more = (data.has_more === true || data.has_more === 1) && !!offset && offset !== offsetBefore;
+        const continuous = !offsetBefore && old?.frontier !== void 0 && items.some((raw) => !localFeedPinned(raw) && supplied(raw));
+        this.cache.cursors[source.key] = continuous ? { ...old, fetchedAt: now } : { offset, hasMore: more, frontier: frontier2 ?? (offsetBefore ? old?.frontier : void 0), fetchedAt: offsetBefore ? old?.fetchedAt : now };
+        for (const raw of items) {
+          const prior = byId.get(raw.id_str);
+          byId.set(raw.id_str, { id: raw.id_str, raw, online: !source.uid || !!prior?.online, local: { ...prior?.local, ...source.uid ? { [source.uid]: source.generation } : {} } });
+        }
+      }
+      this.cache.entries = [...byId.values()];
+      return { failed, failedKeys, stopped, first: first2, read: pages.length, total: sources.length };
+    }
+    /** Furthest-behind sources bound the line; unknown frontiers must be read. */
+    continuation(type, skip2 = /* @__PURE__ */ new Set()) {
+      const open = this.scope(type).filter((source) => !skip2.has(source.key) && (this.cache.cursors[source.key]?.hasMore ?? true));
+      const frontier2 = (source) => this.cache.cursors[source.key]?.frontier;
+      return [...open.filter((source) => frontier2(source) === void 0), ...open.filter((source) => frontier2(source) !== void 0).sort((a, b) => frontier2(b) - frontier2(a)).slice(0, pageWidth)];
+    }
+    /** Answers one list request. `first` starts a new list. */
+    async page(nativeUrl, options) {
+      if (this.deps.prefs().native) return null;
+      const url = new URL(nativeUrl), type = url.searchParams.get("type") || "all";
+      const signal = options.signal ?? new AbortController().signal;
+      this.prune();
+      let session = this.session;
+      if (options.first || !session || session.type !== type) session = this.session = { id: Math.random().toString(36).slice(2, 10), type, delivered: /* @__PURE__ */ new Set(), baseline: "", pages: 0 };
+      let failed = 0, stopped = false, first2 = "", read = 0, total = 0;
+      const failedKeys = /* @__PURE__ */ new Set();
+      const tally = (result) => {
+        failed += result.failed;
+        stopped ||= result.stopped;
+        first2 ||= result.first;
+        read += result.read;
+        total += result.total;
+        for (const key2 of result.failedKeys) failedKeys.add(key2);
+        return result;
+      };
+      if (options.first) {
+        const sources = this.scope(type).filter((source) => options.force || this.stale(source) || !source.uid && !this.onlineRead.has(source.key));
+        if (sources.length) {
+          const result = tally(await this.read(sources, true, nativeUrl, signal));
+          for (const source of sources) if (!source.uid && !result.failedKeys.includes(source.key)) this.onlineRead.add(source.key);
+        }
+      }
+      const pending2 = () => {
+        const last = session.last;
+        return this.visible(type, this.line(type)).filter((entry) => !session.delivered.has(entry.id) && (!last || time(entry.raw) < last[0] || time(entry.raw) === last[0] && entry.id < last[1]));
+      };
+      let slice = pending2();
+      for (let round = 0; !slice.length && !stopped && !signal.aborted && round < maxRounds; round++) {
+        const next = this.continuation(type, failedKeys);
+        if (!next.length) break;
+        if (!tally(await this.read(next, false, nativeUrl, signal)).read) break;
+        slice = pending2();
+      }
+      slice = slice.slice(0, sliceLimit);
+      for (const entry of slice) session.delivered.add(entry.id);
+      const tail = slice[slice.length - 1];
+      if (tail) session.last = [time(tail.raw), tail.id];
+      if (!session.baseline) session.baseline = slice[0]?.id ?? "";
+      session.pages++;
+      this.persist();
+      const more = !stopped && !!slice.length && (this.continuation(type, failedKeys).length > 0 || pending2().length > 0);
+      this.status = stopped ? `\u670D\u52A1\u9650\u5236\uFF0C\u5DF2\u505C\u6B62\uFF1A${first2}` : failed ? `\u5DF2\u8BFB\u53D6 ${read}/${total} \u4E2A\u6765\u6E90\uFF0C\u5931\u8D25 ${failed}\uFF08${first2}\uFF09` : total ? `\u5DF2\u8BFB\u53D6 ${read} \u4E2A\u6765\u6E90` : "\u4F7F\u7528\u672C\u673A\u7F13\u5B58";
+      return { code: 0, message: "0", ttl: 1, data: { has_more: more, items: slice.map((entry) => entry.raw), offset: `${tokenPrefix}${session.id}:${session.pages}`, update_baseline: session.baseline, update_num: 0 } };
+    }
+    /** One UP's own stream, read from their space feed in their own order
+     * (pinned first). It lives for this page only and never moves the merged
+     * cursors; re-selecting within 15 minutes replays it without a read. */
+    async authorPage(uid, type, options) {
+      const signal = options.signal ?? new AbortController().signal, kinds2 = typeKinds[type];
+      let error, read = 0;
+      const fetch2 = async (fromTop) => {
+        let data;
+        const stream2 = this.authors.get(uid);
+        await runConcurrentReads({
+          keys: [uid],
+          batch: signal,
+          limit: 1,
+          timeout: this.deps.timeout,
+          read: (key2, readSignal) => this.deps.api.dynamic(key2, readSignal, fromTop || !stream2 ? "" : stream2.offset),
+          onValue: (_, value2) => {
+            data = value2;
+          },
+          onError: (_, failure2) => {
+            error = failure2;
+            return true;
+          }
+        });
+        if (!data) return false;
+        read++;
+        (this.deps.observe ?? observeLocalFollowDynamics)(data, uid);
+        const items = data.items.filter((raw) => raw && typeof raw.id_str === "string" && raw.id_str && author(raw) === uid);
+        const offset = typeof data.offset === "string" ? data.offset : String(data.offset ?? "");
+        const before = fromTop || !stream2 ? "" : stream2.offset;
+        const more2 = (data.has_more === true || data.has_more === 1) && !!offset && offset !== before;
+        if (fromTop || !stream2) this.authors.set(uid, { items, offset, hasMore: more2, fetchedAt: this.now(), next: 0 });
+        else {
+          const seen = new Set(stream2.items.map((raw) => raw.id_str));
+          stream2.items.push(...items.filter((raw) => !seen.has(raw.id_str)));
+          stream2.offset = offset;
+          stream2.hasMore = more2;
+        }
+        return true;
+      };
+      if (options.first) {
+        const stream2 = this.authors.get(uid), now = this.now();
+        if (!stream2 || options.force || stream2.fetchedAt > now || now - stream2.fetchedAt >= localFeedFreshFor) await fetch2(true);
+        else stream2.next = 0;
+      }
+      const take = () => {
+        const stream2 = this.authors.get(uid);
+        if (!stream2) return [];
+        const slice2 = [];
+        while (stream2.next < stream2.items.length && slice2.length < sliceLimit) {
+          const raw = stream2.items[stream2.next++];
+          if (!kinds2 || kinds2.has(raw?.type)) slice2.push(raw);
+        }
+        return slice2;
+      };
+      let slice = take();
+      for (let round = 0; !slice.length && !error && round < maxRounds && this.authors.get(uid)?.hasMore; round++) {
+        if (!await fetch2(false)) break;
+        slice = take();
+      }
+      const stream = this.authors.get(uid);
+      const stopped = error instanceof LocalFollowReadError && error.stopsBatch;
+      const message = error instanceof Error ? error.message : error ? "\u8BFB\u53D6\u5931\u8D25" : "";
+      this.status = stopped ? `\u670D\u52A1\u9650\u5236\uFF0C\u5DF2\u505C\u6B62\uFF1A${message}` : message ? `\u8BFB\u53D6\u5931\u8D25\uFF1A${message}` : read ? "\u5DF2\u8BFB\u53D6 1 \u4E2A\u6765\u6E90" : "\u4F7F\u7528\u672C\u9875\u7F13\u5B58";
+      const more = !stopped && !!slice.length && !!stream && (stream.next < stream.items.length || stream.hasMore);
+      return { code: 0, message: "0", ttl: 1, data: { has_more: more, items: slice, offset: `${tokenPrefix}author:${uid}`, update_baseline: "", update_num: 0 } };
+    }
+    /** Newest known publish time (seconds) per author, from every record kept. */
+    latestByAuthor() {
+      const latest = /* @__PURE__ */ new Map();
+      const note = (raw) => {
+        const uid = author(raw), at = time(raw);
+        if (uid && at > (latest.get(uid) ?? 0)) latest.set(uid, at);
+      };
+      for (const entry of this.cache.entries) note(entry.raw);
+      for (const stream of this.authors.values()) stream.items.forEach(note);
+      return latest;
+    }
+    /** Whether a native offset continues the current merged list. */
+    continues(offset) {
+      return !!offset && !!this.session && offset.startsWith(`${tokenPrefix}${this.session.id}:`);
+    }
+    /** Saves the newest records only. A source read below the kept range is
+     * saved as restarting from its newest page, so no dropped record is
+     * skipped later; this page keeps its full in-memory list. */
+    persist() {
+      let entries = [...this.cache.entries].sort(newestFirst), cursors = this.cache.cursors;
+      if (entries.length > localFeedCacheLimit) {
+        const bound = time(entries[localFeedCacheLimit - 1].raw);
+        entries = entries.filter((entry) => time(entry.raw) >= bound && time(entry.raw) > 0);
+        cursors = Object.fromEntries(Object.entries(cursors).map(([key2, cursor]) => [
+          key2,
+          cursor.frontier !== void 0 && cursor.frontier < bound ? { offset: "", hasMore: true, fetchedAt: cursor.fetchedAt } : cursor
+        ]));
+      }
+      try {
+        this.deps.save({ version: 2, entries, cursors });
+      } catch {
+        this.status += "\uFF1B\u7F13\u5B58\u4FDD\u5B58\u5931\u8D25";
+      }
+    }
+  };
+
+  // src/modules/local-following/feed-cards.ts
+  function safeUrl(value2) {
+    if (typeof value2 !== "string" || !value2.trim()) return "";
+    try {
+      const url = new URL(value2.startsWith("//") ? `https:${value2}` : value2);
+      return url.protocol === "https:" || url.protocol === "http:" ? url.href.replace(/^http:/, "https:") : "";
+    } catch {
+      return "";
+    }
+  }
+  function bilibiliThumb(value2, size) {
+    const url = safeUrl(value2);
+    return /^https:\/\/[^/]*hdslb\.com\//.test(url) && !url.includes("@") ? `${url}@${size}.webp` : url;
+  }
+  var formatCount = (value2) => {
+    const number = Number(value2);
+    if (!Number.isFinite(number) || number <= 0) return typeof value2 === "string" && value2 && value2 !== "0" ? value2 : "";
+    return number >= 1e4 ? `${(number / 1e4).toFixed(number >= 1e5 ? 0 : 1)}\u4E07` : String(number);
+  };
+  var count = formatCount;
+  function node(tag, className = "", text2) {
+    const element2 = document.createElement(tag);
+    if (className) element2.className = className;
+    if (text2 !== void 0) element2.textContent = text2;
+    return element2;
+  }
+  function link(href, className = "", text2) {
+    const anchor = node("a", className, text2);
+    if (href) {
+      anchor.href = href;
+      anchor.target = "_blank";
+      anchor.rel = "noopener noreferrer";
+    }
+    return anchor;
+  }
+  function image2(src, className, alt = "") {
+    const element2 = node("img", className);
+    element2.loading = "lazy";
+    element2.decoding = "async";
+    element2.alt = alt;
+    element2.referrerPolicy = "no-referrer";
+    if (src) element2.src = src;
+    return element2;
+  }
+  var typeLabels = {
+    DYNAMIC_TYPE_AV: "\u89C6\u9891",
+    DYNAMIC_TYPE_FORWARD: "\u8F6C\u53D1",
+    DYNAMIC_TYPE_ARTICLE: "\u4E13\u680F",
+    DYNAMIC_TYPE_LIVE_RCMD: "\u76F4\u64AD",
+    DYNAMIC_TYPE_LIVE: "\u76F4\u64AD",
+    DYNAMIC_TYPE_PGC: "\u756A\u5267",
+    DYNAMIC_TYPE_PGC_UNION: "\u756A\u5267",
+    DYNAMIC_TYPE_UGC_SEASON: "\u5408\u96C6",
+    DYNAMIC_TYPE_MUSIC: "\u97F3\u9891",
+    DYNAMIC_TYPE_COURSES_SEASON: "\u8BFE\u7A0B"
+  };
+  var additionalLabels = {
+    ADDITIONAL_TYPE_VOTE: "\u6295\u7968",
+    ADDITIONAL_TYPE_RESERVE: "\u9884\u7EA6",
+    ADDITIONAL_TYPE_GOODS: "\u5546\u54C1",
+    ADDITIONAL_TYPE_UPOWER_LOTTERY: "\u62BD\u5956",
+    ADDITIONAL_TYPE_LOTTERY: "\u62BD\u5956",
+    ADDITIONAL_TYPE_UGC: "\u89C6\u9891",
+    ADDITIONAL_TYPE_COMMON: "\u76F8\u5173\u5185\u5BB9",
+    ADDITIONAL_TYPE_MATCH: "\u8D5B\u4E8B"
+  };
+  var dynamicUrl = (raw) => `https://t.bilibili.com/${encodeURIComponent(String(raw?.id_str ?? ""))}`;
+  function richText(nodes, fallback2) {
+    const box = node("div", "adc-text");
+    const list = Array.isArray(nodes) && nodes.length ? nodes : typeof fallback2 === "string" && fallback2 ? [{ type: "RICH_TEXT_NODE_TYPE_TEXT", text: fallback2 }] : [];
+    for (const item of list) {
+      const text2 = typeof item?.text === "string" ? item.text : typeof item?.orig_text === "string" ? item.orig_text : "";
+      if (item?.type === "RICH_TEXT_NODE_TYPE_EMOJI" && item.emoji) {
+        const emoji = image2(safeUrl(item.emoji.webp_url || item.emoji.icon_url), item.emoji.size === 2 ? "adc-emoji adc-emoji-large" : "adc-emoji", text2);
+        emoji.title = text2;
+        box.append(emoji);
+        continue;
+      }
+      const href = safeUrl(item?.jump_url) || (item?.type === "RICH_TEXT_NODE_TYPE_AT" && /^\d+$/.test(String(item?.rid)) ? `https://space.bilibili.com/${item.rid}` : "");
+      const target = href && item?.type !== "RICH_TEXT_NODE_TYPE_TEXT" ? box.appendChild(link(href, "adc-link")) : box;
+      text2.split("\n").forEach((part, index) => {
+        if (index) target.append(node("br"));
+        if (part) target.append(document.createTextNode(part));
+      });
+    }
+    return list.length ? box : null;
+  }
+  function pictures(list) {
+    const pics = (Array.isArray(list) ? list : []).map((pic) => safeUrl(pic?.url ?? pic?.src)).filter(Boolean).slice(0, 9);
+    if (!pics.length) return null;
+    const grid = node("div", `adc-pics adc-pics-${pics.length === 1 ? 1 : pics.length === 2 || pics.length === 4 ? 2 : 3}`);
+    for (const src of pics) {
+      const anchor = link(src, "adc-pic");
+      anchor.append(image2(bilibiliThumb(src, pics.length === 1 ? "520w" : "240w_240h_1c"), ""));
+      grid.append(anchor);
+    }
+    return grid;
+  }
+  function media(options) {
+    const panel = node("div", options.video ? "adc-media adc-video bili-dyn-content__orig__major" : "adc-media");
+    const anchor = panel.appendChild(link(options.href, "adc-media-link"));
+    const thumb = anchor.appendChild(node("div", "adc-thumb"));
+    const cover = thumb.appendChild(node("div", options.video ? "adc-cover bili-awesome-img" : "adc-cover"));
+    const src = bilibiliThumb(options.cover, "320w_180h_1c");
+    if (src) cover.append(image2(src, ""));
+    if (options.duration) thumb.append(node("span", "adc-duration", options.duration));
+    if (options.badge) thumb.append(node("span", "adc-badge", options.badge));
+    const info = anchor.appendChild(node("div", "adc-media-info"));
+    info.append(node("strong", "adc-media-title", typeof options.title === "string" && options.title ? options.title : "\uFF08\u65E0\u6807\u9898\uFF09"));
+    for (const line of options.lines ?? []) if (line) info.append(node("span", "adc-media-line", line));
+    return panel;
+  }
+  function major(raw) {
+    const value2 = raw?.modules?.module_dynamic?.major, type = value2?.type;
+    if (!value2) return null;
+    if (type === "MAJOR_TYPE_ARCHIVE" && value2.archive) {
+      const archive = value2.archive, play = count(archive.stat?.play), danmaku = count(archive.stat?.danmaku);
+      const href = safeUrl(archive.jump_url) || (typeof archive.bvid === "string" ? `https://www.bilibili.com/video/${archive.bvid}` : "");
+      const panel = media({
+        href,
+        cover: archive.cover,
+        title: archive.title,
+        duration: archive.duration_text,
+        badge: archive.badge?.text === "\u6295\u7A3F\u89C6\u9891" ? "" : archive.badge?.text,
+        video: true,
+        lines: [[play && `\u64AD\u653E ${play}`, danmaku && `\u5F39\u5E55 ${danmaku}`].filter(Boolean).join(" \xB7 ")]
+      });
+      if (typeof archive.bvid === "string") panel.dataset.bvid = archive.bvid;
+      return panel;
+    }
+    if (type === "MAJOR_TYPE_OPUS" && value2.opus) {
+      const box = node("div", "adc-opus");
+      if (value2.opus.title) box.append(node("strong", "adc-opus-title", value2.opus.title));
+      const text2 = richText(value2.opus.summary?.rich_text_nodes, value2.opus.summary?.text);
+      if (text2) box.append(text2);
+      if (value2.opus.summary?.has_more && safeUrl(value2.opus.jump_url)) box.append(link(safeUrl(value2.opus.jump_url), "adc-more", "\u67E5\u770B\u5168\u6587"));
+      const pics = pictures(value2.opus.pics);
+      if (pics) box.append(pics);
+      return box;
+    }
+    if (type === "MAJOR_TYPE_DRAW" && value2.draw) return pictures(value2.draw.items);
+    if (type === "MAJOR_TYPE_ARTICLE" && value2.article) return media({ href: safeUrl(value2.article.jump_url), cover: value2.article.covers?.[0], title: value2.article.title, lines: [value2.article.desc, value2.article.label], badge: "\u4E13\u680F" });
+    if (type === "MAJOR_TYPE_LIVE_RCMD" && value2.live_rcmd) {
+      let info = {};
+      try {
+        info = JSON.parse(value2.live_rcmd.content)?.live_play_info ?? {};
+      } catch {
+      }
+      return media({
+        href: safeUrl(info.link) || (info.room_id ? `https://live.bilibili.com/${info.room_id}` : ""),
+        cover: info.cover,
+        title: info.title,
+        lines: [[info.area_name, info.watched_show?.text_large].filter(Boolean).join(" \xB7 ")],
+        badge: info.live_status === 1 ? "\u76F4\u64AD\u4E2D" : "\u76F4\u64AD"
+      });
+    }
+    if (type === "MAJOR_TYPE_LIVE" && value2.live) return media({ href: safeUrl(value2.live.jump_url), cover: value2.live.cover, title: value2.live.title, lines: [value2.live.desc_first], badge: value2.live.badge?.text || "\u76F4\u64AD" });
+    if (type === "MAJOR_TYPE_PGC" && value2.pgc) return media({
+      href: safeUrl(value2.pgc.jump_url),
+      cover: value2.pgc.cover,
+      title: value2.pgc.title,
+      badge: value2.pgc.badge?.text || "\u756A\u5267",
+      lines: [[count(value2.pgc.stat?.play) && `\u64AD\u653E ${count(value2.pgc.stat.play)}`, count(value2.pgc.stat?.danmaku) && `\u5F39\u5E55 ${count(value2.pgc.stat.danmaku)}`].filter(Boolean).join(" \xB7 ")]
+    });
+    if (type === "MAJOR_TYPE_UGC_SEASON" && value2.ugc_season) return media({
+      href: safeUrl(value2.ugc_season.jump_url),
+      cover: value2.ugc_season.cover,
+      title: value2.ugc_season.title,
+      duration: value2.ugc_season.duration_text,
+      badge: "\u5408\u96C6",
+      lines: [count(value2.ugc_season.stat?.play) && `\u64AD\u653E ${count(value2.ugc_season.stat.play)}`]
+    });
+    if (type === "MAJOR_TYPE_MUSIC" && value2.music) return media({ href: safeUrl(value2.music.jump_url), cover: value2.music.cover, title: value2.music.title, lines: [value2.music.label], badge: "\u97F3\u9891" });
+    if (type === "MAJOR_TYPE_COURSES" && value2.courses) return media({ href: safeUrl(value2.courses.jump_url), cover: value2.courses.cover, title: value2.courses.title, lines: [value2.courses.sub_title, value2.courses.desc], badge: "\u8BFE\u7A0B" });
+    if (type === "MAJOR_TYPE_COMMON" && value2.common) return media({ href: safeUrl(value2.common.jump_url), cover: value2.common.cover, title: value2.common.title, lines: [value2.common.desc], badge: value2.common.badge?.text });
+    if (type === "MAJOR_TYPE_NONE") return node("p", "adc-none", value2.none?.tips || "\u6E90\u52A8\u6001\u5DF2\u5931\u6548");
+    return null;
+  }
+  function elsewhere(raw, label) {
+    const line = node("p", "adc-elsewhere", `${label} \xB7 `);
+    line.append(link(dynamicUrl(raw), "adc-link", "\u5728\u539F\u9875\u9762\u67E5\u770B"));
+    return line;
+  }
+  function body(raw) {
+    const box = node("div", "adc-body"), dynamic = raw?.modules?.module_dynamic;
+    const text2 = richText(dynamic?.desc?.rich_text_nodes, dynamic?.desc?.text);
+    if (text2) box.append(text2);
+    const main = major(raw);
+    if (main) box.append(main);
+    else if (dynamic?.major && raw?.type !== "DYNAMIC_TYPE_FORWARD") box.append(elsewhere(raw, `\u6B64\u7C7B\u5185\u5BB9\uFF08${String(dynamic.major.type ?? "\u672A\u77E5").replace(/^MAJOR_TYPE_/, "")}\uFF09`));
+    if (raw?.type === "DYNAMIC_TYPE_FORWARD") box.append(raw.orig ? renderDynamicCard(raw.orig, true) : node("p", "adc-none", "\u539F\u52A8\u6001\u5DF2\u5931\u6548"));
+    const additional = dynamic?.additional?.type;
+    if (additional) box.append(elsewhere(raw, `\u9644\u52A0\u5185\u5BB9\uFF1A${additionalLabels[additional] ?? "\u5176\u4ED6"}`));
+    if (!text2 && !main && !box.childElementCount) box.append(elsewhere(raw, "\u6682\u4E0D\u652F\u6301\u7684\u52A8\u6001"));
+    return box;
+  }
+  function renderDynamicCard(raw, nested = false) {
+    const author2 = raw?.modules?.module_author ?? {}, card = node("article", nested ? "adc-card adc-nested" : "adc-card xp-window");
+    if (!nested) card.dataset.inactive = "";
+    card.dataset.dynamicId = String(raw?.id_str ?? "");
+    const caption = card.appendChild(node("header", nested ? "adc-caption" : "adc-caption xp-caption"));
+    const uid = /^\d+$/.test(String(author2.mid ?? "")) ? String(author2.mid) : "";
+    const space = uid ? `https://space.bilibili.com/${uid}/dynamic` : "";
+    if (!nested) caption.appendChild(link(space, "adc-face-link")).append(image2(bilibiliThumb(author2.face, "32w_32h_1c"), "adc-face", ""));
+    caption.append(link(space, "adc-name xp-caption-title", nested ? `@${author2.name || uid || "\u672A\u77E5"}` : author2.name || uid || "\u672A\u77E5"));
+    if (author2.pub_action) caption.append(node("span", "adc-action", author2.pub_action));
+    if (raw?.modules?.module_tag?.text) caption.append(node("span", "adc-pin", raw.modules.module_tag.text));
+    caption.append(node("span", "adc-tag", typeLabels[raw?.type] ?? "\u52A8\u6001"));
+    const content = card.appendChild(body(raw));
+    if (!nested) {
+      const stat = raw?.modules?.module_stat ?? {}, actions = node("div", "adc-actions");
+      for (const [label, key2] of [["\u8F6C\u53D1", "forward"], ["\u8BC4\u8BBA", "comment"], ["\u70B9\u8D5E", "like"]]) {
+        const button4 = actions.appendChild(node("button", `adc-button atelier-control adc-${key2}`, label));
+        button4.type = "button";
+        button4.dataset.action = key2;
+        button4.dataset.label = label;
+        button4.dataset.count = String(Math.max(0, Number(stat[key2]?.count) || 0));
+        const value2 = count(stat[key2]?.count);
+        if (value2) button4.textContent = `${label} ${value2}`;
+        if (key2 === "like") button4.setAttribute("aria-pressed", String(stat.like?.status === true));
+        if (stat[key2]?.disabled || stat[key2]?.forbidden) {
+          button4.disabled = true;
+          button4.title = key2 === "comment" ? "\u8FD9\u6761\u52A8\u6001\u7684\u8BC4\u8BBA\u533A\u5DF2\u5173\u95ED" : key2 === "like" ? "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u70B9\u8D5E" : "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u8F6C\u53D1";
+        }
+      }
+      const last = node("div", "adc-last");
+      if (content.lastElementChild) last.append(content.lastElementChild);
+      last.append(actions);
+      content.append(last);
+    }
+    const when = typeof author2.pub_time === "string" && author2.pub_time ? author2.pub_time : Number(author2.pub_ts) > 0 ? new Date(Number(author2.pub_ts) * 1e3).toLocaleString() : "";
+    if (when && !nested) card.appendChild(node("footer", "adc-footer xp-status")).append(node("span", "xp-status-pane", `\u53D1\u5E03\u4E8E ${when}`));
+    return card;
+  }
+  function dynamicBlockText(raw) {
+    const parts2 = [];
+    const collect = (item) => {
+      const dynamic = item?.modules?.module_dynamic;
+      for (const value2 of [dynamic?.desc?.text, dynamic?.major?.opus?.title, dynamic?.major?.opus?.summary?.text, dynamic?.major?.archive?.title, dynamic?.major?.archive?.desc, dynamic?.major?.article?.title, dynamic?.major?.article?.desc]) {
+        if (typeof value2 === "string" && value2) parts2.push(value2);
+      }
+    };
+    collect(raw);
+    if (raw?.orig) collect(raw.orig);
+    return parts2.join("\n");
+  }
+  var dynamicVideoTitle = (raw) => raw?.modules?.module_dynamic?.major?.archive?.title ?? raw?.orig?.modules?.module_dynamic?.major?.archive?.title;
+  var root = "#atelier-feed";
+  var viewed = `${root} .adc-card:has(> .adc-body > .adc-video .btnIsView, > .adc-body > .adc-last > .adc-video .btnIsView)`;
+  var dynamicCardCss = `
+${root}{display:flex;flex-direction:column;gap:8px;color:var(--xp-ink);${xpFont};text-align:left}
+${root} .adc-caption{gap:5px}
+${root} .adc-face-link{flex:none;display:block}
+${root} .adc-face{display:block;width:16px;height:16px;object-fit:cover}
+${root} .adc-name{flex:0 1 auto!important;color:inherit!important;text-decoration:none}
+${root} .adc-action{flex:none;white-space:nowrap}
+${root} .adc-tag,${root} .adc-pin{flex:none;white-space:nowrap}
+${root} .adc-caption>.adc-pin{margin-left:auto}${root} .adc-caption>.adc-action+.adc-tag,${root} .adc-caption>.adc-name+.adc-tag{margin-left:auto}
+${root} .adc-pin::before,${root} .adc-pin+.adc-tag::before{content:"\xB7 "}
+${root} .adc-card>.adc-body{background:var(--xp-face);border:1px solid var(--xp-edge);margin:1px 0 0}
+${root} .adc-body{padding:7px 9px;display:flex;flex-direction:column;gap:7px;overflow-wrap:anywhere}
+${root} .adc-text{white-space:normal}${root} :is(.adc-link,.adc-more){color:var(--xp-task-link)}${root} :is(.adc-link,.adc-more):hover{color:var(--xp-highlight)}
+${root} .adc-emoji{width:20px;height:20px;vertical-align:text-bottom;image-rendering:auto}${root} .adc-emoji-large{width:40px;height:40px}
+${root} .adc-opus{display:flex;flex-direction:column;gap:6px}${root} .adc-opus-title{font-weight:bold}
+${root} .adc-pics{display:grid;gap:3px;max-width:420px}${root} .adc-pics-2{grid-template-columns:repeat(2,1fr)}${root} .adc-pics-3{grid-template-columns:repeat(3,1fr)}
+${root} .adc-pic{display:block;border:1px solid var(--xp-edge);background:var(--xp-face);aspect-ratio:1;overflow:hidden}${root} .adc-pics-1 .adc-pic{aspect-ratio:auto;max-height:420px}
+${root} :is(.adc-pic,.adc-cover) img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
+${root} .adc-media{position:relative;background:var(--xp-face);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d);box-shadow:inset 1px 1px var(--xp-dark3d)}
+${root} .adc-media{--adc-pad:5px;--adc-cover-w:200px}
+${root} .adc-media-link{display:flex;gap:9px;color:var(--xp-ink)!important;text-decoration:none;padding:var(--adc-pad)}
+${root} .adc-thumb{position:relative;flex:0 0 var(--adc-cover-w);aspect-ratio:16/9}
+${root} .adc-cover{height:100%;background:var(--xp-face);overflow:hidden}
+${root} .adc-duration,${root} .adc-badge{position:absolute;${xpFont};padding:0 3px;color:#fff;background:#000b}
+${root} .adc-duration{right:2px;bottom:2px}${root} .adc-badge{left:2px;top:2px;color:var(--xp-caption-ink);background:var(--xp-caption)}
+/* \u672A\u770B/\u5DF2\u770B stays in the panel, outside the video's link, 4px inside the
+ * cover's top-right corner. No transform: it would stop Chrome snapping the
+ * button's edges to device pixels. */
+${root} .adc-video>.btnView{position:absolute;left:auto;top:calc(var(--adc-pad) + 4px);right:calc(100% - var(--adc-pad) - var(--adc-cover-w) + 4px);bottom:auto}
+${root} .adc-media-info{display:flex;flex-direction:column;gap:3px;min-width:0}
+${root} .adc-media-title{font-weight:bold;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+${root} .adc-media-line{color:var(--xp-muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+${root} .adc-nested{background:var(--xp-face);border:1px solid var(--xp-edge)}
+${root} .adc-nested>.adc-caption{display:flex;align-items:center;gap:5px;padding:3px 8px 0;color:var(--xp-task-link)}
+${root} .adc-nested .adc-name{font-weight:bold}
+${root} :is(.adc-none,.adc-elsewhere){margin:0;color:var(--xp-muted)}
+${root} .adc-last{display:flex;align-items:flex-end;gap:8px}
+${root} .adc-last>:not(.adc-actions){flex:1;min-width:0}
+${root} .adc-actions{flex:none;display:flex;gap:3px;margin-left:auto}
+${root} .adc-actions .atelier-control{min-width:0}
+/* Cards keep the inactive caption bitmap but use the active caption's text. */
+${root} .adc-card[data-inactive]>.xp-caption{color:var(--xp-caption-ink)}
+${root} .adc-card[data-inactive]>.xp-caption .xp-caption-title{text-shadow:var(--xp-dot) var(--xp-dot) var(--xp-caption-shadow)}
+/* The rest of the caption shares the title's font and shadow, in regular
+ * weight: one size and baseline at every scale. */
+${root} .adc-card[data-inactive]>.xp-caption>:is(.adc-action,.adc-pin,.adc-tag){font:var(--xp-caption-size)/var(--xp-line) var(--xp-caption-font);text-shadow:var(--xp-dot) var(--xp-dot) var(--xp-caption-shadow)}
+/* A watched video's card wears silver's inactive window, Luna's only grey. */
+${viewed}{border-image-source:var(--xp-grey-frame)}
+${viewed}>.xp-caption{border-image-source:var(--xp-grey-caption);color:var(--xp-grey-caption-ink)}
+${viewed}>.xp-caption :is(.xp-caption-title,.adc-action,.adc-pin,.adc-tag){text-shadow:none}
+${viewed} .adc-body,${viewed} .adc-body :is(.adc-media-link,.adc-link,.adc-more,.adc-media-line){color:var(--xp-graytext)!important}
+${root} .adc-footer{margin:0 -1px}
+${root} .btnView{z-index:3}
+`;
+
+  // src/ui/dialogs.ts
+  var pending = Promise.resolve();
+  function atelierDialog(options) {
+    const run = () => new Promise((resolve) => {
+      ensureLunaTheme();
+      const before = document.activeElement;
+      const dialog = document.createElement("dialog");
+      dialog.className = "atelier-dialog xp-window";
+      dialog.setAttribute("data-bili-blocker-ui", "");
+      const caption = document.createElement("header");
+      caption.className = "xp-caption";
+      const heading = document.createElement("h2");
+      heading.id = "atelier-dialog-title";
+      heading.textContent = options.title;
+      const dismiss = document.createElement("button");
+      dismiss.type = "button";
+      dismiss.className = "xp-caption-button";
+      dismiss.dataset.kind = "close";
+      dismiss.setAttribute("aria-label", "\u5173\u95ED");
+      dismiss.title = "\u5173\u95ED";
+      caption.append(heading, dismiss);
+      dialog.setAttribute("aria-labelledby", heading.id);
+      const message = document.createElement("p");
+      message.textContent = options.message;
+      const body2 = document.createElement("div");
+      body2.className = "atelier-dialog-body";
+      body2.append(message);
+      let input;
+      if (options.input !== void 0) {
+        input = document.createElement(options.multiline ? "textarea" : "input");
+        input.value = options.input;
+        input.readOnly = !!options.readOnly;
+        input.setAttribute("aria-label", options.title);
+        body2.append(input);
+      }
+      const actions = document.createElement("div");
+      actions.className = "atelier-dialog-actions";
+      let settled = false;
+      const cleanupPixels = observeCrispText(dialog);
+      dismiss.addEventListener("click", () => {
+        sound("click");
+        finish(null);
+      });
+      const finish = (result2) => {
+        if (settled) return;
+        settled = true;
+        cleanupPixels();
+        dialog.remove();
+        if (before?.isConnected) before.focus();
+        resolve(result2);
+      };
+      const add = (label, value2, parent = actions) => {
+        const button4 = document.createElement("button");
+        button4.type = "button";
+        button4.className = "atelier-control";
+        button4.textContent = label;
+        button4.addEventListener("click", () => {
+          sound("click");
+          finish(value2());
+        });
+        parent.append(button4);
+        return button4;
+      };
+      if (options.choices) {
+        const choices = document.createElement("div");
+        choices.className = "atelier-dialog-choices";
+        for (const choice of options.choices) add(choice.label, () => choice.value, choices);
+        body2.append(choices);
+      } else add(options.confirmLabel || (options.readOnly || options.alert ? "\u5173\u95ED" : "\u786E\u5B9A"), () => input?.value ?? "ok");
+      if (!options.alert && !options.readOnly) add("\u53D6\u6D88", () => null);
+      dialog.append(caption, body2, actions);
+      dialog.addEventListener("cancel", (event) => {
+        event.preventDefault();
+        finish(null);
+      });
+      dialog.addEventListener("keydown", (event) => {
+        event.stopPropagation();
+        if (event.key === "Escape") {
+          event.preventDefault();
+          finish(null);
+        }
+        if (event.key === "Enter" && event.target === input && !options.multiline) {
+          event.preventDefault();
+          finish(input.value);
+        }
+      });
+      document.body.append(dialog);
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+      (input || dialog.querySelector("button"))?.focus();
+      if (options.readOnly) input?.select();
+    });
+    const result = pending.then(run, run);
+    pending = result;
+    return result;
+  }
+  async function atelierConfirm(message, title = "\u786E\u8BA4\u64CD\u4F5C") {
+    return await atelierDialog({ title, message }) !== null;
+  }
+  function atelierAlert(message, title = "\u64CD\u4F5C\u63D0\u793A") {
+    return atelierDialog({ title, message, alert: true });
+  }
+  function atelierPrompt(message, value2 = "", readOnly = false) {
+    return atelierDialog({ title: readOnly ? "\u5BFC\u51FA\u6570\u636E" : "\u5BFC\u5165\u6570\u636E", message, input: value2, multiline: true, readOnly });
+  }
+
+  // src/core/info-log.ts
+  var rootId = "bili-atelier-info-log";
+  var styleId = "bili-atelier-info-log-style";
+  var maxItems = 6;
+  function ensureInfoLogStyle() {
+    ensureAppearance();
+    if (document.getElementById(styleId)) {
+      return;
+    }
+    const style = document.createElement("style");
+    style.id = styleId;
+    style.textContent = `
+#${rootId} {
+  position: fixed;
+  top: 84px;
+  right: 24px;
+  z-index: 2147483640;
+  width: min(360px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  pointer-events: none;
+  font: var(--xp-font-size)/var(--xp-line) var(--xp-font);
+}
+#${rootId} .bili-atelier-info-log-item {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 180px;
+  padding: 5px 8px 6px 10px;
+  border: 1px solid var(--xp-ink);
+  border-left: 4px solid var(--xp-highlight);
+  background: var(--xp-info);
+  color: var(--xp-info-ink);
+  box-shadow: 2px 2px 2px #0005;
+  opacity: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+#${rootId} .bili-atelier-info-log-item.is-visible { opacity: 1; }
+#${rootId} .bili-atelier-info-log-item.is-leaving { display: none; }
+#${rootId} .bili-atelier-info-log-success { border-left-color: #3fb34f; }
+#${rootId} .bili-atelier-info-log-warning { border-left-color: #f7b500; }
+#${rootId} .bili-atelier-info-log-error { border-left-color: var(--xp-danger); }
+`;
+    (document.head || document.documentElement).appendChild(style);
+  }
+  function ensureInfoLogRoot() {
+    if (!document.body) {
+      return null;
+    }
+    ensureInfoLogStyle();
+    let root3 = document.getElementById(rootId);
+    if (!root3) {
+      root3 = document.createElement("div");
+      root3.id = rootId;
+      root3.setAttribute("data-bili-blocker-ui", "true");
+      root3.setAttribute("data-bili-atelier-ui", "info-log");
+      root3.setAttribute("role", "status");
+      root3.setAttribute("aria-live", "polite");
+      document.body.appendChild(root3);
+    }
+    return root3;
+  }
+  function showInfoLog(message, tone = "info", durationMs = 3600) {
+    const text2 = String(message || "").replace(/\s+/g, " ").trim();
+    if (!text2) {
+      return;
+    }
+    const root3 = ensureInfoLogRoot();
+    if (!root3) {
+      document.addEventListener("DOMContentLoaded", () => showInfoLog(text2, tone, durationMs), { once: true });
+      return;
+    }
+    const item = document.createElement("div");
+    item.className = `bili-atelier-info-log-item bili-atelier-info-log-${tone}`;
+    const label = item.appendChild(document.createElement("span"));
+    label.className = "xp-text";
+    label.textContent = text2;
+    root3.prepend(item);
+    item.style.maxHeight = `${Math.max(48, item.scrollHeight + 20)}px`;
+    window.requestAnimationFrame(() => item.classList.add("is-visible"));
+    while (root3.children.length > maxItems) {
+      root3.lastElementChild?.remove();
+    }
+    window.setTimeout(() => {
+      item.classList.add("is-leaving");
+      window.setTimeout(() => item.remove(), 320);
+    }, durationMs);
+  }
+
+  // src/modules/blocker/page-context.ts
+  function currentLocation() {
+    return typeof location !== "undefined" ? location : null;
+  }
+  function isHomePageLocation(value2 = currentLocation()) {
+    return value2?.hostname === "www.bilibili.com" && /^\/?$/.test(value2.pathname || "");
+  }
+  function isSpacePageLocation(value2 = currentLocation()) {
+    return value2?.hostname === "space.bilibili.com" && /^\/\d+/.test(value2.pathname || "");
+  }
+  function parseUid(value2) {
+    const match = value2?.match(/space\.bilibili\.com\/(\d+)|data-user-id=["']?(\d+)|data-usercard-mid=["']?(\d+)|^(\d+)$/i);
+    const raw = match?.[1] || match?.[2] || match?.[3] || match?.[4];
+    if (!raw) {
+      return void 0;
+    }
+    const uid = Number.parseInt(raw, 10);
+    return Number.isFinite(uid) ? uid : void 0;
+  }
+  function parseSpaceProfileUid(pathname = currentLocation()?.pathname) {
+    return parseUid(pathname?.match(/^\/(\d+)/)?.[1]);
+  }
+
+  // src/modules/blocker/extract.ts
+  var videoCardSelectors = [
+    ".bili-video-card",
+    ".bili-feed-card",
+    ".feed-card",
+    ".video-card",
+    ".video-page-card-small",
+    ".video-page-operator-card-small",
+    ".small-item",
+    ".history-record",
+    ".rank-item",
+    ".rank-list>li",
+    ".video-list-item",
+    ".card-box",
+    "li",
+    "div"
+  ];
+  var commentSelectors = [
+    "bili-comment-thread-renderer",
+    "bili-comment-reply-renderer",
+    ".reply-item",
+    ".sub-reply-item",
+    ".list-item",
+    ".comment-item"
+  ];
+  var liveCardSelectors = [
+    ".bili-live-card",
+    ".live-card",
+    ".room-card",
+    ".bili-feed-card",
+    ".feed-card",
+    ".bili-video-card",
+    ".recommend-card",
+    ".floor-single-card",
+    ".video-list-item",
+    ".index_item_JSGkw",
+    "li",
+    "div"
+  ];
+  var ignoredTextTags = /* @__PURE__ */ new Set(["STYLE", "SCRIPT", "TEMPLATE", "NOSCRIPT"]);
+  function normalizeVisibleText(value2) {
+    return value2.replace(/\s+/g, " ").trim();
+  }
+  function readVisibleText(node3) {
+    if (!node3) {
+      return "";
+    }
+    if (node3.nodeType === 3) {
+      return node3.textContent || "";
+    }
+    const tagName = String(node3.tagName || node3.localName || "").toUpperCase();
+    if (ignoredTextTags.has(tagName) || node3.getAttribute?.("data-bili-blocker-ui") === "true") {
+      return "";
+    }
+    if (tagName === "BR") {
+      return "\n";
+    }
+    if (tagName === "IMG") {
+      return node3.getAttribute?.("alt") || node3.getAttribute?.("title") || "";
+    }
+    const childNodes = node3.childNodes && node3.childNodes.length > 0 ? node3.childNodes : node3.children;
+    const parts2 = Array.from(childNodes || []).map(readVisibleText);
+    if (parts2.length === 0 && typeof node3.localText === "string") {
+      parts2.push(node3.localText);
+    }
+    if (node3.shadowRoot) {
+      parts2.push(readVisibleText(node3.shadowRoot));
+    }
+    return parts2.filter(Boolean).join(" ");
+  }
+  function text(el) {
+    return normalizeVisibleText(readVisibleText(el));
+  }
+  function attr(el, name) {
+    return el?.getAttribute(name)?.trim() || "";
+  }
+  function first(root3, selectors) {
+    for (const selector of selectors) {
+      const found = root3.querySelector(selector);
+      if (found) {
+        return found;
+      }
+    }
+    return null;
+  }
+  function queryAllDeep(root3, selector) {
+    const results = [];
+    const visit = (node3) => {
+      if (typeof Element !== "undefined" && node3 instanceof Element && node3.matches(selector)) {
+        results.push(node3);
+      }
+      if (typeof Element !== "undefined" && node3 instanceof Element && node3.shadowRoot) {
+        visit(node3.shadowRoot);
+      }
+      results.push(...Array.from(node3.querySelectorAll(selector)));
+      for (const el of Array.from(node3.querySelectorAll("*"))) {
+        if (el.shadowRoot) {
+          visit(el.shadowRoot);
+        }
+      }
+    };
+    visit(root3);
+    return results;
+  }
+  function queryOneDeep(root3, selectors) {
+    for (const selector of selectors) {
+      const local = root3.querySelector(selector);
+      if (local) {
+        return local;
+      }
+    }
+    for (const el of Array.from(root3.querySelectorAll("*"))) {
+      const shadowRoot = el.shadowRoot;
+      if (!shadowRoot) {
+        continue;
+      }
+      const nested = queryOneDeep(shadowRoot, selectors);
+      if (nested) {
+        return nested;
+      }
+    }
+    return null;
+  }
+  function parseBv(url) {
+    return url?.match(/\/video\/(BV[^/?#]+)/i)?.[1] || null;
+  }
+  function parseRoomId(url) {
+    return url?.match(/live\.bilibili\.com\/(?:blanc\/)?(\d+)/i)?.[1] || void 0;
+  }
+  function getSpaceOwner(root3) {
+    if (!isSpacePageLocation()) {
+      return { uid: void 0, name: void 0 };
+    }
+    const uid = parseSpaceProfileUid();
+    const name = text(first(root3, [
+      "#h-name",
+      ".h-name",
+      ".n-name",
+      ".space-header .name",
+      ".user-info .name",
+      ".user-name",
+      ".nickname"
+    ])) || void 0;
+    return { uid, name };
+  }
+  function fillOwnerFromSpacePage(owner, root3) {
+    if (owner.uid !== void 0 || owner.name) {
+      return owner;
+    }
+    return getSpaceOwner(root3);
+  }
+  function closestAny(el, selectors) {
+    for (const selector of selectors) {
+      const found = el.closest(selector);
+      if (found instanceof HTMLElement) {
+        return found;
+      }
+    }
+    return el instanceof HTMLElement ? el : null;
+  }
+  function getOwner(root3) {
+    const ownerLink = first(root3, [
+      'a[href*="//space.bilibili.com/"]',
+      'a[href*="space.bilibili.com/"]',
+      ".bili-video-card__info--owner",
+      ".bili-live-card__info--uname",
+      ".bili-live-card__info--owner",
+      ".live-card__info--uname",
+      ".upname a",
+      ".channel-name",
+      ".anchor-name",
+      ".room-anchor",
+      ".up-name"
+    ]);
+    const href = attr(ownerLink, "href");
+    const name = text(ownerLink?.querySelector?.(".bili-video-card__info--author")) || text(ownerLink?.querySelector?.(".bili-live-card__info--uname")) || text(ownerLink?.querySelector?.(".name")) || text(ownerLink);
+    const uid = parseUid(href) ?? parseUid(attr(ownerLink, "data-usercard-mid")) ?? parseUid(attr(ownerLink, "data-user-id"));
+    return { uid, name: name || void 0 };
+  }
+  function readCollectionVideoItem(row) {
+    const insertionEl = row.querySelector(".video-pod__item") || row;
+    const titleEl = row.querySelector(".video-episode-card__info-title,.title") || row;
+    const titleCopy = titleEl.cloneNode(true);
+    titleCopy.querySelectorAll(".btnView").forEach((node3) => node3.remove());
+    const title = attr(titleEl, "title") || text(titleCopy);
+    if (!title) return null;
+    const owner = getOwner(row);
+    return {
+      kind: "video",
+      el: row,
+      insertionEl,
+      collection: true,
+      title,
+      bv: parseBv(row.getAttribute("data-key") || row.querySelector('a[href*="/video/BV"]')?.href),
+      uid: owner.uid,
+      name: owner.name
+    };
+  }
+  function collectVideoItems(root3 = document) {
+    const anchors = Array.from(root3.querySelectorAll('a[href*="/video/BV"]'));
+    const seen = /* @__PURE__ */ new Set();
+    const items = [];
+    const collectionSelector = ".pod-item,.video-episode-card,.multip .video-pod__item,.multip.grid .page";
+    for (const row of Array.from(root3.querySelectorAll(collectionSelector))) {
+      if (row.closest("[data-bili-blocker-ui]")) continue;
+      if (row.parentElement?.closest(collectionSelector)) continue;
+      const item = readCollectionVideoItem(row);
+      if (!item) continue;
+      items.push(item);
+      seen.add(row);
+    }
+    for (const anchor of anchors) {
+      if (anchor.closest(collectionSelector)) continue;
+      const card = closestAny(anchor, videoCardSelectors);
+      if (!card || seen.has(card)) {
+        continue;
+      }
+      seen.add(card);
+      const owner = fillOwnerFromSpacePage(getOwner(card), root3);
+      const title = attr(anchor, "title") || text(first(card, [".bili-video-card__info--tit", ".title", "h3", ".video-name"])) || text(anchor);
+      const bv = parseBv(anchor.href);
+      const insertionEl = first(card, [
+        ".bili-video-card__info--bottom",
+        ".bili-video-card__info--owner",
+        ".bili-video-card__info",
+        ".video-card-info",
+        ".info",
+        ".meta",
+        ".playinfo"
+      ]) || card;
+      items.push({
+        kind: "video",
+        el: card,
+        insertionEl,
+        title: title || void 0,
+        bv: bv || void 0,
+        uid: owner.uid,
+        name: owner.name
+      });
+    }
+    return items;
+  }
+  function collectCommentItems(root3 = document) {
+    const selector = commentSelectors.join(",");
+    const candidates = queryAllDeep(root3, selector);
+    const seen = /* @__PURE__ */ new Set();
+    const items = [];
+    for (const candidate of candidates) {
+      if (!(candidate instanceof HTMLElement) || seen.has(candidate)) {
+        continue;
+      }
+      seen.add(candidate);
+      const searchRoot = candidate.shadowRoot || candidate;
+      const userLink = queryOneDeep(searchRoot, [
+        '#user-name a[href*="space.bilibili.com/"]',
+        'a[href*="space.bilibili.com/"]',
+        ".user-name",
+        ".sub-user-name",
+        ".name"
+      ]);
+      const contentEl = queryOneDeep(searchRoot, [
+        "#contents",
+        ".reply-content",
+        ".text-con",
+        ".text",
+        "bili-rich-text"
+      ]);
+      const content = text(contentEl);
+      const href = attr(userLink, "href") || attr(userLink, "data-usercard-mid") || attr(userLink, "data-user-id") || candidate.outerHTML.slice(0, 500);
+      const uid = parseUid(href);
+      const name = text(userLink) || void 0;
+      if (!content && uid === void 0 && !name) {
+        continue;
+      }
+      items.push({
+        kind: "comment",
+        el: candidate,
+        insertionEl: userLink || candidate,
+        name,
+        uid,
+        content: content || void 0
+      });
+    }
+    return items;
+  }
+  function collectLiveItems(root3 = document) {
+    const anchors = Array.from(root3.querySelectorAll('a[href*="live.bilibili.com/"]'));
+    const seen = /* @__PURE__ */ new Set();
+    const items = [];
+    for (const anchor of anchors) {
+      const roomId = parseRoomId(anchor.href);
+      if (!roomId) {
+        continue;
+      }
+      const card = closestAny(anchor, liveCardSelectors);
+      if (!card || seen.has(card)) {
+        continue;
+      }
+      seen.add(card);
+      const owner = fillOwnerFromSpacePage(getOwner(card), root3);
+      const liveTitle = attr(anchor, "title") || text(first(card, [".room-title", ".bili-live-card__info--tit", "h3", ".title"])) || text(anchor);
+      const partition = text(first(card, [".area-name", ".video-card-meta__chip", ".partition"]));
+      items.push({
+        kind: "live",
+        el: card,
+        insertionEl: first(card, [
+          ".bili-live-card__info--bottom",
+          ".bili-live-card__info",
+          ".bili-video-card__info--bottom",
+          ".bili-video-card__info--owner",
+          ".live-card__info",
+          ".room-card-info",
+          ".video-card-info",
+          ".info",
+          ".meta"
+        ]) || card,
+        name: owner.name,
+        uid: owner.uid,
+        liveTitle: liveTitle || void 0,
+        roomId,
+        partition: partition || void 0
+      });
+    }
+    return items;
+  }
+
+  // src/modules/sync/panel.ts
+  var import_qrcode = __toESM(require_browser(), 1);
+  function mountSyncPanel() {
+    const host = document.createElement("div");
+    host.className = "luna-sync";
+    const root3 = host.attachShadow({ mode: "closed" });
+    root3.innerHTML = `<style>
+    ${sharedControlCss}
+    ${xpFieldCss("input")}
+    :host { display:block; color:var(--xp-ink); ${xpFont}; }
+    * { box-sizing:border-box; }
+    h2 { font:inherit; font-weight:bold; margin:0 0 12px; }
+    h3 { font:inherit; font-weight:normal; color:var(--xp-group-text); margin:0 0 10px; }
+    p { margin:0 0 16px; }
+    .hint { color:var(--xp-muted); }
+    section { border-top:1px solid var(--xp-line); padding:12px 0; }
+    .fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 18px; }
+    label { display:block; min-width:0; }
+    input { display:block; width:100%; margin:4px 0 0; }
+    [role=status] { white-space:pre-wrap; overflow-wrap:anywhere; background:var(--xp-window); border:1px solid var(--xp-edge); padding:6px 8px; margin:12px 0; }
+    .actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .actions .atelier-control { min-width:75px; }
+    .qr:not(:empty) { border:1px solid var(--xp-edge); padding:14px; margin-top:16px; background:var(--xp-window); }
+    canvas { display:block; max-width:100%; height:auto!important; margin-bottom:12px; }
+    @media(max-width:850px) { .fields { grid-template-columns:minmax(0,1fr); } h2 { font-size:1.4em; } }
+  </style>
+  <h2>PC / Android \u540C\u6B65</h2>
+  <p class="hint">\u901A\u8FC7 Backblaze B2 \u540C\u6B65\u5DF2\u770B\u6807\u8BB0\u3001UID\uFF0F\u7CBE\u786E\u7528\u6237\u540D\u9ED1\u540D\u5355\uFF0C\u4EE5\u53CA\u672C\u5730\u5173\u6CE8\u548C\u5206\u7EC4\uFF0C\u5305\u62EC\u65B0\u589E\u4E0E\u79FB\u9664\u3002</p>
+  <section><h3>\u8FDE\u63A5\u8BBE\u7F6E</h3><div class="fields"></div>
+  <p class="hint" style="margin-top:12px">\u4E24\u7AEF\u4F7F\u7528\u540C\u4E00 Bucket \u548C\u540C\u6B65\u76EE\u5F55\u3002\u9996\u6B21\u5408\u5E76\u540E\u4E0D\u80FD\u66F4\u6362\u8FD9\u4E24\u9879\uFF1B\u540C\u4E00\u7A7A\u95F4\u5185\u53EF\u66F4\u65B0\u5BC6\u94A5\u3002\u5176\u4ED6\u5C4F\u853D\u89C4\u5219\u548C\u5386\u53F2\u8BB0\u5F55\u4E0D\u53C2\u4E0E\u4E91\u540C\u6B65\u3002</p>
+  <div class="actions settings"></div></section>
+  <section><h3>\u540C\u6B65\u72B6\u6001</h3><p role="status" aria-live="polite"></p><div class="actions controls"></div>
+  <p class="hint" style="margin-top:12px">\u542F\u7528\u540E\u81EA\u52A8\u540C\u6B65\uFF1B\u6682\u505C\u671F\u95F4\u4ECD\u4FDD\u7559\u672C\u5730\u6539\u52A8\uFF0C\u91CD\u65B0\u542F\u7528\u540E\u7EE7\u7EED\u4E0A\u4F20\u3002\u9996\u6B21\u4E91\u7AEF\u5408\u5E76\u524D\u4F1A\u4FDD\u7559\u672C\u5730\u5907\u4EFD\u3002</p></section>
+  <section><h3>\u624B\u673A\u914D\u7F6E\u4E0E\u5907\u4EFD</h3><div class="actions transfer"></div><div class="qr"></div></section>`;
+    const fields2 = /* @__PURE__ */ new Map();
+    const cleanupPixels = observeCrispText(root3);
+    const c = getConfig();
+    for (const [key2, label, value2] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
+      const row = document.createElement("label");
+      row.textContent = label;
+      const input = document.createElement("input");
+      input.name = key2;
+      input.type = key2 === "applicationKey" ? "password" : "text";
+      input.autocomplete = "off";
+      input.spellcheck = false;
+      input.value = value2;
+      input.addEventListener("input", () => hideSecrets());
+      fields2.set(key2, input);
+      row.append(input);
+      root3.querySelector(".fields").append(row);
+    }
+    const fieldValues = () => Object.fromEntries([...fields2].map(([k, v]) => [k, v.value.trim()]));
+    let saved = JSON.stringify(fieldValues());
+    let message = "";
+    let disposed = false;
+    let qrGeneration = 0;
+    function hideSecrets() {
+      qrGeneration++;
+      root3.querySelector(".qr").replaceChildren();
+    }
+    const render2 = () => {
+      if (disposed) return;
+      const s = status();
+      root3.querySelector('[role="status"]').textContent = `${paused() ? "\u5DF2\u6682\u505C" : "\u5DF2\u542F\u7528"} \xB7 ${s.busy ? "\u540C\u6B65\u4E2D" : `\u5F85\u4E0A\u4F20 ${s.pending} \u6761\u64CD\u4F5C`}
+\u6700\u8FD1\u6210\u529F\uFF1A${s.lastSuccess ? new Date(s.lastSuccess).toLocaleString() : "\u5C1A\u672A\u540C\u6B65"}${s.error ? `
+${s.error}` : ""}${message ? `
+${message}` : ""}`;
+    };
+    const config2 = () => parseConfig({ schema: "bili-atelier-b2-config", version: 1, ...fieldValues() });
+    const action = (group, label, run, primary = false, done = "success", long = false) => {
+      const button4 = document.createElement("button");
+      button4.type = "button";
+      button4.textContent = label;
+      button4.className = "atelier-control";
+      if (primary) button4.classList.add("xp-default");
+      button4.onclick = async () => {
+        const feedback = soundTask(long ? "start" : void 0, () => !disposed && host.isConnected && !host.closest('[data-minimized="true"]'));
+        button4.disabled = true;
+        message = "";
+        try {
+          const result = await run();
+          if (result === "skipped") {
+            message = "\u672C\u6B21\u6CA1\u6709\u5F00\u59CB\u65B0\u7684\u540C\u6B65\uFF0C\u8BF7\u68C0\u67E5\u8FDE\u63A5\u8BBE\u7F6E\u548C\u5F53\u524D\u72B6\u6001\u3002";
+            feedback.finish("warning");
+          } else feedback.finish(result === "error" ? "error" : result === "cancelled" ? "cancel" : done);
+        } catch (e) {
+          message = e instanceof Error ? e.message : "\u64CD\u4F5C\u5931\u8D25";
+          feedback.finish("error");
+        } finally {
+          button4.disabled = false;
+          render2();
+        }
+      };
+      root3.querySelector("." + group).append(button4);
+    };
+    action("settings", "\u6D4B\u8BD5\u8FDE\u63A5", async () => {
+      await testConnection(config2());
+      message = "\u8BA4\u8BC1\u3001\u76EE\u5F55\u8BFB\u53D6\u53CA\u6743\u9650\u68C0\u67E5\u901A\u8FC7\uFF1B\u9996\u6B21\u540C\u6B65\u5C06\u9A8C\u8BC1\u4E0A\u4F20\u3002";
+    }, false, "success", true);
+    action("settings", "\u4FDD\u5B58\u5E76\u542F\u7528", () => {
+      saveConfig(config2());
+      saved = JSON.stringify(fieldValues());
+      setPaused(false);
+    }, true);
+    action("controls", "\u6682\u505C\u540C\u6B65", () => setPaused(true), false, "select");
+    action("controls", "\u7ACB\u5373\u540C\u6B65", () => {
+      if (paused()) throw new Error("\u8BF7\u5148\u4FDD\u5B58\u5E76\u542F\u7528\u540C\u6B65");
+      return synchronize(true);
+    }, false, "complete", true);
+    action("transfer", "\u4E0B\u8F7D\u9996\u6B21\u5907\u4EFD", downloadBackup);
+    action("transfer", "\u4E0B\u8F7D\u672C\u5730\u5173\u6CE8\u9996\u6B21\u5907\u4EFD", downloadLocalFollowBackup);
+    action("transfer", "\u663E\u793A\u914D\u7F6E\u4E8C\u7EF4\u7801", async () => {
+      const qr = root3.querySelector(".qr");
+      if (qr.childNodes.length) {
+        hideSecrets();
+        return;
+      }
+      const generation = ++qrGeneration;
+      const text2 = JSON.stringify(config2());
+      const hint = document.createElement("p");
+      hint.className = "hint";
+      hint.textContent = "\u4E8C\u7EF4\u7801\u5305\u542B\u8BBF\u95EE\u5BC6\u94A5\uFF0C\u8BF7\u52FF\u5206\u4EAB\u3002\u518D\u6B21\u70B9\u51FB\u53EF\u9690\u85CF\u3002\u624B\u673A\u53EF\u626B\u7801\u590D\u5236\u6587\u672C\uFF0C\u5728\u4E91\u540C\u6B65\u8BBE\u7F6E\u4E2D\u7C98\u8D34\u5BFC\u5165\u3002";
+      const canvas = document.createElement("canvas");
+      await import_qrcode.default.toCanvas(canvas, text2, { width: 320, errorCorrectionLevel: "M" });
+      if (disposed || generation !== qrGeneration) return;
+      const copy = document.createElement("button");
+      copy.type = "button";
+      copy.className = "atelier-control";
+      copy.textContent = "\u590D\u5236\u914D\u7F6E\u6587\u672C";
+      copy.onclick = async () => {
+        const feedback = soundTask(void 0, () => !disposed && copy.isConnected && host.isConnected);
+        try {
+          await navigator.clipboard.writeText(text2);
+          message = "\u914D\u7F6E\u6587\u672C\u5DF2\u590D\u5236";
+          feedback.finish("success");
+        } catch {
+          message = "\u65E0\u6CD5\u8BBF\u95EE\u526A\u8D34\u677F\uFF0C\u8BF7\u4F7F\u7528\u4E8C\u7EF4\u7801";
+          feedback.finish("warning");
+        }
+        render2();
+      };
+      qr.append(hint, canvas, copy);
+    }, false, "menu");
+    render2();
+    window.addEventListener("atelier-sync-status", render2);
+    return {
+      host,
+      isDirty: () => saved !== JSON.stringify(fieldValues()),
+      hideSecrets,
+      dispose() {
+        disposed = true;
+        cleanupPixels();
+        hideSecrets();
+        window.removeEventListener("atelier-sync-status", render2);
+        host.remove();
+      }
+    };
+  }
+  function registerSyncPanel(open) {
+    if (typeof GM_registerMenuCommand === "function") GM_registerMenuCommand("Bili Atelier \u4E91\u540C\u6B65", open);
+  }
+
+  // src/modules/sounds/panel.ts
+  function mountSoundPanel() {
+    const host = document.createElement("section");
+    host.className = "luna-sounds";
+    host.innerHTML = `<style>
+    .luna-sounds{display:flex;flex-direction:column;gap:10px;min-width:0}
+    .luna-sounds h2{font-size:14px!important}.luna-sounds p{line-height:1.5!important}
+    .luna-sound-group{padding:14px;border:2px solid;border-color:var(--atelier-edge) var(--atelier-highlight) var(--atelier-highlight) var(--atelier-edge);background:var(--atelier-surface);min-width:0}
+    .luna-sound-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0}
+    .luna-sound-row label{display:flex;align-items:center;gap:8px;min-width:0}
+    .luna-sound-row input[type=range]{width:clamp(100px,25vw,240px);max-width:100%;accent-color:var(--atelier-accent)}
+    .luna-sound-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--atelier-accent)}
+    .luna-sound-row output{min-width:4ch;font-variant-numeric:tabular-nums}
+    .luna-sounds select{max-width:100%;min-width:0;padding:5px;background:var(--atelier-field);border:2px inset var(--atelier-edge)}
+    .luna-sounds summary{cursor:pointer;padding:7px 0}.luna-sounds [role=status]{border:1px solid var(--atelier-edge);padding:10px;background:var(--atelier-panel)}
+  </style><h2>\u8BBE\u7F6E \u203A \u97F3\u6548</h2><p>\u8F7B\u67D4\u7684 Windows XP \u4EA4\u4E92\u58F0\u97F3\u3002\u901A\u77E5\u548C\u64CD\u4F5C\u7ED3\u679C\u59CB\u7EC8\u9759\u97F3\uFF1B\u97F3\u91CF\u53EA\u5F71\u54CD\u6309\u94AE\u3001\u5BFC\u822A\u548C\u7A97\u53E3\uFF0C\u504F\u597D\u4FDD\u5B58\u5728\u672C\u673A\u3002</p>`;
+    let prefs = readSoundPreferences();
+    const events = new AbortController();
+    const controls = [];
+    const status2 = document.createElement("p");
+    status2.setAttribute("role", "status");
+    status2.setAttribute("aria-live", "polite");
+    const refresh = () => {
+      prefs = readSoundPreferences();
+      controls.forEach((update) => update());
+      status2.textContent = soundPlaybackStatus();
+    };
+    const save = () => writeSoundPreferences(prefs);
+    const button4 = (label, run) => {
+      const node3 = document.createElement("button");
+      node3.type = "button";
+      node3.className = "luna-button";
+      node3.textContent = label;
+      node3.addEventListener("click", () => {
+        run();
+        status2.textContent = soundPlaybackStatus();
+      });
+      return node3;
+    };
+    function row(name, category) {
+      const section = document.createElement("section");
+      section.className = "luna-sound-group";
+      const values = () => category ? prefs.categories[category] : prefs;
+      const line2 = document.createElement("div");
+      line2.className = "luna-sound-row";
+      const label = document.createElement("label"), enabled = document.createElement("input");
+      enabled.type = "checkbox";
+      enabled.setAttribute("aria-label", name + "\u5F00\u5173");
+      label.append(enabled, document.createTextNode(name));
+      line2.append(label);
+      enabled.addEventListener("change", () => {
+        values().enabled = enabled.checked;
+        save();
+        sound("select");
+      });
+      const volumeLabel = document.createElement("label");
+      volumeLabel.textContent = "\u97F3\u91CF";
+      const volume2 = document.createElement("input");
+      volume2.type = "range";
+      volume2.min = "0";
+      volume2.max = "100";
+      volume2.step = "1";
+      volume2.setAttribute("aria-label", name + "\u97F3\u91CF");
+      const output = document.createElement("output");
+      volume2.addEventListener("input", () => {
+        values().volume = Number(volume2.value) / 100;
+        output.value = volume2.value + "%";
+        save();
+      });
+      volume2.addEventListener("change", () => sound("select"));
+      volumeLabel.append(volume2, output);
+      line2.append(volumeLabel);
+      if (category) line2.append(button4("\u8BD5\u542C" + name, () => previewSound(catalog_default.categories.find((item) => item.id === category).sample, category)));
+      controls.push(() => {
+        enabled.checked = values().enabled;
+        volume2.value = String(Math.round(values().volume * 100));
+        output.value = volume2.value + "%";
+      });
+      section.append(line2);
+      host.append(section);
+    }
+    row("\u603B\u97F3\u6548");
+    for (const category of catalog_default.categories) row(category.name, category.id);
+    const details = document.createElement("details"), summary = document.createElement("summary");
+    summary.textContent = "\u5168\u90E8 26 \u79CD\u539F\u7248\u58F0\u97F3\u8BD5\u542C";
+    details.append(summary);
+    summary.addEventListener("click", () => sound("menu"));
+    const line = document.createElement("div");
+    line.className = "luna-sound-row";
+    const select = document.createElement("select");
+    select.setAttribute("aria-label", "\u8BD5\u542C\u58F0\u97F3");
+    for (const clip of catalog_default.sounds) {
+      const option = document.createElement("option");
+      option.value = clip.id;
+      option.textContent = clip.name + (clip.previewOnly ? "\uFF08\u4EC5\u8BD5\u542C\uFF09" : "") + ` \xB7 ${(clip.durationMs / 1e3).toFixed(2)} \u79D2`;
+      select.append(option);
+    }
+    select.addEventListener("change", () => {
+      stopSoundPreview();
+      sound("select");
+    });
+    line.append(select, button4("\u8BD5\u542C\u6240\u9009\u58F0\u97F3", () => {
+      const cue = Object.values(catalog_default.cues).find((cue2) => cue2.sound === select.value);
+      previewSound(select.value, cue?.category || "navigation");
+    }), button4("\u505C\u6B62\u8BD5\u542C", () => {
+      stopSoundPreview();
+      sound("cancel");
+    }));
+    const hint = document.createElement("p");
+    hint.textContent = "\u901A\u77E5\u3001\u64CD\u4F5C\u7ED3\u679C\u4EE5\u53CA\u957F\u5F00\u673A\u3001\u5173\u673A\u3001\u767B\u5F55\u548C\u786C\u4EF6\u63D0\u793A\u6837\u672C\u4EC5\u4F9B\u624B\u52A8\u8BD5\u542C\uFF0C\u4E0D\u4F1A\u81EA\u52A8\u54CD\u8D77\u3002\u672A\u5206\u914D\u7ED9\u65E5\u5E38\u52A8\u4F5C\u7684\u6837\u672C\u4F7F\u7528\u201C\u5BFC\u822A\u4E0E\u7A97\u53E3\u201D\u97F3\u91CF\u3002";
+    details.append(line, hint);
+    host.append(details);
+    const quiet = document.createElement("p");
+    quiet.textContent = "\u5F53\u524D\u9875\u6216\u811A\u672C\u8986\u76D6\u7684 B \u7AD9\u6807\u7B7E\u64AD\u653E\u5A92\u4F53\u65F6\uFF08\u5305\u62EC\u9759\u97F3\u89C6\u9891\uFF09\uFF0C\u754C\u9762\u97F3\u6548\u6682\u65F6\u5B89\u9759\uFF1B\u5207\u5230\u540E\u53F0\u3001\u5173\u95ED\u7A97\u53E3\u6216\u53D7\u6D4F\u89C8\u5668\u9650\u5236\u7684\u58F0\u97F3\u4E0D\u4F1A\u8865\u64AD\u3002\u8BD5\u542C\u4E5F\u9075\u5B88\u5F00\u5173\u4E0E\u97F3\u91CF\u3002";
+    host.append(quiet, status2);
+    window.addEventListener(soundPreferencesChanged, refresh, { signal: events.signal });
+    refresh();
+    return { host, dispose() {
+      events.abort();
+      stopSoundPreview();
+      host.remove();
+    } };
+  }
 
   // src/ui/navigation.ts
   var atelierAreas = [
@@ -11423,18 +15495,498 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
     openPanel?.(section);
   }
 
+  // src/ui/window-drag.ts
+  function enableWindowDrag(panel, caption, signal) {
+    const positions = {};
+    let drag;
+    const mode = () => panel.dataset.minimized === "true" ? "minimized" : "normal";
+    const maximized = () => panel.dataset.maximized === "true" && mode() === "normal";
+    const place = (position) => {
+      const rect = panel.getBoundingClientRect();
+      position.x = Math.max(0, Math.min(Math.max(0, innerWidth - rect.width), position.x));
+      position.y = Math.max(0, Math.min(Math.max(0, innerHeight - rect.height), position.y));
+      Object.assign(panel.style, { left: `${position.x}px`, top: `${position.y}px`, right: "auto", bottom: "auto", margin: "0" });
+    };
+    const update = () => {
+      drag = void 0;
+      for (const property of ["left", "top", "right", "bottom", "margin"]) panel.style.removeProperty(property);
+      if (!maximized() && positions[mode()]) place(positions[mode()]);
+      caption.style.cursor = maximized() ? "default" : "move";
+    };
+    caption.style.touchAction = "none";
+    caption.querySelectorAll("img").forEach((img) => {
+      img.draggable = false;
+    });
+    caption.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || maximized() || event.target.closest("button")) return;
+      const rect = panel.getBoundingClientRect();
+      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, origin: { x: rect.left, y: rect.top }, moved: false };
+      caption.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    }, { signal });
+    caption.addEventListener("pointermove", (event) => {
+      if (!drag || drag.id !== event.pointerId) return;
+      if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 4) drag.moved = true;
+      if (!drag.moved) return;
+      const position = { x: drag.origin.x + event.clientX - drag.x, y: drag.origin.y + event.clientY - drag.y };
+      place(position);
+      positions[mode()] = position;
+    }, { signal });
+    const release = (event) => {
+      if (!drag || drag.id !== event.pointerId) return;
+      if (event.type === "pointercancel" && drag.moved) {
+        positions[mode()] = drag.origin;
+        place(drag.origin);
+      }
+      drag = void 0;
+    };
+    for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) caption.addEventListener(event, release, { signal });
+    window.addEventListener("resize", update, { signal });
+    update();
+    return update;
+  }
+
+  // src/modules/local-following/groups-window.ts
+  var windowClass = "atelier-groups-window";
+  var names2 = new Intl.Collator("zh-CN-u-co-pinyin", { sensitivity: "base", numeric: true });
+  var current = null;
+  function openLocalFollowGroups(options = {}) {
+    sound("open");
+    if (current) {
+      current.focus(options.group, options.search);
+      return;
+    }
+    ensureLunaTheme();
+    ensureStyle2();
+    const events = new AbortController();
+    const panel = document.createElement("section");
+    panel.className = `${windowClass} xp-window`;
+    panel.setAttribute("data-bili-blocker-ui", "");
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-label", "\u7BA1\u7406\u672C\u5730\u5206\u7EC4");
+    const caption = panel.appendChild(document.createElement("header"));
+    caption.className = "xp-caption";
+    caption.append(shellIcon(shellFolderIcon, 16), Object.assign(document.createElement("h2"), { textContent: "\u7BA1\u7406\u672C\u5730\u5206\u7EC4" }));
+    const close = caption.appendChild(document.createElement("button"));
+    close.type = "button";
+    close.className = "xp-caption-button";
+    close.dataset.kind = "close";
+    close.title = "\u5173\u95ED";
+    close.setAttribute("aria-label", "\u5173\u95ED");
+    const body2 = panel.appendChild(document.createElement("div"));
+    body2.className = "agw-body";
+    const search = body2.appendChild(document.createElement("input"));
+    search.type = "search";
+    search.className = "agw-search";
+    search.placeholder = "\u6635\u79F0 / UID";
+    search.setAttribute("aria-label", "\u641C\u7D22\u672C\u5730\u5173\u6CE8");
+    search.value = options.search ?? "";
+    const sheet = body2.appendChild(document.createElement("div"));
+    sheet.className = "agw-sheet";
+    const table = sheet.appendChild(document.createElement("table"));
+    table.setAttribute("role", "grid");
+    table.setAttribute("aria-label", "\u672C\u5730\u5173\u6CE8 \xD7 \u5206\u7EC4");
+    const status2 = panel.appendChild(document.createElement("div"));
+    status2.className = "xp-status";
+    status2.setAttribute("role", "status");
+    const statusText = status2.appendChild(Object.assign(document.createElement("span"), { className: "xp-status-pane" }));
+    let focusGroup = options.group ?? "", focusKey = "", menu = null;
+    const name = (account) => readLocalFollowCache(account.uid).name || account.name || account.uid;
+    const label = (group, groups) => groups.filter((other) => other.name === group.name).length > 1 ? `${group.name} (${group.id.slice(0, 6)})` : group.name;
+    function rows() {
+      const query = search.value.trim().toLowerCase();
+      return localFollowSnapshot().accounts.filter((account) => !query || name(account).toLowerCase().includes(query) || account.uid === query).sort((a, b) => names2.compare(name(a), name(b)) || a.uid.length - b.uid.length || (a.uid < b.uid ? -1 : 1));
+    }
+    function attempt(action, cue) {
+      try {
+        action();
+        sound(cue);
+        statusText.textContent = "";
+      } catch (error) {
+        sound("error");
+        statusText.textContent = error instanceof Error ? error.message : "\u672C\u5730\u5206\u7EC4\u6CA1\u6709\u4FDD\u5B58";
+      }
+    }
+    const cell = (row, column) => table.querySelector(`[data-row="${row}"][data-column="${column}"]`);
+    const byKey = (key2) => [...table.querySelectorAll("[data-key]")].find((node3) => node3.dataset.key === key2);
+    const header = (group) => byKey(`group:${group}`);
+    function focusCell(target) {
+      if (!target) return;
+      for (const other of table.querySelectorAll("[data-row]")) other.tabIndex = other === target ? 0 : -1;
+      focusKey = target.dataset.key;
+      target.focus();
+    }
+    function render2() {
+      const snapshot = localFollowSnapshot(), groups = snapshot.groups, list = rows();
+      if (focusGroup && !groups.some((group) => group.id === focusGroup)) focusGroup = "";
+      const hadFocus = table.contains(document.activeElement), left = sheet.scrollLeft, top = sheet.scrollTop;
+      const head = document.createElement("thead"), headRow = head.insertRow();
+      const corner = headRow.appendChild(document.createElement("th"));
+      corner.className = "agw-corner";
+      corner.textContent = "UP \u4E3B";
+      corner.scope = "col";
+      groups.forEach((group, index) => {
+        const th = headRow.appendChild(document.createElement("th"));
+        th.scope = "col";
+        th.className = "agw-group";
+        th.title = `${group.name}
+\u70B9\u51FB\u6253\u5F00\u5206\u7EC4\u83DC\u5355`;
+        Object.assign(th.dataset, { row: "0", column: String(index + 1), key: `group:${group.id}`, group: group.id });
+        if (group.id === focusGroup) th.setAttribute("aria-current", "true");
+        th.append(shellIcon(group.icon, 16), Object.assign(document.createElement("span"), { textContent: label(group, groups) }));
+        th.addEventListener("click", () => openMenu(th, group, index, groups.length));
+      });
+      const create = headRow.appendChild(document.createElement("th"));
+      create.scope = "col";
+      create.className = "agw-group agw-new";
+      create.textContent = "\u65B0\u5EFA\u5206\u7EC4\u2026";
+      Object.assign(create.dataset, { row: "0", column: String(groups.length + 1), key: "new" });
+      create.addEventListener("click", () => void createGroup());
+      const tbody = document.createElement("tbody");
+      list.forEach((account, rowIndex) => {
+        const row = tbody.insertRow();
+        const th = row.appendChild(document.createElement("th"));
+        th.scope = "row";
+        th.className = "agw-name";
+        th.title = `${name(account)}
+UID\uFF1A${account.uid}`;
+        const face = th.appendChild(document.createElement("img"));
+        face.alt = "";
+        face.loading = "lazy";
+        face.decoding = "async";
+        face.referrerPolicy = "no-referrer";
+        face.src = bilibiliThumb(readLocalFollowCache(account.uid).face || account.face, "32w_32h_1c") || atelierIcons.app;
+        th.append(Object.assign(document.createElement("span"), { textContent: name(account) }));
+        groups.forEach((group, index) => {
+          const td = row.insertCell(), member = account.groupIds.includes(group.id);
+          td.className = "agw-cell";
+          Object.assign(td.dataset, { row: String(rowIndex + 1), column: String(index + 1), key: `member:${account.uid}:${group.id}` });
+          td.setAttribute("role", "gridcell");
+          td.setAttribute("aria-checked", String(member));
+          td.setAttribute("aria-label", `${name(account)} \xB7 ${group.name}`);
+          const box = td.appendChild(document.createElement("input"));
+          box.type = "checkbox";
+          box.checked = member;
+          box.tabIndex = -1;
+          box.setAttribute("aria-hidden", "true");
+          td.addEventListener("click", (event) => {
+            event.preventDefault();
+            toggle(account, group);
+          });
+        });
+        row.insertCell().className = "agw-cell agw-spare";
+      });
+      table.replaceChildren(head, tbody);
+      if (!snapshot.accounts.length || !list.length) {
+        const empty = tbody.insertRow().insertCell();
+        empty.colSpan = groups.length + 2;
+        empty.className = "agw-empty";
+        empty.textContent = snapshot.accounts.length ? "\u6CA1\u6709\u627E\u5230\u8FD9\u4E2A UP \u4E3B" : "\u8FD8\u6CA1\u6709\u672C\u5730\u5173\u6CE8";
+      }
+      sheet.scrollLeft = left;
+      sheet.scrollTop = top;
+      const target = byKey(focusKey) ?? table.querySelector("[data-row]");
+      if (target) {
+        target.tabIndex = 0;
+        if (hadFocus) target.focus();
+      }
+    }
+    function toggle(account, group) {
+      focusKey = `member:${account.uid}:${group.id}`;
+      attempt(() => setLocalFollowMembership([account.uid], group.id, !account.groupIds.includes(group.id)), "select");
+    }
+    function reveal(group) {
+      focusGroup = group;
+      render2();
+      const th = header(group);
+      if (!th) return;
+      const name2 = table.querySelector(".agw-corner").offsetWidth;
+      sheet.scrollLeft = Math.max(0, th.offsetLeft - name2);
+    }
+    async function createGroup() {
+      const value2 = await atelierDialog({ title: "\u65B0\u5EFA\u672C\u5730\u5206\u7EC4", message: "\u5206\u7EC4\u540D\u79F0\uFF1A", input: "" });
+      if (!value2?.trim()) return;
+      let id = "";
+      attempt(() => {
+        id = createLocalFollowGroup(value2);
+      }, "save");
+      if (id) reveal(id);
+    }
+    function closeMenu() {
+      menu?.remove();
+      menu = null;
+    }
+    function openMenu(th, group, index, count2) {
+      closeMenu();
+      sound("menu");
+      focusGroup = group.id;
+      for (const other of table.querySelectorAll("th[data-group]")) other.toggleAttribute("aria-current", other === th);
+      const list = rows();
+      menu = panel.appendChild(document.createElement("nav"));
+      menu.className = "agw-menu xp-menu";
+      menu.setAttribute("role", "menu");
+      menu.setAttribute("aria-label", group.name);
+      const box = th.getBoundingClientRect(), frame = panel.getBoundingClientRect();
+      Object.assign(menu.style, { left: `${box.left - frame.left}px`, top: `${box.bottom - frame.top}px` });
+      const item = (text2, enabled, action) => {
+        const entry = menu.appendChild(document.createElement("button"));
+        entry.type = "button";
+        entry.className = "xp-menu-item";
+        entry.setAttribute("role", "menuitem");
+        entry.textContent = text2;
+        entry.disabled = !enabled;
+        entry.addEventListener("click", () => {
+          closeMenu();
+          void action();
+          th.focus();
+        });
+      };
+      item("\u53CD\u9009", list.length > 0, () => attempt(() => invertLocalFollowMembership(list.map((account) => account.uid), group.id), "select"));
+      item("\u91CD\u547D\u540D", true, async () => {
+        const value2 = await atelierDialog({ title: "\u91CD\u547D\u540D\u672C\u5730\u5206\u7EC4", message: "\u65B0\u7684\u540D\u79F0\uFF1A", input: group.name });
+        if (value2?.trim() && value2.trim() !== group.name) attempt(() => renameLocalFollowGroup(group.id, value2), "save");
+      });
+      item("\u66F4\u6362\u56FE\u6807", true, async () => {
+        const icon2 = await pickShellIcon(group.icon ?? shellFolderIcon);
+        if (icon2 !== null) attempt(() => setLocalFollowGroupIcon(group.id, icon2), "save");
+      });
+      item("\u5DE6\u79FB", index > 0, () => attempt(() => moveLocalFollowGroup(group.id, -1), "select"));
+      item("\u53F3\u79FB", index < count2 - 1, () => attempt(() => moveLocalFollowGroup(group.id, 1), "select"));
+      menu.append(Object.assign(document.createElement("div"), { className: "xp-menu-separator" }));
+      item("\u5220\u9664\u5206\u7EC4", true, async () => {
+        if (await atelierConfirm(`\u786E\u5B9A\u8981\u5220\u9664\u300C${group.name}\u300D\u5417\uFF1F\u5206\u7EC4\u91CC\u7684 UP \u4E3B\u4ECD\u7136\u4FDD\u7559\u5728\u672C\u5730\u5173\u6CE8\u91CC\u3002`, "\u5220\u9664\u672C\u5730\u5206\u7EC4")) attempt(() => deleteLocalFollowGroup(group.id), "delete");
+      });
+      observeCrispText(menu);
+      menu.querySelector("button:not(:disabled)")?.focus();
+      menu.addEventListener("keydown", (event) => {
+        const entries = [...menu.querySelectorAll("button:not(:disabled)")], at = entries.indexOf(document.activeElement);
+        if (event.key === "Escape") {
+          event.preventDefault();
+          event.stopPropagation();
+          sound("close");
+          closeMenu();
+          th.focus();
+        } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          entries[(at + (event.key === "ArrowDown" ? 1 : -1) + entries.length) % entries.length]?.focus();
+        }
+      });
+    }
+    table.addEventListener("keydown", (event) => {
+      const here = event.target.closest("[data-row]");
+      if (!here) return;
+      const row = Number(here.dataset.row), column = Number(here.dataset.column);
+      const move = { ArrowLeft: [row, column - 1], ArrowRight: [row, column + 1], ArrowUp: [row - 1, column], ArrowDown: [row + 1, column] }[event.key];
+      if (move) {
+        event.preventDefault();
+        focusCell(cell(move[0], move[1]));
+        return;
+      }
+      if (event.key === " " || event.key === "Enter" || event.key === "ContextMenu" || event.key === "F10" && event.shiftKey) {
+        event.preventDefault();
+        here.click();
+      }
+    });
+    search.addEventListener("input", () => render2());
+    panel.addEventListener("click", (event) => {
+      if (event.target.closest?.("button:not(:disabled)")) sound("click");
+    });
+    panel.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !menu) {
+        event.preventDefault();
+        sound("close");
+        dispose();
+      }
+    });
+    document.addEventListener("pointerdown", (event) => {
+      if (menu && !menu.contains(event.target)) closeMenu();
+    }, { signal: events.signal, capture: true });
+    window.addEventListener(localFollowChangedEvent, () => render2(), { signal: events.signal });
+    close.addEventListener("click", () => {
+      sound("close");
+      dispose();
+    });
+    function dispose() {
+      events.abort();
+      cleanup();
+      panel.remove();
+      current = null;
+    }
+    document.body.append(panel);
+    enableWindowDrag(panel, caption, events.signal);
+    const cleanup = observeCrispText(panel);
+    render2();
+    if (focusGroup) reveal(focusGroup);
+    (header(focusGroup) ?? search).focus();
+    current = {
+      focus: (group, query) => {
+        if (query !== void 0) search.value = query;
+        panel.parentElement?.append(panel);
+        if (group) reveal(group);
+        else render2();
+        (group && header(group) || search).focus();
+      }
+    };
+  }
+  function pickShellIcon(selected) {
+    return new Promise((resolve) => {
+      ensureLunaTheme();
+      ensureStyle2();
+      sound("open");
+      const dialog = document.createElement("dialog");
+      dialog.className = "atelier-dialog agw-picker xp-window";
+      dialog.setAttribute("data-bili-blocker-ui", "");
+      const caption = dialog.appendChild(document.createElement("header"));
+      caption.className = "xp-caption";
+      const heading = caption.appendChild(Object.assign(document.createElement("h2"), { id: "agw-picker-title", textContent: "\u66F4\u6539\u56FE\u6807" }));
+      dialog.setAttribute("aria-labelledby", heading.id);
+      const dismiss = caption.appendChild(document.createElement("button"));
+      dismiss.type = "button";
+      dismiss.className = "xp-caption-button";
+      dismiss.dataset.kind = "close";
+      dismiss.setAttribute("aria-label", "\u5173\u95ED");
+      const body2 = dialog.appendChild(Object.assign(document.createElement("div"), { className: "atelier-dialog-body" }));
+      const ready = shellIconsAvailable();
+      body2.append(Object.assign(document.createElement("p"), { textContent: ready ? "\u4ECE\u4EE5\u4E0B\u5217\u8868\u4E2D\u9009\u62E9\u4E00\u4E2A\u56FE\u6807\uFF1A" : "\u56FE\u6807\u8D44\u6E90\u5C1A\u672A\u4E0B\u8F7D\u3002\u8BF7\u5728\u811A\u672C\u66F4\u65B0\u540E\u91CD\u8BD5\u3002" }));
+      const list = body2.appendChild(document.createElement("div"));
+      list.className = "agw-icons";
+      list.setAttribute("role", "listbox");
+      list.setAttribute("aria-label", "\u56FE\u6807");
+      let chosen = shellIconIds.includes(selected) ? selected : shellFolderIcon;
+      const options = ready ? shellIconIds.map((id) => {
+        const option = list.appendChild(document.createElement("div"));
+        option.className = "agw-icon";
+        option.dataset.icon = String(id);
+        option.setAttribute("role", "option");
+        option.title = `\u56FE\u6807 ${id}`;
+        option.append(shellIcon(id, 32));
+        option.addEventListener("click", () => {
+          if (id !== chosen) sound("select");
+          choose(id);
+        });
+        option.addEventListener("dblclick", () => finish(id));
+        return option;
+      }) : [];
+      function choose(id) {
+        chosen = id;
+        for (const option of options) {
+          const on = option.dataset.icon === String(id);
+          option.setAttribute("aria-selected", String(on));
+          option.tabIndex = on ? 0 : -1;
+          if (on) {
+            option.focus();
+            option.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+          }
+        }
+      }
+      const actions = dialog.appendChild(Object.assign(document.createElement("div"), { className: "atelier-dialog-actions" }));
+      const button4 = (text2, action) => {
+        const node3 = actions.appendChild(document.createElement("button"));
+        node3.type = "button";
+        node3.className = "atelier-control";
+        node3.textContent = text2;
+        node3.addEventListener("click", () => {
+          sound("click");
+          action();
+        });
+        return node3;
+      };
+      button4("\u786E\u5B9A", () => finish(chosen)).disabled = !ready;
+      button4("\u53D6\u6D88", () => {
+        sound("close");
+        finish(null);
+      });
+      dismiss.addEventListener("click", () => {
+        sound("close");
+        finish(null);
+      });
+      list.addEventListener("keydown", (event) => {
+        const at = shellIconIds.indexOf(chosen), step = { ArrowUp: -1, ArrowDown: 1, ArrowLeft: -4, ArrowRight: 4, Home: -at, End: shellIconIds.length - 1 - at }[event.key];
+        if (step !== void 0) {
+          event.preventDefault();
+          choose(shellIconIds[Math.max(0, Math.min(shellIconIds.length - 1, at + step))]);
+        }
+        if (event.key === "Enter") {
+          event.preventDefault();
+          finish(chosen);
+        }
+      });
+      dialog.addEventListener("cancel", (event) => {
+        event.preventDefault();
+        finish(null);
+      });
+      dialog.addEventListener("keydown", (event) => {
+        event.stopPropagation();
+        if (event.key === "Escape") {
+          event.preventDefault();
+          sound("close");
+          finish(null);
+        }
+      });
+      const cleanup = observeCrispText(dialog);
+      let settled = false;
+      function finish(value2) {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        dialog.remove();
+        resolve(value2);
+      }
+      document.body.append(dialog);
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+      if (ready) choose(chosen);
+      else actions.querySelector("button:not(:disabled)")?.focus();
+    });
+  }
+  function ensureStyle2() {
+    if (document.getElementById("atelier-groups-style")) return;
+    const style = document.createElement("style");
+    style.id = "atelier-groups-style";
+    const w = `.${windowClass}`;
+    style.textContent = `
+${w}{position:fixed;inset:0;z-index:100002;width:640px;height:440px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);min-width:320px;min-height:220px;margin:auto;display:flex;flex-direction:column;resize:both;overflow:hidden;${xpFont};color:var(--xp-ink)}
+${w} *{box-sizing:border-box}
+${w} .xp-caption{gap:4px}
+${w} .agw-body{display:flex;flex-direction:column;gap:6px;flex:1;min-height:0;padding:6px;background:var(--xp-face)}
+${w} .agw-search{flex:none}
+${w} .agw-sheet{flex:1;min-height:0;overflow:auto;background:var(--xp-window);border:1px solid var(--xp-edge)}
+${w} table{border-collapse:separate;border-spacing:0;${xpFont}}
+${w} th,${w} td{height:22px;padding:0 4px;border-right:1px solid var(--xp-line);border-bottom:1px solid var(--xp-line);white-space:nowrap;font-weight:normal;text-align:left}
+${w} thead th{position:sticky;top:0;z-index:2;height:24px;background:var(--xp-face);border-right-color:var(--xp-shadow3d);border-bottom-color:var(--xp-shadow3d);cursor:default}
+${w} .agw-corner{left:0;z-index:3;width:130px;min-width:130px}
+${w} .agw-group{width:78px;min-width:78px;max-width:78px;overflow:hidden;text-overflow:ellipsis}
+${w} .agw-group>*{vertical-align:middle}${w} .agw-group>span:last-child{margin-left:3px}
+${w} .agw-group[aria-current=true]{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
+${w} .agw-new{width:96px;min-width:96px;max-width:none}
+${w} tbody th{position:sticky;left:0;z-index:1;max-width:130px;overflow:hidden;text-overflow:ellipsis;background:var(--xp-window);border-right-color:var(--xp-shadow3d)}
+${w} tbody th img{width:16px;height:16px;margin-right:4px;vertical-align:middle;object-fit:cover;image-rendering:auto}
+${w} .agw-cell{text-align:center;cursor:default}${w} .agw-cell input{margin:0;pointer-events:none}
+${w} .agw-spare{border-right:0}
+${w} .agw-empty{padding:16px 8px;color:var(--xp-muted);text-align:left}
+${w} [data-row]:focus{outline:1px dotted var(--xp-ink);outline-offset:-2px}
+${w} .agw-menu{position:absolute;z-index:4;min-width:120px}
+${w} .xp-status{flex:none}
+.agw-picker .atelier-dialog-body{display:flex;flex-direction:column;gap:6px}
+.agw-picker .agw-icons{display:grid;grid-auto-flow:column;grid-template-rows:repeat(4,44px);grid-auto-columns:44px;width:${44 * 8 + 2}px;height:${44 * 4 + 18}px;overflow-x:auto;overflow-y:hidden;background:var(--xp-window);border:1px solid var(--xp-edge)}
+.agw-picker .agw-icon{display:flex;align-items:center;justify-content:center;outline:none}
+.agw-picker .agw-icon[aria-selected=true]>*{background-color:var(--xp-highlight);outline:1px dotted var(--xp-highlight-xor,var(--xp-ink));outline-offset:1px}
+`;
+    (document.head || document.documentElement).append(style);
+  }
+
   // src/modules/local-following/panel.ts
   var panelId = "atelier-local-following-panel";
   function localFollowElement(tag, className = "", text2 = "") {
-    const node = document.createElement(tag);
-    node.className = className;
-    node.textContent = text2;
-    return node;
+    const node3 = document.createElement(tag);
+    node3.className = className;
+    node3.textContent = text2;
+    return node3;
   }
   function button(label, action, className = "lf-button") {
-    const node = localFollowElement("button", className, label);
-    node.type = "button";
-    node.addEventListener("click", () => {
+    const node3 = localFollowElement("button", className, label);
+    node3.type = "button";
+    node3.addEventListener("click", () => {
       try {
         sound("click");
         action();
@@ -11442,7 +15994,7 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
         reportLocalFollowError(error);
       }
     });
-    return node;
+    return node3;
   }
   function reportLocalFollowError(error) {
     const status2 = document.querySelector(`#${panelId} .lf-footer`);
@@ -11474,36 +16026,32 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;border-radius:0}${id}[
     const id = "#" + panelId;
     style.textContent = `
 #bili-atelier-blocker-panel .luna-following-content{display:flex;padding:8px;overflow:hidden}
-${id}{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;min-width:0;color:var(--atelier-ink);font:13px/1.5 Tahoma,"Microsoft YaHei",sans-serif}
+${id}{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;min-width:0;color:var(--xp-ink);${xpFont}}
 ${id} *{box-sizing:border-box}${id} [hidden]{display:none!important}
 ${id} .lf-layout{display:flex;flex-direction:column;gap:6px;flex:1;min-height:0}
 ${id} .lf-sidebar{flex-shrink:0;max-height:160px;overflow:auto}
 ${id} .lf-nav{display:flex;gap:3px;overflow:auto;padding-bottom:3px}
 ${id} .lf-group-button{flex-shrink:0;white-space:nowrap}
-${id} .lf-group-button[aria-current=page]{background:var(--atelier-selected);border-color:var(--atelier-accent);font-weight:bold}
+${id} .lf-group-button[aria-current=page]{font-weight:bold}
+${id} .lf-groups-open{margin-top:3px}
 ${id} .lf-main{display:flex;flex-direction:column;min-width:0;min-height:0;flex:1;overflow:auto}
 ${id} .lf-main>:not(.lf-directory){flex-shrink:0}
 ${id} .lf-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
-${id} :is(input:not([type=checkbox]),select){font:inherit;min-height:28px;padding:4px 6px;border:1px solid var(--atelier-edge);background:var(--atelier-field);color:var(--atelier-ink);min-width:0}
+${id} :is(input:not([type=checkbox]),select){min-height:21px;min-width:0}
 ${id} .lf-row input[type=search],${id} .lf-add input{flex:1;min-width:120px}
-${id} .lf-button{font:12px Tahoma,SimSun,sans-serif;color:var(--atelier-ink);border:1px solid var(--atelier-edge);border-radius:2px;background:var(--atelier-button);box-shadow:inset 1px 1px var(--atelier-highlight),inset -1px -1px var(--atelier-shadow);padding:5px 8px;min-height:28px;cursor:pointer}
-${id} .lf-button:hover{background:var(--atelier-hover)}${id} .lf-button:active{background:var(--atelier-selected);box-shadow:inset 1px 1px var(--atelier-shadow)}${id} .lf-button:disabled{opacity:.5;cursor:default}
-${id} .lf-groups-editor{margin:3px 0;border-top:1px solid var(--atelier-edge);padding-top:3px}
-${id} .lf-group-editor{display:flex;gap:5px;flex-wrap:wrap;padding:5px 0}${id} .lf-group-editor input{flex:1;min-width:100px}
-${id} .lf-directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:5px;background:var(--atelier-field);border:1px solid var(--atelier-edge);padding:5px;overflow:auto;min-height:100px;flex:1 0 100px}
-${id} .lf-tile{position:relative;border:1px solid var(--atelier-edge);padding:6px;min-width:0;background:var(--atelier-surface)}
-${id} .lf-tile[data-selected=true]{background:var(--atelier-selected);border-color:var(--atelier-accent)}
+${id} .lf-directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:2px;background:var(--xp-window);border:1px solid var(--xp-edge);padding:4px;overflow:auto;min-height:100px;flex:1 0 100px}
+${id} .lf-tile{position:relative;border:1px solid transparent;padding:5px;min-width:0}
+${id} .lf-tile[data-selected=true]{background:var(--xp-highlight);color:var(--xp-highlight-ink)}${id} .lf-tile[data-selected=true] :is(.lf-account,.lf-meta){color:inherit}
 ${id} .lf-account{display:flex;gap:7px;color:var(--atelier-ink);text-decoration:none;min-width:0;align-items:center;min-height:40px}
 ${id} .lf-face{height:32px;width:32px;object-fit:cover;flex:none;border:1px solid var(--atelier-edge);image-rendering:auto}
 ${id} .lf-name{min-width:0;overflow-wrap:anywhere;padding-right:18px;font-weight:bold}
 ${id} .lf-select{position:absolute;right:4px;top:4px}
-${id} .lf-meta{display:block;color:var(--atelier-muted);font-size:12px;overflow-wrap:anywhere;margin-top:3px}
+${id} .lf-meta{display:block;color:var(--xp-muted);overflow-wrap:anywhere;margin-top:2px}
 ${id} .lf-check{display:inline-flex;gap:5px;align-items:center;min-height:26px}
 ${id} .lf-options{display:flex;gap:5px 12px;flex-wrap:wrap;padding:4px 0}
 ${id} .lf-footer{padding:6px;border-top:1px solid var(--atelier-edge);color:var(--atelier-muted);flex-shrink:0;overflow-wrap:anywhere}
 ${id} .lf-empty{grid-column:1/-1;padding:16px 8px;color:var(--atelier-muted)}
 ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
-${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--atelier-edge);padding:4px}
 @media(max-width:420px){${id} .lf-directory{grid-template-columns:minmax(0,1fr)}}
 `;
     (document.head || document.documentElement).appendChild(style);
@@ -11534,11 +16082,7 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
     };
     const layout = localFollowElement("div", "lf-layout"), sidebar = localFollowElement("aside", "lf-sidebar"), nav = localFollowElement("nav", "lf-nav");
     nav.setAttribute("aria-label", "\u672C\u5730\u5206\u7EC4");
-    const groupEditor = localFollowElement("details", "lf-groups-editor");
-    groupEditor.append(localFollowElement("summary", "", "\u7F16\u8F91\u5206\u7EC4"));
-    const groupRows = localFollowElement("div");
-    groupEditor.append(groupRows);
-    sidebar.append(nav, groupEditor);
+    sidebar.append(nav, button("\u5206\u7EC4\u7BA1\u7406", () => openLocalFollowGroups({ group: groupId === "all" || groupId === "ungrouped" ? void 0 : groupId }), "lf-button lf-groups-open"));
     const main = localFollowElement("div", "lf-main"), addRow = localFollowElement("form", "lf-row lf-add");
     const input = localFollowElement("input");
     input.placeholder = "\u7C98\u8D34 UID \u6216\u4E2A\u4EBA\u4E3B\u9875\u94FE\u63A5";
@@ -11585,9 +16129,9 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
     search.setAttribute("aria-label", "\u641C\u7D22\u672C\u5730\u5173\u6CE8");
     const sortSelect = localFollowElement("select");
     sortSelect.setAttribute("aria-label", "\u6392\u5E8F\u65B9\u5F0F");
-    for (const [value, text2] of [["name", "\u6309\u540D\u5B57\uFF0F\u62FC\u97F3"], ["added", "\u6309\u6DFB\u52A0\u65F6\u95F4"], ["viewed", "\u6309\u6700\u8FD1\u67E5\u770B"], ["updated", "\u6309\u5DF2\u83B7\u53D6\u66F4\u65B0\u65F6\u95F4"]]) {
+    for (const [value2, text2] of [["name", "\u6309\u540D\u5B57\uFF0F\u62FC\u97F3"], ["added", "\u6309\u6DFB\u52A0\u65F6\u95F4"], ["viewed", "\u6309\u6700\u8FD1\u67E5\u770B"], ["updated", "\u6309\u5DF2\u83B7\u53D6\u66F4\u65B0\u65F6\u95F4"]]) {
       const option = localFollowElement("option", "", text2);
-      option.value = value;
+      option.value = value2;
       sortSelect.append(option);
     }
     sortSelect.value = sort;
@@ -11595,17 +16139,17 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
       ascending = !ascending;
       direction.textContent = ascending ? "\u5347\u5E8F" : "\u964D\u5E8F";
       savePrefs();
-      render();
+      render2();
     });
     sortSelect.addEventListener("change", () => {
       sort = sortSelect.value;
       ascending = sort === "name";
       direction.textContent = ascending ? "\u5347\u5E8F" : "\u964D\u5E8F";
       savePrefs();
-      render();
+      render2();
       sound("select");
     });
-    search.addEventListener("input", render);
+    search.addEventListener("input", render2);
     toolbar.append(search, sortSelect, direction);
     const typeDetails = localFollowElement("details"), typeList = localFollowElement("div", "lf-options");
     typeDetails.append(localFollowElement("summary", "", "\u54EA\u4E9B\u5185\u5BB9\u7B97\u66F4\u65B0"), typeList);
@@ -11617,7 +16161,7 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
           sound("warning");
           return;
         }
-        types = checked ? [...types, kind] : types.filter((value) => value !== kind);
+        types = checked ? [...types, kind] : types.filter((value2) => value2 !== kind);
         savePrefs();
         renderDirectory();
       });
@@ -11653,20 +16197,16 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
     const remove = button("\u79FB\u9664\u9009\u4E2D\u672C\u5730\u5173\u6CE8", () => {
       mutate(() => removeLocalFollows([...selected]), "delete");
       selected.clear();
-      render();
+      render2();
     });
     actions.append(all, none, checkChosen, checkGroup, cancel, remove);
-    const membership = localFollowElement("details");
-    membership.append(localFollowElement("summary", "", "\u8BBE\u7F6E\u9009\u4E2D\u8D26\u53F7\u7684\u5206\u7EC4\uFF08\u53EF\u591A\u9009\uFF09"));
-    const membershipRows = localFollowElement("div", "lf-options lf-membership");
-    membership.append(membershipRows);
     const directory = localFollowElement("div", "lf-directory");
     directory.setAttribute("aria-label", "\u672C\u5730\u5173\u6CE8\u76EE\u5F55");
-    const checker = new LocalFollowChecker(void 0, (state) => {
-      checkChosen.disabled = state.running || !selected.size;
-      checkGroup.disabled = state.running || !inGroup().length;
-      cancel.disabled = !state.running;
-      footer.textContent = state.running ? `\u6B63\u5728\u68C0\u67E5 ${state.completed + state.failed + 1}/${state.total}\uFF1B\u6210\u529F ${state.completed}\uFF0C\u5931\u8D25 ${state.failed}` : state.message;
+    const checker = new LocalFollowChecker(void 0, (state2) => {
+      checkChosen.disabled = state2.running || !selected.size;
+      checkGroup.disabled = state2.running || !inGroup().length;
+      cancel.disabled = !state2.running;
+      footer.textContent = state2.running ? `\u6B63\u5728\u68C0\u67E5 ${state2.completed + state2.failed + 1}/${state2.total}\uFF1B\u6210\u529F ${state2.completed}\uFF0C\u5931\u8D25 ${state2.failed}` : state2.message;
     });
     function savePrefs() {
       writeLocalFollowPreferences({ sort, ascending, types });
@@ -11682,8 +16222,8 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
     function visible() {
       return sortLocalFollows(inGroup(), sort, ascending, types, search.value);
     }
-    function date(value) {
-      return value ? new Date(value).toLocaleString() : "\u65F6\u95F4\u672A\u77E5";
+    function date(value2) {
+      return value2 ? new Date(value2).toLocaleString() : "\u65F6\u95F4\u672A\u77E5";
     }
     function groupLabel(group) {
       const peers = localFollowSnapshot().groups.filter((other) => other.name === group.name && other.id !== group.id);
@@ -11702,12 +16242,12 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
         const cache = readLocalFollowCache(account.uid), name = cache.name || account.name || "\u672A\u547D\u540D\u8D26\u53F7";
         const tile = localFollowElement("div", "lf-tile");
         tile.dataset.selected = String(selected.has(account.uid));
-        const link = localFollowElement("a", "lf-account");
-        link.href = `https://space.bilibili.com/${account.uid}`;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.id = "lf-account-" + account.uid;
-        link.addEventListener("click", () => {
+        const link2 = localFollowElement("a", "lf-account");
+        link2.href = `https://space.bilibili.com/${account.uid}`;
+        link2.target = "_blank";
+        link2.rel = "noopener noreferrer";
+        link2.id = "lf-account-" + account.uid;
+        link2.addEventListener("click", () => {
           recordLocalFollowVisit(account.uid);
           sound("folder");
         });
@@ -11715,11 +16255,11 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
         face.alt = "";
         face.loading = "lazy";
         face.referrerPolicy = "no-referrer";
-        face.src = cache.face || account.face || luna.app;
+        face.src = cache.face || account.face || atelierIcons.app;
         face.addEventListener("error", () => {
-          face.src = luna.app;
+          face.src = atelierIcons.app;
         }, { once: true });
-        link.append(face, localFollowElement("span", "lf-name", name));
+        link2.append(face, localFollowElement("span", "lf-name", name));
         const select = checkbox(`\u9009\u62E9 ${name}`, selected.has(account.uid), (checked) => {
           if (checked) selected.add(account.uid);
           else selected.delete(account.uid);
@@ -11728,108 +16268,3616 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
         select.input.className = "lf-select";
         select.input.setAttribute("aria-label", `\u9009\u62E9 ${name}`);
         select.input.id = "lf-select-" + account.uid;
-        tile.append(link, select.input);
-        const time = sort === "viewed" ? `\u6700\u8FD1\u67E5\u770B\uFF1A${date(cache.viewedAt)}` : sort === "added" ? `\u6DFB\u52A0\u4E8E\uFF1A${date(account.addedAt)}` : `\u5DF2\u83B7\u53D6\u66F4\u65B0\uFF1A${date(latestLocalFollowUpdate(cache, types))}`;
-        tile.append(localFollowElement("span", "lf-meta", time));
+        tile.append(link2, select.input);
+        const time2 = sort === "viewed" ? `\u6700\u8FD1\u67E5\u770B\uFF1A${date(cache.viewedAt)}` : sort === "added" ? `\u6DFB\u52A0\u4E8E\uFF1A${date(account.addedAt)}` : `\u5DF2\u83B7\u53D6\u66F4\u65B0\uFF1A${date(latestLocalFollowUpdate(cache, types))}`;
+        tile.append(localFollowElement("span", "lf-meta", time2));
         if (account.groupIds.length) tile.append(localFollowElement("span", "lf-meta", account.groupIds.map((id) => snapshot.groups.find((group) => group.id === id)).filter(Boolean).map(groupLabel).join("\u3001")));
         if (cache.checkError) tile.append(localFollowElement("span", "lf-meta", `\u4E0A\u6B21\u68C0\u67E5\u5931\u8D25\uFF1A${cache.checkError}`));
         directory.append(tile);
       }
       if (!accounts.length) directory.append(localFollowElement("p", "lf-empty", "\u6CA1\u6709\u5339\u914D\u7684\u672C\u5730\u5173\u6CE8\u3002\u53EF\u4ECE\u4E3B\u9875\u6DFB\u52A0\uFF0C\u6216\u5728\u4E0A\u65B9\u7C98\u8D34\u8D26\u53F7\u94FE\u63A5\u3002"));
-      membershipRows.replaceChildren();
-      const chosen = snapshot.accounts.filter((account) => selected.has(account.uid));
-      for (const group of snapshot.groups) {
-        const count = chosen.filter((account) => account.groupIds.includes(group.id)).length;
-        const control = checkbox(groupLabel(group), !!chosen.length && count === chosen.length, (value) => setLocalFollowMembership([...selected], group.id, value));
-        control.input.id = "lf-member-" + group.id;
-        control.input.indeterminate = count > 0 && count < chosen.length;
-        control.input.disabled = !chosen.length;
-        membershipRows.append(control.wrapper);
-      }
-      if (!snapshot.groups.length) membershipRows.append(localFollowElement("span", "", "\u5148\u5728\u5DE6\u4FA7\u65B0\u5EFA\u5206\u7EC4"));
       remove.disabled = none.disabled = !selected.size;
       checkChosen.disabled = checker.state.running || !selected.size;
       checkGroup.disabled = checker.state.running || !inGroup().length;
       cancel.disabled = !checker.state.running;
       if (focusId) document.getElementById(focusId)?.focus();
     }
-    function render() {
+    function render2() {
       const focusId = panel.contains(document.activeElement) ? document.activeElement?.id : "";
       const snapshot = localFollowSnapshot();
       if (groupId !== "all" && groupId !== "ungrouped" && !snapshot.groups.some((group) => group.id === groupId)) groupId = "ungrouped";
       nav.replaceChildren();
       for (const [id, label] of [["all", "\u5168\u90E8\u672C\u5730\u5173\u6CE8"], ["ungrouped", "\u672A\u5206\u7EC4"], ...snapshot.groups.map((group) => [group.id, groupLabel(group)])]) {
-        const node = button(label, () => {
+        const node3 = button(label, () => {
           if (groupId !== id) sound("folder");
           groupId = id;
-          render();
+          render2();
         }, "lf-button lf-group-button");
-        node.setAttribute("aria-current", id === groupId ? "page" : "false");
-        nav.append(node);
-        node.id = "lf-group-" + id;
-      }
-      if (!groupRows.contains(document.activeElement) || document.activeElement?.tagName !== "INPUT") {
-        groupRows.replaceChildren();
-        const newRow = localFollowElement("form", "lf-row");
-        const newName = localFollowElement("input");
-        newName.placeholder = "\u65B0\u5206\u7EC4\u540D\u79F0";
-        newName.setAttribute("aria-label", "\u65B0\u5206\u7EC4\u540D\u79F0");
-        const create = () => {
-          if (newName.value.trim()) mutate(() => createLocalFollowGroup(newName.value), "save");
-        };
-        newRow.addEventListener("submit", (event) => {
-          event.preventDefault();
-          create();
-        });
-        newRow.append(newName, button("\u65B0\u5EFA", create));
-        groupRows.append(newRow);
-        for (const [index, group] of snapshot.groups.entries()) {
-          const row = localFollowElement("div", "lf-group-editor"), name = localFollowElement("input");
-          name.value = group.name;
-          name.setAttribute("aria-label", `\u91CD\u547D\u540D ${groupLabel(group)}`);
-          const actions2 = localFollowElement("div", "lf-row");
-          const rename = button("\u6539\u540D", () => {
-            if (name.value.trim()) {
-              name.blur();
-              mutate(() => renameLocalFollowGroup(group.id, name.value), "save");
-            }
-          });
-          const up = button("\u4E0A\u79FB", () => moveLocalFollowGroup(group.id, -1)), down = button("\u4E0B\u79FB", () => moveLocalFollowGroup(group.id, 1));
-          up.disabled = index === 0;
-          down.disabled = index === snapshot.groups.length - 1;
-          actions2.append(rename, up, down, button("\u5220\u9664\u7EC4", () => {
-            mutate(() => deleteLocalFollowGroup(group.id), "delete");
-            footer.textContent = "\u5206\u7EC4\u5DF2\u5220\u9664\uFF0C\u8D26\u53F7\u4FDD\u7559";
-          }));
-          row.append(name, actions2);
-          groupRows.append(row);
-        }
+        node3.setAttribute("aria-current", id === groupId ? "page" : "false");
+        nav.append(node3);
+        node3.id = "lf-group-" + id;
       }
       renderDirectory();
       if (focusId) document.getElementById(focusId)?.focus();
     }
-    main.append(addRow, toolbar, typeDetails, actions, membership, directory);
+    main.append(addRow, toolbar, typeDetails, actions, directory);
     layout.append(sidebar, main);
     panel.append(layout, footer);
-    window.addEventListener(localFollowChangedEvent, render, { signal: events.signal });
+    window.addEventListener(localFollowChangedEvent, render2, { signal: events.signal });
     for (const summary of panel.querySelectorAll("summary")) summary.addEventListener("click", () => sound("menu"));
     window.addEventListener("pagehide", () => close(), { signal: events.signal, once: true });
-    render();
+    render2();
     return { host: panel, dispose: close };
   }
 
+  // src/modules/blocker/panel.ts
+  var categories = [
+    { id: "user", label: "\u7528\u6237", description: "\u6309\u7528\u6237\u8EAB\u4EFD\u8FC7\u6EE4\u5185\u5BB9\uFF0C\u767D\u540D\u5355\u4F18\u5148\u4FDD\u7559\u3002", keys: ["precise_uid", "precise_uid_white", "name", "precise_name", "nameCanonical"] },
+    { id: "video", label: "\u89C6\u9891", description: "\u6309\u6807\u9898\u8FC7\u6EE4\u4E0D\u60F3\u770B\u5230\u7684\u89C6\u9891", keys: ["title", "titleCanonical"] },
+    { id: "comment", label: "\u8BC4\u8BBA", description: "\u6309\u8BC4\u8BBA\u6B63\u6587\u4E2D\u7684\u5173\u952E\u8BCD\u8FC7\u6EE4\u5185\u5BB9\u3002", keys: ["commentOn", "commentOnCanonical"] },
+    { id: "dynamic", label: "\u52A8\u6001", description: "\u6309\u52A8\u6001\u6B63\u6587\u4E2D\u7684\u5173\u952E\u8BCD\u8FC7\u6EE4\u5185\u5BB9\u3002", keys: ["dynamic", "dynamicCanonical"] },
+    { id: "live", label: "\u76F4\u64AD", description: "\u6309\u76F4\u64AD\u6807\u9898\u3001\u76F4\u64AD\u95F4\u6216\u5206\u533A\u8FC7\u6EE4\u5185\u5BB9\u3002", keys: ["liveTitle", "liveTitleCanonical", "precise_liveRoomId", "precise_partition"] }
+  ];
+  var modeLabels = {
+    precise_uid: "\u7528\u6237 UID",
+    precise_uid_white: "UID \u767D\u540D\u5355",
+    name: "\u6A21\u7CCA\u7528\u6237\u540D",
+    precise_name: "\u7CBE\u786E\u7528\u6237\u540D",
+    nameCanonical: "\u6B63\u5219\u7528\u6237\u540D",
+    title: "\u6A21\u7CCA\u5339\u914D",
+    titleCanonical: "\u6B63\u5219\u5339\u914D",
+    commentOn: "\u6A21\u7CCA\u5339\u914D",
+    commentOnCanonical: "\u6B63\u5219\u5339\u914D",
+    dynamic: "\u6A21\u7CCA\u5339\u914D",
+    dynamicCanonical: "\u6B63\u5219\u5339\u914D",
+    liveTitle: "\u6A21\u7CCA\u6807\u9898",
+    liveTitleCanonical: "\u6B63\u5219\u6807\u9898",
+    precise_liveRoomId: "\u76F4\u64AD\u95F4 ID",
+    precise_partition: "\u76F4\u64AD\u5206\u533A"
+  };
+  var activePanel;
+  function toggleBlockerHistory(onRulesChanged, renderHistory) {
+    if (!activePanel?.toggleHistory()) openBlockerPanel(onRulesChanged, renderHistory, "history");
+  }
+  function element(tag, className = "", text2 = "") {
+    const node3 = document.createElement(tag);
+    node3.className = className;
+    node3.textContent = text2;
+    return node3;
+  }
+  function icon(src, size = 28) {
+    const image3 = element("img");
+    image3.src = src;
+    image3.alt = "";
+    image3.width = image3.height = size;
+    return image3;
+  }
+  function button2(text2, action, className = "luna-button") {
+    const node3 = element("button", className, text2);
+    node3.type = "button";
+    node3.addEventListener("click", () => {
+      sound("click");
+      action();
+    });
+    return node3;
+  }
+  function appearancePage() {
+    const page = element("div", "atelier-appearance");
+    const preview = element("div", "atelier-appearance-preview");
+    preview.setAttribute("aria-hidden", "true");
+    const sample = (className, title, inactive, kinds2, body2) => {
+      const frame = element("div", "xp-window " + className);
+      if (inactive) frame.dataset.inactive = "";
+      const caption = element("div", "xp-caption");
+      caption.append(element("span", "xp-caption-title", title));
+      for (const kind of kinds2) {
+        const control = element("span", "xp-caption-button");
+        control.dataset.kind = kind;
+        caption.append(control);
+      }
+      const content = element("div", "preview-body");
+      content.append(...body2);
+      frame.append(caption, content);
+      return frame;
+    };
+    preview.append(
+      sample("preview-inactive", "\u975E\u6D3B\u52A8\u7A97\u53E3", true, ["minimize", "maximize", "close"], []),
+      sample("preview-active", "\u6D3B\u52A8\u7A97\u53E3", false, ["minimize", "maximize", "close"], [element("span", "", "\u7A97\u53E3\u6587\u5B57")]),
+      sample("preview-message", "\u6D88\u606F\u6846", false, ["close"], [element("span", "", "\u6D88\u606F\u6587\u5B57"), element("span", "xp-button", "\u786E\u5B9A")])
+    );
+    const row = (label, control) => {
+      const line = element("label", "atelier-appearance-row");
+      line.append(element("span", "", label), control);
+      return line;
+    };
+    const choice = (options, value2, change) => {
+      const node3 = element("select");
+      for (const [key2, text2] of options) {
+        const option = element("option", "", text2);
+        option.value = key2;
+        node3.append(option);
+      }
+      node3.value = value2;
+      node3.addEventListener("change", () => {
+        change(node3.value);
+        sound("select");
+      });
+      return node3;
+    };
+    const prefs = readUiPreferences();
+    page.append(
+      element("h2", "", "\u5916\u89C2"),
+      preview,
+      row("\u8272\u5F69\u65B9\u6848(C):", choice(Object.entries(lunaSchemeNames), prefs.scheme, (value2) => saveUiPreferences({ scheme: value2 }))),
+      row("\u660E\u6697(D):", choice([["page", "\u8DDF\u968F\u7F51\u9875"], ["light", "\u6D45\u8272"], ["dark", "\u6DF1\u8272"]], prefs.theme, (value2) => saveUiPreferences({ theme: value2 }))),
+      element("p", "luna-hint", "\u6587\u5B57\u4F7F\u7528 Windows XP \u5B8B\u4F53\u7684\u539F\u751F\u70B9\u9635\uFF0C\u6309\u5C4F\u5E55\u7F29\u653E\u9009\u62E9\u6700\u63A5\u8FD1\u7684\u5C3A\u5BF8\u3002"),
+      button2("\u91CD\u7F6E\u7535\u89C6\u5165\u53E3\u4F4D\u7F6E", () => {
+        saveUiPreferences({ edge: "right", y: 0.72 });
+        window.dispatchEvent(new Event("atelier-reset-launcher"));
+      })
+    );
+    return page;
+  }
+  function download(data, stem) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link2 = element("a");
+    link2.href = url;
+    link2.download = stem + "-" + (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) + ".json";
+    document.body.appendChild(link2);
+    link2.click();
+    link2.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1e3);
+  }
+  function openBlockerPanel(onRulesChanged, renderHistory, initialSection = "video") {
+    if (activePanel && document.getElementById(atelierPanelId)) {
+      activePanel.show(initialSection);
+      return;
+    }
+    ensureLunaTheme();
+    const previousFocus = document.activeElement;
+    const events = new AbortController();
+    const panel = element("section");
+    panel.id = atelierPanelId;
+    panel.className = "xp-window";
+    panel.setAttribute("data-bili-blocker-ui", "");
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-labelledby", "bili-atelier-title");
+    const snapshot = readRuleSnapshot();
+    const fields2 = /* @__PURE__ */ new Map();
+    const saved = /* @__PURE__ */ new Map();
+    let section = initialSection;
+    let selectedKey = "title";
+    let syncPanel;
+    let soundPanel;
+    let followingPanel;
+    const cleanupPixels = observeCrispText(panel);
+    const navButtons = /* @__PURE__ */ new Map();
+    const isDirty = () => [...fields2].some(([key2, field]) => field.value !== saved.get(key2));
+    const status2 = element("span", "luna-status xp-status-pane");
+    status2.setAttribute("role", "status");
+    status2.setAttribute("aria-live", "polite");
+    function updateStatus(message) {
+      const count2 = [...fields2].reduce((sum, [key2, field]) => sum + parseRuleText(field.value, ruleDefinitions.find((rule) => rule.key === key2)?.integer).length, 0);
+      const relevant = isDirty() || categories.some((category) => category.id === section);
+      status2.textContent = message || (relevant ? count2 + " \u6761\u89C4\u5219 \xB7 " + (isDirty() ? "\u6709\u672A\u4FDD\u5B58\u7684\u4FEE\u6539" : "\u5DF2\u4FDD\u5B58") : "");
+      status2.dataset.dirty = String(isDirty());
+    }
+    for (const rule of ruleDefinitions) {
+      const field = element("textarea", "luna-editor");
+      field.id = "bili-rule-" + rule.key;
+      field.value = formatRuleText(snapshot[rule.key]);
+      field.spellcheck = false;
+      field.setAttribute("aria-label", rule.label);
+      field.addEventListener("input", () => updateStatus());
+      fields2.set(rule.key, field);
+      saved.set(rule.key, field.value);
+    }
+    let closing = false;
+    async function close() {
+      if (closing) return;
+      closing = true;
+      const feedback = soundTask();
+      if ((isDirty() || syncPanel?.isDirty()) && !await atelierConfirm("\u89C4\u5219\u6216\u540C\u6B65\u8BBE\u7F6E\u5C1A\u672A\u4FDD\u5B58\uFF0C\u786E\u5B9A\u653E\u5F03\u4FEE\u6539\u5E76\u5173\u95ED\u5417\uFF1F")) {
+        closing = false;
+        feedback.finish("cancel");
+        return;
+      }
+      events.abort();
+      syncPanel?.dispose();
+      soundPanel?.dispose();
+      followingPanel?.dispose();
+      cleanupPixels();
+      panel.remove();
+      activePanel = void 0;
+      if (previousFocus?.isConnected) previousFocus.focus();
+      feedback.finish("close");
+    }
+    function syncSavedRules(discardDrafts = false) {
+      const current2 = readRuleSnapshot();
+      for (const rule of ruleDefinitions) {
+        const field = fields2.get(rule.key);
+        if (discardDrafts || field.value === saved.get(rule.key)) {
+          field.value = formatRuleText(current2[rule.key]);
+          saved.set(rule.key, field.value);
+        }
+      }
+      updateStatus();
+    }
+    function save() {
+      const changed = isDirty();
+      const latest = readRuleSnapshot();
+      for (const rule of ruleDefinitions) {
+        const field = fields2.get(rule.key);
+        if (field.value === saved.get(rule.key)) continue;
+        let next = parseRuleText(field.value, rule.integer);
+        if (rule.key === "precise_uid" || rule.key === "precise_name") {
+          const identity = (value2) => String(value2).trim().toLowerCase();
+          const baseline = new Set(parseRuleText(saved.get(rule.key), rule.integer).map(identity));
+          const draft = new Set(next.map(identity));
+          const current2 = latest[rule.key].filter((value2) => !baseline.has(identity(value2)) || draft.has(identity(value2)));
+          const present = new Set(current2.map(identity));
+          next = current2.concat(next.filter((value2) => !baseline.has(identity(value2)) && !present.has(identity(value2))));
+        }
+        writeRuleList(rule.key, next);
+      }
+      syncSavedRules(true);
+      onRulesChanged();
+      showInfoLog("\u5DF2\u4FDD\u5B58\u5C4F\u853D\u89C4\u5219", "success");
+      if (changed) sound("save");
+    }
+    const caption = element("header", "luna-caption xp-caption");
+    const title = element("h1", "", "Bili Atelier");
+    title.id = "bili-atelier-title";
+    const captionActions = element("div", "luna-caption-actions");
+    function setCaptionImages(node3, name) {
+      node3.dataset.kind = name;
+    }
+    function captionButton(name, label, action) {
+      const node3 = button2("", action, "luna-caption-button xp-caption-button");
+      node3.title = label;
+      node3.setAttribute("aria-label", label);
+      setCaptionImages(node3, name);
+      captionActions.appendChild(node3);
+      return node3;
+    }
+    const minimize = captionButton("minimize", "\u6700\u5C0F\u5316", () => {
+      const minimized = panel.dataset.minimized !== "true";
+      if (minimized) syncPanel?.hideSecrets();
+      panel.dataset.minimized = String(minimized);
+      updateWindowPosition();
+      minimize.title = minimized ? "\u5C55\u5F00\u7A97\u53E3" : "\u6700\u5C0F\u5316";
+      minimize.setAttribute("aria-label", minimize.title);
+      sound(minimized ? "minimize" : "restore");
+    });
+    const maximize = captionButton("maximize", "\u6700\u5927\u5316", () => {
+      panel.dataset.minimized = "false";
+      minimize.title = "\u6700\u5C0F\u5316";
+      minimize.setAttribute("aria-label", minimize.title);
+      const maximized = panel.dataset.maximized !== "true";
+      panel.dataset.maximized = String(maximized);
+      updateWindowPosition();
+      maximize.title = maximized ? "\u8FD8\u539F\u7A97\u53E3" : "\u6700\u5927\u5316";
+      maximize.setAttribute("aria-label", maximize.title);
+      setCaptionImages(maximize, maximized ? "restore" : "maximize");
+      sound(maximized ? "maximize" : "restore");
+    });
+    captionButton("close", "\u5173\u95ED\u7A97\u53E3", close);
+    caption.append(icon(atelierIcons.tv, 16), title, captionActions);
+    const updateWindowPosition = enableWindowDrag(panel, caption, events.signal);
+    const layout = element("div", "luna-layout");
+    const sidebar = element("aside", "luna-sidebar xp-taskpane");
+    const group = element("section", "xp-task-group");
+    group.dataset.special = "";
+    const groupHead = button2("\u5DE5\u4F5C\u53F0", () => {
+      group.toggleAttribute("data-collapsed");
+      groupHead.setAttribute("aria-expanded", String(!group.hasAttribute("data-collapsed")));
+    }, "xp-task-head");
+    groupHead.setAttribute("aria-expanded", "true");
+    const nav = element("nav", "luna-nav xp-task-body");
+    nav.setAttribute("aria-label", "Atelier \u529F\u80FD\u76EE\u5F55");
+    function addNav(parent, id, label) {
+      const node3 = button2("", () => show(id, true), "luna-nav-button xp-task-link");
+      node3.append(icon(atelierIcons[areaFor(id)], 16), document.createTextNode(label));
+      navButtons.set(id, node3);
+      parent.appendChild(node3);
+    }
+    atelierAreas.forEach((area) => addNav(nav, area.id, area.label));
+    group.append(groupHead, nav);
+    sidebar.append(group);
+    const main = element("div", "luna-main");
+    const breadcrumb = element("div", "luna-breadcrumb");
+    const address = element("div", "luna-address");
+    breadcrumb.append(document.createTextNode("\u5730\u5740"), address);
+    const sectionTabs = element("nav", "luna-section-tabs xp-tabs");
+    sectionTabs.setAttribute("aria-label", "\u5F53\u524D\u680F\u76EE\u5B50\u9875\u9762");
+    const content = element("main", "luna-content");
+    const footer = element("footer", "luna-footer");
+    const saveRules = button2("\u4FDD\u5B58\u89C4\u5219", save, "luna-button luna-button-primary xp-default");
+    footer.append(saveRules, button2("\u5173\u95ED", close));
+    main.append(breadcrumb, sectionTabs, content, footer);
+    layout.append(sidebar, main);
+    const statusBar = element("div", "xp-status");
+    statusBar.append(status2);
+    panel.append(caption, layout, statusBar);
+    function showRules() {
+      const category = categories.find((item) => item.id === section);
+      if (!category.keys.includes(selectedKey)) selectedKey = category.keys[0];
+      content.append(element("h2", "", category.label + "\u5C4F\u853D\u89C4\u5219"), element("p", "luna-description", category.description));
+      const tabs2 = element("div", "luna-rule-tabs");
+      tabs2.setAttribute("role", "tablist");
+      tabs2.setAttribute("aria-label", category.label + "\u5339\u914D\u65B9\u5F0F");
+      const editorHost = element("div");
+      editorHost.setAttribute("role", "tabpanel");
+      editorHost.id = "bili-atelier-rule-editor";
+      const modeButtons = /* @__PURE__ */ new Map();
+      function selectMode(key2, user = false) {
+        if (user && selectedKey !== key2) sound("select");
+        selectedKey = key2;
+        for (const [mode, node3] of modeButtons) {
+          node3.setAttribute("aria-selected", String(mode === key2));
+          node3.tabIndex = mode === key2 ? 0 : -1;
+        }
+        editorHost.setAttribute("aria-labelledby", "bili-atelier-mode-" + key2);
+        editorHost.replaceChildren(fields2.get(key2));
+      }
+      for (const key2 of category.keys) {
+        const tab = button2(modeLabels[key2], () => selectMode(key2, true), "luna-rule-tab");
+        const mark = element("span", "luna-radio");
+        mark.setAttribute("aria-hidden", "true");
+        tab.prepend(mark);
+        tab.id = "bili-atelier-mode-" + key2;
+        tab.setAttribute("role", "tab");
+        tab.setAttribute("aria-controls", editorHost.id);
+        tab.addEventListener("keydown", (event) => {
+          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+          event.preventDefault();
+          const index = category.keys.indexOf(key2);
+          const next = event.key === "Home" ? 0 : event.key === "End" ? category.keys.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + category.keys.length) % category.keys.length;
+          selectMode(category.keys[next], true);
+          modeButtons.get(category.keys[next]).focus();
+        });
+        modeButtons.set(key2, tab);
+        tabs2.appendChild(tab);
+      }
+      selectMode(selectedKey);
+      content.append(tabs2, editorHost, element("p", "luna-hint", "\u6BCF\u884C\u4E00\u6761\u89C4\u5219"));
+    }
+    function dataGroup(title2, hint, actions) {
+      const group2 = element("section", "luna-data-group xp-groupbox");
+      const row = element("div", "luna-button-row");
+      row.append(...actions);
+      group2.append(element("h3", "", title2), element("p", "luna-hint", hint), row);
+      return group2;
+    }
+    function downloadViewed() {
+      const data = exportViewedDataPackage();
+      download(data, "bili-atelier-viewed");
+      showInfoLog("\u5DF2\u751F\u6210 " + data.viewed.items.length + " \u6761\u5DF2\u770B\u8BB0\u5F55\u7684\u4E0B\u8F7D\u6587\u4EF6", "success");
+      sound("success");
+    }
+    async function importText(text2, mode) {
+      if (isDirty() && !await atelierConfirm("\u5BFC\u5165\u4F1A\u91CD\u65B0\u8F7D\u5165\u89C4\u5219\u5E76\u653E\u5F03\u5C1A\u672A\u4FDD\u5B58\u7684\u4FEE\u6539\u3002\u7EE7\u7EED\u5417\uFF1F")) return false;
+      if (mode === "overwrite" && !await atelierConfirm("\u8986\u76D6\u5BFC\u5165\u4F1A\u66FF\u6362\u5DF2\u770B\u8BB0\u5F55\u548C\u5BF9\u5E94\u5C4F\u853D\u89C4\u5219\u3002\u786E\u5B9A\u7EE7\u7EED\u5417\uFF1F")) return false;
+      if (!panel.isConnected) return false;
+      const result = importAtelierDataInput(JSON.parse(text2), mode);
+      syncSavedRules(true);
+      onRulesChanged();
+      updateStatus(result.res);
+      showInfoLog(result.res + "\uFF1B\u5DF2\u770B\u72B6\u6001\u53EF\u80FD\u9700\u8981\u5237\u65B0\u9875\u9762\u540E\u5B8C\u5168\u751F\u6548\u3002", "success", 5200);
+      return true;
+    }
+    async function pasteImport(mode) {
+      const feedback = soundTask(void 0, panel);
+      const text2 = await atelierPrompt("\u7C98\u8D34\u7EDF\u4E00\u6570\u636E JSON\uFF0C\u4E5F\u517C\u5BB9\u65E7\u5C4F\u853D/\u5DF2\u770B JSON");
+      if (!text2) {
+        feedback.finish("cancel");
+        return;
+      }
+      try {
+        feedback.finish(await importText(text2, mode) ? "success" : "cancel");
+      } catch (error) {
+        void atelierAlert("\u5BFC\u5165\u5931\u8D25\uFF1A" + String(error));
+        feedback.finish("error");
+      }
+    }
+    function fileImport(label, mode) {
+      const input = element("input");
+      input.type = "file";
+      input.accept = ".txt,.json,application/json,text/plain";
+      input.hidden = true;
+      input.addEventListener("change", async () => {
+        const feedback = soundTask("start", panel);
+        const file = input.files?.[0];
+        input.value = "";
+        if (!file) return;
+        try {
+          const text2 = await file.text();
+          if (panel.isConnected) feedback.finish(await importText(text2, mode) ? "success" : "cancel");
+        } catch (error) {
+          void atelierAlert("\u5BFC\u5165\u5931\u8D25\uFF1A" + String(error));
+          feedback.finish("error");
+        }
+      });
+      const wrapper = element("span");
+      wrapper.append(button2(label, () => input.click()), input);
+      return wrapper;
+    }
+    function showData() {
+      content.append(element("h2", "", "\u6570\u636E\u7BA1\u7406"), element("p", "luna-description", "\u5907\u4EFD\u4F60\u7684\u5DF2\u770B\u8BB0\u5F55\u548C\u5C4F\u853D\u89C4\u5219\uFF0C\u4E5F\u53EF\u5BFC\u5165\u5230\u624B\u673A\u3002"));
+      content.append(dataGroup("\u5BFC\u51FA\u4E0E\u624B\u673A\u5BFC\u5165", "\u5BFC\u51FA\u5F53\u524D\u5DF2\u4FDD\u5B58\u7684\u6570\u636E\uFF1B\u4FEE\u6539\u89C4\u5219\u540E\u8BF7\u5148\u4FDD\u5B58\u3002", [
+        button2("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
+        button2("\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", () => {
+          download(exportAtelierDataPackage(), "bili-atelier-data");
+          showInfoLog("\u5DF2\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u542B\u5DF2\u770B\u548C\u5C4F\u853D\u89C4\u5219\uFF09", "success");
+          sound("success");
+        }),
+        button2("\u5BFC\u51FA\u7EDF\u4E00 JSON", async () => {
+          const feedback = soundTask(void 0, panel);
+          const json = JSON.stringify(exportAtelierDataPackage(), null, 2);
+          let copied = false;
+          try {
+            if (navigator.clipboard?.writeText) {
+              await navigator.clipboard.writeText(json);
+              copied = true;
+            }
+          } catch {
+          }
+          await atelierPrompt(copied ? "\u7EDF\u4E00\u6570\u636E JSON\uFF08\u5DF2\u590D\u5236\u5230\u526A\u8D34\u677F\uFF09" : "\u7EDF\u4E00\u6570\u636E JSON\uFF08\u8BF7\u624B\u52A8\u590D\u5236\uFF09", json, true);
+          showInfoLog("\u5DF2\u5BFC\u51FA\u7EDF\u4E00 JSON", "success");
+          feedback.finish("success");
+        })
+      ]));
+      content.append(dataGroup("\u8FFD\u52A0\u5BFC\u5165", "\u5408\u5E76\u5E76\u53BB\u91CD\uFF0C\u4FDD\u7559\u5DF2\u6709\u8BB0\u5F55\u3002\u517C\u5BB9\u65E7\u5C4F\u853D / \u5DF2\u770B JSON\u3002", [
+        button2("\u8FFD\u52A0\u5BFC\u5165\u7EDF\u4E00 JSON", () => pasteImport("append")),
+        fileImport("\u4ECE\u6587\u4EF6\u8FFD\u52A0\u5BFC\u5165", "append")
+      ]));
+      content.append(dataGroup("\u8986\u76D6\u5BFC\u5165", "\u66FF\u6362\u5DF2\u770B\u8BB0\u5F55\u53CA\u5BFC\u5165\u6587\u4EF6\u4E2D\u7684\u89C4\u5219\u3002\u64CD\u4F5C\u524D\u4F1A\u518D\u6B21\u786E\u8BA4\u3002", [
+        button2("\u8986\u76D6\u5BFC\u5165\u7EDF\u4E00 JSON", () => pasteImport("overwrite")),
+        fileImport("\u4ECE\u6587\u4EF6\u8986\u76D6\u5BFC\u5165", "overwrite")
+      ]));
+    }
+    function showViewed() {
+      const snapshot2 = readViewedStorage();
+      content.append(
+        element("h2", "", "\u5DF2\u770B\u6807\u8BB0"),
+        element("p", "luna-description", "\u7EE7\u7EED\u4F7F\u7528\u89C6\u9891\u5361\u7247\u4E0A\u7684\u5DF2\u770B\u6309\u94AE\u7BA1\u7406\u89C2\u770B\u72B6\u6001\u3002"),
+        element("p", "", "\u5DF2\u4FDD\u5B58 " + snapshot2.items.length + " \u6761\u5DF2\u770B\u8BB0\u5F55")
+      );
+      const list = element("pre", "luna-viewed-list", snapshot2.items.length ? snapshot2.items.slice(0, 100).join("\n") : "\u8FD8\u6CA1\u6709\u5DF2\u770B\u8BB0\u5F55\u3002\u6807\u8BB0\u89C6\u9891\u540E\uFF0C\u8BB0\u5F55\u4F1A\u663E\u793A\u5728\u8FD9\u91CC\u3002");
+      list.setAttribute("aria-label", "\u5DF2\u770B\u89C6\u9891 ID");
+      content.append(list);
+      if (snapshot2.items.length > 100) content.append(element("p", "luna-hint", "\u6B64\u5904\u9884\u89C8\u524D 100 \u6761\uFF1B\u5BFC\u51FA\u6587\u4EF6\u5305\u542B\u5168\u90E8\u8BB0\u5F55\u3002"));
+      content.append(dataGroup("\u6570\u636E\u5907\u4EFD", "\u53EF\u5C06\u5DF2\u770B\u8BB0\u5F55\u4E0B\u8F7D\u5230\u624B\u673A\uFF0C\u6216\u8FDB\u5165\u6570\u636E\u7BA1\u7406\u5BFC\u5165\u5DF2\u6709\u8BB0\u5F55\u3002", [
+        button2("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
+        button2("\u5BFC\u5165\u5DF2\u770B\u8BB0\u5F55\u2026", () => show("data", true)),
+        button2("\u5237\u65B0\u8BB0\u5F55", () => show("viewed", true))
+      ]));
+    }
+    function refreshHistory() {
+      const container = content.querySelector(".luna-history");
+      if (container) renderHistory(container, () => {
+        syncSavedRules();
+        onRulesChanged();
+      });
+    }
+    function show(next, user = false) {
+      if (user && next !== section) sound("folder");
+      else if (user && panel.dataset.minimized === "true") sound("restore");
+      if (section === "sounds" && next !== "sounds") stopSoundPreview();
+      syncPanel?.hideSecrets();
+      section = next;
+      saveRules.hidden = !categories.some((category2) => category2.id === section);
+      panel.dataset.minimized = "false";
+      updateWindowPosition();
+      minimize.title = "\u6700\u5C0F\u5316";
+      minimize.setAttribute("aria-label", minimize.title);
+      syncSavedRules();
+      for (const [id, node3] of navButtons) {
+        if (id === areaFor(section)) node3.setAttribute("aria-current", "page");
+        else node3.removeAttribute("aria-current");
+      }
+      const category = categories.find((item) => item.id === section);
+      const area = areaFor(section);
+      const label = atelierAreas.find((item) => item.id === area).label;
+      address.replaceChildren(icon(atelierIcons[area], 16), document.createTextNode("Bili Atelier \u203A " + label));
+      sectionTabs.replaceChildren();
+      const tabs2 = area === "video" ? [...categories.map((item) => [item.id, item.label]), ["history", "\u5C4F\u853D\u5386\u53F2"]] : area === "data" ? [["data", "\u5BFC\u5165\u4E0E\u5BFC\u51FA"], ["sync", "PC / Android \u540C\u6B65"]] : area === "settings" ? [["settings", "\u5916\u89C2"], ["sounds", "\u97F3\u6548"]] : [];
+      sectionTabs.hidden = !tabs2.length;
+      for (const [id, label2] of tabs2) {
+        const tab = button2(label2, () => show(id, true), "luna-section-tab xp-tab");
+        if (id === section) tab.setAttribute("aria-current", "page");
+        sectionTabs.append(tab);
+      }
+      content.replaceChildren();
+      content.classList.toggle("xp-tabpanel", !!tabs2.length);
+      content.classList.toggle("luna-following-content", section === "following");
+      if (section === "following") {
+        followingPanel ??= mountLocalFollowingPanel();
+        content.append(followingPanel.host);
+      } else if (category) showRules();
+      else if (section === "viewed") showViewed();
+      else if (section === "data") showData();
+      else if (section === "settings") {
+        content.append(appearancePage());
+      } else if (section === "sounds") {
+        soundPanel ??= mountSoundPanel();
+        content.append(soundPanel.host);
+      } else if (section === "sync") {
+        syncPanel ??= mountSyncPanel();
+        content.append(syncPanel.host);
+      } else {
+        content.append(element("h2", "", "\u5C4F\u853D\u5386\u53F2"), element("p", "luna-description", "\u67E5\u770B\u5DF2\u9690\u85CF\u7684\u5185\u5BB9\uFF0C\u4E5F\u53EF\u4EE5\u89E3\u9664\u5BF9\u5E94\u7684\u5C4F\u853D\u89C4\u5219\u3002"), element("div", "luna-history"));
+        refreshHistory();
+      }
+      content.scrollTop = 0;
+    }
+    panel.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        close();
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!saveRules.hidden) save();
+      }
+    });
+    window.addEventListener("atelier-sync-applied", () => {
+      syncSavedRules();
+      if (section === "viewed") show("viewed");
+    }, { signal: events.signal });
+    document.addEventListener(historyChangedEvent, () => {
+      if (section === "history") refreshHistory();
+    }, { signal: events.signal });
+    window.addEventListener("beforeunload", (event) => {
+      if (isDirty() || syncPanel?.isDirty()) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    }, { signal: events.signal });
+    activePanel = { show: (next) => show(next, true), toggleHistory: () => {
+      if (section !== "history" || !panel.isConnected) return false;
+      minimize.click();
+      return true;
+    } };
+    document.body.appendChild(panel);
+    show(initialSection);
+    navButtons.get(areaFor(initialSection))?.focus();
+    sound("open");
+  }
+
+  // src/modules/blocker/visibility.ts
+  var showingBlocked = false;
+  var blockedVisibilityChangedEvent = "atelier-blocked-visibility-changed";
+  function isShowingBlocked() {
+    return showingBlocked;
+  }
+  function toggleBlockedVisibility() {
+    showingBlocked = !showingBlocked;
+    window.dispatchEvent(new Event(blockedVisibilityChangedEvent));
+  }
+
+  // src/modules/blocker/runtime.ts
+  var actionClass = "bili-blocker-action";
+  var inlineActionClass = "bili-blocker-inline-action";
+  var homeVideoActionClass = "bili-blocker-home-video-action";
+  var homeLiveActionClass = "bili-blocker-home-live-action";
+  var profileActionClass = "bili-blocker-profile-action";
+  var spaceProfileActionClass = "bili-blocker-space-profile-action";
+  var hiddenAttribute = "data-bili-blocker-hidden";
+  var previousDisplayAttribute = "data-bili-blocker-previous-display";
+  var previousDisplayPriorityAttribute = "data-bili-blocker-previous-display-priority";
+  var hiddenElements = /* @__PURE__ */ new Set();
+  var historyShortcutInstalled = false;
+  var commentExpandFastScanInstalled = false;
+  var userRuleKeys = /* @__PURE__ */ new Set(["precise_uid", "precise_name", "name", "nameCanonical"]);
+  var homeFeedCardSelectors = [
+    ".bili-feed-card",
+    ".feed-card",
+    ".bili-video-card",
+    ".bili-video-card__wrap",
+    ".floor-single-card",
+    ".recommend-card",
+    '[class*="feed-card"]',
+    '[class*="bili-video-card"]'
+  ];
+  var commentFastScanContainerSelectors = [
+    "bili-comments",
+    "#commentapp",
+    ".comment-container",
+    ".comment-list",
+    ".reply-list"
+  ];
+  var commentFastScanItemSelectors = [
+    "bili-comment-thread-renderer",
+    "bili-comment-reply-renderer",
+    ".reply-item",
+    ".sub-reply-item",
+    ".comment-item",
+    ".list-item"
+  ];
+  var commentFastScanRootSelectors = [...commentFastScanContainerSelectors, ...commentFastScanItemSelectors];
+  var commentExpandTextPattern = /展开|点击查看|更多回复|查看(?:全部)?回复|加载更多|共\s*\d+\s*条?回复|还有\s*\d+/;
+  function ensureRuntimeStyle() {
+    if (document.getElementById("bili-atelier-blocker-style")) {
+      return;
+    }
+    const style = document.createElement("style");
+    style.id = "bili-atelier-blocker-style";
+    style.textContent = `
+.${actionClass}{position:absolute;top:4px;right:4px;z-index:20}
+.${inlineActionClass},.${homeVideoActionClass},.${homeLiveActionClass},.${profileActionClass},.${spaceProfileActionClass}{margin-left:8px;vertical-align:middle}
+.${homeVideoActionClass},.${homeLiveActionClass}{float:right;flex:0 0 auto;margin-left:auto}
+[${hiddenAttribute}="true"]:not([data-bili-blocker-revealed]){display:none!important}
+[data-bili-blocker-revealed]{outline:1px dashed #a33024;outline-offset:-1px}
+`;
+    document.head.appendChild(style);
+  }
+  function styleCompactButton(button4) {
+    button4.style.marginLeft = "8px";
+    styleAtelierAction(button4);
+  }
+  function decide(item, rules) {
+    if (item.el.closest("[data-bili-blocker-ui]")) {
+      return null;
+    }
+    return decideBlockableItem(item, rules);
+  }
+  function hideRawElement(el, decision) {
+    const newlyHidden = el.getAttribute(hiddenAttribute) !== "true";
+    if (newlyHidden) {
+      el.setAttribute(previousDisplayAttribute, el.style.getPropertyValue("display") || "");
+      el.setAttribute(previousDisplayPriorityAttribute, el.style.getPropertyPriority("display") || "");
+    }
+    el.setAttribute(hiddenAttribute, "true");
+    hiddenElements.add(el);
+    applyBlockedVisibility(el);
+    el.title = `Bili Atelier \u5DF2\u5C4F\u853D\uFF1A${decision.type} ${decision.matching}`;
+    return newlyHidden;
+  }
+  function applyBlockedVisibility(el) {
+    el.toggleAttribute("data-bili-blocker-revealed", isShowingBlocked());
+    if (isShowingBlocked()) {
+      el.style.removeProperty("display");
+      const previous = el.getAttribute(previousDisplayAttribute);
+      if (previous) el.style.setProperty("display", previous, el.getAttribute(previousDisplayPriorityAttribute) || "");
+    } else el.style.setProperty("display", "none", "important");
+  }
+  function hideElement(item, decision) {
+    const newlyHidden = hideRawElement(item.el, decision);
+    if (newlyHidden && decision.ruleKey) {
+      recordBlockHistory(item, decision);
+    }
+    debugLog("blocked", item.kind, decision, item);
+  }
+  function restoreElement(item) {
+    const el = item.el;
+    if (el.getAttribute(hiddenAttribute) !== "true") {
+      return;
+    }
+    const previousDisplay = el.getAttribute(previousDisplayAttribute) || "";
+    const previousDisplayPriority = el.getAttribute(previousDisplayPriorityAttribute) || "";
+    el.removeAttribute(hiddenAttribute);
+    hiddenElements.delete(el);
+    el.removeAttribute("data-bili-blocker-revealed");
+    el.removeAttribute(previousDisplayAttribute);
+    el.removeAttribute(previousDisplayPriorityAttribute);
+    el.style.removeProperty("display");
+    if (previousDisplay) {
+      el.style.setProperty("display", previousDisplay, previousDisplayPriority);
+    }
+  }
+  function isAdBlockPlaceholderText(value2) {
+    const compactText2 = String(value2 || "").replace(/\s+/g, "");
+    return /该内容被.*(?:AdGuard|AdBlock).*插件屏蔽/i.test(compactText2) || /插件屏蔽.*恢复正常内容展示/.test(compactText2);
+  }
+  function removeHomeAdBlockPlaceholders() {
+    if (!isHomePageLocation()) {
+      return;
+    }
+    const candidates = Array.from(document.querySelectorAll(homeFeedCardSelectors.join(",")));
+    const cards = /* @__PURE__ */ new Set();
+    for (const candidate of candidates) {
+      const card = candidate.closest(
+        ".bili-feed-card,.feed-card,.bili-video-card,.floor-single-card,.recommend-card"
+      ) || candidate;
+      if (!isAdBlockPlaceholderText(card.textContent)) {
+        continue;
+      }
+      cards.add(card);
+    }
+    for (const card of cards) {
+      hideRawElement(card, { type: "\u9996\u9875\u5E7F\u544A\u5C4F\u853D\u5360\u4F4D", matching: "AdGuard/AdBlock" });
+    }
+  }
+  function formatHistoryTime(timestamp) {
+    return new Date(timestamp).toLocaleString();
+  }
+  function kindLabel(kind) {
+    if (kind === "comment") {
+      return "\u8BC4\u8BBA";
+    }
+    if (kind === "live") {
+      return "\u76F4\u64AD";
+    }
+    if (kind === "dynamic") {
+      return "\u52A8\u6001";
+    }
+    return "\u89C6\u9891";
+  }
+  function isUserRuleKey(ruleKey) {
+    return Boolean(ruleKey && userRuleKeys.has(ruleKey));
+  }
+  function isUserBlockDecision(decision) {
+    return isUserRuleKey(decision.ruleKey);
+  }
+  function compactText(value2) {
+    return String(value2 ?? "").replace(/\s+/g, " ").trim();
+  }
+  function shortText(value2, maxLength) {
+    const textValue = compactText(value2);
+    if (!textValue) {
+      return "\u672A\u77E5\u5185\u5BB9";
+    }
+    return textValue.length > maxLength ? `${textValue.slice(0, maxLength)}...` : textValue;
+  }
+  function isLeakedStyleText(value2) {
+    return /:host\s*\{|--bili-rich-text-|^\s*\.[\w-]+\s*\{/.test(value2);
+  }
+  function shortReadableText(value2, maxLength, fallback2 = "\u672A\u77E5\u5185\u5BB9") {
+    const textValue = compactText(value2);
+    const readable = !textValue || isLeakedStyleText(textValue) ? fallback2 : textValue;
+    return readable.length > maxLength ? `${readable.slice(0, maxLength)}...` : readable;
+  }
+  function historyUserId(entry) {
+    if (entry.uid !== void 0) {
+      return String(entry.uid);
+    }
+    if (entry.ruleKey === "precise_uid" && entry.ruleValue !== void 0) {
+      return String(entry.ruleValue);
+    }
+    if (entry.ruleKey === "precise_uid" && entry.matching !== void 0) {
+      return String(entry.matching);
+    }
+    return "\u672A\u77E5";
+  }
+  function historyTypeLabel(entry) {
+    if (entry.kind === "comment" && isUserRuleKey(entry.ruleKey)) {
+      return "\u8BC4\u8BBA\u533A\u7528\u6237";
+    }
+    if (entry.kind === "video" && isUserRuleKey(entry.ruleKey)) {
+      return "UP";
+    }
+    if (entry.kind === "live" && isUserRuleKey(entry.ruleKey)) {
+      return "\u76F4\u64ADUP";
+    }
+    if (entry.kind === "dynamic" && isUserRuleKey(entry.ruleKey)) {
+      return "\u52A8\u6001UP";
+    }
+    if (entry.ruleKey === "dynamic" || entry.ruleKey === "dynamicCanonical") {
+      return "\u52A8\u6001\u5173\u952E\u8BCD";
+    }
+    if (entry.ruleKey === "commentOn" || entry.ruleKey === "commentOnCanonical") {
+      return "\u8BC4\u8BBA\u5173\u952E\u8BCD";
+    }
+    if (entry.ruleKey === "title" || entry.ruleKey === "titleCanonical") {
+      return "\u89C6\u9891\u6807\u9898";
+    }
+    if (entry.ruleKey === "liveTitle" || entry.ruleKey === "liveTitleCanonical") {
+      return "\u76F4\u64AD\u6807\u9898";
+    }
+    if (entry.ruleKey === "precise_liveRoomId") {
+      return "\u76F4\u64AD\u95F4";
+    }
+    if (entry.ruleKey === "precise_partition") {
+      return "\u76F4\u64AD\u5206\u533A";
+    }
+    return kindLabel(entry.kind);
+  }
+  function historyEntrySummary(entry) {
+    const typeLabel = historyTypeLabel(entry);
+    if (typeLabel === "UP") {
+      const name = entry.name ? ` / ${entry.name}` : "";
+      return `UP ID\uFF1A${historyUserId(entry)}${name}`;
+    }
+    if (typeLabel === "\u8BC4\u8BBA\u533A\u7528\u6237") {
+      return `\u7528\u6237 ID\uFF1A${historyUserId(entry)} / \u8BC4\u8BBA\uFF1A${shortReadableText(entry.content || entry.summary, 28, "\u65E7\u8BB0\u5F55\u672A\u4FDD\u5B58\u8BC4\u8BBA\u6B63\u6587")}`;
+    }
+    if (typeLabel === "\u76F4\u64ADUP") {
+      const name = entry.name ? ` / ${entry.name}` : "";
+      return `\u76F4\u64AD UP ID\uFF1A${historyUserId(entry)}${name}`;
+    }
+    if (typeLabel === "\u8BC4\u8BBA\u5173\u952E\u8BCD") {
+      return shortReadableText(entry.content || entry.summary, 52, "\u65E7\u8BB0\u5F55\u672A\u4FDD\u5B58\u8BC4\u8BBA\u6B63\u6587");
+    }
+    if (typeLabel === "\u89C6\u9891\u6807\u9898") {
+      return shortText(entry.title || entry.summary, 52);
+    }
+    if (typeLabel === "\u76F4\u64AD\u6807\u9898") {
+      return shortText(entry.liveTitle || entry.summary, 52);
+    }
+    return shortText(entry.summary, 52);
+  }
+  function historyEntryDetail(entry) {
+    const typeLabel = historyTypeLabel(entry);
+    const parts2 = [];
+    if (typeLabel === "UP" || typeLabel === "\u8BC4\u8BBA\u533A\u7528\u6237" || typeLabel === "\u76F4\u64ADUP") {
+      if (entry.name) {
+        parts2.push(`\u7528\u6237\u540D\uFF1A${entry.name}`);
+      }
+    } else if (entry.detail) {
+      parts2.push(entry.detail);
+    }
+    if (entry.bv) {
+      parts2.push(`BV\uFF1A${entry.bv}`);
+    }
+    if (entry.roomId) {
+      parts2.push(`\u76F4\u64AD\u95F4\uFF1A${entry.roomId}`);
+    }
+    parts2.push(`\u547D\u4E2D\uFF1A${entry.matching}`);
+    return parts2.join(" / ");
+  }
+  function isEditableTarget(target) {
+    if (!(target instanceof HTMLElement)) {
+      return false;
+    }
+    const tagName = target.tagName;
+    return tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT" || target.isContentEditable || target.closest("[contenteditable=true]") !== null;
+  }
+  function appendText(parent, tagName, className, text2) {
+    const el = document.createElement(tagName);
+    el.className = className;
+    el.textContent = text2;
+    parent.appendChild(el);
+    return el;
+  }
+  function renderHistoryPanel(panel, rescan, embedded = false) {
+    panel.textContent = "";
+    panel.setAttribute("data-bili-blocker-ui", "true");
+    const header = document.createElement("div");
+    header.className = "bili-blocker-history-header";
+    appendText(header, "div", "", "\u5C4F\u853D\u5386\u53F2");
+    const headerActions = document.createElement("div");
+    headerActions.className = "bili-blocker-history-actions";
+    const refreshButton = document.createElement("button");
+    refreshButton.type = "button";
+    refreshButton.textContent = "\u5237\u65B0";
+    refreshButton.addEventListener("click", () => {
+      renderHistoryPanel(panel, rescan, embedded);
+      sound("click");
+    });
+    headerActions.appendChild(refreshButton);
+    const clearButton = document.createElement("button");
+    clearButton.type = "button";
+    clearButton.textContent = "\u6E05\u7A7A";
+    clearButton.addEventListener("click", () => {
+      const changed = readBlockHistory().length > 0;
+      writeBlockHistory([]);
+      renderHistoryPanel(panel, rescan, embedded);
+      sound(changed ? "delete" : "click");
+    });
+    headerActions.appendChild(clearButton);
+    const closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.textContent = "\u5173\u95ED";
+    closeButton.addEventListener("click", () => {
+      panel.hidden = true;
+      sound("close");
+    });
+    if (!embedded) headerActions.appendChild(closeButton);
+    header.appendChild(headerActions);
+    panel.appendChild(header);
+    const body2 = document.createElement("div");
+    body2.className = "bili-blocker-history-body";
+    const history = readBlockHistory();
+    if (history.length === 0) {
+      appendText(body2, "div", "bili-blocker-history-empty", "\u8FD8\u6CA1\u6709\u5C4F\u853D\u8BB0\u5F55");
+      panel.appendChild(body2);
+      return;
+    }
+    for (const entry of history) {
+      const item = document.createElement("div");
+      item.className = "bili-blocker-history-item";
+      appendText(item, "div", "bili-blocker-history-type-badge", historyTypeLabel(entry));
+      const meta = document.createElement("div");
+      meta.className = "bili-blocker-history-meta";
+      appendText(meta, "span", "", `${kindLabel(entry.kind)} \xB7 ${entry.type}`);
+      appendText(meta, "span", "", formatHistoryTime(entry.timestamp));
+      item.appendChild(meta);
+      appendText(item, "div", "bili-blocker-history-summary", historyEntrySummary(entry));
+      appendText(item, "div", "bili-blocker-history-detail", historyEntryDetail(entry));
+      const footer = document.createElement("div");
+      footer.className = "bili-blocker-history-footer";
+      const unblockButton = document.createElement("button");
+      unblockButton.type = "button";
+      const removableRules = entryRuleReferences(entry);
+      if (removableRules.length > 0) {
+        unblockButton.textContent = "\u89E3\u9664";
+        unblockButton.addEventListener("click", () => {
+          const feedback = soundTask(void 0, () => panel.isConnected && !panel.hidden);
+          const results = removableRules.map((rule) => removeRuleItem(rule.key, rule.value));
+          const failures2 = results.filter((result) => !result.status && result.res !== "\u89C4\u5219\u4E0D\u5B58\u5728");
+          if (failures2.length === 0) {
+            removeHistoryByRules(removableRules);
+            showInfoLog(`\u5DF2\u89E3\u9664\u5C4F\u853D\uFF1A${historyEntrySummary(entry)}`, "success");
+            rescan();
+            renderHistoryPanel(panel, rescan, embedded);
+            feedback.finish(results.some((result) => result.status) ? "success" : "click");
+            return;
+          }
+          void atelierAlert(String(failures2[0].res));
+          feedback.finish("error");
+        });
+      } else {
+        unblockButton.textContent = "\u4E0D\u53EF\u89E3\u9664";
+        unblockButton.disabled = true;
+      }
+      footer.appendChild(unblockButton);
+      item.appendChild(footer);
+      body2.appendChild(item);
+    }
+    panel.appendChild(body2);
+  }
+  function toggleHistoryPanel(rescan) {
+    toggleBlockerHistory(rescan, (container, scan) => renderHistoryPanel(container, scan, true));
+  }
+  function installHistoryShortcut(rescan) {
+    if (historyShortcutInstalled) {
+      return;
+    }
+    historyShortcutInstalled = true;
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "`" && event.code !== "Backquote" || event.ctrlKey || event.altKey || event.metaKey) {
+        return;
+      }
+      if (isEditableTarget(event.target)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      toggleHistoryPanel(rescan);
+    }, true);
+  }
+  function eventPathElements(event) {
+    const path = typeof event.composedPath === "function" ? event.composedPath() : [];
+    const fallback2 = event.target ? [event.target] : [];
+    return (path.length > 0 ? path : fallback2).filter((node3) => node3 instanceof Element);
+  }
+  function hasCommentContext(elements) {
+    const selector = commentFastScanRootSelectors.join(",");
+    return elements.some((element2) => Boolean(element2.closest(selector)));
+  }
+  function isCommentExpandClick(event) {
+    if (isEditableTarget(event.target)) {
+      return false;
+    }
+    const elements = eventPathElements(event);
+    if (elements.some((element2) => Boolean(element2.closest("[data-bili-blocker-ui]")))) {
+      return false;
+    }
+    if (!hasCommentContext(elements)) {
+      return false;
+    }
+    return elements.some((element2) => {
+      const textValue = compactText([
+        element2.textContent,
+        element2.getAttribute("aria-label"),
+        element2.getAttribute("title")
+      ].filter(Boolean).join(" "));
+      return commentExpandTextPattern.test(textValue);
+    });
+  }
+  function findCommentFastScanRoot(event) {
+    const elements = eventPathElements(event);
+    const containerSelector = commentFastScanContainerSelectors.join(",");
+    for (const element2 of elements) {
+      const root3 = element2.closest(containerSelector);
+      if (root3) {
+        return root3;
+      }
+    }
+    const itemSelector = commentFastScanItemSelectors.join(",");
+    for (const element2 of elements) {
+      const root3 = element2.closest(itemSelector);
+      if (root3) {
+        return root3;
+      }
+    }
+    return document;
+  }
+  function scheduleCommentFastScans(scanComments, root3) {
+    const run = () => scanComments(root3);
+    if (typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(run);
+    } else {
+      window.setTimeout(run, 0);
+    }
+    for (const delayMs of [80, 180, 420, 900, 1600]) {
+      window.setTimeout(run, delayMs);
+    }
+  }
+  function commentMutationRoots(records2) {
+    const roots2 = /* @__PURE__ */ new Set();
+    const itemSelector = commentFastScanItemSelectors.join(",");
+    const isOwnUi = (node3) => node3 instanceof Element && Boolean(node3.closest(".atelier-control,[data-bili-blocker-ui]"));
+    for (const record of records2) {
+      const target = record.target instanceof Element ? record.target : record.target.parentElement;
+      if (target && isOwnUi(target)) continue;
+      const changed = [...record.addedNodes, ...record.removedNodes];
+      if (changed.length && changed.every(isOwnUi)) continue;
+      let node3 = record.target;
+      let owner = null;
+      while (node3) {
+        if (node3 instanceof HTMLElement) owner = node3.closest(itemSelector);
+        if (owner) break;
+        node3 = node3 instanceof ShadowRoot ? node3.host : node3.parentNode;
+      }
+      if (owner?.isConnected) roots2.add(owner);
+      else for (const added of record.addedNodes) {
+        if (added instanceof HTMLElement && added.isConnected && !isOwnUi(added)) roots2.add(added);
+      }
+    }
+    return roots2;
+  }
+  function installCommentExpandFastScan(scanComments) {
+    if (commentExpandFastScanInstalled) {
+      return;
+    }
+    commentExpandFastScanInstalled = true;
+    document.addEventListener("click", (event) => {
+      if (!(event instanceof MouseEvent) || !isCommentExpandClick(event)) {
+        return;
+      }
+      scheduleCommentFastScans(scanComments, findCommentFastScanRoot(event));
+    }, true);
+  }
+  function applyManualBlockChoice(item, rescan, choice, type = "\u624B\u52A8\u5C4F\u853D", feedback) {
+    applyManualBlockChoices(item, rescan, [choice], type, { feedback });
+  }
+  function applyManualBlockChoices(item, rescan, choices, type = "\u624B\u52A8\u5C4F\u853D", options = {}) {
+    const feedback = options.feedback ?? soundTask();
+    const hideCurrent = options.hideCurrent !== false;
+    const linkedRules = [];
+    let firstError = "";
+    let added = 0;
+    let primaryChoice;
+    for (const choice of choices) {
+      const result = addRuleItem(choice.key, choice.value);
+      if (result.status) added++;
+      if (result.status || result.res === "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9") {
+        const value2 = result.status && "value" in result ? result.value : choice.value;
+        const rule = { key: choice.key, value: value2 };
+        linkedRules.push(rule);
+        primaryChoice ||= rule;
+        continue;
+      }
+      firstError ||= String(result.res);
+    }
+    if (linkedRules.length > 0 && primaryChoice) {
+      const manualDecision = {
+        type,
+        matching: primaryChoice.value,
+        ruleKey: primaryChoice.key,
+        ruleValue: primaryChoice.value,
+        linkedRules
+      };
+      if (hideCurrent) {
+        hideElement(item, manualDecision);
+      } else {
+        recordBlockHistory(item, manualDecision);
+      }
+      showInfoLog(`${type}\uFF1A${shortReadableText(summarizeBlockedItem(item), 36)}`, "success");
+      rescan();
+      if (hideCurrent) {
+        hideElement(item, manualDecision);
+      }
+      feedback.finish(added > 0 ? "success" : "click");
+      return true;
+    }
+    void atelierAlert(firstError || "\u5F53\u524D\u5143\u7D20\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u5C4F\u853D\u5B57\u6BB5");
+    feedback.finish("error");
+    return false;
+  }
+  function alertManualFailure(message) {
+    const feedback = soundTask();
+    void atelierAlert(message);
+    feedback.finish("error");
+  }
+  async function handleManualBlock(item, rescan) {
+    const choices = getManualChoices(item);
+    if (choices.length === 0) {
+      alertManualFailure("\u5F53\u524D\u5143\u7D20\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u5C4F\u853D\u5B57\u6BB5");
+      return;
+    }
+    const feedback = soundTask();
+    const selected = await atelierDialog({ title: "\u9009\u62E9\u5C4F\u853D\u65B9\u5F0F", message: "\u9009\u62E9\u8981\u5C4F\u853D\u7684\u5B57\u6BB5", choices: choices.map((choice2, index) => ({ value: String(index), label: choice2.label })) });
+    const choice = selected === null ? void 0 : choices[Number(selected)];
+    if (!choice) {
+      feedback.finish("cancel");
+      return;
+    }
+    applyManualBlockChoice(item, rescan, choice, "\u624B\u52A8\u5C4F\u853D", feedback);
+  }
+  function handleCommentUserBlock(item, rescan, options = {}) {
+    const choices = getCommentUserBlockChoices(item);
+    if (choices.length === 0) {
+      alertManualFailure("\u5F53\u524D\u8BC4\u8BBA\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u7528\u6237\u5B57\u6BB5");
+      return;
+    }
+    applyManualBlockChoices(item, rescan, choices, "\u624B\u52A8\u5C4F\u853D\u8BC4\u8BBA\u533A\u7528\u6237", options);
+  }
+  function handleHomeVideoOwnerBlock(item, rescan) {
+    const choices = getVideoOwnerBlockChoices(item);
+    if (choices.length === 0) {
+      alertManualFailure("\u5F53\u524D\u89C6\u9891\u5361\u7247\u6CA1\u6709\u53EF\u63D0\u53D6\u7684 UP \u5B57\u6BB5");
+      return;
+    }
+    applyManualBlockChoices(item, rescan, choices, "\u624B\u52A8\u5C4F\u853DUP");
+  }
+  function handleHomeLiveOwnerBlock(item, rescan) {
+    const choices = getLiveOwnerBlockChoices(item);
+    if (choices.length === 0) {
+      alertManualFailure("\u5F53\u524D\u76F4\u64AD\u5361\u7247\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u4E3B\u64AD\u6216\u76F4\u64AD\u95F4\u5B57\u6BB5");
+      return;
+    }
+    applyManualBlockChoices(item, rescan, choices, "\u624B\u52A8\u5C4F\u853D\u76F4\u64ADUP");
+  }
+  function hasManualActionButton(item) {
+    const selector = `.${actionClass},.${inlineActionClass},.${homeVideoActionClass},.${homeLiveActionClass}`;
+    const insertionParent = item.insertionEl !== item.el ? item.insertionEl.parentElement : null;
+    return Boolean(
+      item.el.querySelector(selector) || item.el.shadowRoot?.querySelector(selector) || insertionParent?.querySelector(selector)
+    );
+  }
+  function createManualActionButton(item, rescan, className = actionClass, options = {}) {
+    const button4 = document.createElement("button");
+    button4.type = "button";
+    button4.className = className;
+    button4.textContent = "\u5C4F\u853D";
+    let confirmTimer;
+    button4.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (item.kind === "comment") {
+        if (button4.dataset.confirmBlock !== "true") {
+          button4.dataset.confirmBlock = "true";
+          button4.textContent = "\u786E\u8BA4\uFF1F";
+          sound("select");
+          if (confirmTimer !== void 0) {
+            window.clearTimeout(confirmTimer);
+          }
+          confirmTimer = window.setTimeout(() => {
+            if (button4.dataset.confirmBlock === "true") {
+              button4.dataset.confirmBlock = "";
+              button4.textContent = "\u5C4F\u853D";
+            }
+          }, 2500);
+          return;
+        }
+        if (confirmTimer !== void 0) {
+          window.clearTimeout(confirmTimer);
+        }
+        handleCommentUserBlock(item, rescan, options);
+        return;
+      }
+      handleManualBlock(item, rescan);
+    });
+    styleAtelierAction(button4);
+    return button4;
+  }
+  function createCommentUserBlockButton(item, rescan, className) {
+    return createManualActionButton(item, rescan, className, { hideCurrent: false });
+  }
+  function createHomeVideoActionButton(item, rescan) {
+    const button4 = document.createElement("button");
+    button4.type = "button";
+    button4.className = homeVideoActionClass;
+    button4.textContent = "\u5C4F\u853D";
+    button4.title = item.uid !== void 0 ? `\u5C4F\u853D UP ${item.uid}` : `\u5C4F\u853D UP ${item.name || ""}`;
+    let confirmTimer;
+    button4.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (button4.dataset.confirmBlock !== "true") {
+        button4.dataset.confirmBlock = "true";
+        button4.textContent = "\u786E\u8BA4\uFF1F";
+        sound("select");
+        if (confirmTimer !== void 0) {
+          window.clearTimeout(confirmTimer);
+        }
+        confirmTimer = window.setTimeout(() => {
+          if (button4.dataset.confirmBlock === "true") {
+            button4.dataset.confirmBlock = "";
+            button4.textContent = "\u5C4F\u853D";
+          }
+        }, 2500);
+        return;
+      }
+      if (confirmTimer !== void 0) {
+        window.clearTimeout(confirmTimer);
+      }
+      handleHomeVideoOwnerBlock(item, rescan);
+    });
+    styleAtelierAction(button4);
+    return button4;
+  }
+  function createHomeLiveActionButton(item, rescan) {
+    const button4 = document.createElement("button");
+    button4.type = "button";
+    button4.className = homeLiveActionClass;
+    button4.textContent = "\u5C4F\u853D";
+    button4.title = item.uid !== void 0 ? `\u5C4F\u853D\u76F4\u64AD\u4E3B\u64AD ${item.uid}` : item.name ? `\u5C4F\u853D\u76F4\u64AD\u4E3B\u64AD ${item.name}` : `\u5C4F\u853D\u76F4\u64AD\u95F4 ${item.roomId || ""}`;
+    let confirmTimer;
+    button4.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (button4.dataset.confirmBlock !== "true") {
+        button4.dataset.confirmBlock = "true";
+        button4.textContent = "\u786E\u8BA4\uFF1F";
+        sound("select");
+        if (confirmTimer !== void 0) {
+          window.clearTimeout(confirmTimer);
+        }
+        confirmTimer = window.setTimeout(() => {
+          if (button4.dataset.confirmBlock === "true") {
+            button4.dataset.confirmBlock = "";
+            button4.textContent = "\u5C4F\u853D";
+          }
+        }, 2500);
+        return;
+      }
+      if (confirmTimer !== void 0) {
+        window.clearTimeout(confirmTimer);
+      }
+      handleHomeLiveOwnerBlock(item, rescan);
+    });
+    styleAtelierAction(button4);
+    return button4;
+  }
+  function findCommentActionTarget(item) {
+    const root3 = item.el.shadowRoot || item.el;
+    return (item.insertionEl !== item.el ? item.insertionEl : null) || root3.querySelector("#user-name,.user-name,.sub-user-name,.name,.user,.reply-info,.info") || item.el;
+  }
+  function insertInlineActionButton(target, button4) {
+    if (target.tagName === "A" || target.matches("#user-name,.user-name,.sub-user-name,.name")) {
+      target.insertAdjacentElement("afterend", button4);
+    } else target.appendChild(button4);
+    styleCompactButton(button4);
+  }
+  function isHomeVideoItem(item) {
+    return item.kind === "video" && isHomePageLocation() && Boolean(item.el.closest(
+      ".bili-feed-card,.feed-card,.bili-video-card,.recommend-card,.floor-single-card,.video-card,.video-list-item"
+    ));
+  }
+  function isHomeLiveItem(item) {
+    return item.kind === "live" && (isHomePageLocation() || isSpacePageLocation()) && Boolean(item.el.closest(
+      ".bili-live-card,.live-card,.room-card,.bili-feed-card,.feed-card,.bili-video-card,.recommend-card,.floor-single-card,.video-list-item,.index_item_JSGkw"
+    ));
+  }
+  function findHomeVideoActionTarget(item) {
+    const root3 = item.el.shadowRoot || item.el;
+    return root3.querySelector(
+      ".bili-video-card__info--bottom,.bili-video-card__info--owner,.video-card-info,.info,.meta"
+    ) || item.insertionEl || item.el;
+  }
+  function findHomeLiveActionTarget(item) {
+    const root3 = item.el.shadowRoot || item.el;
+    return root3.querySelector(
+      ".bili-live-card__info--bottom,.bili-live-card__info,.bili-video-card__info--bottom,.bili-video-card__info--owner,.live-card__info,.room-card-info,.video-card-info,.info,.meta"
+    ) || item.insertionEl || item.el;
+  }
+  function insertHomeVideoActionButton(target, button4) {
+    if (target.tagName === "A") {
+      target.insertAdjacentElement("afterend", button4);
+      return;
+    }
+    target.appendChild(button4);
+  }
+  function insertHomeLiveActionButton(target, button4) {
+    if (target.tagName === "A") {
+      target.insertAdjacentElement("afterend", button4);
+      return;
+    }
+    target.appendChild(button4);
+  }
+  function ensureHomeVideoActionButton(item, rescan) {
+    if (!isHomeVideoItem(item) || item.uid === void 0 && !item.name) {
+      return;
+    }
+    const button4 = createHomeVideoActionButton(item, rescan);
+    insertHomeVideoActionButton(findHomeVideoActionTarget(item), button4);
+  }
+  function ensureHomeLiveActionButton(item, rescan) {
+    if (!isHomeLiveItem(item) || item.uid === void 0 && !item.name && !item.roomId) {
+      return;
+    }
+    const button4 = createHomeLiveActionButton(item, rescan);
+    insertHomeLiveActionButton(findHomeLiveActionTarget(item), button4);
+  }
+  function ensureActionButton(item, rescan) {
+    if (item.el.getAttribute(hiddenAttribute) === "true" || hasManualActionButton(item)) {
+      return;
+    }
+    if (item.kind === "video") {
+      if (item.collection) return;
+      ensureHomeVideoActionButton(item, rescan);
+      return;
+    }
+    if (item.kind === "live") {
+      ensureHomeLiveActionButton(item, rescan);
+      return;
+    }
+    if (item.kind === "comment") {
+      const button5 = createManualActionButton(item, rescan, inlineActionClass);
+      insertInlineActionButton(findCommentActionTarget(item), button5);
+      return;
+    }
+    const computedPosition = window.getComputedStyle(item.el).position;
+    if (computedPosition === "static") {
+      item.el.style.position = "relative";
+    }
+    const button4 = createManualActionButton(item, rescan);
+    item.el.appendChild(button4);
+  }
+  function findSpaceProfileNameTarget() {
+    for (const selector of [
+      "#h-name",
+      ".h-name",
+      ".n-name",
+      ".space-header .name",
+      ".h-basic .name",
+      ".user-info .name",
+      ".username",
+      ".nickname"
+    ]) {
+      const target = document.querySelector(selector);
+      if (target && !target.closest("[data-bili-blocker-ui]") && target.textContent?.trim()) {
+        return target;
+      }
+    }
+    return null;
+  }
+  function readSpaceProfileUser() {
+    if (!isSpacePageLocation()) {
+      return null;
+    }
+    const target = findSpaceProfileNameTarget();
+    if (!target) {
+      return null;
+    }
+    const uid = parseSpaceProfileUid();
+    const name = target.textContent?.replace(/\s+/g, " ").trim() || void 0;
+    if (uid === void 0 && !name) {
+      return null;
+    }
+    return { uid, name, target };
+  }
+  function handleSpaceProfileOwnerBlock(user, target, rescan) {
+    const choices = getVideoOwnerBlockChoices(user);
+    if (choices.length === 0) {
+      alertManualFailure("\u5F53\u524D\u4E2A\u4EBA\u4E3B\u9875\u6CA1\u6709\u53EF\u63D0\u53D6\u7684 UP \u5B57\u6BB5");
+      return false;
+    }
+    const item = {
+      kind: "video",
+      el: target,
+      insertionEl: target,
+      uid: user.uid,
+      name: user.name,
+      title: "UP \u4E2A\u4EBA\u4E3B\u9875"
+    };
+    return applyManualBlockChoices(item, rescan, choices, "\u624B\u52A8\u5C4F\u853DUP", { hideCurrent: false });
+  }
+  function spaceProfileUserKey(user) {
+    return `${user.uid ?? ""}|${user.name ?? ""}`;
+  }
+  function getSpaceProfileBlockedRules(user) {
+    const rules = readRuleSnapshot();
+    const blockedRules = [];
+    if (user.uid !== void 0) {
+      const uidMatch = exactMatch(rules.precise_uid, user.uid);
+      if (uidMatch) {
+        blockedRules.push({ key: "precise_uid", value: uidMatch.matching });
+      }
+    }
+    if (user.name) {
+      const nameMatch = exactMatch(rules.precise_name, user.name);
+      if (nameMatch) {
+        blockedRules.push({ key: "precise_name", value: nameMatch.matching });
+      }
+    }
+    return blockedRules;
+  }
+  function setSpaceProfileActionButtonState(button4, user) {
+    const blocked = getSpaceProfileBlockedRules(user).length > 0;
+    const label = user.uid !== void 0 ? `UP ${user.uid}` : `UP ${user.name || ""}`;
+    button4.dataset.userKey = spaceProfileUserKey(user);
+    button4.dataset.blocked = blocked ? "true" : "";
+    if (blocked) button4.dataset.confirmBlock = "";
+    const labelText = blocked ? "\u5DF2\u5C4F\u853D" : button4.dataset.confirmBlock === "true" ? "\u786E\u8BA4\uFF1F" : "\u5C4F\u853D";
+    if (button4.textContent !== labelText) button4.textContent = labelText;
+    button4.title = blocked ? `\u89E3\u9664\u5C4F\u853D ${label}` : `\u5C4F\u853D ${label}`;
+    button4.disabled = false;
+  }
+  function handleSpaceProfileOwnerUnblock(user, rescan) {
+    const blockedRules = getSpaceProfileBlockedRules(user);
+    if (blockedRules.length === 0) {
+      return false;
+    }
+    const failures2 = blockedRules.map((rule) => removeRuleItem(rule.key, rule.value)).filter((result) => !result.status);
+    if (failures2.length > 0) {
+      alertManualFailure(String(failures2[0].res));
+      return false;
+    }
+    removeHistoryByRules(blockedRules);
+    notifyBlockHistoryChanged();
+    showInfoLog(`\u5DF2\u89E3\u9664\u5C4F\u853D\uFF1A${user.name || user.uid || "\u5F53\u524DUP"}`, "success");
+    rescan();
+    sound("success");
+    return true;
+  }
+  function createSpaceProfileActionButton(user, target, rescan) {
+    const button4 = document.createElement("button");
+    button4.type = "button";
+    button4.className = spaceProfileActionClass;
+    let confirmTimer;
+    setSpaceProfileActionButtonState(button4, user);
+    button4.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (button4.dataset.blocked === "true") {
+        if (confirmTimer !== void 0) {
+          window.clearTimeout(confirmTimer);
+        }
+        button4.dataset.confirmBlock = "";
+        handleSpaceProfileOwnerUnblock(user, rescan);
+        setSpaceProfileActionButtonState(button4, user);
+        return;
+      }
+      if (button4.dataset.confirmBlock !== "true") {
+        button4.dataset.confirmBlock = "true";
+        button4.textContent = "\u786E\u8BA4\uFF1F";
+        sound("select");
+        if (confirmTimer !== void 0) {
+          window.clearTimeout(confirmTimer);
+        }
+        confirmTimer = window.setTimeout(() => {
+          if (button4.dataset.confirmBlock === "true") {
+            button4.dataset.confirmBlock = "";
+            setSpaceProfileActionButtonState(button4, user);
+          }
+        }, 2500);
+        return;
+      }
+      if (confirmTimer !== void 0) {
+        window.clearTimeout(confirmTimer);
+      }
+      if (handleSpaceProfileOwnerBlock(user, target, rescan)) {
+        button4.dataset.confirmBlock = "";
+        setSpaceProfileActionButtonState(button4, user);
+      }
+    });
+    styleAtelierAction(button4);
+    return button4;
+  }
+  function ensureSpaceProfileBlockButton(rescan) {
+    const profileUser = readSpaceProfileUser();
+    if (!profileUser) {
+      return;
+    }
+    const { target } = profileUser;
+    const existingButton = target.parentElement?.querySelector(`.${spaceProfileActionClass}`) || target.querySelector(`.${spaceProfileActionClass}`);
+    if (existingButton?.dataset.userKey === spaceProfileUserKey(profileUser)) {
+      setSpaceProfileActionButtonState(existingButton, profileUser);
+      return;
+    }
+    existingButton?.remove();
+    const button4 = createSpaceProfileActionButton(profileUser, target, rescan);
+    styleCompactButton(button4);
+    target.insertAdjacentElement("afterend", button4);
+  }
+  function extractProfileUser(container) {
+    const profileData = container.__data?.card;
+    const profileUid = Number.parseInt(String(profileData?.mid ?? ""), 10);
+    const profileName = String(profileData?.name ?? "").trim();
+    if (Number.isFinite(profileUid) || profileName) {
+      return { uid: Number.isFinite(profileUid) ? profileUid : void 0, name: profileName || void 0 };
+    }
+    const vueUserData = container.querySelector(".user-card-m-exp.card-loaded")?.__vue__?.userData;
+    const vueUid = Number.parseInt(String(vueUserData?.mid ?? ""), 10);
+    const vueName = String(vueUserData?.name ?? "").trim();
+    if (Number.isFinite(vueUid) || vueName) {
+      return { uid: Number.isFinite(vueUid) ? vueUid : void 0, name: vueName || void 0 };
+    }
+    const searchRoot = container.shadowRoot || container;
+    const link2 = searchRoot.querySelector('a[href*="space.bilibili.com/"]');
+    const uid = parseUid(link2?.href) ?? parseUid(container.outerHTML.slice(0, 700));
+    const name = link2?.textContent?.trim() || searchRoot.querySelector(".name,.nickname,.username,.user-name")?.textContent?.trim();
+    return { uid, name: name || void 0 };
+  }
+  function ensureProfileBlockButtons(rescan) {
+    const containers = Array.from(
+      document.querySelectorAll(".usercard-wrap,.up-panel-container,bili-user-profile,.bili-user-profile")
+    );
+    for (const container of containers) {
+      const searchRoot = container.shadowRoot || container;
+      if (container.closest("[data-bili-blocker-ui]")) {
+        continue;
+      }
+      const existing = searchRoot.querySelector(`.${profileActionClass}`);
+      if (existing) {
+        placeVideoUpAction(searchRoot, existing, "block");
+        continue;
+      }
+      const user = extractProfileUser(container);
+      if (user.uid === void 0 && !user.name) {
+        continue;
+      }
+      const target = searchRoot.querySelector("#action") || searchRoot.querySelector(".user,.name,.nickname,.username,.user-name") || searchRoot.querySelector('a[href*="space.bilibili.com/"]') || container;
+      const button4 = document.createElement("button");
+      button4.type = "button";
+      button4.className = profileActionClass;
+      button4.textContent = "\u5C4F\u853D";
+      button4.title = user.uid !== void 0 ? `\u5C4F\u853D UID ${user.uid}` : `\u5C4F\u853D\u7528\u6237 ${user.name}`;
+      styleCompactButton(button4);
+      button4.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const feedback = soundTask();
+        const result = user.uid !== void 0 ? addRuleItem("precise_uid", user.uid) : addRuleItem("precise_name", user.name);
+        void atelierAlert(String(result.res));
+        feedback.finish(result.status ? "success" : result.res === "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" ? "click" : "error");
+        if (result.status) {
+          rescan();
+        }
+      });
+      if (placeVideoUpAction(searchRoot, button4, "block")) continue;
+      if (target.tagName === "A") {
+        target.insertAdjacentElement("afterend", button4);
+      } else {
+        target.appendChild(button4);
+      }
+    }
+  }
+  function debounce(callback, waitMs) {
+    let timer2;
+    return () => {
+      if (timer2 !== void 0) {
+        window.clearTimeout(timer2);
+      }
+      timer2 = window.setTimeout(callback, waitMs);
+    };
+  }
+  function observeElementShadowRoot(el, observer, observed) {
+    const shadowRoot = el.shadowRoot;
+    if (!shadowRoot || observed.has(shadowRoot)) {
+      return;
+    }
+    observed.add(shadowRoot);
+    ensurePageControls(shadowRoot);
+    observer.observe(shadowRoot, { childList: true, subtree: true });
+    observeOpenShadowRoots(shadowRoot, observer, observed);
+  }
+  function observeOpenShadowRoots(root3, observer, observed) {
+    if (root3 instanceof HTMLElement) {
+      observeElementShadowRoot(root3, observer, observed);
+    }
+    for (const el of Array.from(root3.querySelectorAll("*"))) {
+      observeElementShadowRoot(el, observer, observed);
+    }
+  }
+  function scheduleStartupScans(scan) {
+    for (const delayMs of [250, 750, 1500, 3e3]) {
+      window.setTimeout(scan, delayMs);
+    }
+  }
+  function startBlocker() {
+    let observer = null;
+    const observedShadowRoots = /* @__PURE__ */ new WeakSet();
+    const scanComments = (root3 = document, rules = readRuleSnapshotWithHistoryAliases()) => {
+      if (observer) {
+        observeOpenShadowRoots(root3, observer, observedShadowRoots);
+      }
+      for (const item of collectCommentItems(root3)) {
+        const decision = decideComment(item, rules);
+        if (decision) {
+          hideElement(item, decision);
+        } else {
+          restoreElement(item);
+          ensureActionButton(item, scan);
+        }
+      }
+    };
+    const scan = () => {
+      for (const el of hiddenElements) if (!el.isConnected) hiddenElements.delete(el);
+      if (observer) {
+        observeOpenShadowRoots(document, observer, observedShadowRoots);
+      }
+      const rules = readRuleSnapshotWithHistoryAliases();
+      removeHomeAdBlockPlaceholders();
+      const items = [
+        ...collectVideoItems(document),
+        ...collectLiveItems(document)
+      ];
+      for (const item of items) {
+        const decision = decide(item, rules);
+        if (decision) {
+          hideElement(item, decision);
+        } else {
+          restoreElement(item);
+          ensureActionButton(item, scan);
+        }
+      }
+      scanComments(document, rules);
+      ensureProfileBlockButtons(scan);
+      ensureSpaceProfileBlockButton(scan);
+    };
+    const scheduleScan = debounce(scan, 300);
+    window.addEventListener(blockedVisibilityChangedEvent, () => {
+      for (const el of hiddenElements) {
+        if (el.isConnected) applyBlockedVisibility(el);
+        else hiddenElements.delete(el);
+      }
+      scan();
+    });
+    window.addEventListener("atelier-sync-applied", scheduleScan);
+    const start = () => {
+      ensureRuntimeStyle();
+      if (typeof GM_registerMenuCommand === "function") {
+        GM_registerMenuCommand("Bili Atelier \u5C4F\u853D\u89C4\u5219", () => openBlockerPanel(scan, (container, rescan) => renderHistoryPanel(container, rescan, true)));
+      }
+      installHistoryShortcut(scan);
+      installCommentExpandFastScan(scanComments);
+      observer = new MutationObserver((records2) => {
+        for (const root3 of commentMutationRoots(records2)) scanComments(root3);
+        scheduleScan();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      scan();
+      scheduleStartupScans(scan);
+      debugLog("blocker started");
+    };
+    if (document.body) {
+      start();
+      return;
+    }
+    const bodyObserver = new MutationObserver(() => {
+      if (!document.body) {
+        return;
+      }
+      bodyObserver.disconnect();
+      start();
+    });
+    bodyObserver.observe(document.documentElement, { childList: true });
+    window.addEventListener("pagehide", () => observer?.disconnect(), { once: true });
+  }
+
+  // src/modules/local-following/feed-interact.ts
+  var feedWrites = {
+    like: ["/x/dynamic/feed/dyn/thumb", "json", "query"],
+    "forward-check": ["/x/dynamic/feed/create/submit_check", "json", "query"],
+    forward: ["/x/dynamic/feed/create/dyn", "json", "query"],
+    reply: ["/x/v2/reply/add", "form", "body"],
+    "reply-like": ["/x/v2/reply/action", "form", "body"],
+    "reply-hate": ["/x/v2/reply/hate", "form", "body"],
+    "reply-delete": ["/x/v2/reply/del", "form", "body"],
+    "reply-report": ["/x/v2/reply/report", "form", "body"],
+    upload: ["/x/dynamic/feed/draw/upload_bfs", "file", "body"]
+  };
+  function pageWrite(channel) {
+    const pending2 = /* @__PURE__ */ new Map();
+    window.addEventListener("message", (event) => {
+      const data = event.data;
+      if (event.origin !== location.origin || data?.channel !== channel || data.kind !== "write-result") return;
+      const waiter = pending2.get(data.id);
+      if (!waiter) return;
+      pending2.delete(data.id);
+      if (data.error) waiter.reject(new FeedActionError(data.error));
+      else if (data.status < 200 || data.status >= 300) waiter.reject(new FeedActionError(`\u8BF7\u6C42\u5931\u8D25\uFF1AHTTP ${data.status}`, data.status));
+      else waiter.resolve(data.body);
+    });
+    return (op, payload) => new Promise((resolve, reject) => {
+      const id = crypto.randomUUID();
+      pending2.set(id, { resolve, reject });
+      window.postMessage({ channel, kind: "write", id, op, ...payload }, location.origin);
+    });
+  }
+  var FeedActionError = class extends Error {
+    constructor(message, code = 0) {
+      super(message);
+      this.code = code;
+    }
+    /** Risk control wants a captcha or a human check: only the page can do that. */
+    get needsVerification() {
+      return [-352, -412, 412, 12015, 12016, 12025].includes(this.code) || /验证|风控|异常/.test(this.message);
+    }
+  };
+  function ok(raw) {
+    if (!raw || raw.code !== 0) throw new FeedActionError(typeof raw?.message === "string" && raw.message ? raw.message : "\u64CD\u4F5C\u5931\u8D25", Number(raw?.code) || 0);
+    return raw.data ?? {};
+  }
+  var FeedInteractions = class {
+    constructor(read, write, signingKey, mid) {
+      this.read = read;
+      this.write = write;
+      this.signingKey = signingKey;
+      this.mid = mid;
+    }
+    get(url, signal = new AbortController().signal) {
+      return this.read(url, signal).then(ok, (error) => {
+        throw error instanceof LocalFollowReadError ? new FeedActionError(error.message, error.status) : error;
+      });
+    }
+    async send(op, payload) {
+      return ok(await this.write(op, payload));
+    }
+    like(dynId, on) {
+      return this.send("like", { body: { dyn_id_str: dynId, up: on ? 1 : 2, spmid: "333.1365.0.0" } });
+    }
+    /** The page's own forward flow: submit check, then the scene-4 create. */
+    async forward(dynId, text2) {
+      const content = { contents: text2 ? [{ raw_text: text2, type: 1, biz_id: "" }] : [] };
+      const upload = `${this.mid || 0}_${Math.floor(Date.now() / 1e3)}_${Math.floor(Math.random() * 9e3 + 1e3)}`;
+      const request2 = { content, scene: 4, attach_card: null, upload_id: upload, meta: { app_meta: { from: "create.dynamic.web", mobi_app: "web" } }, option: { aigc: 2 } };
+      await this.send("forward-check", { body: { content, scene: 4, attach_card: null, create_option: request2.option } });
+      return this.send("forward", { query: { platform: "web" }, body: { dyn_req: request2, web_repost_src: { dyn_id_str: dynId } } });
+    }
+    comments(oid, type, mode, next = 0, signal) {
+      return this.get(`https://api.bilibili.com/x/v2/reply/main?oid=${oid}&type=${type}&mode=${mode}&next=${next}&ps=20&plat=1`, signal);
+    }
+    replies(oid, type, root3, page, signal) {
+      return this.get(`https://api.bilibili.com/x/v2/reply/reply?oid=${oid}&type=${type}&root=${root3}&pn=${page}&ps=10`, signal);
+    }
+    /** Signed the way the comment component signs its posts. */
+    async post(options) {
+      const body2 = { oid: options.oid, type: options.type, message: options.message, plat: 1, gaia_source: "main_web" };
+      if (options.root) {
+        body2.root = options.root;
+        body2.parent = options.parent || options.root;
+      }
+      if (options.pictures?.length) body2.pictures = JSON.stringify(options.pictures);
+      const signed = new URLSearchParams(localFollowWbiQuery({ web_location: "333.1365" }, await this.signingKey(new AbortController().signal)));
+      return this.send("reply", { query: Object.fromEntries(signed), body: body2 });
+    }
+    likeReply(oid, type, rpid, on) {
+      return this.send("reply-like", { body: { oid, type, rpid, action: on ? 1 : 0 } });
+    }
+    hateReply(oid, type, rpid, on) {
+      return this.send("reply-hate", { body: { oid, type, rpid, action: on ? 1 : 0 } });
+    }
+    deleteReply(oid, type, rpid) {
+      return this.send("reply-delete", { body: { oid, type, rpid } });
+    }
+    async reportReasons(oid, type, rpid) {
+      const data = await this.get(`https://api.bilibili.com/x/v2/reply/report/metadata?oid=${oid}&type=${type}&rpid=${rpid}`);
+      return (Array.isArray(data.reason_list) ? data.reason_list : []).filter((reason) => Number.isFinite(Number(reason?.tag_id)) && typeof reason?.tag_name === "string").map((reason) => ({ id: Number(reason.tag_id), name: reason.tag_name }));
+    }
+    report(oid, type, rpid, reason, content) {
+      return this.send("reply-report", { body: { oid, type, rpid, reason, content, gaia_source: "main_web" } });
+    }
+    async upload(file) {
+      const data = await this.send("upload", { body: { biz: "new_dyn", category: "daily" }, file });
+      if (typeof data.image_url !== "string") throw new FeedActionError("\u56FE\u7247\u4E0A\u4F20\u5931\u8D25");
+      return { img_src: data.image_url, img_width: Number(data.image_width) || 0, img_height: Number(data.image_height) || 0, img_size: Number(data.img_size) || 0 };
+    }
+    /** Read once per page; the panel keeps the answer. */
+    emotes() {
+      return this.emotePackages ??= this.get("https://api.bilibili.com/x/emote/user/panel/web?business=reply").then(
+        (data) => (Array.isArray(data.packages) ? data.packages : []).map((item) => ({
+          id: Number(item?.id) || 0,
+          name: String(item?.text ?? ""),
+          icon: String(item?.url ?? ""),
+          emotes: (Array.isArray(item?.emote) ? item.emote : []).filter((emote) => typeof emote?.text === "string").map((emote) => ({ text: emote.text, url: typeof emote.url === "string" ? emote.url : "", large: Number(emote?.meta?.size) === 2 }))
+        })).filter((item) => item.emotes.length)
+      ).catch((error) => {
+        this.emotePackages = void 0;
+        throw error;
+      });
+    }
+  };
+
+  // src/modules/local-following/feed-comments.ts
+  function node2(tag, className = "", text2) {
+    const element2 = document.createElement(tag);
+    if (className) element2.className = className;
+    if (text2 !== void 0) element2.textContent = text2;
+    return element2;
+  }
+  function button3(label, className, action) {
+    const element2 = node2("button", `atelier-control ${className}`, label);
+    element2.type = "button";
+    element2.addEventListener("click", () => action(element2));
+    return element2;
+  }
+  var failure = (error) => error instanceof FeedActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u539F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
+  function commentMessage(content) {
+    const box = node2("div", "acm-text"), message = typeof content?.message === "string" ? content.message : "";
+    const emotes = content?.emote && typeof content.emote === "object" ? content.emote : {};
+    const links = /* @__PURE__ */ new Map();
+    for (const member of Array.isArray(content?.members) ? content.members : []) {
+      if (/^\d+$/.test(String(member?.mid)) && typeof member?.uname === "string") links.set(`@${member.uname}`, `https://space.bilibili.com/${member.mid}`);
+    }
+    for (const [keyword, jump] of Object.entries(content?.jump_url && typeof content.jump_url === "object" ? content.jump_url : {})) {
+      const url = safeUrl(jump?.pc_url) || `https://search.bilibili.com/all?keyword=${encodeURIComponent(keyword)}`;
+      links.set(keyword, url);
+    }
+    const tokens = [...Object.keys(emotes), ...links.keys()].filter(Boolean).sort((a, b) => b.length - a.length);
+    const pattern = tokens.length ? new RegExp(`(${tokens.map((token) => token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`) : null;
+    const text2 = (value2) => value2.split("\n").forEach((part, index) => {
+      if (index) box.append(node2("br"));
+      if (part) box.append(document.createTextNode(part));
+    });
+    for (const piece of pattern ? message.split(pattern) : [message]) {
+      if (!piece) continue;
+      const emote = emotes[piece], url = safeUrl(emote?.url);
+      if (url) {
+        const image3 = node2("img", Number(emote?.meta?.size) === 2 ? "acm-emote acm-emote-large" : "acm-emote");
+        image3.src = url;
+        image3.alt = piece;
+        image3.title = piece;
+        image3.referrerPolicy = "no-referrer";
+        image3.loading = "lazy";
+        box.append(image3);
+      } else if (links.has(piece)) {
+        const link2 = node2("a", "acm-link", piece);
+        link2.href = links.get(piece);
+        link2.target = "_blank";
+        link2.rel = "noopener noreferrer";
+        box.append(link2);
+      } else text2(piece);
+    }
+    const pictures2 = (Array.isArray(content?.pictures) ? content.pictures : []).map((picture) => safeUrl(picture?.img_src)).filter(Boolean).slice(0, 9);
+    if (pictures2.length) {
+      const grid = node2("div", "acm-pics");
+      for (const src of pictures2) {
+        const link2 = grid.appendChild(node2("a", "acm-pic"));
+        link2.href = src;
+        link2.target = "_blank";
+        link2.rel = "noopener noreferrer";
+        const image3 = link2.appendChild(node2("img"));
+        image3.src = bilibiliThumb(src, "160w_160h_1c");
+        image3.alt = "";
+        image3.referrerPolicy = "no-referrer";
+        image3.loading = "lazy";
+      }
+      box.append(grid);
+    }
+    return box;
+  }
+  var emotePanel;
+  async function openEmotes(api, anchor, insert) {
+    emotePanel?.close();
+    const panel = node2("section", "acm-emotes xp-window");
+    panel.setAttribute("data-bili-blocker-ui", "");
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-label", "\u8868\u60C5");
+    const caption = panel.appendChild(node2("header", "xp-caption"));
+    caption.append(node2("span", "xp-caption-title", "\u8868\u60C5"));
+    const close = caption.appendChild(button3("", "xp-caption-button", () => done()));
+    close.className = "xp-caption-button";
+    close.dataset.kind = "close";
+    close.title = "\u5173\u95ED";
+    const tabs2 = panel.appendChild(node2("div", "xp-tabs"));
+    const grid = panel.appendChild(node2("div", "acm-emote-grid xp-tabpanel"));
+    grid.textContent = "\u6B63\u5728\u8BFB\u53D6\u8868\u60C5\u2026";
+    const rect = anchor.getBoundingClientRect();
+    panel.style.left = `${Math.max(4, Math.min(rect.left, innerWidth - 336))}px`;
+    panel.style.top = `${rect.bottom + 4 + 260 > innerHeight ? Math.max(4, rect.top - 264) : rect.bottom + 4}px`;
+    document.body.append(panel);
+    const outside = (event) => {
+      if (!event.composedPath().includes(panel) && !event.composedPath().includes(anchor)) done();
+    };
+    const escape = (event) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        done();
+      }
+    };
+    function done() {
+      panel.remove();
+      document.removeEventListener("pointerdown", outside, true);
+      document.removeEventListener("keydown", escape, true);
+      if (emotePanel === entry) emotePanel = void 0;
+    }
+    const entry = { close: done };
+    emotePanel = entry;
+    document.addEventListener("pointerdown", outside, true);
+    document.addEventListener("keydown", escape, true);
+    let packages;
+    try {
+      packages = await api.emotes();
+    } catch (error) {
+      grid.textContent = `\u8868\u60C5\u8BFB\u53D6\u5931\u8D25\uFF1A${failure(error)}`;
+      return;
+    }
+    const show = (item) => {
+      for (const tab of tabs2.children) tab.setAttribute("aria-selected", String(tab.dataset.id === String(item.id)));
+      grid.replaceChildren(...item.emotes.map((emote) => {
+        const cell = node2("button", emote.url ? "acm-emote-cell" : "acm-emote-cell acm-emote-text");
+        cell.type = "button";
+        cell.title = emote.text;
+        if (emote.url) {
+          const image3 = cell.appendChild(node2("img"));
+          image3.src = emote.url;
+          image3.alt = emote.text;
+          image3.referrerPolicy = "no-referrer";
+          image3.loading = "lazy";
+        } else cell.textContent = emote.text;
+        cell.addEventListener("click", () => insert(emote.text));
+        return cell;
+      }));
+    };
+    tabs2.replaceChildren(...packages.map((item) => {
+      const tab = node2("button", "xp-tab", item.name);
+      tab.type = "button";
+      tab.dataset.id = String(item.id);
+      tab.addEventListener("click", () => show(item));
+      return tab;
+    }));
+    if (packages[0]) show(packages[0]);
+    else grid.textContent = "\u6CA1\u6709\u53EF\u7528\u7684\u8868\u60C5";
+  }
+  function composer(context, options) {
+    const box = node2("div", "acm-compose");
+    const field = box.appendChild(node2("textarea", "xp-field acm-input"));
+    field.placeholder = options.placeholder;
+    field.rows = 2;
+    if (options.prefix) field.value = options.prefix;
+    const thumbs = box.appendChild(node2("div", "acm-thumbs"));
+    const row = box.appendChild(node2("div", "acm-compose-row"));
+    const note = node2("span", "acm-note");
+    const pictures2 = [];
+    const insert = (text2) => {
+      const start = field.selectionStart ?? field.value.length, end = field.selectionEnd ?? start;
+      field.setRangeText(text2, start, end, "end");
+      field.focus();
+      refresh();
+    };
+    const emotes = button3("\u8868\u60C5", "acm-tool", (target) => void openEmotes(context.api, target, insert));
+    const input = node2("input");
+    input.type = "file";
+    input.accept = "image/png,image/jpeg,image/gif,image/webp";
+    input.multiple = true;
+    input.hidden = true;
+    const images2 = button3("\u56FE\u7247", "acm-tool", () => input.click());
+    const send = button3("\u53D1\u8868", "acm-send xp-default", () => void submit());
+    row.append(emotes, images2, input, note, send);
+    if (options.cancel) row.append(button3("\u53D6\u6D88", "acm-cancel", () => options.cancel()));
+    const refresh = () => {
+      images2.disabled = pictures2.length >= 9;
+      send.disabled = pictures2.some((item) => !item.picture && !item.failed) || pictures2.some((item) => item.failed) || !field.value.trim() && !pictures2.length;
+    };
+    input.addEventListener("change", () => {
+      for (const file of [...input.files ?? []].slice(0, 9 - pictures2.length)) {
+        const element2 = thumbs.appendChild(node2("span", "acm-thumb"));
+        const image3 = element2.appendChild(node2("img"));
+        image3.src = URL.createObjectURL(file);
+        image3.alt = "";
+        const item = { file, element: element2 };
+        element2.appendChild(button3("\u2715", "acm-thumb-remove", () => {
+          URL.revokeObjectURL(image3.src);
+          element2.remove();
+          pictures2.splice(pictures2.indexOf(item), 1);
+          refresh();
+        })).title = "\u53BB\u6389\u8FD9\u5F20\u56FE\u7247";
+        pictures2.push(item);
+        context.api.upload(file).then((picture) => {
+          item.picture = picture;
+        }, () => {
+          item.failed = true;
+          element2.dataset.failed = "";
+          element2.title = "\u4E0A\u4F20\u5931\u8D25\uFF0C\u8BF7\u53BB\u6389\u540E\u91CD\u8BD5";
+        }).finally(refresh);
+      }
+      input.value = "";
+      refresh();
+    });
+    field.addEventListener("input", refresh);
+    field.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        if (!send.disabled) void submit();
+      }
+      if (event.key === "Escape" && options.cancel) {
+        event.preventDefault();
+        options.cancel();
+      }
+    });
+    async function submit() {
+      send.disabled = true;
+      note.textContent = "\u6B63\u5728\u53D1\u8868\u2026";
+      try {
+        await options.submit(field.value.trim(), pictures2.flatMap((item) => item.picture ? [item.picture] : []));
+        field.value = options.prefix ?? "";
+        thumbs.replaceChildren();
+        pictures2.length = 0;
+        note.textContent = "";
+      } catch (error) {
+        note.textContent = failure(error);
+      }
+      refresh();
+    }
+    refresh();
+    return { box, focus: () => {
+      field.focus();
+      field.setSelectionRange(field.value.length, field.value.length);
+    } };
+  }
+  function createCommentArea(context) {
+    const area = node2("section", "adc-comments");
+    area.setAttribute("aria-label", "\u8BC4\u8BBA");
+    const head = area.appendChild(node2("div", "acm-head"));
+    const title = head.appendChild(node2("strong", "acm-title", "\u8BC4\u8BBA"));
+    const sorts = head.appendChild(node2("span", "acm-sorts"));
+    const status2 = head.appendChild(node2("span", "acm-status"));
+    const original = head.appendChild(node2("a", "acm-original", "\u5728\u539F\u9875\u9762\u67E5\u770B"));
+    original.href = context.page;
+    original.target = "_blank";
+    original.rel = "noopener noreferrer";
+    const name = `acm-sort-${crypto.randomUUID()}`;
+    let mode = 3, next = 0, total = 0, loading = false, generation = 0;
+    for (const [value2, label] of [[3, "\u70ED\u95E8"], [2, "\u6700\u65B0"]]) {
+      const choice = sorts.appendChild(node2("label", "acm-sort"));
+      const radio = choice.appendChild(node2("input"));
+      radio.type = "radio";
+      radio.name = name;
+      radio.checked = value2 === mode;
+      radio.addEventListener("change", () => {
+        if (radio.checked) {
+          mode = value2;
+          void load(true);
+        }
+      });
+      choice.append(document.createTextNode(label));
+    }
+    const say = (message, link2 = false) => {
+      status2.textContent = message;
+      original.hidden = false;
+      original.dataset.emphasis = String(link2);
+    };
+    const count2 = (value2) => {
+      total = Math.max(0, value2);
+      title.textContent = `\u8BC4\u8BBA ${formatCount(total) || 0}`;
+      context.onCount(total);
+    };
+    if (context.me) {
+      const compose = composer(context, { placeholder: "\u53D1\u4E00\u6761\u53CB\u5584\u7684\u8BC4\u8BBA", submit: async (message, pictures2) => {
+        const data = await context.api.post({ oid: context.oid, type: context.type, message, pictures: pictures2 });
+        if (data.reply) list.prepend(item(data.reply, false));
+        count2(total + 1);
+      } });
+      area.append(compose.box);
+    }
+    const list = area.appendChild(node2("div", "acm-list"));
+    const more = area.appendChild(button3("\u52A0\u8F7D\u66F4\u591A\u8BC4\u8BBA", "acm-more", () => void load(false)));
+    more.hidden = true;
+    let rules = context.blocking ? readRuleSnapshotWithHistoryAliases() : null;
+    const blocked = /* @__PURE__ */ new Set(), targets = /* @__PURE__ */ new WeakMap();
+    const reveal = () => {
+      for (const element2 of blocked) element2.hidden = !isShowingBlocked();
+    };
+    window.addEventListener(blockedVisibilityChangedEvent, reveal);
+    function guarded(element2) {
+      const target = targets.get(element2);
+      if (!rules || !target || blocked.has(element2)) return element2;
+      const decision = decideComment(target, rules);
+      if (!decision) return element2;
+      recordBlockHistory(target, decision);
+      element2.classList.add("acm-blocked");
+      element2.title = `Bili Atelier \u5DF2\u5C4F\u853D\uFF1A${decision.type} ${decision.matching}`;
+      element2.hidden = !isShowingBlocked();
+      blocked.add(element2);
+      const control = element2.querySelector(":scope > .acm-main > .acm-top > .acm-block");
+      if (control && isUserBlockDecision(decision)) {
+        delete control.dataset.confirmBlock;
+        control.textContent = "\u5DF2\u5C4F\u853D";
+        control.disabled = true;
+      }
+      return element2;
+    }
+    function rescan() {
+      rules = context.blocking ? readRuleSnapshotWithHistoryAliases() : null;
+      for (const element2 of area.querySelectorAll(".acm-item")) guarded(element2);
+      context.onBlocked();
+    }
+    function item(reply, sub, pinned = false) {
+      const element2 = node2("article", sub ? "acm-item acm-sub-item" : "acm-item");
+      const rpid = String(reply?.rpid_str ?? reply?.rpid ?? ""), mid = String(reply?.mid_str ?? reply?.mid ?? reply?.member?.mid ?? "");
+      element2.dataset.rpid = rpid;
+      const space = /^\d+$/.test(mid) ? `https://space.bilibili.com/${mid}` : "";
+      const face = element2.appendChild(node2("a", "acm-face"));
+      if (space) {
+        face.href = space;
+        face.target = "_blank";
+        face.rel = "noopener noreferrer";
+      }
+      const avatar = face.appendChild(node2("img"));
+      avatar.alt = "";
+      avatar.referrerPolicy = "no-referrer";
+      avatar.loading = "lazy";
+      avatar.src = bilibiliThumb(reply?.member?.avatar, sub ? "32w_32h_1c" : "64w_64h_1c");
+      const main = element2.appendChild(node2("div", "acm-main"));
+      const top = main.appendChild(node2("div", "acm-top"));
+      const who = top.appendChild(node2("a", "acm-name", reply?.member?.uname || mid || "\u672A\u77E5\u7528\u6237"));
+      if (space) {
+        who.href = space;
+        who.target = "_blank";
+        who.rel = "noopener noreferrer";
+      }
+      const target = { kind: "comment", el: element2, insertionEl: element2, uid: Number(mid) || void 0, name: reply?.member?.uname, content: reply?.content?.message };
+      targets.set(element2, target);
+      if (context.blocking && !(context.me && mid === context.me)) top.append(createCommentUserBlockButton(target, rescan, "acm-block"));
+      if (mid && mid === context.owner) top.append(node2("span", "acm-badge", "UP"));
+      const level = Number(reply?.member?.level_info?.current_level);
+      if (Number.isFinite(level) && level > 0) top.append(node2("span", "acm-level", `Lv${level}`));
+      if (pinned) top.append(node2("span", "acm-badge", "\u7F6E\u9876"));
+      main.append(commentMessage(reply?.content));
+      const meta = main.appendChild(node2("div", "acm-meta"));
+      const when = String(reply?.reply_control?.time_desc ?? "").replace(/发布$/, "") || (Number(reply?.ctime) > 0 ? new Date(Number(reply.ctime) * 1e3).toLocaleString() : "");
+      meta.append(node2("span", "acm-when", [when, reply?.reply_control?.location].filter(Boolean).join(" \xB7 ")));
+      const actions = meta.appendChild(node2("span", "acm-actions"));
+      let likes = Math.max(0, Number(reply?.like) || 0), action = Number(reply?.action) || 0;
+      const like = button3("", "acm-like", () => void toggle(1)), hate = button3("\u8E29", "acm-hate", () => void toggle(2));
+      const paint = () => {
+        like.textContent = likes ? `\u70B9\u8D5E ${formatCount(likes)}` : "\u70B9\u8D5E";
+        like.setAttribute("aria-pressed", String(action === 1));
+        hate.setAttribute("aria-pressed", String(action === 2));
+      };
+      async function toggle(which) {
+        if (!context.me) return;
+        const before = { likes, action }, on = action !== which;
+        if (which === 1) likes += on ? 1 : -1;
+        else if (on && action === 1) likes -= 1;
+        action = on ? which : 0;
+        paint();
+        try {
+          await (which === 1 ? context.api.likeReply : context.api.hateReply).call(context.api, context.oid, context.type, rpid, on);
+        } catch (error) {
+          ({ likes, action } = before);
+          paint();
+          say(failure(error), true);
+        }
+      }
+      paint();
+      actions.append(like, hate, button3("\u56DE\u590D", "acm-reply", () => openReply()));
+      if (context.me && (mid === context.me || context.owner === context.me)) actions.append(button3("\u5220\u9664", "acm-delete", () => void remove()));
+      actions.append(button3("\u4E3E\u62A5", "acm-report", () => void report()));
+      if (!context.me) for (const control of actions.querySelectorAll("button")) {
+        control.disabled = true;
+        control.title = "\u767B\u5F55\u540E\u53EF\u7528";
+      }
+      const replies = sub ? null : main.appendChild(node2("div", "acm-sub"));
+      let replyBox = null;
+      function openReply() {
+        if (!context.me) return;
+        if (replyBox) {
+          replyBox.remove();
+          replyBox = null;
+          return;
+        }
+        const root3 = sub ? String(reply?.root_str ?? reply?.root ?? "") : rpid;
+        const compose = composer(context, {
+          placeholder: `\u56DE\u590D @${reply?.member?.uname ?? ""}`,
+          prefix: sub ? `\u56DE\u590D @${reply?.member?.uname ?? ""} :` : "",
+          submit: async (message, pictures2) => {
+            const data = await context.api.post({ oid: context.oid, type: context.type, message, root: root3, parent: rpid, pictures: pictures2 });
+            const host = sub ? element2.parentElement : replies;
+            if (data.reply && host) host.append(item(data.reply, true));
+            count2(total + 1);
+            replyBox?.remove();
+            replyBox = null;
+          },
+          cancel: () => {
+            replyBox?.remove();
+            replyBox = null;
+          }
+        });
+        replyBox = compose.box;
+        replyBox.classList.add("acm-reply-box");
+        main.append(replyBox);
+        compose.focus();
+      }
+      async function remove() {
+        if (!await atelierConfirm("\u786E\u5B9A\u5220\u9664\u8FD9\u6761\u8BC4\u8BBA\u5417\uFF1F", "\u5220\u9664\u8BC4\u8BBA")) return;
+        try {
+          await context.api.deleteReply(context.oid, context.type, rpid);
+          element2.remove();
+          count2(total - 1);
+        } catch (error) {
+          say(failure(error), true);
+        }
+      }
+      async function report() {
+        let reasons;
+        try {
+          reasons = await context.api.reportReasons(context.oid, context.type, rpid);
+        } catch (error) {
+          say(failure(error), true);
+          return;
+        }
+        if (!reasons.length) {
+          say("\u6CA1\u6709\u53EF\u9009\u7684\u4E3E\u62A5\u7406\u7531", true);
+          return;
+        }
+        const reason = await atelierDialog({ title: "\u4E3E\u62A5\u8BC4\u8BBA", message: "\u8BF7\u9009\u62E9\u4E3E\u62A5\u7406\u7531", choices: reasons.map((entry) => ({ value: String(entry.id), label: entry.name })) });
+        if (reason === null) return;
+        const detail = await atelierDialog({ title: "\u4E3E\u62A5\u8BC4\u8BBA", message: "\u8865\u5145\u8BF4\u660E\uFF08\u53EF\u4E0D\u586B\uFF09", input: "", confirmLabel: "\u4E3E\u62A5" });
+        if (detail === null) return;
+        try {
+          await context.api.report(context.oid, context.type, rpid, Number(reason), detail.trim());
+          say("\u4E3E\u62A5\u5DF2\u63D0\u4EA4");
+        } catch (error) {
+          say(failure(error), true);
+        }
+      }
+      if (replies) {
+        const preview = Array.isArray(reply?.replies) ? reply.replies : [], replyCount = Math.max(Number(reply?.rcount) || 0, preview.length);
+        for (const child of preview.slice(0, 3)) replies.append(item(child, true));
+        if (replyCount > Math.min(3, preview.length)) {
+          const open = replies.appendChild(button3(String(reply?.reply_control?.sub_reply_entry_text || `\u5171 ${replyCount} \u6761\u56DE\u590D`) + "\uFF0C\u70B9\u51FB\u67E5\u770B", "acm-open", () => void page(1)));
+          open.classList.add("xp-tool");
+        }
+        async function page(number) {
+          replies.dataset.loading = "";
+          try {
+            const data = await context.api.replies(context.oid, context.type, rpid, number);
+            const pages = Math.max(1, Math.ceil((Number(data.page?.count) || 0) / (Number(data.page?.size) || 10)));
+            replies.replaceChildren(...(Array.isArray(data.replies) ? data.replies : []).map((child) => item(child, true)));
+            if (pages > 1) {
+              const pager = replies.appendChild(node2("div", "acm-pager"));
+              pager.append(button3("\u4E0A\u4E00\u9875", "acm-prev", () => void page(number - 1)), node2("span", "", `\u7B2C ${number} / ${pages} \u9875`), button3("\u4E0B\u4E00\u9875", "acm-next", () => void page(number + 1)));
+              pager.querySelector(".acm-prev").disabled = number <= 1;
+              pager.querySelector(".acm-next").disabled = number >= pages;
+            }
+          } catch (error) {
+            say(failure(error));
+          }
+          delete replies.dataset.loading;
+        }
+      }
+      return guarded(element2);
+    }
+    async function load(first2) {
+      if (loading && !first2) return;
+      const ticket = ++generation;
+      loading = true;
+      more.hidden = true;
+      say("\u6B63\u5728\u8BFB\u53D6\u8BC4\u8BBA\u2026");
+      if (first2) {
+        next = 0;
+        list.replaceChildren();
+      }
+      try {
+        const data = await context.api.comments(context.oid, context.type, mode, next);
+        if (ticket !== generation) return;
+        const seen = new Set([...list.querySelectorAll(".acm-item")].map((element2) => element2.dataset.rpid));
+        const tops = first2 ? [...Array.isArray(data.top_replies) ? data.top_replies : [], ...data.upper?.top ? [data.upper.top] : []] : [];
+        for (const reply of tops) {
+          const id = String(reply?.rpid_str ?? reply?.rpid);
+          if (!seen.has(id)) {
+            seen.add(id);
+            list.append(item(reply, false, true));
+          }
+        }
+        for (const reply of Array.isArray(data.replies) ? data.replies : []) {
+          const id = String(reply?.rpid_str ?? reply?.rpid);
+          if (!seen.has(id)) {
+            seen.add(id);
+            list.append(item(reply, false));
+          }
+        }
+        if (Number.isFinite(Number(data.cursor?.all_count))) count2(Number(data.cursor.all_count));
+        next = Number(data.cursor?.next) || next + 1;
+        more.hidden = !!data.cursor?.is_end;
+        say(list.childElementCount ? "" : "\u8FD8\u6CA1\u6709\u8BC4\u8BBA");
+      } catch (error) {
+        if (ticket === generation) say(failure(error), true);
+      } finally {
+        if (ticket === generation) loading = false;
+      }
+    }
+    void load(true);
+    return { element: area, dispose: () => {
+      generation++;
+      window.removeEventListener(blockedVisibilityChangedEvent, reveal);
+      emotePanel?.close();
+      area.remove();
+    } };
+  }
+  var root2 = "#atelier-feed";
+  var commentAreaCss = `
+${root2} .adc-comments{display:flex;flex-direction:column;gap:6px;margin:4px 0 0;padding:6px 8px;background:var(--xp-face);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d);box-shadow:inset 1px 1px var(--xp-dark3d)}
+${root2} .acm-head{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px}
+${root2} .acm-sorts{display:flex;gap:10px}${root2} .acm-sort{display:inline-flex;align-items:center}
+${root2} .acm-status{flex:1;min-width:0;color:var(--xp-muted)}
+${root2} .acm-original{color:var(--xp-task-link)}${root2} .acm-original[data-emphasis=true]{font-weight:bold}
+${root2} .acm-compose{display:flex;flex-direction:column;gap:4px}
+${root2} .acm-input{width:100%;min-height:40px;resize:vertical}
+${root2} .acm-compose-row{display:flex;align-items:center;gap:4px}${root2} .acm-note{flex:1;min-width:0;color:var(--xp-danger)}
+${root2} .acm-compose-row .atelier-control{min-width:0}
+${root2} .acm-thumbs{display:flex;flex-wrap:wrap;gap:4px}${root2} .acm-thumbs:empty{display:none}
+${root2} .acm-thumb{position:relative;width:56px;height:56px;border:1px solid var(--xp-edge);background:var(--xp-window)}
+${root2} .acm-thumb img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
+${root2} .acm-thumb[data-failed]::after{content:"\u5931\u8D25";position:absolute;left:0;right:0;bottom:0;text-align:center;color:#fff;background:#a33024c0}
+${root2} .acm-thumb-remove{position:absolute;top:-6px;right:-6px;min-height:16px!important;padding:0 3px!important;line-height:14px!important}
+${root2} .acm-list{display:flex;flex-direction:column}
+${root2} .acm-item{display:flex;gap:8px;padding:6px 0;border-top:1px solid var(--xp-line)}
+${root2} .acm-list>.acm-item:first-child{border-top:0}
+${root2} .acm-face{flex:none}${root2} .acm-face img{display:block;width:32px;height:32px;object-fit:cover;image-rendering:auto}
+${root2} .acm-sub-item .acm-face img{width:16px;height:16px}
+${root2} .acm-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+${root2} .acm-top{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+${root2} .acm-name{font-weight:bold;color:var(--xp-ink)!important;text-decoration:none}
+${root2} .acm-top .acm-block{min-width:0}
+${root2} .acm-badge{padding:0 3px;color:var(--xp-caption-ink);background:var(--xp-caption)}
+${root2} .acm-level{color:var(--xp-group-text)}
+${root2} .acm-text{overflow-wrap:anywhere}${root2} .acm-link{color:var(--xp-task-link)}
+${root2} .acm-emote{width:20px;height:20px;vertical-align:text-bottom;image-rendering:auto}${root2} .acm-emote-large{width:40px;height:40px}
+${root2} .acm-pics{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}${root2} .acm-pic{display:block;width:80px;height:80px;border:1px solid var(--xp-edge)}
+${root2} .acm-pic img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
+${root2} .acm-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}${root2} .acm-when{flex:1;min-width:0;color:var(--xp-muted)}
+${root2} .acm-actions{display:flex;gap:3px}${root2} .acm-actions .atelier-control{min-width:0}
+${root2} .acm-sub{display:flex;flex-direction:column;margin-top:2px}
+${root2} .acm-sub:not(:empty){padding:0 6px;background:var(--xp-face);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d)}
+${root2} .acm-sub[data-loading]{opacity:.6}
+${root2} .acm-open{align-self:flex-start;margin:3px 0;color:var(--xp-task-link)}
+${root2} .acm-pager{display:flex;align-items:center;gap:6px;padding:4px 0}
+${root2} .acm-reply-box{margin-top:3px}
+${root2} .acm-more{align-self:center}
+${root2} .acm-blocked{outline:1px dashed #a33024;outline-offset:-1px}
+.acm-emotes{position:fixed;z-index:2147483646;width:330px;${xpFont}}
+.acm-emotes .xp-tabs{overflow-x:auto;flex-wrap:nowrap}
+.acm-emote-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:2px;height:190px;overflow:auto;padding:4px;margin:0 4px 4px}
+.acm-emote-cell{display:grid;place-items:center;min-height:34px;padding:1px;border:1px solid transparent;background:transparent;cursor:default}
+.acm-emote-cell:hover{border-color:var(--xp-highlight);background:color-mix(in srgb,var(--xp-highlight) 15%,transparent)}
+.acm-emote-cell img{width:28px;height:28px;object-fit:contain;image-rendering:auto}
+.acm-emote-text{grid-column:span 3;${xpFont};color:var(--xp-ink)}
+`;
+
+  // src/modules/local-following/feed-roster.ts
+  var pageSize = 50;
+  var followingsUrl = (mid, page) => `https://api.bilibili.com/x/relation/followings?vmid=${mid}&pn=${page}&ps=${pageSize}&order=desc&order_type=`;
+  function people(raw) {
+    if (raw?.code !== 0 || !Array.isArray(raw?.data?.list)) {
+      const code = Math.abs(Number(raw?.code));
+      throw new LocalFollowReadError(typeof raw?.message === "string" ? raw.message : "\u5173\u6CE8\u5217\u8868\u683C\u5F0F\u65E0\u6548", [412, 429].includes(code) ? code : 0);
+    }
+    return raw.data.list.flatMap((item) => /^\d+$/.test(String(item?.mid)) && typeof item?.uname === "string" ? [{ uid: String(item.mid), name: item.uname, face: safeLocalFace(item.face) }] : []);
+  }
+  async function readFollowings(request2, mid, signal, limits = {}) {
+    const found = /* @__PURE__ */ new Map();
+    let total = 0, error = "", stopped = false;
+    const onError = (_, failure2) => {
+      error ||= failure2 instanceof Error ? failure2.message : "\u8BFB\u53D6\u5931\u8D25";
+      stopped = failure2 instanceof LocalFollowReadError && failure2.stopsBatch;
+      return stopped;
+    };
+    await runConcurrentReads({
+      ...limits,
+      keys: [1],
+      batch: signal,
+      read: (page, readSignal) => request2(followingsUrl(mid, page), readSignal),
+      onValue: (_, raw) => {
+        total = Number(raw?.data?.total) || 0;
+        for (const person of people(raw)) found.set(person.uid, person);
+      },
+      onError
+    });
+    const pages = Math.ceil(total / pageSize);
+    if (!stopped && !signal.aborted && pages > 1) {
+      await runConcurrentReads({
+        ...limits,
+        keys: Array.from({ length: pages - 1 }, (_, index) => index + 2),
+        batch: signal,
+        read: (page, readSignal) => request2(followingsUrl(mid, page), readSignal),
+        onValue: (_, raw) => {
+          for (const person of people(raw)) found.set(person.uid, person);
+        },
+        onError
+      });
+    }
+    const complete = !error && !signal.aborted && found.size >= total;
+    return { at: Date.now(), complete, list: [...found.values()], ...error ? { error } : {} };
+  }
+  var portalUrl = "https://api.bilibili.com/x/polymer/web-dynamic/v1/portal?up_list_more=1&web_location=333.1365";
+  var livePeople = (items) => (Array.isArray(items) ? items : []).flatMap((item) => /^\d+$/.test(String(item?.mid)) && /^\d+$/.test(String(item?.room_id)) && typeof (item?.uname ?? item?.name) === "string" ? [{ uid: String(item.mid), name: item.uname ?? item.name, face: safeLocalFace(item.face), room: String(item.room_id), title: typeof item.title === "string" ? item.title : "" }] : []);
+  async function readLiveUsers(request2, signal) {
+    const raw = await request2(portalUrl, signal);
+    if (raw?.code !== 0) {
+      const code = Math.abs(Number(raw?.code));
+      throw new LocalFollowReadError(typeof raw?.message === "string" && raw.message ? raw.message : "\u76F4\u64AD\u540D\u5355\u683C\u5F0F\u65E0\u6548", [412, 429].includes(code) ? code : 0);
+    }
+    const live = raw.data?.live_users, list = livePeople(live?.items);
+    return { at: Date.now(), count: Math.max(list.length, Number(live?.count) || 0), list };
+  }
+  function parseLiveCopy(value2) {
+    const raw = value2;
+    if (!raw || !Array.isArray(raw.list)) return null;
+    const list = livePeople(raw.list.map((person) => ({ mid: person?.uid, uname: person?.name, face: person?.face, room_id: person?.room, title: person?.title })));
+    return { at: Number(raw.at) || 0, count: Math.max(list.length, Number(raw.count) || 0), list };
+  }
+  function parseFollowingsCopy(value2) {
+    const raw = value2;
+    if (!raw || !Array.isArray(raw.list)) return null;
+    return {
+      at: Number(raw.at) || 0,
+      complete: raw.complete === true,
+      list: raw.list.filter((person) => /^\d+$/.test(String(person?.uid)) && typeof person?.name === "string").map((person) => ({ uid: String(person.uid), name: person.name, face: safeLocalFace(person.face) }))
+    };
+  }
+  var names3 = new Intl.Collator("zh-CN-u-co-pinyin", { sensitivity: "base", numeric: true });
+  function rosterTiles(options) {
+    const tiles = /* @__PURE__ */ new Map();
+    for (const person of options.online) tiles.set(person.uid, { ...person, online: true, local: false, fresh: false });
+    for (const person of options.local) {
+      const known2 = tiles.get(person.uid);
+      if (known2) {
+        known2.local = true;
+        known2.name ||= person.name;
+        known2.face ||= person.face;
+      } else tiles.set(person.uid, { ...person, online: false, local: true, fresh: false });
+    }
+    const list = [...tiles.values()];
+    for (const tile of list) {
+      tile.latest = options.latest(tile.uid);
+      tile.fresh = tile.latest !== void 0 && tile.latest * 1e3 > options.seen(tile.uid);
+    }
+    return list.sort((a, b) => a.latest === void 0 ? b.latest === void 0 ? names3.compare(a.name || a.uid, b.name || b.uid) : 1 : b.latest === void 0 ? -1 : b.latest - a.latest || names3.compare(a.name, b.name));
+  }
+  function tileLines(name, width2 = 60) {
+    const advance = (char) => /[⺀-￿]/.test(char) ? 12 : 7;
+    const chars = [...name.trim()], lines = [];
+    let line = [], used = 0, index = 0;
+    for (; index < chars.length; index++) {
+      const char = chars[index];
+      if (used + advance(char) > width2) {
+        const space = line.lastIndexOf(" ");
+        const carry = advance(char) === 7 && space > 0 ? line.splice(space).slice(1) : [];
+        lines.push(line.join("").trimEnd());
+        if (lines.length === 2) {
+          index -= carry.length;
+          break;
+        }
+        line = carry;
+        used = carry.reduce((sum, value2) => sum + advance(value2), 0);
+      }
+      line.push(char);
+      used += advance(char);
+    }
+    if (lines.length < 2 && line.length) lines.push(line.join(""));
+    if (index < chars.length) lines[1] = [...lines[1]].slice(0, -1).join("") + "\u2026";
+    return lines;
+  }
+
+  // src/modules/local-following/feed-panel.ts
+  var panelClass = "atelier-follow-panel";
+  var stickyTop = 72;
+  var columns = 3;
+  function createFollowPanel(identity, source) {
+    const seenKey = `BiliAtelier_FeedSeen_${identity}`, foldKey = `BiliAtelier_FeedPanelFolded_${identity}`;
+    const liveKey = `BiliAtelier_FeedLiveOpen_${identity}`, dynamicKey = `BiliAtelier_FeedDynamicOpen_${identity}`;
+    let seen = (() => {
+      const raw = GM_getValue(seenKey, {});
+      return raw && typeof raw === "object" ? raw : {};
+    })();
+    let liveOpen = GM_getValue(liveKey, false) === true, dynamicOpen = GM_getValue(dynamicKey, true) !== false;
+    const panel = document.createElement("section");
+    panel.className = `${panelClass} xp-window`;
+    panel.setAttribute("data-atelier-local-ui", "");
+    panel.setAttribute("data-bili-blocker-ui", "true");
+    const caption = panel.appendChild(document.createElement("header"));
+    caption.className = "afp-caption xp-caption";
+    const icon2 = caption.appendChild(document.createElement("span"));
+    icon2.className = "afp-caption-icon";
+    const title = caption.appendChild(document.createElement("h2"));
+    const note = caption.appendChild(document.createElement("span"));
+    note.className = "afp-note";
+    const toggle = caption.appendChild(document.createElement("button"));
+    toggle.type = "button";
+    toggle.className = "afp-toggle xp-caption-button";
+    const body2 = panel.appendChild(document.createElement("div"));
+    body2.className = "afp-body";
+    const view = body2.appendChild(document.createElement("div"));
+    view.className = "afp-view";
+    view.setAttribute("role", "listbox");
+    view.setAttribute("aria-label", "\u5173\u6CE8\u7684 UP \u4E3B");
+    let folded = GM_getValue(foldKey, false) === true;
+    const fold = () => {
+      body2.hidden = folded;
+      toggle.dataset.kind = folded ? "restore" : "minimize";
+      toggle.title = folded ? "\u8FD8\u539F" : "\u6700\u5C0F\u5316";
+      toggle.setAttribute("aria-label", folded ? "\u5C55\u5F00\u5173\u6CE8\u680F" : "\u6298\u53E0\u5173\u6CE8\u680F");
+      toggle.setAttribute("aria-expanded", String(!folded));
+    };
+    toggle.addEventListener("click", () => {
+      folded = !folded;
+      sound(folded ? "minimize" : "restore");
+      GM_setValue(foldKey, folded);
+      fold();
+    });
+    fold();
+    let focused = "";
+    const tiles = () => [...view.querySelectorAll(".afp-tile")];
+    const choose = (uid, all) => {
+      if (!all) {
+        seen[uid] = Date.now();
+        GM_setValue(seenKey, seen);
+      }
+      source.select(all || source.selected() === uid ? "" : uid);
+    };
+    const space = (uid) => window.open(`https://space.bilibili.com/${uid}/dynamic`, "_blank", "noopener");
+    const opens = (kind) => kind === "folder" || kind === "up";
+    function activate(tile2) {
+      const kind = tile2.dataset.kind, id = tile2.dataset.uid;
+      sound("folder");
+      if (kind === "live") window.open(tile2.href, "_blank", "noopener");
+      else if (kind === "folder") source.openFolder(id);
+      else if (kind === "up") source.openFolder("");
+      else choose(id, kind === "all" || kind === "folder-all");
+    }
+    function tile(kind, person, picture2) {
+      const anchor = document.createElement("a");
+      anchor.className = `afp-tile afp-tile-${kind}`;
+      anchor.dataset.uid = person.uid;
+      anchor.dataset.kind = kind;
+      const selected = kind === "person" ? source.selected() === person.uid : (kind === "all" || kind === "folder-all") && !source.selected();
+      anchor.setAttribute("role", "option");
+      anchor.setAttribute("aria-pressed", String(selected));
+      anchor.setAttribute("aria-selected", String(selected));
+      anchor.tabIndex = -1;
+      if (kind === "person") {
+        anchor.href = `https://space.bilibili.com/${person.uid}/dynamic`;
+        anchor.target = "_blank";
+        anchor.rel = "noopener";
+      } else if (kind === "live") {
+        anchor.href = `https://live.bilibili.com/${person.room}`;
+        anchor.target = "_blank";
+        anchor.rel = "noopener";
+      } else anchor.href = "#";
+      const when = person.latest ? new Date(person.latest * 1e3).toLocaleString() : "\u672A\u77E5";
+      anchor.title = kind === "person" ? `${person.name || person.uid}
+UID\uFF1A${person.uid}
+\u6700\u8FD1\u53D1\u5E03\uFF1A${when}${person.online && person.local ? "\n\u8D26\u53F7\u5173\u6CE8 \xB7 \u672C\u5730\u5173\u6CE8" : person.local ? "\n\u672C\u5730\u5173\u6CE8" : ""}` : kind === "live" ? `${person.name}
+${person.title || "\u6B63\u5728\u76F4\u64AD"}` : person.name;
+      const face2 = anchor.appendChild(document.createElement("span"));
+      face2.className = "afp-face";
+      face2.append(picture2);
+      if (person.fresh) face2.append(Object.assign(document.createElement("i"), { className: "afp-dot", title: "\u6709\u65B0\u52A8\u6001" }));
+      if (kind === "live") face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-live", textContent: "\u76F4\u64AD" }));
+      if (kind === "person" && person.local && !person.online) face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-local", textContent: "\u672C" }));
+      const name = anchor.appendChild(document.createElement("span"));
+      name.className = "afp-name";
+      for (const line of tileLines(person.name || person.uid)) name.append(Object.assign(document.createElement("span"), { className: "afp-line", textContent: line }));
+      anchor.addEventListener("focus", () => {
+        focused = `${kind}:${person.uid}`;
+        for (const other of tiles()) other.tabIndex = other === anchor ? 0 : -1;
+      });
+      anchor.addEventListener("click", (event) => {
+        if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return;
+        if (kind === "live") {
+          sound("folder");
+          return;
+        }
+        event.preventDefault();
+        if (opens(kind)) anchor.focus();
+        else activate(anchor);
+      });
+      if (opens(kind)) anchor.addEventListener("dblclick", (event) => {
+        event.preventDefault();
+        activate(anchor);
+      });
+      anchor.addEventListener("contextmenu", (event) => {
+        if (kind === "all" || kind === "up") return;
+        event.preventDefault();
+        if (kind === "folder" || kind === "folder-all") source.manage(person.uid === "ungrouped" ? void 0 : person.uid);
+        else {
+          sound("folder");
+          space(person.uid);
+        }
+      });
+      return anchor;
+    }
+    const face = (url) => {
+      const img = document.createElement("img");
+      img.alt = "";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.referrerPolicy = "no-referrer";
+      img.src = bilibiliThumb(url, "64w_64h_1c") || atelierIcons.app;
+      return img;
+    };
+    const picture = (src) => Object.assign(document.createElement("img"), { alt: "", src, className: "afp-pixel" });
+    function group(text2, open, onClick, tip = "") {
+      const header = document.createElement("button");
+      header.type = "button";
+      header.className = "afp-group";
+      header.setAttribute("aria-expanded", String(open));
+      if (tip) header.title = tip;
+      header.append(Object.assign(document.createElement("span"), { className: "afp-group-title", textContent: text2 }), Object.assign(document.createElement("i"), { className: "afp-chevron" }));
+      header.addEventListener("click", onClick);
+      return header;
+    }
+    const grid = (...children) => {
+      const node3 = document.createElement("div");
+      node3.className = "afp-grid";
+      node3.append(...children);
+      return node3;
+    };
+    view.addEventListener("keydown", (event) => {
+      if (event.key === "Backspace" && source.folder()) {
+        event.preventDefault();
+        sound("folder");
+        source.openFolder("");
+        return;
+      }
+      const list = tiles(), at = list.findIndex((node3) => node3 === document.activeElement);
+      if (at < 0) return;
+      const target = { ArrowLeft: at - 1, ArrowRight: at + 1, ArrowUp: vertical(list, at, -1), ArrowDown: vertical(list, at, 1), Home: 0, End: list.length - 1 }[event.key];
+      if (target !== void 0) {
+        event.preventDefault();
+        list[Math.max(0, Math.min(list.length - 1, target))].focus();
+        return;
+      }
+      if (event.key === "Enter" || event.key === " " && !opens(list[at].dataset.kind)) {
+        event.preventDefault();
+        activate(list[at]);
+        return;
+      }
+      if (event.key === " ") {
+        event.preventDefault();
+        return;
+      }
+      if (event.key === "ContextMenu" || event.key === "F10" && event.shiftKey) {
+        event.preventDefault();
+        list[at].dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true }));
+      }
+    });
+    function vertical(list, at, direction) {
+      const rects = list.map((node3) => node3.getBoundingClientRect());
+      if (rects.every((rect) => !rect.width)) return at + direction * columns;
+      const here = rects[at], rows = [...new Set(rects.map((rect) => Math.round(rect.top)))].sort((a, b) => a - b);
+      const row = rows[rows.indexOf(Math.round(here.top)) + direction];
+      if (row === void 0) return at;
+      let best = at, distance = Infinity;
+      rects.forEach((rect, index) => {
+        const gap2 = Math.abs(rect.left - here.left);
+        if (Math.round(rect.top) === row && gap2 < distance) {
+          best = index;
+          distance = gap2;
+        }
+      });
+      return best;
+    }
+    function render2() {
+      const folder = source.folder();
+      const people2 = rosterTiles({
+        online: source.online(),
+        local: source.local(),
+        latest: source.latest,
+        seen: (uid) => Math.max(seen[uid] ?? 0, source.visitedAt(uid))
+      });
+      let added = false;
+      for (const person of people2) if (seen[person.uid] === void 0) {
+        seen[person.uid] = Date.now();
+        person.fresh = false;
+        added = true;
+      }
+      if (added) GM_setValue(seenKey, seen);
+      title.textContent = `${folder?.name ?? "\u5173\u6CE8"} \xB7 ${people2.length} \u4F4D`;
+      icon2.replaceChildren(folder ? shellIcon(folder.icon, 16) : picture(atelierIcons.following || atelierIcons.folder));
+      note.textContent = source.incomplete() ? "\u540D\u5355\u4E0D\u5B8C\u6574" : "";
+      const hadFocus = view.contains(document.activeElement);
+      const sections = [];
+      const live = source.live();
+      if (live) {
+        const never = !!live.error && !live.stale && !live.list.length;
+        sections.push(group(
+          never ? "\u6B63\u5728\u76F4\u64AD\uFF08\u8BFB\u53D6\u5931\u8D25\uFF09" : `\u6B63\u5728\u76F4\u64AD (${live.count})${live.stale ? "\uFF08\u672A\u66F4\u65B0\uFF09" : ""}`,
+          liveOpen && !never,
+          () => {
+            if (never) {
+              sound("click");
+              source.retryLive();
+              return;
+            }
+            liveOpen = !liveOpen;
+            sound(liveOpen ? "restore" : "minimize");
+            GM_setValue(liveKey, liveOpen);
+            render2();
+          },
+          live.error
+        ));
+        if (liveOpen && !never && live.list.length) sections.push(grid(...live.list.map((person) => tile("live", person, face(person.face)))));
+      }
+      sections.push(group(`${folder?.name ?? "\u52A8\u6001"} (${people2.length})`, dynamicOpen, () => {
+        dynamicOpen = !dynamicOpen;
+        sound(dynamicOpen ? "restore" : "minimize");
+        GM_setValue(dynamicKey, dynamicOpen);
+        render2();
+      }));
+      if (dynamicOpen) {
+        sections.push(grid(...folder ? [tile("up", { uid: "", name: "\u5411\u4E0A", face: "" }, picture(atelierIcons.up)), tile("folder-all", { uid: folder.id, name: "\u5168\u90E8", face: "" }, shellIcon(folder.icon, 32))] : [tile("all", { uid: "", name: "\u5168\u90E8\u52A8\u6001", face: "" }, picture(atelierIcons.folder)), ...source.folders().map((each) => tile("folder", { uid: each.id, name: each.name, face: "" }, shellIcon(each.icon, 32)))]));
+        if (people2.length) sections.push(grid(...people2.map((person) => tile("person", person, face(person.face)))));
+        else if (folder) sections.push(Object.assign(document.createElement("p"), { className: "afp-empty", textContent: "\u8FD9\u4E2A\u5206\u7EC4\u8FD8\u6CA1\u6709 UP \u4E3B\uFF0C\u53F3\u952E\u6587\u4EF6\u5939\u53EF\u4EE5\u7BA1\u7406\u5206\u7EC4" }));
+      }
+      view.replaceChildren(...sections);
+      const list = tiles(), current2 = list.find((node3) => `${node3.dataset.kind}:${node3.dataset.uid}` === focused) ?? list.find((node3) => node3.getAttribute("aria-selected") === "true") ?? list[0];
+      if (current2) {
+        current2.tabIndex = 0;
+        if (hadFocus) current2.focus();
+      }
+    }
+    observeCrispText(panel);
+    const place = () => {
+      panel.style.top = `${stickyTop}px`;
+      body2.style.maxHeight = `calc(100vh - ${stickyTop + 52}px)`;
+    };
+    function mount() {
+      if (panel.isConnected) return;
+      const left = document.querySelector("aside.left");
+      if (!left) return;
+      const live = left.querySelector(".bili-dyn-live-users");
+      if (live) live.insertAdjacentElement("afterend", panel);
+      else left.append(panel);
+      place();
+    }
+    window.addEventListener("resize", place);
+    return { panel, render: render2, mount, unmount: () => panel.remove() };
+  }
+  var p = `.${panelClass}`;
+  var followPanelCss = `
+html[data-atelier-list=drawn] .bili-dyn-live-users{display:none!important}
+${p}{position:sticky;z-index:1;margin-top:8px;${xpFont};text-align:left}
+${p} *{box-sizing:border-box}${p} [hidden]{display:none!important}
+${p} .afp-caption-icon{display:flex;flex:none}${p} .afp-caption-icon img{width:16px;height:16px;image-rendering:pixelated}
+${p} .afp-note{flex:none;color:#ffe7a8;white-space:nowrap}
+${p} .afp-body{overflow-y:auto;padding:0 1px 6px;background:var(--xp-window);border:1px solid var(--xp-edge)}
+${p} .afp-group{display:flex;align-items:center;gap:3px;width:100%;margin:0;padding:5px 4px 3px;border:0;background:linear-gradient(90deg,var(--xp-group-text),transparent) bottom/100% 1px no-repeat;color:var(--xp-group-text);${xpFont};text-align:left;cursor:default}
+${p} .afp-group-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+${p} .afp-chevron{flex:none;width:5px;height:5px;margin:0 2px;border:solid currentColor;border-width:1px 1px 0 0;transform:translateY(1px) rotate(-45deg)}
+${p} .afp-group[aria-expanded=false] .afp-chevron{transform:translateY(-1px) rotate(135deg)}
+${p} .afp-grid{display:grid;grid-template-columns:repeat(${columns},minmax(0,1fr));gap:8px 0;padding-top:5px}
+${p} .afp-tile{display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 1px;color:var(--xp-ink)!important;text-decoration:none!important;outline:none!important;cursor:default}
+${p} .afp-face{position:relative;flex:none;width:32px;height:32px}
+${p} .afp-face>img{display:block;width:32px;height:32px;object-fit:cover;image-rendering:auto}
+${p} .afp-face>img.afp-pixel{object-fit:none;image-rendering:pixelated}
+${p} .afp-tile-up .afp-face>img{width:24px;height:24px;margin:4px}
+${p} .afp-tile[aria-selected=true] .afp-face::after{content:"";position:absolute;inset:0;background:var(--xp-highlight);opacity:.5;pointer-events:none}
+${p} .afp-dot{position:absolute;top:-2px;right:-3px;width:7px;height:7px;background:#3fb34f;border:1px solid var(--xp-window)}
+${p} .afp-badge{position:absolute;${xpFont};font-weight:bold;font-style:normal;color:var(--xp-caption-ink);background:var(--xp-caption);border:1px solid var(--xp-window);padding:0 1px;white-space:nowrap}
+${p} .afp-local{left:-3px;bottom:-2px}${p} .afp-live{right:-6px;bottom:-3px}
+${p} .afp-name{display:flex;flex-direction:column;align-items:center;max-width:100%;padding:0 1px;text-align:center;outline:1px dotted transparent;outline-offset:0}
+${p} .afp-line{white-space:nowrap}
+${p} .afp-empty{margin:4px 6px 0;color:var(--xp-muted)}
+${p} .afp-tile:focus .afp-name{outline-color:var(--xp-ink)}
+${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);color:var(--xp-highlight-ink);outline-color:var(--xp-highlight-xor)}
+`;
+
+  // src/modules/local-following/feed-quick.ts
+  function biliTheme() {
+    return /(?:^|;\s*)theme_style=dark(?:;|$)/.test(document.cookie) ? "dark" : "light";
+  }
+  function setBiliTheme(theme2) {
+    document.cookie = `theme_style=${theme2}; domain=.bilibili.com; path=/; max-age=${365 * 86400}`;
+    let map = document.getElementById("__css-map__");
+    if (map) map.href = map.href.replace(/\/(?:light|dark)(_all)?\.css/, (_, all = "") => `/${theme2}${all}.css`);
+    else {
+      map = Object.assign(document.createElement("link"), { id: "__css-map__", rel: "stylesheet", href: `//s1.hdslb.com/bfs/seed/jinkela/short/bili-theme/${theme2}_all.css` });
+      const head = document.head || document.documentElement;
+      head.insertBefore(map, head.firstChild);
+    }
+    const filter = document.getElementById("__css-map-filter__");
+    if (filter) {
+      const text2 = (filter.textContent ?? "").trim(), bare = text2.replace(/^[/*]+|[*/]+$/g, "");
+      if (theme2 === "dark") filter.textContent = bare;
+      else if (!text2.startsWith("/*")) filter.textContent = `/*${bare}*/`;
+    }
+    try {
+      injectPageScript(`(${pageThemeSwitch.toString()})(${JSON.stringify(theme2)});`);
+    } catch {
+    }
+    document.documentElement.classList.toggle("bili_dark", theme2 === "dark");
+    document.dispatchEvent(new CustomEvent("biliThemeChange", { detail: { theme: theme2 }, bubbles: true, cancelable: true }));
+  }
+  function pageThemeSwitch(theme2) {
+    const app = document.getElementById("app")?.__vue__;
+    if (typeof app?.themeSwitchHandler === "function") app.themeSwitchHandler(theme2);
+  }
+  var width = 200;
+  var gap = 12;
+  var margin = 16;
+  function createQuickWindow(options) {
+    const foldKey = `BiliAtelier_QuickFolded_${options.identity}`;
+    const win = document.createElement("section");
+    win.className = "alf-quick xp-window";
+    win.setAttribute("aria-label", "\u5FEB\u6377\u64CD\u4F5C");
+    const caption = win.appendChild(document.createElement("header"));
+    caption.className = "xp-caption";
+    const icon2 = caption.appendChild(document.createElement("img"));
+    icon2.src = atelierIcons.up16;
+    icon2.alt = "";
+    caption.appendChild(document.createElement("h2")).textContent = "\u5FEB\u6377\u64CD\u4F5C";
+    const toggle = caption.appendChild(document.createElement("button"));
+    toggle.type = "button";
+    toggle.className = "xp-caption-button";
+    const body2 = win.appendChild(document.createElement("div"));
+    body2.className = "alf-quick-body";
+    const button4 = (className, label) => {
+      const element2 = body2.appendChild(document.createElement("button"));
+      element2.type = "button";
+      element2.className = `atelier-control ${className}`;
+      element2.appendChild(document.createElement("span")).textContent = label;
+      return element2;
+    };
+    const toTop = button4("alf-quick-top", "\u56DE\u5230\u5361\u7247\u9876\u7AEF");
+    toTop.prepend(Object.assign(document.createElement("img"), { src: atelierIcons.up, alt: "" }));
+    const night = button4("alf-quick-night", "\u591C\u95F4\u6A21\u5F0F");
+    let folded = GM_getValue(foldKey, false) === true;
+    const fold = () => {
+      body2.hidden = folded;
+      toggle.dataset.kind = folded ? "restore" : "minimize";
+      toggle.title = folded ? "\u8FD8\u539F" : "\u6700\u5C0F\u5316";
+      toggle.setAttribute("aria-label", folded ? "\u5C55\u5F00\u5FEB\u6377\u64CD\u4F5C" : "\u6298\u53E0\u5FEB\u6377\u64CD\u4F5C");
+      toggle.setAttribute("aria-expanded", String(!folded));
+    };
+    toggle.addEventListener("click", () => {
+      folded = !folded;
+      sound(folded ? "minimize" : "restore");
+      GM_setValue(foldKey, folded);
+      fold();
+    });
+    fold();
+    const current2 = () => {
+      for (const card of options.list.children) {
+        if (!(card instanceof HTMLElement) || !card.classList.contains("adc-card")) continue;
+        const rect = card.getBoundingClientRect();
+        if (rect.top < stickyTop - 0.5 && rect.bottom > stickyTop) return card;
+      }
+      return null;
+    };
+    toTop.addEventListener("click", () => {
+      const card = current2();
+      if (card) window.scrollTo({ top: card.getBoundingClientRect().top + window.scrollY - stickyTop, behavior: "instant" });
+    });
+    const paintNight = () => night.setAttribute("aria-pressed", String(options.loggedIn && biliTheme() === "dark"));
+    if (options.loggedIn) night.addEventListener("click", () => {
+      setBiliTheme(biliTheme() === "dark" ? "light" : "dark");
+      if (readUiPreferences().theme !== "page") saveUiPreferences({ theme: "page" });
+      paintNight();
+    });
+    else {
+      night.disabled = true;
+      night.title = "\u767B\u5F55\u540E\u53EF\u7528";
+    }
+    paintNight();
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      toTop.disabled = !current2();
+      const right = options.feedWindow.getBoundingClientRect().right;
+      win.style.left = `${Math.max(0, Math.min(right + gap, window.innerWidth - width - margin))}px`;
+    };
+    const schedule2 = () => {
+      frame ||= requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", schedule2, { passive: true });
+    window.addEventListener("resize", schedule2);
+    document.addEventListener("biliThemeChange", paintNight);
+    const resize = typeof ResizeObserver === "function" ? new ResizeObserver(schedule2) : null;
+    resize?.observe(options.feedWindow);
+    const cards = new MutationObserver(schedule2);
+    cards.observe(options.list, { childList: true });
+    schedule2();
+    return {
+      element: win,
+      dispose: () => {
+        cancelAnimationFrame(frame);
+        cards.disconnect();
+        resize?.disconnect();
+        window.removeEventListener("scroll", schedule2);
+        window.removeEventListener("resize", schedule2);
+        document.removeEventListener("biliThemeChange", paintNight);
+        win.remove();
+      }
+    };
+  }
+  var quickWindowCss = `
+#atelier-feed-root .alf-quick{position:fixed;bottom:${margin}px;z-index:100;width:${width}px;margin:0}
+#atelier-feed-root .alf-quick-body{display:flex;flex-direction:column;gap:4px;padding:6px}
+#atelier-feed-root .alf-quick-body .atelier-control{width:100%;min-width:0;justify-content:flex-start}
+#atelier-feed-root .alf-quick-top img{width:24px;height:24px;image-rendering:pixelated}
+`;
+
+  // src/modules/local-following/feed-page.ts
+  var barClass = "atelier-local-feed-bar";
+  var views = [["online", "\u4EC5\u5728\u7EBF"], ["local", "\u4EC5\u672C\u5730"], ["mixed", "\u5728\u7EBF+\u672C\u5730"]];
+  var tabs = [["all", "\u5168\u90E8"], ["video", "\u6295\u7A3F"], ["pgc", "\u8FFD\u756A"], ["article", "\u4E13\u680F"]];
+  function localFeedPageWorld(channel, writes) {
+    const original = window.fetch, base = "/x/polymer/web-dynamic/v1/feed/";
+    const allowed = /* @__PURE__ */ new Set([base + "space", base + "all", "/x/polymer/web-dynamic/v1/portal", "/x/web-interface/nav", "/x/web-interface/card", "/x/relation/followings", "/x/v2/reply/main", "/x/v2/reply/reply", "/x/v2/reply/report/metadata", "/x/emote/user/panel/web"]);
+    const parse = (value2) => {
+      try {
+        return new URL(String(value2), location.href);
+      } catch {
+        return null;
+      }
+    };
+    const post = (message) => window.postMessage({ channel, ...message }, location.origin);
+    const empty = (url) => {
+      if (!url || url.hostname !== "api.bilibili.com" || document.documentElement.getAttribute("data-atelier-feed") !== "drawn") return null;
+      if (url.pathname === base + "all/update") return { code: 0, message: "0", ttl: 1, data: { update_num: 0 } };
+      return url.pathname === base + "all" ? { code: 0, message: "0", ttl: 1, data: { has_more: false, items: [], offset: "", update_baseline: "", update_num: 0 } } : null;
+    };
+    const reads = /* @__PURE__ */ new Map();
+    window.addEventListener("message", (event) => {
+      const data = event.data;
+      if (event.origin !== location.origin || data?.channel !== channel) return;
+      if (data.kind === "abort") reads.get(data.id)?.abort();
+      else if (data.kind === "read") {
+        const url = parse(data.url), controller = new AbortController();
+        if (!url || url.protocol !== "https:" || url.hostname !== "api.bilibili.com" || !allowed.has(url.pathname)) {
+          post({ kind: "read-result", id: data.id, status: 0, error: "\u65E0\u6548\u8BFB\u53D6" });
+          return;
+        }
+        reads.set(data.id, controller);
+        original.call(window, url.href, { credentials: "include", signal: controller.signal }).then(async (response) => post({ kind: "read-result", id: data.id, status: response.status, body: response.ok ? await response.json() : null })).catch((error) => post({ kind: "read-result", id: data.id, status: 0, error: String(error?.message || error) })).finally(() => reads.delete(data.id));
+      } else if (data.kind === "write") {
+        const spec = Object.prototype.hasOwnProperty.call(writes, data.op) ? writes[data.op] : null;
+        const answer = (message) => post({ kind: "write-result", id: data.id, ...message });
+        const csrf = document.cookie.match(/(?:^|;\s*)bili_jct=([^;]+)/)?.[1] ?? "";
+        if (!spec) {
+          answer({ status: 0, error: "\u4E0D\u5141\u8BB8\u7684\u64CD\u4F5C" });
+          return;
+        }
+        if (!csrf) {
+          answer({ status: 0, error: "\u8BF7\u5148\u767B\u5F55" });
+          return;
+        }
+        const [path, encoding, where] = spec, url = new URL("https://api.bilibili.com" + path);
+        for (const [name, value2] of Object.entries(data.query ?? {})) if (typeof value2 === "string") url.searchParams.set(name, value2);
+        if (where === "query") url.searchParams.set("csrf", csrf);
+        const fields2 = { ...data.body ?? {} };
+        if (where === "body") fields2.csrf = csrf;
+        const scalar = (value2) => typeof value2 === "string" || typeof value2 === "number" || typeof value2 === "boolean";
+        let body2, headers;
+        if (encoding === "json") {
+          body2 = JSON.stringify(fields2);
+          headers = { "Content-Type": "application/json" };
+        } else if (encoding === "form") {
+          const form = new URLSearchParams();
+          for (const [name, value2] of Object.entries(fields2)) if (scalar(value2)) form.set(name, String(value2));
+          body2 = form;
+          headers = { "Content-Type": "application/x-www-form-urlencoded" };
+        } else {
+          if (!(data.file instanceof Blob)) {
+            answer({ status: 0, error: "\u6CA1\u6709\u6587\u4EF6" });
+            return;
+          }
+          const form = new FormData();
+          form.append("file_up", data.file);
+          for (const [name, value2] of Object.entries(fields2)) if (scalar(value2)) form.append(name, String(value2));
+          body2 = form;
+        }
+        original.call(window, url.href, { method: "POST", credentials: "include", headers, body: body2 }).then(async (response) => answer({ status: response.status, body: response.ok ? await response.json() : null })).catch((error) => answer({ status: 0, error: String(error?.message || error) }));
+      }
+    });
+    window.fetch = function(...args) {
+      const body2 = empty(parse(args[0] instanceof Request ? args[0].url : args[0]));
+      return body2 ? Promise.resolve(new Response(JSON.stringify(body2), { status: 200, headers: { "content-type": "application/json" } })) : original.apply(this, args);
+    };
+    const urls = /* @__PURE__ */ new WeakMap(), open = XMLHttpRequest.prototype.open, send = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.open = function(...args) {
+      urls.set(this, String(args[1]));
+      return open.apply(this, args);
+    };
+    XMLHttpRequest.prototype.send = function(...args) {
+      const url = parse(urls.get(this)), body2 = empty(url), xhr = this;
+      if (!body2) return send.apply(this, args);
+      setTimeout(() => {
+        const text2 = JSON.stringify(body2);
+        const define2 = (name, value2) => Object.defineProperty(xhr, name, { configurable: true, value: value2 });
+        define2("readyState", 4);
+        define2("status", 200);
+        define2("statusText", "OK");
+        define2("responseURL", url.href);
+        define2("responseText", text2);
+        define2("response", xhr.responseType === "json" ? body2 : text2);
+        define2("getResponseHeader", (name) => /^content-type$/i.test(name) ? "application/json" : null);
+        define2("getAllResponseHeaders", () => "content-type: application/json\r\n");
+        for (const name of ["readystatechange", "load", "loadend"]) xhr.dispatchEvent(new Event(name));
+      }, 0);
+    };
+  }
+  function pageRequest(channel) {
+    const pending2 = /* @__PURE__ */ new Map();
+    window.addEventListener("message", (event) => {
+      const data = event.data;
+      if (event.origin !== location.origin || data?.channel !== channel || data.kind !== "read-result") return;
+      const waiter = pending2.get(data.id);
+      if (!waiter) return;
+      pending2.delete(data.id);
+      if (data.error) waiter.reject(new LocalFollowReadError(`\u7F51\u7EDC\u8BFB\u53D6\u5931\u8D25\uFF1A${data.error}`));
+      else if (data.status < 200 || data.status >= 300) waiter.reject(new LocalFollowReadError(`\u8BFB\u53D6\u5931\u8D25\uFF1AHTTP ${data.status}`, data.status));
+      else waiter.resolve(data.body);
+    });
+    return (value2, signal) => new Promise((resolve, reject) => {
+      const url = localFollowApiUrl(value2), id = crypto.randomUUID();
+      if (signal.aborted) {
+        reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError"));
+        return;
+      }
+      pending2.set(id, { resolve, reject });
+      signal.addEventListener("abort", () => {
+        if (!pending2.delete(id)) return;
+        window.postMessage({ channel, kind: "abort", id }, location.origin);
+        reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError"));
+      }, { once: true });
+      window.postMessage({ channel, kind: "read", id, url }, location.origin);
+    });
+  }
+  function unpinned(raw) {
+    if (!localFeedPinned(raw)) return raw;
+    const { module_tag: _, ...modules } = raw.modules;
+    return { ...raw, modules };
+  }
+  var feedUrl = (type) => `https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?timezone_offset=${(/* @__PURE__ */ new Date()).getTimezoneOffset()}&type=${type}&platform=web&page=1&features=${localFollowFeatures}&web_location=333.1365&offset=`;
+  var pageCss = `
+html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili-dyn-list-tabs,html[data-atelier-list=drawn] section:has(>.bili-dyn-up-list){display:none!important}
+#atelier-feed-root{margin:0 0 10px;${xpFont};text-align:left}
+#atelier-feed-root *{box-sizing:border-box}#atelier-feed-root [hidden]{display:none!important}
+#atelier-feed-root:not(.xp-window)>:not(.${barClass}){display:none!important}
+.${barClass}{display:flex;flex-direction:column;background:var(--xp-face)}
+.${barClass} .alf-gap{flex:1}
+.${barClass} .alf-groups{display:inline-flex;align-items:center;gap:3px}
+.${barClass} .xp-tabs{margin-top:4px}
+#atelier-feed-root .alf-pane{display:flex;flex-direction:column;gap:8px;padding:8px;min-height:120px;background:var(--xp-face)}
+#atelier-feed .adc-forward-box{display:flex;align-items:center;gap:4px;margin:4px 0 0}
+#atelier-feed .adc-forward-box input{flex:1;min-width:0}
+#atelier-feed .adc-forward-box .atelier-control{min-width:0}
+#atelier-feed-root .alf-status{flex:1}
+#atelier-feed-root .alf-progress{display:flex;align-items:center;flex:none;padding:0 2px}
+.atelier-feed-footer{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0 24px;color:var(--xp-muted)}
+.atelier-feed-footer .atelier-control{min-width:96px}
+#atelier-feed .adc-empty{padding:24px;text-align:center;color:var(--xp-muted)}
+`;
+  var started4 = false;
+  function startLocalFeed() {
+    if (started4 || location.hostname !== "t.bilibili.com") return;
+    started4 = true;
+    const mid = document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1];
+    const loggedIn = !!mid, identity = mid ? `account:${mid}` : "guest";
+    const prefsKey = `BiliAtelier_LocalFeedPrefs_${identity}`, cacheKey = `BiliAtelier_LocalFeed_${identity}`, followingsKey = `BiliAtelier_Followings_${identity}`;
+    let prefs = parseLocalFeedPrefs(GM_getValue(prefsKey, null));
+    if (GM_getValue("BiliAtelier_LocalFeedIdentity", identity) !== identity && prefs.group) {
+      prefs = { ...prefs, group: "" };
+      GM_setValue(prefsKey, prefs);
+    }
+    GM_setValue("BiliAtelier_LocalFeedIdentity", identity);
+    if (!loggedIn && prefs.view === "mixed") prefs = { ...prefs, view: "local" };
+    const drawn = () => !prefs.native && (loggedIn || prefs.view === "local");
+    const mark = () => {
+      document.documentElement.setAttribute("data-atelier-feed", loggedIn && !prefs.native ? "drawn" : "native");
+      document.documentElement.setAttribute("data-atelier-list", drawn() ? "drawn" : "native");
+    };
+    mark();
+    const channel = "atelier-local-feed-" + crypto.randomUUID(), request2 = pageRequest(channel);
+    try {
+      injectPageScript(`(${localFeedPageWorld.toString()})(${JSON.stringify(channel)}, ${JSON.stringify(feedWrites)});`);
+    } catch {
+      return;
+    }
+    const api = new LocalFollowApi(request2);
+    const engine2 = new LocalFeedEngine({
+      api,
+      directory: localFollowSnapshot,
+      prefs: () => prefs,
+      loggedIn,
+      load: () => GM_getValue(cacheKey, null),
+      save: (value2) => GM_setValue(cacheKey, value2)
+    });
+    const savePrefs = () => GM_setValue(prefsKey, prefs);
+    let type = "all", author2 = "", generation = 0, loading = false, more = false, status2 = "", abort = new AbortController();
+    let queue = Promise.resolve();
+    const root3 = document.createElement("div");
+    root3.id = "atelier-feed-root";
+    root3.setAttribute("data-atelier-local-ui", "");
+    root3.setAttribute("data-bili-blocker-ui", "true");
+    const caption = root3.appendChild(document.createElement("header"));
+    caption.className = "xp-caption alf-caption";
+    const captionIcon = caption.appendChild(document.createElement("img"));
+    captionIcon.src = atelierIcons.data;
+    captionIcon.alt = "";
+    const captionTitle = caption.appendChild(document.createElement("h2"));
+    const closeAuthor = caption.appendChild(document.createElement("button"));
+    closeAuthor.type = "button";
+    closeAuthor.className = "xp-caption-button";
+    closeAuthor.dataset.kind = "close";
+    closeAuthor.title = "\u91CD\u65B0\u663E\u793A\u6240\u6709 UP";
+    closeAuthor.setAttribute("aria-label", "\u91CD\u65B0\u663E\u793A\u6240\u6709 UP");
+    closeAuthor.addEventListener("click", () => {
+      sound("close");
+      author2 = "";
+      void reload();
+    });
+    const bar = root3.appendChild(document.createElement("div"));
+    bar.className = barClass;
+    const pane = root3.appendChild(document.createElement("div"));
+    pane.className = "alf-pane xp-tabpanel";
+    const list = pane.appendChild(document.createElement("div"));
+    list.id = "atelier-feed";
+    const statusBar = root3.appendChild(document.createElement("div"));
+    statusBar.className = "xp-status";
+    const statusText = statusBar.appendChild(document.createElement("span"));
+    statusText.className = "alf-status xp-status-pane";
+    statusText.setAttribute("role", "status");
+    const progressPane = statusBar.appendChild(document.createElement("span"));
+    progressPane.className = "alf-progress xp-status-pane";
+    const progress = progressPane.appendChild(document.createElement("span"));
+    progress.className = "xp-progress";
+    progress.dataset.marquee = "";
+    progress.setAttribute("role", "progressbar");
+    progress.setAttribute("aria-label", "\u6B63\u5728\u8BFB\u53D6");
+    progress.append(document.createElement("i"));
+    const footer = pane.appendChild(document.createElement("div"));
+    footer.className = "atelier-feed-footer";
+    const footerText = footer.appendChild(document.createElement("span"));
+    const loadMore = footer.appendChild(document.createElement("button"));
+    loadMore.type = "button";
+    loadMore.textContent = "\u52A0\u8F7D\u66F4\u591A";
+    loadMore.addEventListener("click", () => void load(false));
+    const quick = createQuickWindow({ identity, list, feedWindow: root3, loggedIn });
+    root3.append(quick.element);
+    const style = document.createElement("style");
+    style.textContent = pageCss + dynamicCardCss + commentAreaCss + followPanelCss + quickWindowCss;
+    (document.head || document.documentElement).append(style);
+    let followings = parseFollowingsCopy(GM_getValue(followingsKey, null));
+    const inGroup = () => localFollowSnapshot().accounts.filter((account) => !prefs.group || (prefs.group === "ungrouped" ? !account.groupIds.length : account.groupIds.includes(prefs.group)));
+    const folder = () => {
+      if (!prefs.group || prefs.view === "online") return null;
+      if (prefs.group === "ungrouped") return { id: "ungrouped", name: "\u672A\u5206\u7EC4" };
+      const group = localFollowSnapshot().groups.find((each) => each.id === prefs.group);
+      return group ? { id: group.id, name: group.name, icon: group.icon } : null;
+    };
+    const members = () => folder() ? new Set(inGroup().map((account) => account.uid)) : null;
+    const shown = (people2) => {
+      const set = members();
+      return set ? people2.filter((person) => set.has(person.uid)) : people2;
+    };
+    const liveKey = `BiliAtelier_LiveUsers_${identity}`;
+    let live = parseLiveCopy(GM_getValue(liveKey, null)), liveError = "", liveReading = false;
+    function refreshLive() {
+      if (!loggedIn || liveReading) return;
+      liveReading = true;
+      void readLiveUsers(request2, new AbortController().signal).then((copy) => {
+        live = copy;
+        liveError = "";
+        GM_setValue(liveKey, copy);
+      }, (error) => {
+        liveError = error instanceof Error ? error.message : "\u8BFB\u53D6\u5931\u8D25";
+      }).finally(() => {
+        liveReading = false;
+        renderPanel();
+      });
+    }
+    function openFolder(id) {
+      if (id === prefs.group && !author2) return;
+      prefs = { ...prefs, group: id };
+      savePrefs();
+      author2 = "";
+      void reload();
+    }
+    let latestMemo;
+    const panel = createFollowPanel(identity, {
+      online: () => prefs.view !== "local" && loggedIn ? shown(followings?.list ?? []) : [],
+      local: () => prefs.view !== "online" ? inGroup().map((account) => {
+        const cache = readLocalFollowCache(account.uid);
+        return { uid: account.uid, name: cache.name || account.name, face: cache.face || account.face };
+      }) : [],
+      incomplete: () => prefs.view !== "local" && loggedIn && !followings?.complete,
+      latest: (uid) => {
+        const merged = (latestMemo ??= engine2.latestByAuthor()).get(uid), index = Object.values(readLocalFollowCache(uid).updates ?? {});
+        const local = index.length ? Math.floor(Math.max(...index) / 1e3) : void 0;
+        return merged === void 0 ? local : local === void 0 ? merged : Math.max(merged, local);
+      },
+      visitedAt: (uid) => readLocalFollowCache(uid).viewedAt ?? 0,
+      selected: () => author2,
+      select: (uid) => {
+        author2 = uid;
+        void reload();
+      },
+      live: () => {
+        if (!loggedIn) return null;
+        const list2 = shown(live?.list ?? []);
+        return { list: list2, count: folder() ? list2.length : live?.count ?? 0, error: liveError, stale: !!liveError && !!live };
+      },
+      retryLive: refreshLive,
+      folders: () => prefs.view === "online" ? [] : [
+        ...localFollowSnapshot().groups.map((group) => ({ id: group.id, name: group.name, icon: group.icon })),
+        // 未分组 only while some local follow has no group.
+        ...localFollowSnapshot().accounts.some((account) => !account.groupIds.length) ? [{ id: "ungrouped", name: "\u672A\u5206\u7EC4" }] : []
+      ],
+      folder,
+      openFolder,
+      manage: (group) => openLocalFollowGroups({ group })
+    });
+    const renderPanel = () => {
+      latestMemo = void 0;
+      panel.render();
+    };
+    function blocked(raw, rules) {
+      if (!rules) return false;
+      const owner = raw?.modules?.module_author ?? {}, holder = document.createElement("div");
+      const item = { kind: "dynamic", el: holder, insertionEl: holder, uid: Number(owner.mid) || void 0, name: owner.name, content: dynamicBlockText(raw), title: dynamicVideoTitle(raw) };
+      const decision = decideDynamic(item, rules);
+      if (decision) recordBlockHistory(item, decision);
+      return !!decision;
+    }
+    function append(answer) {
+      const rules = config.blocker.enabled ? readRuleSnapshotWithHistoryAliases() : null;
+      let hidden = 0;
+      for (const raw of answer.data.items) {
+        if (blocked(raw, rules)) {
+          hidden++;
+          continue;
+        }
+        const card = renderDynamicCard(author2 ? raw : unpinned(raw));
+        cards.set(card, raw);
+        if (!loggedIn) for (const control of card.querySelectorAll('.adc-actions [data-action="like"],.adc-actions [data-action="forward"]')) {
+          control.disabled = true;
+          control.title = "\u767B\u5F55\u540E\u53EF\u7528";
+        }
+        list.append(card);
+      }
+      if (hidden) status2 += `\uFF1B\u5DF2\u5C4F\u853D ${hidden} \u6761`;
+      window.dispatchEvent(new Event("scroll"));
+    }
+    function load(first2, force = false) {
+      if (loading || !first2 && !more) return Promise.resolve();
+      const ticket = generation, signal = abort.signal;
+      loading = true;
+      renderBar();
+      const step = queue.then(async () => {
+        let answer = null;
+        try {
+          answer = author2 ? await engine2.authorPage(author2, type, { first: first2, force, signal }) : await engine2.page(feedUrl(type), { first: first2, force, signal });
+          if (ticket !== generation) return;
+          status2 = engine2.status;
+        } catch (error) {
+          if (ticket !== generation) return;
+          status2 = `\u8BFB\u53D6\u5931\u8D25\uFF1A${error instanceof Error ? error.message : error}`;
+        }
+        more = !!answer?.data.has_more;
+        if (answer) append(answer);
+        if (!list.childElementCount) list.append(Object.assign(document.createElement("div"), { className: "adc-empty", textContent: more ? "\u6B63\u5728\u8BFB\u53D6\u2026" : "\u6CA1\u6709\u53EF\u663E\u793A\u7684\u52A8\u6001" }));
+        else list.querySelector(".adc-empty")?.remove();
+      }).finally(() => {
+        if (ticket !== generation) return;
+        loading = false;
+        renderBar();
+        renderPanel();
+        if (more && footer.getBoundingClientRect().top < window.innerHeight + 600) void load(false);
+      });
+      queue = step.catch(() => {
+      });
+      return step;
+    }
+    const interactions = new FeedInteractions(request2, pageWrite(channel), (signal) => api.signingKey(signal), mid ?? "");
+    const cards = /* @__PURE__ */ new WeakMap();
+    let comments;
+    const label = (control, total) => {
+      control.dataset.count = String(Math.max(0, total));
+      control.textContent = total > 0 ? `${control.dataset.label} ${formatCount(total)}` : control.dataset.label;
+    };
+    const failure2 = (error) => error instanceof FeedActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u539F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
+    function note(card, message, sticky = false) {
+      const pane2 = card.querySelector(".adc-footer .xp-status-pane");
+      if (!pane2) return;
+      pane2.dataset.original ??= pane2.textContent ?? "";
+      if (sticky) pane2.dataset.original = message;
+      pane2.textContent = message;
+      window.clearTimeout(Number(pane2.dataset.timer));
+      if (!sticky) pane2.dataset.timer = String(window.setTimeout(() => {
+        pane2.textContent = pane2.dataset.original ?? "";
+      }, 5e3));
+    }
+    function refilter(keep) {
+      const rules = config.blocker.enabled ? readRuleSnapshotWithHistoryAliases() : null;
+      for (const card of [...list.children]) {
+        const raw = cards.get(card);
+        if (!raw || !blocked(raw, rules)) continue;
+        if (card === keep) note(card, "\u5DF2\u5C4F\u853D\uFF0C\u5237\u65B0\u540E\u4E0D\u518D\u663E\u793A\u8FD9\u5F20\u5361\u7247", true);
+        else card.remove();
+      }
+    }
+    async function like(card, raw, control) {
+      const on = control.getAttribute("aria-pressed") !== "true", before = Number(control.dataset.count) || 0;
+      control.setAttribute("aria-pressed", String(on));
+      label(control, before + (on ? 1 : -1));
+      control.disabled = true;
+      try {
+        await interactions.like(String(raw.id_str), on);
+      } catch (error) {
+        control.setAttribute("aria-pressed", String(!on));
+        label(control, before);
+        note(card, failure2(error));
+      } finally {
+        control.disabled = false;
+      }
+    }
+    function forward(card, raw, control) {
+      const open = card.querySelector(".adc-forward-box");
+      if (open) {
+        open.remove();
+        return;
+      }
+      const box = document.createElement("div");
+      box.className = "adc-forward-box";
+      const field = box.appendChild(document.createElement("input"));
+      field.type = "text";
+      field.maxLength = 1e3;
+      field.placeholder = "\u8F6C\u53D1\u8BED\uFF08\u53EF\u4E0D\u586B\uFF09";
+      const send = box.appendChild(button4("\u8F6C\u53D1", () => void submit(), "\u8F6C\u53D1\u8FD9\u6761\u52A8\u6001"));
+      box.append(button4("\u53D6\u6D88", () => box.remove()));
+      const elsewhere2 = box.appendChild(document.createElement("a"));
+      elsewhere2.className = "adc-link";
+      elsewhere2.textContent = "\u5728\u539F\u9875\u9762\u8F6C\u53D1";
+      elsewhere2.href = dynamicUrl(raw);
+      elsewhere2.target = "_blank";
+      elsewhere2.rel = "noopener noreferrer";
+      field.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") void submit();
+        if (event.key === "Escape") box.remove();
+      });
+      async function submit() {
+        send.disabled = true;
+        field.disabled = true;
+        try {
+          await interactions.forward(String(raw.id_str), field.value.trim());
+          label(control, (Number(control.dataset.count) || 0) + 1);
+          box.remove();
+          note(card, "\u5DF2\u8F6C\u53D1");
+        } catch (error) {
+          send.disabled = false;
+          field.disabled = false;
+          note(card, failure2(error));
+        }
+      }
+      card.querySelector(".adc-footer")?.before(box);
+      field.focus();
+    }
+    function comment(card, raw, control) {
+      const same = comments?.card === card;
+      comments?.dispose();
+      comments = void 0;
+      if (same) return;
+      const oid = String(raw?.basic?.comment_id_str ?? ""), type2 = Number(raw?.basic?.comment_type);
+      if (!/^\d+$/.test(oid) || !Number.isFinite(type2)) {
+        window.open(dynamicUrl(raw), "_blank", "noopener");
+        return;
+      }
+      const area = createCommentArea({
+        api: interactions,
+        me: mid ?? "",
+        owner: String(raw?.modules?.module_author?.mid ?? ""),
+        oid,
+        type: type2,
+        page: dynamicUrl(raw),
+        blocking: config.blocker.enabled,
+        onCount: (total) => label(control, total),
+        onBlocked: () => refilter(card)
+      });
+      card.querySelector(".adc-footer")?.before(area.element);
+      comments = { card, dispose: area.dispose };
+    }
+    list.addEventListener("click", (event) => {
+      const control = event.target.closest(".adc-actions [data-action]");
+      const card = control?.closest(".adc-card.xp-window"), raw = card && cards.get(card);
+      if (!control || !card || !raw || control.disabled) return;
+      if (control.dataset.action === "like") void like(card, raw, control);
+      else if (control.dataset.action === "forward") {
+        sound(card.querySelector(".adc-forward-box") ? "close" : "open");
+        forward(card, raw, control);
+      } else {
+        sound(comments?.card === card ? "minimize" : "restore");
+        comment(card, raw, control);
+      }
+    });
+    function reload(force = false) {
+      comments?.dispose();
+      comments = void 0;
+      generation++;
+      abort.abort();
+      abort = new AbortController();
+      loading = false;
+      more = false;
+      list.replaceChildren();
+      renderBar();
+      renderPanel();
+      return load(true, force);
+    }
+    function button4(label2, action, title = "") {
+      const element2 = document.createElement("button");
+      element2.type = "button";
+      element2.textContent = label2;
+      if (title) element2.title = title;
+      element2.addEventListener("click", action);
+      styleAtelierAction(element2);
+      return element2;
+    }
+    function tool(label2, action, title = "") {
+      const element2 = document.createElement("button");
+      element2.type = "button";
+      element2.className = "xp-tool";
+      element2.textContent = label2;
+      if (title) element2.title = title;
+      element2.addEventListener("click", action);
+      return element2;
+    }
+    const separator = () => Object.assign(document.createElement("span"), { className: "xp-tool-separator" });
+    function renderBar() {
+      root3.classList.toggle("xp-window", !prefs.native);
+      if (prefs.native) {
+        bar.replaceChildren(button4("\u4F7F\u7528 Atelier \u52A8\u6001\u5217\u8868", () => {
+          prefs = { ...prefs, native: false };
+          savePrefs();
+          apply2();
+        }, "\u672C\u5730\u5173\u6CE8\u3001\u5173\u6CE8\u680F\u548C\u4E09\u79CD\u663E\u793A\u65B9\u5F0F"));
+        return;
+      }
+      const toolbar = document.createElement("div");
+      toolbar.className = "xp-toolbar alf-row";
+      toolbar.setAttribute("role", "toolbar");
+      for (const [view, label2] of views) {
+        const control = tool(label2, () => {
+          if (view === prefs.view) return;
+          sound("folder");
+          prefs = { ...prefs, view, group: view === "online" ? "" : prefs.group };
+          savePrefs();
+          author2 = "";
+          apply2();
+        });
+        control.setAttribute("aria-pressed", String(view === prefs.view));
+        if (view === "mixed" && !loggedIn) {
+          control.disabled = true;
+          control.title = "\u5728\u7EBF\u52A8\u6001\u9700\u8981\u767B\u5F55";
+        }
+        toolbar.append(control);
+      }
+      const groups = tool("\u7BA1\u7406\u672C\u5730\u5206\u7EC4", () => openLocalFollowGroups(), "\u672C\u5730\u5173\u6CE8 \xD7 \u5206\u7EC4\u7684\u52FE\u9009\u8868");
+      groups.classList.add("alf-groups");
+      groups.prepend(shellIcon(void 0, 16));
+      toolbar.append(
+        separator(),
+        groups,
+        separator(),
+        tool("\u5237\u65B0", () => {
+          sound("folder");
+          refreshLive();
+          void reload(true);
+        }, "\u91CD\u65B0\u8BFB\u53D6\uFF0C\u4E0D\u4F7F\u7528 15 \u5206\u949F\u7F13\u5B58"),
+        Object.assign(document.createElement("span"), { className: "alf-gap" }),
+        tool("\u539F\u751F", () => {
+          prefs = { ...prefs, native: true };
+          savePrefs();
+          location.reload();
+        }, "\u9000\u56DE B \u7AD9\u539F\u6765\u7684\u52A8\u6001\u9875\uFF08\u4F1A\u5237\u65B0\u4E00\u6B21\u9875\u9762\uFF09")
+      );
+      const strip = document.createElement("div");
+      strip.className = "alf-tabs xp-tabs";
+      strip.setAttribute("role", "tablist");
+      for (const [value2, label2] of tabs) {
+        const tab = strip.appendChild(document.createElement("button"));
+        tab.type = "button";
+        tab.className = "alf-tab xp-tab";
+        tab.textContent = label2;
+        tab.setAttribute("role", "tab");
+        tab.setAttribute("aria-selected", String(value2 === type));
+        tab.addEventListener("click", () => {
+          if (value2 !== type) {
+            sound("folder");
+            type = value2;
+            void reload();
+          }
+        });
+      }
+      bar.replaceChildren(toolbar, strip);
+      const viewName = views.find(([view]) => view === prefs.view)?.[1] ?? "";
+      captionTitle.textContent = author2 ? `\u52A8\u6001 - ${panelName(author2)}` : `\u52A8\u6001 - ${viewName}`;
+      closeAuthor.hidden = !author2;
+      statusText.textContent = loading ? "\u6B63\u5728\u8BFB\u53D6\u2026" : status2;
+      progressPane.hidden = !loading;
+      footerText.textContent = loading ? "\u6B63\u5728\u8BFB\u53D6\u2026" : more ? "" : list.querySelector(".adc-card") ? "\u6CA1\u6709\u66F4\u591A\u4E86" : "";
+      loadMore.hidden = !more || loading;
+    }
+    const panelName = (uid) => followings?.list.find((person) => person.uid === uid)?.name || readLocalFollowCache(uid).name || localFollowSnapshot().accounts.find((account) => account.uid === uid)?.name || uid;
+    let followingsRead = false;
+    function refreshFollowings() {
+      if (!loggedIn || followingsRead) return;
+      followingsRead = true;
+      void readFollowings(request2, mid, new AbortController().signal).then((copy) => {
+        if (copy.list.length || copy.complete) {
+          followings = copy;
+          GM_setValue(followingsKey, { at: copy.at, complete: copy.complete, list: copy.list });
+        } else if (followings) followings = { ...followings, complete: false };
+        renderPanel();
+      });
+    }
+    let liveRead = false;
+    const refreshLiveOnce = () => {
+      if (!liveRead) {
+        liveRead = true;
+        refreshLive();
+      }
+    };
+    function apply2() {
+      mark();
+      quick.element.hidden = !drawn();
+      if (!drawn()) {
+        panel.unmount();
+        list.replaceChildren();
+        footer.hidden = true;
+        generation++;
+        abort.abort();
+        renderBar();
+        return;
+      }
+      footer.hidden = false;
+      panel.mount();
+      refreshFollowings();
+      refreshLiveOnce();
+      void reload();
+    }
+    function mount() {
+      if (!root3.isConnected) {
+        const tabsBar = document.querySelector(".bili-dyn-list-tabs"), native = document.querySelector(".bili-dyn-list");
+        const anchor = tabsBar ?? native;
+        if (!anchor) return;
+        anchor.parentElement.insertBefore(root3, anchor);
+        ensurePageControls();
+        observeCrispText(root3);
+        root3.addEventListener("click", (event) => {
+          if (event.target.closest?.("button:not(:disabled)")) sound("click");
+        });
+        root3.addEventListener("change", (event) => {
+          if (event.target.matches?.("input,select")) sound("select");
+        });
+        styleAtelierAction(loadMore);
+        apply2();
+      }
+      if (drawn()) panel.mount();
+    }
+    new MutationObserver(mount).observe(document.documentElement, { childList: true, subtree: true });
+    window.addEventListener(localFollowChangedEvent, () => {
+      if (prefs.group && prefs.group !== "ungrouped" && !localFollowSnapshot().groups.some((group) => group.id === prefs.group)) {
+        prefs = { ...prefs, group: "" };
+        savePrefs();
+        author2 = "";
+        void reload();
+        return;
+      }
+      renderBar();
+      renderPanel();
+    });
+    mount();
+    if (typeof IntersectionObserver === "function") new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) void load(false);
+    }, { rootMargin: "0px 0px 600px 0px" }).observe(footer);
+  }
+
   // src/modules/local-following/runtime.ts
-  var actionClass = "atelier-local-follow-action";
-  var cleanName = (value) => typeof value === "string" ? value.replace(/\s+/g, " ").trim() : "";
+  var actionClass2 = "atelier-local-follow-action";
+  var cleanName = (value2) => typeof value2 === "string" ? value2.replace(/\s+/g, " ").trim() : "";
   function localProfileFromCard(container) {
-    const root = container.shadowRoot || container;
-    const data = container.__data?.card ?? root.querySelector(".user-card-m-exp.card-loaded")?.__vue__?.userData;
-    const links = [...root.querySelectorAll('a[href*="space.bilibili.com/"]')];
-    const link = links.find((link2) => parseLocalFollowInput(link2.href));
-    const uid = normalizeLocalUid(data?.mid) || parseLocalFollowInput(link?.href ?? "") || normalizeLocalUid(container.getAttribute("data-user-id") || container.getAttribute("data-usercard-mid"));
+    const root3 = container.shadowRoot || container;
+    const data = container.__data?.card ?? root3.querySelector(".user-card-m-exp.card-loaded")?.__vue__?.userData;
+    const links = [...root3.querySelectorAll('a[href*="space.bilibili.com/"]')];
+    const link2 = links.find((link3) => parseLocalFollowInput(link3.href));
+    const uid = normalizeLocalUid(data?.mid) || parseLocalFollowInput(link2?.href ?? "") || normalizeLocalUid(container.getAttribute("data-user-id") || container.getAttribute("data-usercard-mid"));
     if (!uid) return null;
-    const name = cleanName(data?.name) || cleanName(root.querySelector(".name,.nickname,.username,.user-name")?.textContent) || cleanName(link?.textContent);
-    const face = safeLocalFace(data?.face || root.querySelector(".avatar img,.face img,img")?.src);
+    const name = cleanName(data?.name) || cleanName(root3.querySelector(".name,.nickname,.username,.user-name")?.textContent) || cleanName(link2?.textContent);
+    const face = safeLocalFace(data?.face || root3.querySelector(".avatar img,.face img,img")?.src);
     return { uid, name, face };
   }
   function localProfileFromSpace() {
@@ -11843,24 +19891,24 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
     return { profile: { uid, name, face }, target };
   }
   function observePageDynamics(channel) {
-    const observed = (value) => {
+    const observed = (value2) => {
       try {
-        const url = new URL(String(value), location.href);
+        const url = new URL(String(value2), location.href);
         return url.hostname === "api.bilibili.com" && /^\/x\/polymer\/web-dynamic\/v1\/feed\/(?:space|all)$/.test(url.pathname);
       } catch {
         return false;
       }
     };
-    const emit = (body) => {
-      if (body?.code !== 0 || !Array.isArray(body?.data?.items)) return;
-      const items = body.data.items.map((item) => ({ type: item?.type, modules: { module_author: { mid: item?.modules?.module_author?.mid, pub_ts: item?.modules?.module_author?.pub_ts } } }));
+    const emit = (body2) => {
+      if (body2?.code !== 0 || !Array.isArray(body2?.data?.items)) return;
+      const items = body2.data.items.map((item) => ({ type: item?.type, modules: { module_author: { mid: item?.modules?.module_author?.mid, pub_ts: item?.modules?.module_author?.pub_ts } } }));
       window.postMessage({ channel, items }, location.origin);
     };
     const originalFetch = window.fetch;
     window.fetch = function(...args) {
       const response = originalFetch.apply(this, args);
-      if (observed(args[0] instanceof Request ? args[0].url : args[0])) void response.then((value) => {
-        if (value.ok) void value.clone().json().then(emit).catch(() => {
+      if (observed(args[0] instanceof Request ? args[0].url : args[0])) void response.then((value2) => {
+        if (value2.ok) void value2.clone().json().then(emit).catch(() => {
         });
       }).catch(() => {
       });
@@ -11882,18 +19930,22 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
       return send.apply(this, args);
     };
   }
-  var started4 = false;
+  var started5 = false;
   function startLocalFollowing() {
-    if (started4) return;
-    started4 = true;
+    if (started5) return;
+    started5 = true;
     startLocalFollowingStore();
     const channel = "atelier-local-dynamics-" + crypto.randomUUID();
     window.addEventListener("message", (event) => {
-      if (event.source !== window || event.origin !== location.origin || event.data?.channel !== channel) return;
+      if (event.origin !== location.origin || event.data?.channel !== channel) return;
       observeLocalFollowDynamics({ items: event.data.items });
     });
     try {
       injectPageScript(`(${observePageDynamics.toString()})(${JSON.stringify(channel)});`);
+    } catch {
+    }
+    try {
+      startLocalFeed();
     } catch {
     }
     if (typeof GM_registerMenuCommand === "function") GM_registerMenuCommand("Bili Atelier \u672C\u5730\u5173\u6CE8", openLocalFollowingPanel);
@@ -11912,53 +19964,53 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
         }, 100);
       }
     }
-    function attach(target, getProfile, root) {
+    function attach(target, getProfile, root3) {
       const profile = getProfile();
       if (!profile) return;
-      let node = root.querySelector(`.${actionClass}:not(.atelier-local-follow-launcher)`);
-      if (!node) {
-        node = document.createElement("button");
-        node.type = "button";
-        node.className = actionClass;
-        node.setAttribute("data-atelier-local-ui", "");
-        node.style.cssText = "display:inline-flex;align-items:center;margin:3px 6px";
-        node.addEventListener("click", async (event) => {
-          const feedback = soundTask(void 0, () => !!node?.isConnected);
+      let node3 = root3.querySelector(`.${actionClass2}:not(.atelier-local-follow-launcher)`);
+      if (!node3) {
+        node3 = document.createElement("button");
+        node3.type = "button";
+        node3.className = actionClass2;
+        node3.setAttribute("data-atelier-local-ui", "");
+        node3.style.cssText = "display:inline-flex;align-items:center;margin:3px 6px";
+        node3.addEventListener("click", async (event) => {
+          const feedback = soundTask(void 0, () => !!node3?.isConnected);
           event.preventDefault();
           event.stopPropagation();
-          const current = getProfile();
-          if (!current) return;
-          if (localFollowSnapshot().accounts.some((account) => account.uid === current.uid)) {
-            removeLocalFollow(current.uid);
+          const current2 = getProfile();
+          if (!current2) return;
+          if (localFollowSnapshot().accounts.some((account) => account.uid === current2.uid)) {
+            removeLocalFollow(current2.uid);
             scan();
             feedback.finish("delete");
             return;
           }
-          node.disabled = true;
+          node3.disabled = true;
           try {
-            const profile2 = current.name ? current : await new LocalFollowApi().profile(current.uid, new AbortController().signal);
+            const profile2 = current2.name ? current2 : await new LocalFollowApi().profile(current2.uid, new AbortController().signal);
             const before = JSON.stringify(localFollowSnapshot());
             addLocalFollow(profile2);
             writeLocalFollowCache(profile2.uid, profile2);
             if (before !== JSON.stringify(localFollowSnapshot())) feedback.finish("success");
           } catch (error) {
-            node.title = error instanceof Error ? error.message : "\u6DFB\u52A0\u5931\u8D25";
-            node.textContent = "\u91CD\u8BD5\u6DFB\u52A0\u672C\u5730\u5173\u6CE8";
+            node3.title = error instanceof Error ? error.message : "\u6DFB\u52A0\u5931\u8D25";
+            node3.textContent = "\u91CD\u8BD5\u6DFB\u52A0\u672C\u5730\u5173\u6CE8";
             feedback.finish("error");
           } finally {
-            node.disabled = false;
+            node3.disabled = false;
             schedule2();
           }
         });
-        if (target.matches("#action,.user") || target === root) target.appendChild(node);
-        else target.insertAdjacentElement("afterend", node);
-        styleAtelierAction(node);
+        if (target.matches("#action,.user") || target === root3) target.appendChild(node3);
+        else target.insertAdjacentElement("afterend", node3);
+        styleAtelierAction(node3);
       }
-      placeVideoUpAction(root, node, "follow");
+      placeVideoUpAction(root3, node3, "follow");
       const followed = localFollowSnapshot().accounts.some((account) => account.uid === profile.uid);
       const label = followed ? "\u79FB\u9664\u672C\u5730\u5173\u6CE8" : "\u6DFB\u52A0\u672C\u5730\u5173\u6CE8";
-      if (node.textContent !== label) node.textContent = label;
-      node.setAttribute("aria-pressed", String(followed));
+      if (node3.textContent !== label) node3.textContent = label;
+      node3.setAttribute("aria-pressed", String(followed));
       if (followed) {
         const cache = readLocalFollowCache(profile.uid);
         if (profile.name && profile.name !== cache.name || profile.face && profile.face !== cache.face) writeLocalFollowCache(profile.uid, { name: profile.name || cache.name, face: profile.face || cache.face });
@@ -11980,13 +20032,13 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
       } else lastVisited = "";
       for (const container of document.querySelectorAll(".up-panel-container")) {
         if (container.closest("[data-bili-blocker-ui]")) continue;
-        const root = container.shadowRoot || container;
+        const root3 = container.shadowRoot || container;
         if (container.shadowRoot && !roots2.has(container.shadowRoot)) {
           roots2.add(container.shadowRoot);
           observer.observe(container.shadowRoot, { childList: true, subtree: true });
         }
-        const target = root.querySelector("#action,.user,.name,.nickname,.username,.user-name") || container;
-        attach(target, () => localProfileFromCard(container), root);
+        const target = root3.querySelector("#action,.user,.name,.nickname,.username,.user-name") || container;
+        attach(target, () => localProfileFromCard(container), root3);
       }
     }
     observer.observe(document.documentElement || document, { childList: true, subtree: true });
@@ -11999,203 +20051,6 @@ ${id} .lf-membership{max-height:120px;overflow:auto;border:1px solid var(--ateli
       schedule2();
     });
     schedule2();
-  }
-
-  // src/modules/sync/panel.ts
-  var import_qrcode = __toESM(require_browser(), 1);
-  function mountSyncPanel() {
-    const host = document.createElement("div");
-    host.className = "luna-sync";
-    const root = host.attachShadow({ mode: "closed" });
-    root.innerHTML = `<style>
-    ${sharedControlCss}
-    :host { display:block; color:var(--atelier-ink); font:inherit; }
-    * { box-sizing:border-box; }
-    h2 { font-size:14px; line-height:1.3; margin:0 0 12px; }
-    h3 { font-size:1em; margin:0 0 12px; }
-    p { margin:0 0 16px; }
-    .hint { color:var(--atelier-muted); font-size:.85em; }
-    section { border-top:1px solid var(--atelier-edge); padding:12px 0; }
-    .fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 18px; }
-    label { display:block; min-width:0; font-size:.85em; }
-    input { display:block; width:100%; margin:6px 0 0; padding:8px 10px; border:2px solid; border-color:var(--atelier-edge) var(--atelier-highlight) var(--atelier-highlight) var(--atelier-edge); border-radius:0; background:var(--atelier-field); color:var(--atelier-ink); font:inherit; }
-    input:focus { outline:1px solid var(--atelier-accent); outline-offset:-3px; }
-    [role=status] { white-space:pre-wrap; overflow-wrap:anywhere; background:var(--atelier-panel); border:1px solid var(--atelier-edge); padding:12px; margin:18px 0; font-size:.85em; }
-    .actions { display:flex; gap:8px; flex-wrap:wrap; }
-    button { font:inherit; font-size:.85em; color:inherit; cursor:pointer; padding:5px 12px; min-height:38px; border:8px solid transparent; border-radius:0; background:transparent; border-image:url("${luna.button_normal}") 9 8 9 8 fill / 8px stretch; }
-    button.primary { border-image-source:url("${luna.button_default}"); font-weight:bold; }
-    button:hover { border-image-source:url("${luna.button_hover}"); }
-    button:active { border-image-source:url("${luna.button_pressed}"); }
-    button:disabled { border-image-source:url("${luna.button_disabled}"); color:#858575; cursor:default; }
-    button:focus-visible { outline:1px dotted #25300f; outline-offset:-5px; }
-    .qr:not(:empty) { border:1px solid var(--atelier-edge); padding:14px; margin-top:16px; background:var(--atelier-field); }
-    canvas { display:block; max-width:100%; height:auto!important; margin-bottom:12px; }
-    @media(max-width:850px) { .fields { grid-template-columns:minmax(0,1fr); } h2 { font-size:1.4em; } }
-  </style>
-  <h2>PC / Android \u540C\u6B65</h2>
-  <p class="hint">\u901A\u8FC7 Backblaze B2 \u540C\u6B65\u5DF2\u770B\u6807\u8BB0\u3001UID\uFF0F\u7CBE\u786E\u7528\u6237\u540D\u9ED1\u540D\u5355\uFF0C\u4EE5\u53CA\u672C\u5730\u5173\u6CE8\u548C\u5206\u7EC4\uFF0C\u5305\u62EC\u65B0\u589E\u4E0E\u79FB\u9664\u3002</p>
-  <section><h3>\u8FDE\u63A5\u8BBE\u7F6E</h3><div class="fields"></div>
-  <p class="hint" style="margin-top:12px">\u4E24\u7AEF\u4F7F\u7528\u540C\u4E00 Bucket \u548C\u540C\u6B65\u76EE\u5F55\u3002\u9996\u6B21\u5408\u5E76\u540E\u4E0D\u80FD\u66F4\u6362\u8FD9\u4E24\u9879\uFF1B\u540C\u4E00\u7A7A\u95F4\u5185\u53EF\u66F4\u65B0\u5BC6\u94A5\u3002\u5176\u4ED6\u5C4F\u853D\u89C4\u5219\u548C\u5386\u53F2\u8BB0\u5F55\u4E0D\u53C2\u4E0E\u4E91\u540C\u6B65\u3002</p>
-  <div class="actions settings"></div></section>
-  <section><h3>\u540C\u6B65\u72B6\u6001</h3><p role="status" aria-live="polite"></p><div class="actions controls"></div>
-  <p class="hint" style="margin-top:12px">\u542F\u7528\u540E\u81EA\u52A8\u540C\u6B65\uFF1B\u6682\u505C\u671F\u95F4\u4ECD\u4FDD\u7559\u672C\u5730\u6539\u52A8\uFF0C\u91CD\u65B0\u542F\u7528\u540E\u7EE7\u7EED\u4E0A\u4F20\u3002\u9996\u6B21\u4E91\u7AEF\u5408\u5E76\u524D\u4F1A\u4FDD\u7559\u672C\u5730\u5907\u4EFD\u3002</p></section>
-  <section><h3>\u624B\u673A\u914D\u7F6E\u4E0E\u5907\u4EFD</h3><div class="actions transfer"></div><div class="qr"></div></section>`;
-    const fields2 = /* @__PURE__ */ new Map();
-    const cleanupPixels = observePixelLabels(root);
-    const c = getConfig();
-    for (const [key2, label, value] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
-      const row = document.createElement("label");
-      row.textContent = label;
-      const input = document.createElement("input");
-      input.name = key2;
-      input.type = key2 === "applicationKey" ? "password" : "text";
-      input.autocomplete = "off";
-      input.spellcheck = false;
-      input.value = value;
-      input.addEventListener("input", () => hideSecrets());
-      fields2.set(key2, input);
-      row.append(input);
-      root.querySelector(".fields").append(row);
-    }
-    const fieldValues = () => Object.fromEntries([...fields2].map(([k, v]) => [k, v.value.trim()]));
-    let saved = JSON.stringify(fieldValues());
-    let message = "";
-    let disposed = false;
-    let qrGeneration = 0;
-    function hideSecrets() {
-      qrGeneration++;
-      root.querySelector(".qr").replaceChildren();
-    }
-    const render = () => {
-      if (disposed) return;
-      const s = status();
-      root.querySelector('[role="status"]').textContent = `${paused() ? "\u5DF2\u6682\u505C" : "\u5DF2\u542F\u7528"} \xB7 ${s.busy ? "\u540C\u6B65\u4E2D" : `\u5F85\u4E0A\u4F20 ${s.pending} \u6761\u64CD\u4F5C`}
-\u6700\u8FD1\u6210\u529F\uFF1A${s.lastSuccess ? new Date(s.lastSuccess).toLocaleString() : "\u5C1A\u672A\u540C\u6B65"}${s.error ? `
-${s.error}` : ""}${message ? `
-${message}` : ""}`;
-    };
-    const config2 = () => parseConfig({ schema: "bili-atelier-b2-config", version: 1, ...fieldValues() });
-    const action = (group, label, run, primary = false, done = "success", long = false) => {
-      const button3 = document.createElement("button");
-      button3.type = "button";
-      button3.textContent = label;
-      button3.className = "atelier-control";
-      if (primary) button3.classList.add("primary");
-      button3.onclick = async () => {
-        const feedback = soundTask(long ? "start" : void 0, () => !disposed && host.isConnected && !host.closest('[data-minimized="true"]'));
-        button3.disabled = true;
-        message = "";
-        try {
-          const result = await run();
-          if (result === "skipped") {
-            message = "\u672C\u6B21\u6CA1\u6709\u5F00\u59CB\u65B0\u7684\u540C\u6B65\uFF0C\u8BF7\u68C0\u67E5\u8FDE\u63A5\u8BBE\u7F6E\u548C\u5F53\u524D\u72B6\u6001\u3002";
-            feedback.finish("warning");
-          } else feedback.finish(result === "error" ? "error" : result === "cancelled" ? "cancel" : done);
-        } catch (e) {
-          message = e instanceof Error ? e.message : "\u64CD\u4F5C\u5931\u8D25";
-          feedback.finish("error");
-        } finally {
-          button3.disabled = false;
-          render();
-        }
-      };
-      root.querySelector("." + group).append(button3);
-    };
-    action("settings", "\u6D4B\u8BD5\u8FDE\u63A5", async () => {
-      await testConnection(config2());
-      message = "\u8BA4\u8BC1\u3001\u76EE\u5F55\u8BFB\u53D6\u53CA\u6743\u9650\u68C0\u67E5\u901A\u8FC7\uFF1B\u9996\u6B21\u540C\u6B65\u5C06\u9A8C\u8BC1\u4E0A\u4F20\u3002";
-    }, false, "success", true);
-    action("settings", "\u4FDD\u5B58\u5E76\u542F\u7528", () => {
-      saveConfig(config2());
-      saved = JSON.stringify(fieldValues());
-      setPaused(false);
-    }, true);
-    action("controls", "\u6682\u505C\u540C\u6B65", () => setPaused(true), false, "select");
-    action("controls", "\u7ACB\u5373\u540C\u6B65", () => {
-      if (paused()) throw new Error("\u8BF7\u5148\u4FDD\u5B58\u5E76\u542F\u7528\u540C\u6B65");
-      return synchronize(true);
-    }, false, "complete", true);
-    action("transfer", "\u4E0B\u8F7D\u9996\u6B21\u5907\u4EFD", downloadBackup);
-    action("transfer", "\u4E0B\u8F7D\u672C\u5730\u5173\u6CE8\u9996\u6B21\u5907\u4EFD", downloadLocalFollowBackup);
-    action("transfer", "\u663E\u793A\u914D\u7F6E\u4E8C\u7EF4\u7801", async () => {
-      const qr = root.querySelector(".qr");
-      if (qr.childNodes.length) {
-        hideSecrets();
-        return;
-      }
-      const generation = ++qrGeneration;
-      const text2 = JSON.stringify(config2());
-      const hint = document.createElement("p");
-      hint.className = "hint";
-      hint.textContent = "\u4E8C\u7EF4\u7801\u5305\u542B\u8BBF\u95EE\u5BC6\u94A5\uFF0C\u8BF7\u52FF\u5206\u4EAB\u3002\u518D\u6B21\u70B9\u51FB\u53EF\u9690\u85CF\u3002\u624B\u673A\u53EF\u626B\u7801\u590D\u5236\u6587\u672C\uFF0C\u5728\u4E91\u540C\u6B65\u8BBE\u7F6E\u4E2D\u7C98\u8D34\u5BFC\u5165\u3002";
-      const canvas = document.createElement("canvas");
-      await import_qrcode.default.toCanvas(canvas, text2, { width: 320, errorCorrectionLevel: "M" });
-      if (disposed || generation !== qrGeneration) return;
-      const copy = document.createElement("button");
-      copy.type = "button";
-      copy.className = "atelier-control";
-      copy.textContent = "\u590D\u5236\u914D\u7F6E\u6587\u672C";
-      copy.onclick = async () => {
-        const feedback = soundTask(void 0, () => !disposed && copy.isConnected && host.isConnected);
-        try {
-          await navigator.clipboard.writeText(text2);
-          message = "\u914D\u7F6E\u6587\u672C\u5DF2\u590D\u5236";
-          feedback.finish("success");
-        } catch {
-          message = "\u65E0\u6CD5\u8BBF\u95EE\u526A\u8D34\u677F\uFF0C\u8BF7\u4F7F\u7528\u4E8C\u7EF4\u7801";
-          feedback.finish("warning");
-        }
-        render();
-      };
-      qr.append(hint, canvas, copy);
-    }, false, "menu");
-    render();
-    window.addEventListener("atelier-sync-status", render);
-    return {
-      host,
-      isDirty: () => saved !== JSON.stringify(fieldValues()),
-      hideSecrets,
-      dispose() {
-        disposed = true;
-        cleanupPixels();
-        hideSecrets();
-        window.removeEventListener("atelier-sync-status", render);
-        host.remove();
-      }
-    };
-  }
-  function registerSyncPanel(open) {
-    if (typeof GM_registerMenuCommand === "function") GM_registerMenuCommand("Bili Atelier \u4E91\u540C\u6B65", open);
-  }
-
-  // src/core/config.ts
-  var config = {
-    viewedMarker: {
-      enabled: true,
-      fastVideoMainMark: true,
-      fullVideoPageScan: false
-    },
-    commentLocation: {
-      enabled: true,
-      patchSourceScripts: true,
-      domFallback: true,
-      videoPageHeaderGate: true,
-      videoPageHeaderGateTimeoutMs: 3e3
-    },
-    blocker: {
-      enabled: true
-    },
-    debug: false
-  };
-
-  // src/core/logger.ts
-  function debugLog(...args) {
-    if (config.debug) {
-      console.debug("[BiliToolkit]", ...args);
-    }
-  }
-  function warnLog(...args) {
-    console.warn("[BiliToolkit]", ...args);
   }
 
   // src/core/video-page-ready.ts
@@ -13418,203 +21273,6 @@ var utils = {
 
   // src/modules/viewed/legacy-viewed.ts
   var import_jquery = __toESM(require_jquery(), 1);
-
-  // src/core/info-log.ts
-  var rootId = "bili-atelier-info-log";
-  var styleId = "bili-atelier-info-log-style";
-  var maxItems = 6;
-  function ensureInfoLogStyle() {
-    ensureAppearance();
-    if (document.getElementById(styleId)) {
-      return;
-    }
-    const style = document.createElement("style");
-    style.id = styleId;
-    style.textContent = `
-#${rootId} {
-  position: fixed;
-  top: 84px;
-  right: 24px;
-  z-index: 2147483640;
-  width: min(360px, calc(100vw - 32px));
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  pointer-events: none;
-  font: 13px/1.45 Tahoma, "Microsoft YaHei", sans-serif;
-}
-#${rootId} .bili-atelier-info-log-item {
-  box-sizing: border-box;
-  max-width: 100%;
-  min-width: 180px;
-  padding: 9px 12px;
-  border: 1px solid var(--atelier-edge);
-  border-left: 4px solid var(--atelier-accent);
-  border-radius: 2px;
-  background: var(--atelier-panel);
-  color: var(--atelier-ink);
-  box-shadow: inset 1px 1px var(--atelier-highlight), 2px 3px 6px #0003;
-  opacity: 0;
-  transform: translateY(-6px);
-  transition: opacity .24s ease, transform .24s ease, max-height .28s ease, padding .28s ease, margin .28s ease;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-}
-#${rootId} .bili-atelier-info-log-item.is-visible {
-  opacity: .96;
-  transform: translateY(0);
-}
-#${rootId} .bili-atelier-info-log-item.is-leaving {
-  max-height: 0 !important;
-  margin: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  opacity: 0;
-  transform: translateY(-6px);
-}
-#${rootId} .bili-atelier-info-log-success { border-left-color: var(--atelier-accent); }
-#${rootId} .bili-atelier-info-log-warning { border-left-color: #f7b500; }
-#${rootId} .bili-atelier-info-log-error { border-left-color: var(--atelier-danger); }
-`;
-    (document.head || document.documentElement).appendChild(style);
-  }
-  function ensureInfoLogRoot() {
-    if (!document.body) {
-      return null;
-    }
-    ensureInfoLogStyle();
-    let root = document.getElementById(rootId);
-    if (!root) {
-      root = document.createElement("div");
-      root.id = rootId;
-      root.setAttribute("data-bili-blocker-ui", "true");
-      root.setAttribute("data-bili-atelier-ui", "info-log");
-      root.setAttribute("role", "status");
-      root.setAttribute("aria-live", "polite");
-      document.body.appendChild(root);
-    }
-    return root;
-  }
-  function showInfoLog(message, tone = "info", durationMs = 3600) {
-    const text2 = String(message || "").replace(/\s+/g, " ").trim();
-    if (!text2) {
-      return;
-    }
-    const root = ensureInfoLogRoot();
-    if (!root) {
-      document.addEventListener("DOMContentLoaded", () => showInfoLog(text2, tone, durationMs), { once: true });
-      return;
-    }
-    const item = document.createElement("div");
-    item.className = `bili-atelier-info-log-item bili-atelier-info-log-${tone}`;
-    item.textContent = text2;
-    root.prepend(item);
-    item.style.maxHeight = `${Math.max(48, item.scrollHeight + 20)}px`;
-    window.requestAnimationFrame(() => item.classList.add("is-visible"));
-    while (root.children.length > maxItems) {
-      root.lastElementChild?.remove();
-    }
-    window.setTimeout(() => {
-      item.classList.add("is-leaving");
-      window.setTimeout(() => item.remove(), 320);
-    }, durationMs);
-  }
-
-  // src/ui/dialogs.ts
-  var pending = Promise.resolve();
-  function atelierDialog(options) {
-    const run = () => new Promise((resolve) => {
-      ensureLunaTheme();
-      const before = document.activeElement;
-      const dialog = document.createElement("dialog");
-      dialog.className = "atelier-dialog";
-      dialog.setAttribute("data-bili-blocker-ui", "");
-      const heading = document.createElement("h2");
-      heading.id = "atelier-dialog-title";
-      heading.textContent = options.title;
-      dialog.setAttribute("aria-labelledby", heading.id);
-      const message = document.createElement("p");
-      message.textContent = options.message;
-      const body = document.createElement("div");
-      body.className = "atelier-dialog-body";
-      body.append(message);
-      let input;
-      if (options.input !== void 0) {
-        input = document.createElement(options.multiline ? "textarea" : "input");
-        input.value = options.input;
-        input.readOnly = !!options.readOnly;
-        input.setAttribute("aria-label", options.title);
-        body.append(input);
-      }
-      const actions = document.createElement("div");
-      actions.className = "atelier-dialog-actions";
-      let settled = false;
-      const cleanupPixels = observePixelLabels(dialog);
-      const finish = (result2) => {
-        if (settled) return;
-        settled = true;
-        cleanupPixels();
-        dialog.remove();
-        if (before?.isConnected) before.focus();
-        resolve(result2);
-      };
-      const add = (label, value, parent = actions) => {
-        const button3 = document.createElement("button");
-        button3.type = "button";
-        button3.className = "atelier-control";
-        button3.textContent = label;
-        button3.addEventListener("click", () => {
-          sound("click");
-          finish(value());
-        });
-        parent.append(button3);
-        return button3;
-      };
-      if (options.choices) {
-        const choices = document.createElement("div");
-        choices.className = "atelier-dialog-choices";
-        for (const choice of options.choices) add(choice.label, () => choice.value, choices);
-        body.append(choices);
-      } else add(options.confirmLabel || (options.readOnly || options.alert ? "\u5173\u95ED" : "\u786E\u5B9A"), () => input?.value ?? "ok");
-      if (!options.alert && !options.readOnly) add("\u53D6\u6D88", () => null);
-      dialog.append(heading, body, actions);
-      dialog.addEventListener("cancel", (event) => {
-        event.preventDefault();
-        finish(null);
-      });
-      dialog.addEventListener("keydown", (event) => {
-        event.stopPropagation();
-        if (event.key === "Escape") {
-          event.preventDefault();
-          finish(null);
-        }
-        if (event.key === "Enter" && event.target === input && !options.multiline) {
-          event.preventDefault();
-          finish(input.value);
-        }
-      });
-      document.body.append(dialog);
-      if (typeof dialog.showModal === "function") dialog.showModal();
-      else dialog.setAttribute("open", "");
-      (input || dialog.querySelector("button"))?.focus();
-      if (options.readOnly) input?.select();
-    });
-    const result = pending.then(run, run);
-    pending = result;
-    return result;
-  }
-  async function atelierConfirm(message, title = "\u786E\u8BA4\u64CD\u4F5C") {
-    return await atelierDialog({ title, message }) !== null;
-  }
-  function atelierAlert(message, title = "\u64CD\u4F5C\u63D0\u793A") {
-    return atelierDialog({ title, message, alert: true });
-  }
-  function atelierPrompt(message, value = "", readOnly = false) {
-    return atelierDialog({ title: readOnly ? "\u5BFC\u51FA\u6570\u636E" : "\u5BFC\u5165\u6570\u636E", message, input: value, multiline: true, readOnly });
-  }
-
-  // src/modules/viewed/legacy-viewed.ts
   function startViewedMarker() {
     const jq = import_jquery.default;
     if (jq.fn && !jq.fn.size) {
@@ -13904,7 +21562,7 @@ var utils = {
     }
     const videoCollectionSelector = ".pod-item,.video-episode-card,.multip .video-pod__item,.multip.grid .page,.pod-item .page-item";
     function setVideoCollectionViewed(row) {
-      const readId = (node) => String(node?.getAttribute("data-key") || node?.getAttribute("data-bvid") || node?.querySelector('a[href*="/video/BV"]')?.getAttribute("href") || "").match(/BV[0-9a-zA-Z]{10}/i)?.[0];
+      const readId = (node3) => String(node3?.getAttribute("data-key") || node3?.getAttribute("data-bvid") || node3?.querySelector('a[href*="/video/BV"]')?.getAttribute("href") || "").match(/BV[0-9a-zA-Z]{10}/i)?.[0];
       let id = readId(row);
       if (row.matches(".page-item")) {
         const parentId = readId(row.closest(".pod-item"));
@@ -13920,10 +21578,10 @@ var utils = {
         const index = [...document.querySelectorAll(".video-episode-card")].indexOf(row);
         id = episodes[index]?.bvid;
       }
-      const owned = [...row.querySelectorAll(".btnView")].filter((button3) => button3.closest(videoCollectionSelector) === row);
+      const owned = [...row.querySelectorAll(".btnView")].filter((button4) => button4.closest(videoCollectionSelector) === row);
       const normalized = id?.replace(/^BV/i, "");
-      for (const button3 of owned) {
-        if (!normalized || button3.getAttribute("data-av") !== normalized) button3.remove();
+      for (const button4 of owned) {
+        if (!normalized || button4.getAttribute("data-av") !== normalized) button4.remove();
       }
       if (!id) return;
       const cover = row.querySelector(".cover,.video-episode-card__cover");
@@ -13956,15 +21614,15 @@ var utils = {
       const selector = ".card-box .pic," + videoCollectionSelector;
       const pending2 = /* @__PURE__ */ new Set();
       let timer2 = null;
-      const enqueue2 = (node) => {
-        if (!(node instanceof Element)) {
+      const enqueue2 = (node3) => {
+        if (!(node3 instanceof Element)) {
           return;
         }
-        const pic = node.closest(selector);
+        const pic = node3.closest(selector);
         if (pic) {
           pending2.add(pic);
         }
-        for (const child of node.querySelectorAll(selector)) {
+        for (const child of node3.querySelectorAll(selector)) {
           pending2.add(child);
         }
         if (pending2.size && timer2 === null) {
@@ -13993,8 +21651,8 @@ var utils = {
             const pic = mutation.target instanceof Element && mutation.target.closest(selector);
             if (pic) enqueue2(pic);
           }
-          for (const node of mutation.addedNodes) {
-            if (node instanceof Element && !node.matches(".btnView")) enqueue2(node);
+          for (const node3 of mutation.addedNodes) {
+            if (node3 instanceof Element && !node3.matches(".btnView")) enqueue2(node3);
           }
         }
       });
@@ -14038,11 +21696,11 @@ var utils = {
         }
       }, 80);
     }
-    function isSpaceRenderNode(node) {
-      if (!node || node.nodeType != 1) {
+    function isSpaceRenderNode(node3) {
+      if (!node3 || node3.nodeType != 1) {
         return false;
       }
-      var el = node;
+      var el = node3;
       var lateSelectors = ".nav-bar__main-left,.n-inner,.upload-video-card,.bili-video-card,.bili-video-card__wrap,.small-item,.space-video-card,.video-card";
       if (el.matches && el.matches(lateSelectors)) {
         return true;
@@ -14053,8 +21711,8 @@ var utils = {
       if (spaceStartupObserver != null || typeof MutationObserver == "undefined") {
         return;
       }
-      var root = document.documentElement || document.body;
-      if (!root) {
+      var root3 = document.documentElement || document.body;
+      if (!root3) {
         return;
       }
       spaceStartupObserver = new MutationObserver(function(mutations) {
@@ -14071,7 +21729,7 @@ var utils = {
           }
         }
       });
-      spaceStartupObserver.observe(root, { childList: true, subtree: true });
+      spaceStartupObserver.observe(root3, { childList: true, subtree: true });
       setTimeout(function() {
         if (spaceStartupObserver != null) {
           spaceStartupObserver.disconnect();
@@ -14914,8 +22572,8 @@ var utils = {
     const spaceVideoCardSelectors = ".small-item,.bili-video-card,.bili-video-card__wrap,.upload-video-card,.space-video-card,.video-card";
     const spaceVideoCardRootSelectors = ".upload-video-card,.small-item,.space-video-card,.video-card,.bili-video-card";
     function getSpaceVideoCardRoot(el) {
-      var root = (0, import_jquery.default)(el).closest(spaceVideoCardRootSelectors)[0];
-      return root || el;
+      var root3 = (0, import_jquery.default)(el).closest(spaceVideoCardRootSelectors)[0];
+      return root3 || el;
     }
     const setSpaceVideoCardsViewed = function() {
       const handledCards = [];
@@ -15417,2434 +23075,6 @@ var utils = {
     })();
   }
 
-  // src/modules/blocker/history.ts
-  var historyChangedEvent = "bili-atelier-block-history-changed";
-  var historyStorageKey = "BiliAtelier_BlockHistory";
-  var historyLimit = 200;
-  function summarizeBlockedItem(item) {
-    return item.title || item.content || item.liveTitle || item.name || item.bv || item.roomId || item.partition || "\u672A\u77E5\u5185\u5BB9";
-  }
-  function detailBlockedItem(item) {
-    const parts = [];
-    if (item.name) {
-      parts.push(`\u7528\u6237\uFF1A${item.name}`);
-    }
-    if (item.uid !== void 0) {
-      parts.push(`UID\uFF1A${item.uid}`);
-    }
-    if (item.bv) {
-      parts.push(`BV\uFF1A${item.bv}`);
-    }
-    if (item.roomId) {
-      parts.push(`\u76F4\u64AD\u95F4\uFF1A${item.roomId}`);
-    }
-    return parts.join(" / ");
-  }
-  function readBlockHistory() {
-    const value = GM_getValue(historyStorageKey, []);
-    if (!Array.isArray(value)) {
-      return [];
-    }
-    return value.filter((entry) => entry && typeof entry === "object" && typeof entry.id === "string").slice(0, historyLimit);
-  }
-  function writeBlockHistory(history) {
-    GM_setValue(historyStorageKey, history.slice(0, historyLimit));
-  }
-  function notifyBlockHistoryChanged() {
-    document.dispatchEvent(new CustomEvent(historyChangedEvent));
-  }
-  function decisionRuleReferences(decision) {
-    if (decision.linkedRules?.length) {
-      return decision.linkedRules;
-    }
-    if (decision.ruleKey && decision.ruleValue !== void 0) {
-      return [{ key: decision.ruleKey, value: decision.ruleValue }];
-    }
-    return [];
-  }
-  function ruleIdentity(rules) {
-    return rules.map((rule) => `${rule.key}=${String(rule.value)}`).sort().join("&");
-  }
-  function createHistoryId(item, decision) {
-    const identity = ruleIdentity(decisionRuleReferences(decision));
-    if (identity) {
-      return [item.kind, identity].join("|");
-    }
-    return [
-      item.kind,
-      decision.ruleKey || decision.type,
-      String(decision.ruleValue ?? decision.matching)
-    ].join("|");
-  }
-  function entryRuleReferences(entry) {
-    if (entry.linkedRules?.length) {
-      return entry.linkedRules;
-    }
-    if (entry.ruleKey && entry.ruleValue !== void 0) {
-      return [{ key: entry.ruleKey, value: entry.ruleValue }];
-    }
-    return [];
-  }
-  function entryMatchesRule(entry, ruleKey, normalizedValue) {
-    return entryRuleReferences(entry).some((rule) => {
-      return rule.key === ruleKey && String(rule.value) === normalizedValue;
-    });
-  }
-  function isDuplicateHistoryEntry(entry, kind, id, rules) {
-    if (entry.id === id) {
-      return true;
-    }
-    if (entry.kind !== kind || rules.length === 0) {
-      return false;
-    }
-    const existingRules = entryRuleReferences(entry);
-    return existingRules.some((existingRule) => {
-      return rules.some((rule) => existingRule.key === rule.key && String(existingRule.value) === String(rule.value));
-    });
-  }
-  function recordBlockHistory(item, decision) {
-    const id = createHistoryId(item, decision);
-    const history = readBlockHistory();
-    const rules = decisionRuleReferences(decision);
-    if (history.some((entry2) => isDuplicateHistoryEntry(entry2, item.kind, id, rules))) {
-      return;
-    }
-    const entry = {
-      id,
-      timestamp: Date.now(),
-      kind: item.kind,
-      type: decision.type,
-      matching: decision.matching,
-      ruleKey: decision.ruleKey,
-      ruleValue: decision.ruleValue,
-      linkedRules: decision.linkedRules,
-      uid: item.uid,
-      name: item.name,
-      title: item.title?.slice(0, 160),
-      content: item.content?.slice(0, 220),
-      bv: item.bv,
-      liveTitle: item.liveTitle?.slice(0, 160),
-      roomId: item.roomId,
-      partition: item.partition,
-      summary: summarizeBlockedItem(item).slice(0, 140),
-      detail: detailBlockedItem(item),
-      url: location.href
-    };
-    writeBlockHistory([entry, ...history]);
-    notifyBlockHistoryChanged();
-  }
-  function removeHistoryByRules(rules) {
-    writeBlockHistory(readBlockHistory().filter((entry) => {
-      return !rules.some((rule) => entryMatchesRule(entry, rule.key, String(rule.value)));
-    }));
-  }
-
-  // src/modules/blocker/decision.ts
-  function isWhiteUid(uid, rules) {
-    return uid !== void 0 && exactMatch(rules.precise_uid_white, uid) !== null;
-  }
-  function readRuleSnapshotWithHistoryAliases() {
-    const rules = readRuleSnapshot();
-    const preciseNameAliases = new Set(rules.precise_name.map((item) => String(item)));
-    for (const entry of readBlockHistory()) {
-      if (entry.kind !== "comment" || entry.uid === void 0 || !entry.name || exactMatch(rules.precise_uid, entry.uid) === null) {
-        continue;
-      }
-      preciseNameAliases.add(entry.name);
-    }
-    return {
-      ...rules,
-      precise_name: Array.from(preciseNameAliases)
-    };
-  }
-  function blockUser(uid, name, rules) {
-    if (uid !== void 0) {
-      const uidMatch = exactMatch(rules.precise_uid, uid);
-      if (uidMatch) {
-        return { type: "\u7CBE\u786E UID", matching: uidMatch.matching, ruleKey: "precise_uid", ruleValue: uidMatch.matching };
-      }
-    }
-    const nameMatch = blockExactFuzzyRegex(name, {
-      exactRules: rules.precise_name,
-      fuzzyRules: rules.name,
-      regexRules: rules.nameCanonical,
-      options: { caseInsensitive: true },
-      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u7528\u6237\u540D\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
-    });
-    if (nameMatch) {
-      const ruleKey = nameMatch.kind === "exact" ? "precise_name" : nameMatch.kind === "regex" ? "nameCanonical" : "name";
-      return { type: `\u7528\u6237\u540D${nameMatch.kind}`, matching: nameMatch.matching, ruleKey, ruleValue: nameMatch.matching };
-    }
-    return null;
-  }
-  function decideVideo(item, rules) {
-    if (isWhiteUid(item.uid, rules)) {
-      return null;
-    }
-    const userDecision = blockUser(item.uid, item.name, rules);
-    if (userDecision) {
-      return userDecision;
-    }
-    const titleMatch = blockExactFuzzyRegex(item.title, {
-      fuzzyRules: rules.title,
-      regexRules: rules.titleCanonical,
-      options: { caseInsensitive: true },
-      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u6807\u9898\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
-    });
-    if (titleMatch) {
-      const ruleKey = titleMatch.kind === "regex" ? "titleCanonical" : "title";
-      return { type: `\u6807\u9898${titleMatch.kind}`, matching: titleMatch.matching, ruleKey, ruleValue: titleMatch.matching };
-    }
-    return null;
-  }
-  function decideComment(item, rules) {
-    if (isWhiteUid(item.uid, rules)) {
-      return null;
-    }
-    const userDecision = blockUser(item.uid, item.name, rules);
-    if (userDecision) {
-      return userDecision;
-    }
-    const commentMatch = blockExactFuzzyRegex(item.content, {
-      fuzzyRules: rules.commentOn,
-      regexRules: rules.commentOnCanonical,
-      options: { caseInsensitive: true },
-      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u8BC4\u8BBA\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
-    });
-    if (commentMatch) {
-      const ruleKey = commentMatch.kind === "regex" ? "commentOnCanonical" : "commentOn";
-      return { type: `\u8BC4\u8BBA${commentMatch.kind}`, matching: commentMatch.matching, ruleKey, ruleValue: commentMatch.matching };
-    }
-    return null;
-  }
-  function decideLive(item, rules) {
-    if (isWhiteUid(item.uid, rules)) {
-      return null;
-    }
-    const userDecision = blockUser(item.uid, item.name, rules);
-    if (userDecision) {
-      return userDecision;
-    }
-    if (item.roomId) {
-      const roomMatch = exactMatch(rules.precise_liveRoomId, item.roomId);
-      if (roomMatch) {
-        return {
-          type: "\u7CBE\u786E\u76F4\u64AD\u95F4 ID",
-          matching: roomMatch.matching,
-          ruleKey: "precise_liveRoomId",
-          ruleValue: roomMatch.matching
-        };
-      }
-    }
-    if (item.partition) {
-      const partitionMatch = exactMatch(rules.precise_partition, item.partition);
-      if (partitionMatch) {
-        return {
-          type: "\u7CBE\u786E\u76F4\u64AD\u5206\u533A",
-          matching: partitionMatch.matching,
-          ruleKey: "precise_partition",
-          ruleValue: partitionMatch.matching
-        };
-      }
-    }
-    const titleMatch = blockExactFuzzyRegex(item.liveTitle, {
-      fuzzyRules: rules.liveTitle,
-      regexRules: rules.liveTitleCanonical,
-      options: { caseInsensitive: true },
-      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u76F4\u64AD\u6807\u9898\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
-    });
-    if (titleMatch) {
-      const ruleKey = titleMatch.kind === "regex" ? "liveTitleCanonical" : "liveTitle";
-      return { type: `\u76F4\u64AD\u6807\u9898${titleMatch.kind}`, matching: titleMatch.matching, ruleKey, ruleValue: titleMatch.matching };
-    }
-    return null;
-  }
-  function decideBlockableItem(item, rules) {
-    if (item.kind === "video") {
-      return decideVideo(item, rules);
-    }
-    if (item.kind === "comment") {
-      return decideComment(item, rules);
-    }
-    return decideLive(item, rules);
-  }
-  function getManualChoices(item) {
-    const choices = [];
-    if (item.uid !== void 0) {
-      choices.push({ label: `\u5C4F\u853D UID ${item.uid}`, key: "precise_uid", value: item.uid });
-    }
-    if (item.name) {
-      choices.push({ label: `\u5C4F\u853D\u7528\u6237\u540D ${item.name}`, key: "precise_name", value: item.name });
-    }
-    if (item.title) {
-      choices.push({ label: `\u5C4F\u853D\u6807\u9898\u5173\u952E\u8BCD ${item.title.slice(0, 30)}`, key: "title", value: item.title });
-    }
-    if (item.content) {
-      choices.push({ label: `\u5C4F\u853D\u8BC4\u8BBA\u5173\u952E\u8BCD ${item.content.slice(0, 30)}`, key: "commentOn", value: item.content });
-    }
-    if (item.liveTitle) {
-      choices.push({ label: `\u5C4F\u853D\u76F4\u64AD\u6807\u9898 ${item.liveTitle.slice(0, 30)}`, key: "liveTitle", value: item.liveTitle });
-    }
-    if (item.roomId) {
-      choices.push({ label: `\u5C4F\u853D\u76F4\u64AD\u95F4 ${item.roomId}`, key: "precise_liveRoomId", value: item.roomId });
-    }
-    if (item.partition) {
-      choices.push({ label: `\u5C4F\u853D\u76F4\u64AD\u5206\u533A ${item.partition}`, key: "precise_partition", value: item.partition });
-    }
-    return choices;
-  }
-  function getCommentUserBlockChoices(item) {
-    const choices = [];
-    if (item.uid !== void 0) {
-      choices.push({ key: "precise_uid", value: item.uid });
-    }
-    if (item.name) {
-      choices.push({ key: "precise_name", value: item.name });
-    }
-    return choices;
-  }
-  function getVideoOwnerBlockChoices(item) {
-    const choices = [];
-    if (item.uid !== void 0) {
-      choices.push({ key: "precise_uid", value: item.uid });
-    }
-    if (item.name) {
-      choices.push({ key: "precise_name", value: item.name });
-    }
-    return choices;
-  }
-  function getLiveOwnerBlockChoices(item) {
-    const choices = [];
-    if (item.uid !== void 0) {
-      choices.push({ key: "precise_uid", value: item.uid });
-    }
-    if (item.name) {
-      choices.push({ key: "precise_name", value: item.name });
-    }
-    if (choices.length === 0 && item.roomId) {
-      choices.push({ key: "precise_liveRoomId", value: item.roomId });
-    }
-    return choices;
-  }
-
-  // src/modules/blocker/page-context.ts
-  function currentLocation() {
-    return typeof location !== "undefined" ? location : null;
-  }
-  function isHomePageLocation(value = currentLocation()) {
-    return value?.hostname === "www.bilibili.com" && /^\/?$/.test(value.pathname || "");
-  }
-  function isSpacePageLocation(value = currentLocation()) {
-    return value?.hostname === "space.bilibili.com" && /^\/\d+/.test(value.pathname || "");
-  }
-  function parseUid(value) {
-    const match = value?.match(/space\.bilibili\.com\/(\d+)|data-user-id=["']?(\d+)|data-usercard-mid=["']?(\d+)|^(\d+)$/i);
-    const raw = match?.[1] || match?.[2] || match?.[3] || match?.[4];
-    if (!raw) {
-      return void 0;
-    }
-    const uid = Number.parseInt(raw, 10);
-    return Number.isFinite(uid) ? uid : void 0;
-  }
-  function parseSpaceProfileUid(pathname = currentLocation()?.pathname) {
-    return parseUid(pathname?.match(/^\/(\d+)/)?.[1]);
-  }
-
-  // src/modules/blocker/extract.ts
-  var videoCardSelectors = [
-    ".bili-video-card",
-    ".bili-feed-card",
-    ".feed-card",
-    ".video-card",
-    ".video-page-card-small",
-    ".video-page-operator-card-small",
-    ".small-item",
-    ".history-record",
-    ".rank-item",
-    ".rank-list>li",
-    ".video-list-item",
-    ".card-box",
-    "li",
-    "div"
-  ];
-  var commentSelectors = [
-    "bili-comment-thread-renderer",
-    "bili-comment-reply-renderer",
-    ".reply-item",
-    ".sub-reply-item",
-    ".list-item",
-    ".comment-item"
-  ];
-  var liveCardSelectors = [
-    ".bili-live-card",
-    ".live-card",
-    ".room-card",
-    ".bili-feed-card",
-    ".feed-card",
-    ".bili-video-card",
-    ".recommend-card",
-    ".floor-single-card",
-    ".video-list-item",
-    ".index_item_JSGkw",
-    "li",
-    "div"
-  ];
-  var ignoredTextTags = /* @__PURE__ */ new Set(["STYLE", "SCRIPT", "TEMPLATE", "NOSCRIPT"]);
-  function normalizeVisibleText(value) {
-    return value.replace(/\s+/g, " ").trim();
-  }
-  function readVisibleText(node) {
-    if (!node) {
-      return "";
-    }
-    if (node.nodeType === 3) {
-      return node.textContent || "";
-    }
-    const tagName = String(node.tagName || node.localName || "").toUpperCase();
-    if (ignoredTextTags.has(tagName) || node.getAttribute?.("data-bili-blocker-ui") === "true") {
-      return "";
-    }
-    if (tagName === "BR") {
-      return "\n";
-    }
-    if (tagName === "IMG") {
-      return node.getAttribute?.("alt") || node.getAttribute?.("title") || "";
-    }
-    const childNodes = node.childNodes && node.childNodes.length > 0 ? node.childNodes : node.children;
-    const parts = Array.from(childNodes || []).map(readVisibleText);
-    if (parts.length === 0 && typeof node.localText === "string") {
-      parts.push(node.localText);
-    }
-    if (node.shadowRoot) {
-      parts.push(readVisibleText(node.shadowRoot));
-    }
-    return parts.filter(Boolean).join(" ");
-  }
-  function text(el) {
-    return normalizeVisibleText(readVisibleText(el));
-  }
-  function attr(el, name) {
-    return el?.getAttribute(name)?.trim() || "";
-  }
-  function first(root, selectors) {
-    for (const selector of selectors) {
-      const found = root.querySelector(selector);
-      if (found) {
-        return found;
-      }
-    }
-    return null;
-  }
-  function queryAllDeep(root, selector) {
-    const results = [];
-    const visit = (node) => {
-      if (typeof Element !== "undefined" && node instanceof Element && node.matches(selector)) {
-        results.push(node);
-      }
-      if (typeof Element !== "undefined" && node instanceof Element && node.shadowRoot) {
-        visit(node.shadowRoot);
-      }
-      results.push(...Array.from(node.querySelectorAll(selector)));
-      for (const el of Array.from(node.querySelectorAll("*"))) {
-        if (el.shadowRoot) {
-          visit(el.shadowRoot);
-        }
-      }
-    };
-    visit(root);
-    return results;
-  }
-  function queryOneDeep(root, selectors) {
-    for (const selector of selectors) {
-      const local = root.querySelector(selector);
-      if (local) {
-        return local;
-      }
-    }
-    for (const el of Array.from(root.querySelectorAll("*"))) {
-      const shadowRoot = el.shadowRoot;
-      if (!shadowRoot) {
-        continue;
-      }
-      const nested = queryOneDeep(shadowRoot, selectors);
-      if (nested) {
-        return nested;
-      }
-    }
-    return null;
-  }
-  function parseBv(url) {
-    return url?.match(/\/video\/(BV[^/?#]+)/i)?.[1] || null;
-  }
-  function parseRoomId(url) {
-    return url?.match(/live\.bilibili\.com\/(?:blanc\/)?(\d+)/i)?.[1] || void 0;
-  }
-  function getSpaceOwner(root) {
-    if (!isSpacePageLocation()) {
-      return { uid: void 0, name: void 0 };
-    }
-    const uid = parseSpaceProfileUid();
-    const name = text(first(root, [
-      "#h-name",
-      ".h-name",
-      ".n-name",
-      ".space-header .name",
-      ".user-info .name",
-      ".user-name",
-      ".nickname"
-    ])) || void 0;
-    return { uid, name };
-  }
-  function fillOwnerFromSpacePage(owner, root) {
-    if (owner.uid !== void 0 || owner.name) {
-      return owner;
-    }
-    return getSpaceOwner(root);
-  }
-  function closestAny(el, selectors) {
-    for (const selector of selectors) {
-      const found = el.closest(selector);
-      if (found instanceof HTMLElement) {
-        return found;
-      }
-    }
-    return el instanceof HTMLElement ? el : null;
-  }
-  function getOwner(root) {
-    const ownerLink = first(root, [
-      'a[href*="//space.bilibili.com/"]',
-      'a[href*="space.bilibili.com/"]',
-      ".bili-video-card__info--owner",
-      ".bili-live-card__info--uname",
-      ".bili-live-card__info--owner",
-      ".live-card__info--uname",
-      ".upname a",
-      ".channel-name",
-      ".anchor-name",
-      ".room-anchor",
-      ".up-name"
-    ]);
-    const href = attr(ownerLink, "href");
-    const name = text(ownerLink?.querySelector?.(".bili-video-card__info--author")) || text(ownerLink?.querySelector?.(".bili-live-card__info--uname")) || text(ownerLink?.querySelector?.(".name")) || text(ownerLink);
-    const uid = parseUid(href) ?? parseUid(attr(ownerLink, "data-usercard-mid")) ?? parseUid(attr(ownerLink, "data-user-id"));
-    return { uid, name: name || void 0 };
-  }
-  function readCollectionVideoItem(row) {
-    const insertionEl = row.querySelector(".video-pod__item") || row;
-    const titleEl = row.querySelector(".video-episode-card__info-title,.title") || row;
-    const titleCopy = titleEl.cloneNode(true);
-    titleCopy.querySelectorAll(".btnView").forEach((node) => node.remove());
-    const title = attr(titleEl, "title") || text(titleCopy);
-    if (!title) return null;
-    const owner = getOwner(row);
-    return {
-      kind: "video",
-      el: row,
-      insertionEl,
-      collection: true,
-      title,
-      bv: parseBv(row.getAttribute("data-key") || row.querySelector('a[href*="/video/BV"]')?.href),
-      uid: owner.uid,
-      name: owner.name
-    };
-  }
-  function collectVideoItems(root = document) {
-    const anchors = Array.from(root.querySelectorAll('a[href*="/video/BV"]'));
-    const seen = /* @__PURE__ */ new Set();
-    const items = [];
-    const collectionSelector = ".pod-item,.video-episode-card,.multip .video-pod__item,.multip.grid .page";
-    for (const row of Array.from(root.querySelectorAll(collectionSelector))) {
-      if (row.closest("[data-bili-blocker-ui]")) continue;
-      if (row.parentElement?.closest(collectionSelector)) continue;
-      const item = readCollectionVideoItem(row);
-      if (!item) continue;
-      items.push(item);
-      seen.add(row);
-    }
-    for (const anchor of anchors) {
-      if (anchor.closest(collectionSelector)) continue;
-      const card = closestAny(anchor, videoCardSelectors);
-      if (!card || seen.has(card)) {
-        continue;
-      }
-      seen.add(card);
-      const owner = fillOwnerFromSpacePage(getOwner(card), root);
-      const title = attr(anchor, "title") || text(first(card, [".bili-video-card__info--tit", ".title", "h3", ".video-name"])) || text(anchor);
-      const bv = parseBv(anchor.href);
-      const insertionEl = first(card, [
-        ".bili-video-card__info--bottom",
-        ".bili-video-card__info--owner",
-        ".bili-video-card__info",
-        ".video-card-info",
-        ".info",
-        ".meta",
-        ".playinfo"
-      ]) || card;
-      items.push({
-        kind: "video",
-        el: card,
-        insertionEl,
-        title: title || void 0,
-        bv: bv || void 0,
-        uid: owner.uid,
-        name: owner.name
-      });
-    }
-    return items;
-  }
-  function collectCommentItems(root = document) {
-    const selector = commentSelectors.join(",");
-    const candidates = queryAllDeep(root, selector);
-    const seen = /* @__PURE__ */ new Set();
-    const items = [];
-    for (const candidate of candidates) {
-      if (!(candidate instanceof HTMLElement) || seen.has(candidate)) {
-        continue;
-      }
-      seen.add(candidate);
-      const searchRoot = candidate.shadowRoot || candidate;
-      const userLink = queryOneDeep(searchRoot, [
-        '#user-name a[href*="space.bilibili.com/"]',
-        'a[href*="space.bilibili.com/"]',
-        ".user-name",
-        ".sub-user-name",
-        ".name"
-      ]);
-      const contentEl = queryOneDeep(searchRoot, [
-        "#contents",
-        ".reply-content",
-        ".text-con",
-        ".text",
-        "bili-rich-text"
-      ]);
-      const content = text(contentEl);
-      const href = attr(userLink, "href") || attr(userLink, "data-usercard-mid") || attr(userLink, "data-user-id") || candidate.outerHTML.slice(0, 500);
-      const uid = parseUid(href);
-      const name = text(userLink) || void 0;
-      if (!content && uid === void 0 && !name) {
-        continue;
-      }
-      items.push({
-        kind: "comment",
-        el: candidate,
-        insertionEl: userLink || candidate,
-        name,
-        uid,
-        content: content || void 0
-      });
-    }
-    return items;
-  }
-  function collectLiveItems(root = document) {
-    const anchors = Array.from(root.querySelectorAll('a[href*="live.bilibili.com/"]'));
-    const seen = /* @__PURE__ */ new Set();
-    const items = [];
-    for (const anchor of anchors) {
-      const roomId = parseRoomId(anchor.href);
-      if (!roomId) {
-        continue;
-      }
-      const card = closestAny(anchor, liveCardSelectors);
-      if (!card || seen.has(card)) {
-        continue;
-      }
-      seen.add(card);
-      const owner = fillOwnerFromSpacePage(getOwner(card), root);
-      const liveTitle = attr(anchor, "title") || text(first(card, [".room-title", ".bili-live-card__info--tit", "h3", ".title"])) || text(anchor);
-      const partition = text(first(card, [".area-name", ".video-card-meta__chip", ".partition"]));
-      items.push({
-        kind: "live",
-        el: card,
-        insertionEl: first(card, [
-          ".bili-live-card__info--bottom",
-          ".bili-live-card__info",
-          ".bili-video-card__info--bottom",
-          ".bili-video-card__info--owner",
-          ".live-card__info",
-          ".room-card-info",
-          ".video-card-info",
-          ".info",
-          ".meta"
-        ]) || card,
-        name: owner.name,
-        uid: owner.uid,
-        liveTitle: liveTitle || void 0,
-        roomId,
-        partition: partition || void 0
-      });
-    }
-    return items;
-  }
-
-  // src/modules/sounds/panel.ts
-  function mountSoundPanel() {
-    const host = document.createElement("section");
-    host.className = "luna-sounds";
-    host.innerHTML = `<style>
-    .luna-sounds{display:flex;flex-direction:column;gap:10px;min-width:0}
-    .luna-sounds h2{font-size:14px!important}.luna-sounds p{line-height:1.5!important}
-    .luna-sound-group{padding:14px;border:2px solid;border-color:var(--atelier-edge) var(--atelier-highlight) var(--atelier-highlight) var(--atelier-edge);background:var(--atelier-surface);min-width:0}
-    .luna-sound-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0}
-    .luna-sound-row label{display:flex;align-items:center;gap:8px;min-width:0}
-    .luna-sound-row input[type=range]{width:clamp(100px,25vw,240px);max-width:100%;accent-color:var(--atelier-accent)}
-    .luna-sound-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--atelier-accent)}
-    .luna-sound-row output{min-width:4ch;font-variant-numeric:tabular-nums}
-    .luna-sounds select{max-width:100%;min-width:0;padding:5px;background:var(--atelier-field);border:2px inset var(--atelier-edge)}
-    .luna-sounds summary{cursor:pointer;padding:7px 0}.luna-sounds [role=status]{border:1px solid var(--atelier-edge);padding:10px;background:var(--atelier-panel)}
-  </style><h2>\u8BBE\u7F6E \u203A \u97F3\u6548</h2><p>\u8F7B\u67D4\u7684 Windows XP \u4EA4\u4E92\u58F0\u97F3\u3002\u901A\u77E5\u548C\u64CD\u4F5C\u7ED3\u679C\u59CB\u7EC8\u9759\u97F3\uFF1B\u97F3\u91CF\u53EA\u5F71\u54CD\u6309\u94AE\u3001\u5BFC\u822A\u548C\u7A97\u53E3\uFF0C\u504F\u597D\u4FDD\u5B58\u5728\u672C\u673A\u3002</p>`;
-    let prefs = readSoundPreferences();
-    const events = new AbortController();
-    const controls = [];
-    const status2 = document.createElement("p");
-    status2.setAttribute("role", "status");
-    status2.setAttribute("aria-live", "polite");
-    const refresh = () => {
-      prefs = readSoundPreferences();
-      controls.forEach((update) => update());
-      status2.textContent = soundPlaybackStatus();
-    };
-    const save = () => writeSoundPreferences(prefs);
-    const button3 = (label, run) => {
-      const node = document.createElement("button");
-      node.type = "button";
-      node.className = "luna-button";
-      node.textContent = label;
-      node.addEventListener("click", () => {
-        run();
-        status2.textContent = soundPlaybackStatus();
-      });
-      return node;
-    };
-    function row(name, category) {
-      const section = document.createElement("section");
-      section.className = "luna-sound-group";
-      const values = () => category ? prefs.categories[category] : prefs;
-      const line2 = document.createElement("div");
-      line2.className = "luna-sound-row";
-      const label = document.createElement("label"), enabled = document.createElement("input");
-      enabled.type = "checkbox";
-      enabled.setAttribute("aria-label", name + "\u5F00\u5173");
-      label.append(enabled, document.createTextNode(name));
-      line2.append(label);
-      enabled.addEventListener("change", () => {
-        values().enabled = enabled.checked;
-        save();
-        sound("select");
-      });
-      const volumeLabel = document.createElement("label");
-      volumeLabel.textContent = "\u97F3\u91CF";
-      const volume2 = document.createElement("input");
-      volume2.type = "range";
-      volume2.min = "0";
-      volume2.max = "100";
-      volume2.step = "1";
-      volume2.setAttribute("aria-label", name + "\u97F3\u91CF");
-      const output = document.createElement("output");
-      volume2.addEventListener("input", () => {
-        values().volume = Number(volume2.value) / 100;
-        output.value = volume2.value + "%";
-        save();
-      });
-      volume2.addEventListener("change", () => sound("select"));
-      volumeLabel.append(volume2, output);
-      line2.append(volumeLabel);
-      if (category) line2.append(button3("\u8BD5\u542C" + name, () => previewSound(catalog_default.categories.find((item) => item.id === category).sample, category)));
-      controls.push(() => {
-        enabled.checked = values().enabled;
-        volume2.value = String(Math.round(values().volume * 100));
-        output.value = volume2.value + "%";
-      });
-      section.append(line2);
-      host.append(section);
-    }
-    row("\u603B\u97F3\u6548");
-    for (const category of catalog_default.categories) row(category.name, category.id);
-    const details = document.createElement("details"), summary = document.createElement("summary");
-    summary.textContent = "\u5168\u90E8 26 \u79CD\u539F\u7248\u58F0\u97F3\u8BD5\u542C";
-    details.append(summary);
-    summary.addEventListener("click", () => sound("menu"));
-    const line = document.createElement("div");
-    line.className = "luna-sound-row";
-    const select = document.createElement("select");
-    select.setAttribute("aria-label", "\u8BD5\u542C\u58F0\u97F3");
-    for (const clip of catalog_default.sounds) {
-      const option = document.createElement("option");
-      option.value = clip.id;
-      option.textContent = clip.name + (clip.previewOnly ? "\uFF08\u4EC5\u8BD5\u542C\uFF09" : "") + ` \xB7 ${(clip.durationMs / 1e3).toFixed(2)} \u79D2`;
-      select.append(option);
-    }
-    select.addEventListener("change", () => {
-      stopSoundPreview();
-      sound("select");
-    });
-    line.append(select, button3("\u8BD5\u542C\u6240\u9009\u58F0\u97F3", () => {
-      const cue = Object.values(catalog_default.cues).find((cue2) => cue2.sound === select.value);
-      previewSound(select.value, cue?.category || "navigation");
-    }), button3("\u505C\u6B62\u8BD5\u542C", () => {
-      stopSoundPreview();
-      sound("cancel");
-    }));
-    const hint = document.createElement("p");
-    hint.textContent = "\u901A\u77E5\u3001\u64CD\u4F5C\u7ED3\u679C\u4EE5\u53CA\u957F\u5F00\u673A\u3001\u5173\u673A\u3001\u767B\u5F55\u548C\u786C\u4EF6\u63D0\u793A\u6837\u672C\u4EC5\u4F9B\u624B\u52A8\u8BD5\u542C\uFF0C\u4E0D\u4F1A\u81EA\u52A8\u54CD\u8D77\u3002\u672A\u5206\u914D\u7ED9\u65E5\u5E38\u52A8\u4F5C\u7684\u6837\u672C\u4F7F\u7528\u201C\u5BFC\u822A\u4E0E\u7A97\u53E3\u201D\u97F3\u91CF\u3002";
-    details.append(line, hint);
-    host.append(details);
-    const quiet = document.createElement("p");
-    quiet.textContent = "\u5F53\u524D\u9875\u6216\u811A\u672C\u8986\u76D6\u7684 B \u7AD9\u6807\u7B7E\u64AD\u653E\u5A92\u4F53\u65F6\uFF08\u5305\u62EC\u9759\u97F3\u89C6\u9891\uFF09\uFF0C\u754C\u9762\u97F3\u6548\u6682\u65F6\u5B89\u9759\uFF1B\u5207\u5230\u540E\u53F0\u3001\u5173\u95ED\u7A97\u53E3\u6216\u53D7\u6D4F\u89C8\u5668\u9650\u5236\u7684\u58F0\u97F3\u4E0D\u4F1A\u8865\u64AD\u3002\u8BD5\u542C\u4E5F\u9075\u5B88\u5F00\u5173\u4E0E\u97F3\u91CF\u3002";
-    host.append(quiet, status2);
-    window.addEventListener(soundPreferencesChanged, refresh, { signal: events.signal });
-    refresh();
-    return { host, dispose() {
-      events.abort();
-      stopSoundPreview();
-      host.remove();
-    } };
-  }
-
-  // src/ui/assets/luna-olive/atelier-icon.png
-  var atelier_icon_default = readCachedResourceUrl("atelier_atelier_icon_png");
-
-  // src/ui/assets/luna-olive/nav-users.png
-  var nav_users_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAh1SURBVFhH7VZbbFxXFV3zHs94ZjwTOx6/YydOnTRxE2Pixk3btG6TWi2QRwnQqOXRSKiqwhcfCImPUoR4fEBVQPCBCg0qEWoa0ZQ0jxKalLyITZImsRPjOI7tmfGMPe/XvXPv3Ms617Fxqn4ghAQf3dKaM3Nn77vX3mfvfQ4+kf+1mO6s/xX5+R68XB1csa2h/f41ZTmLXGIqe/Pm8HtnrhV+tP8MPqRKkdAN5TvycQT8xPNLly7dVltba1FV1TQxMTGVz+dP8/lrRI5QibvkF3vw+rqeJ59tXdsPi9OHspSGko8hN3MD1y7/tbDveOiFtwfwDlVThGYYUSx31nl5tKGh4eyuXbs+s2PHjuYNGzY0tre3N65cuXK13+/fmkgkviBJ0m3qTRGChBGNiLzjns699Y3t4id0pQCbawngqEI+E6OTkm2pK91/6VbpQrqAaarIhiJlMYGvtba2Hujr63PSGaxWq4G6ujo0NzfD6XTCbDb7w+HwFkVRBqg/Q8g//Qr8FXbr74N1zQ6TrpBWAWabExaHByaTBbHoFCRVg5ybtapyrurybfyddgmiTCwQaG1qajrY1dXl1DSNhib4fD4EAgE4HA4MDAzg4sWLiEQi8Hq9FcXMTGupjPO0iz/ZhS+2NdV/fjoaoZ2Z4WsITQwhdeMEpNETqMiMwyonUTTZIRUSnpNDuEA7kUFRD7CKD5vN9tvly5f7SqUSmGLY7XZw33H+/HmMXvkQXflpbPXb4a+04kK5jLdslu6cXO6kaZhF9MiW3l6U+DwcjXEtoWNVEzxObgcDAZ+DQbWlM0gl4wEg2UQ7HxEXvgWBVhbbg7quQxAQEYto1xZuYXuLG90bHHAHGuEJuuGpdmK3qmDjudv2Vz9I9F0IYXBZXV0bDWG32bCsvm7OqRC+bwEkEahwoqHKaeM/JIEKQ4fCnOF5phWyLBvIZrNYVzGNX7+4Ars/V4+1jwfRdn8tahqdcNrKsNhNCLptaHJhFW2DqqpZobIemTlB5C7wfVBYFwL8PRrmXsz5XBAz090loi8Wi0b6Q6EQvrTWg2yhzHQyK5IKNS9BLpSQySisA24RbGAiRDRLipJs/ljn844FiZIgoGB0OpOnTYagwpyYWel+4VigUCgYGWissCCdVhCLyYbDcLjIVcbsbAm5nIpUqgRNNWaIfSiUughZOBXOuAqHC7hDht8j8TiGp1TRgqIDjAIUYqbj7DwBkYUacxH5vGoQEEilFCSTc9+TybksJLgmqEb7ciqPq+OxGB3RochEcRGM6ElAKeHKRFg9M4IR2kQJMcwMMbPtjiwmMJ7V7jguGatwmMvd/TsUySOcB72i8Oq7OHhpMhyd2wbhcBHkORKhRAK/ORu/zSEkhtiksBPOhYg5EGH1P8Ped4sHoh6cagn1ds6vksZt1PhuzfheLGpIksjViZz05zROUn2QGAsG5FzAo/dXsn0VVnyJRSlQZA2Mp1LYNzCe/NlR/Th1zxGXCVEHhggCBTod48x/jNkw2uPqrAwHe9dnNqFMx5JUvgMN18fSOJXUhiJiED2AvHe795vl3u4XhtMOhy9+C2XaZRh1nNkc4b6/NTODV/6mXSnNQpwlHxBiCBlTUIggIA6GEEkMkkQVx6xH0VE5wX3ucJphYxuL6AWBick8Ligd0mlJOYWHJGfPcz0/3PnUzs7ezl7HTL4Fn9ryK8TyWST5gnjVemRWfx1/sEpoe6KlIWKOWNUh9RB9iVZcIDB/Gore9Jq8nZ2mpt3fbqy/d+v60V+iYfJPqGBHaJoOyeSFbfM3cKZ6p5i2iJgP4Yk90wgGPBwyAdw8O4XvbfsJW5cRCdJc9+5/Bu3dQeh2HeORcRx+/fDp0hulPfR1i2CR/Oss0C3db1QsXfH0m/0PPdW7/r4OXLbdi84XvwtPTz9cjz6H6q9+HzV9/bg9kcSn71mFemsPjh1won0jZ71NQ2J2Fk/f91l47YDHAbzy3kswNSjw+r3IlXLQrTo0j9YcjUbNCOEqfWYJbWEqVbpq3n94de8ar8MLi27FIz1rcPjcOIKPbUawbzMCbX5U8qZg5fjhEOIMt6G7fiNOHqxFXsljJDlilLZ465nJSzgSOoLq2mrDuVyWUeARXdVYBd8m37NUWUt4iLmxaNnw5str6lZ3mlROOLatcGChg1XNbTh69AZcLiwgNqUYOmxtOOCCnmhBWk7DwdCPjbxvEPjO4W9h0wObkCwmDQIGlBw7RIG7xe1BKx6nWq3wbxBwOzxftvLsVmTdcF7kW6SsjprKAMKjOsbGZuecx9I8Eb2QOEZkjiGlLFqtaDiqaajBoUt/xA/eeQnuBjtSUordkDHIJSUex9TLyTTk9jB9DfysIWwGgQq7qynNO1yWEDoKy6PATi2kgc5lK7F/303OBwWnTk3C71hiEFBLOjISbQpZxJIxFLQCBqN/wbv/+B1sPhsnZcJAvBA30p/mFU1kIjXLGxn50C2rBRajC7wPHtfrfLWotLuxxB1gEXm41ybwYgMzyzRFNhWtU7hxqYT2ynVQOGRmc3Fcj1xW46Efj+rVJyRr0Oq1Vlk9lTWVbm+T11XW5jpNY8vIqoz8VF6SIlKmfLU8hmEc419vE1cMAvaeA8M+V3WH31UFl90FHwm4HW7YrXZYzcadBYMsLJvFBgt3LRQdzOViZyN67MiQXhi/zr9FW4moKglRXGIVQ22+y4QIRqJOxVVumBC35Jn5OdBiqtu+1+RqfpjHnNil+ecLosvRPORoWs9ei6CUEMNklpggRgkx3URfi7QKe7GK43rxezgdjGNYkODmGoeZOq8g2DYSy4hqQrzgoyIiEFGKQhdX63mI3zx17r7v/7uymKFIlyDy0dTNixjZ4iouIhUQhP4jp5/I/5EA/wThuHXkPk14XgAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/luna-olive/nav-control-panel.png
-  var nav_control_panel_default = "data:image/png;base64,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";
-
-  // src/ui/assets/luna-olive/nav-recent-documents.png
-  var nav_recent_documents_default = "data:image/png;base64,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";
-
-  // src/ui/assets/luna-olive/nav-computer.png
-  var nav_computer_default = "data:image/png;base64,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";
-
-  // src/ui/atelier-assets.ts
-  var atelierIcons = { tv: atelier_icon_default || luna.app, following: nav_users_default, settings: nav_control_panel_default, viewed: nav_recent_documents_default, data: nav_computer_default, video: luna.history };
-
-  // src/ui/window-drag.ts
-  function enableWindowDrag(panel, caption, signal) {
-    const positions = {};
-    let drag;
-    const mode = () => panel.dataset.minimized === "true" ? "minimized" : "normal";
-    const maximized = () => panel.dataset.maximized === "true" && mode() === "normal";
-    const place = (position) => {
-      const rect = panel.getBoundingClientRect();
-      position.x = Math.max(0, Math.min(Math.max(0, innerWidth - rect.width), position.x));
-      position.y = Math.max(0, Math.min(Math.max(0, innerHeight - rect.height), position.y));
-      Object.assign(panel.style, { left: `${position.x}px`, top: `${position.y}px`, right: "auto", bottom: "auto", margin: "0" });
-    };
-    const update = () => {
-      drag = void 0;
-      for (const property of ["left", "top", "right", "bottom", "margin"]) panel.style.removeProperty(property);
-      if (!maximized() && positions[mode()]) place(positions[mode()]);
-      caption.style.cursor = maximized() ? "default" : "move";
-    };
-    caption.style.touchAction = "none";
-    caption.querySelectorAll("img").forEach((img) => {
-      img.draggable = false;
-    });
-    caption.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0 || maximized() || event.target.closest("button")) return;
-      const rect = panel.getBoundingClientRect();
-      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, origin: { x: rect.left, y: rect.top }, moved: false };
-      caption.setPointerCapture(event.pointerId);
-      event.preventDefault();
-    }, { signal });
-    caption.addEventListener("pointermove", (event) => {
-      if (!drag || drag.id !== event.pointerId) return;
-      if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 4) drag.moved = true;
-      if (!drag.moved) return;
-      const position = { x: drag.origin.x + event.clientX - drag.x, y: drag.origin.y + event.clientY - drag.y };
-      place(position);
-      positions[mode()] = position;
-    }, { signal });
-    const release = (event) => {
-      if (!drag || drag.id !== event.pointerId) return;
-      if (event.type === "pointercancel" && drag.moved) {
-        positions[mode()] = drag.origin;
-        place(drag.origin);
-      }
-      drag = void 0;
-    };
-    for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) caption.addEventListener(event, release, { signal });
-    window.addEventListener("resize", update, { signal });
-    update();
-    return update;
-  }
-
-  // src/modules/blocker/panel.ts
-  var categories = [
-    { id: "user", label: "\u7528\u6237", description: "\u6309\u7528\u6237\u8EAB\u4EFD\u8FC7\u6EE4\u5185\u5BB9\uFF0C\u767D\u540D\u5355\u4F18\u5148\u4FDD\u7559\u3002", keys: ["precise_uid", "precise_uid_white", "name", "precise_name", "nameCanonical"] },
-    { id: "video", label: "\u89C6\u9891", description: "\u6309\u6807\u9898\u8FC7\u6EE4\u4E0D\u60F3\u770B\u5230\u7684\u89C6\u9891", keys: ["title", "titleCanonical"] },
-    { id: "comment", label: "\u8BC4\u8BBA", description: "\u6309\u8BC4\u8BBA\u6B63\u6587\u4E2D\u7684\u5173\u952E\u8BCD\u8FC7\u6EE4\u5185\u5BB9\u3002", keys: ["commentOn", "commentOnCanonical"] },
-    { id: "dynamic", label: "\u52A8\u6001", description: "\u6309\u52A8\u6001\u6B63\u6587\u4E2D\u7684\u5173\u952E\u8BCD\u8FC7\u6EE4\u5185\u5BB9\u3002", keys: ["dynamic", "dynamicCanonical"] },
-    { id: "live", label: "\u76F4\u64AD", description: "\u6309\u76F4\u64AD\u6807\u9898\u3001\u76F4\u64AD\u95F4\u6216\u5206\u533A\u8FC7\u6EE4\u5185\u5BB9\u3002", keys: ["liveTitle", "liveTitleCanonical", "precise_liveRoomId", "precise_partition"] }
-  ];
-  var modeLabels = {
-    precise_uid: "\u7528\u6237 UID",
-    precise_uid_white: "UID \u767D\u540D\u5355",
-    name: "\u6A21\u7CCA\u7528\u6237\u540D",
-    precise_name: "\u7CBE\u786E\u7528\u6237\u540D",
-    nameCanonical: "\u6B63\u5219\u7528\u6237\u540D",
-    title: "\u6A21\u7CCA\u5339\u914D",
-    titleCanonical: "\u6B63\u5219\u5339\u914D",
-    commentOn: "\u6A21\u7CCA\u5339\u914D",
-    commentOnCanonical: "\u6B63\u5219\u5339\u914D",
-    dynamic: "\u6A21\u7CCA\u5339\u914D",
-    dynamicCanonical: "\u6B63\u5219\u5339\u914D",
-    liveTitle: "\u6A21\u7CCA\u6807\u9898",
-    liveTitleCanonical: "\u6B63\u5219\u6807\u9898",
-    precise_liveRoomId: "\u76F4\u64AD\u95F4 ID",
-    precise_partition: "\u76F4\u64AD\u5206\u533A"
-  };
-  var activePanel;
-  function toggleBlockerHistory(onRulesChanged, renderHistory) {
-    if (!activePanel?.toggleHistory()) openBlockerPanel(onRulesChanged, renderHistory, "history");
-  }
-  function element(tag, className = "", text2 = "") {
-    const node = document.createElement(tag);
-    node.className = className;
-    node.textContent = text2;
-    return node;
-  }
-  function icon(src, size = 28) {
-    const image = element("img");
-    image.src = src;
-    image.alt = "";
-    image.width = image.height = size;
-    return image;
-  }
-  function button2(text2, action, className = "luna-button") {
-    const node = element("button", className, text2);
-    node.type = "button";
-    node.addEventListener("click", () => {
-      sound("click");
-      action();
-    });
-    return node;
-  }
-  function download(data, stem) {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = element("a");
-    link.href = url;
-    link.download = stem + "-" + (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) + ".json";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1e3);
-  }
-  function openBlockerPanel(onRulesChanged, renderHistory, initialSection = "video") {
-    if (activePanel && document.getElementById(atelierPanelId)) {
-      activePanel.show(initialSection);
-      return;
-    }
-    ensureLunaTheme();
-    const previousFocus = document.activeElement;
-    const events = new AbortController();
-    const panel = element("section");
-    panel.id = atelierPanelId;
-    panel.setAttribute("data-bili-blocker-ui", "");
-    panel.setAttribute("role", "dialog");
-    panel.setAttribute("aria-labelledby", "bili-atelier-title");
-    const snapshot = readRuleSnapshot();
-    const fields2 = /* @__PURE__ */ new Map();
-    const saved = /* @__PURE__ */ new Map();
-    let section = initialSection;
-    let selectedKey = "title";
-    let syncPanel;
-    let soundPanel;
-    let followingPanel;
-    const cleanupPixels = observePixelLabels(panel);
-    const navButtons = /* @__PURE__ */ new Map();
-    const isDirty = () => [...fields2].some(([key2, field]) => field.value !== saved.get(key2));
-    const status2 = element("span", "luna-status");
-    status2.setAttribute("role", "status");
-    status2.setAttribute("aria-live", "polite");
-    function updateStatus(message) {
-      const count = [...fields2].reduce((sum, [key2, field]) => sum + parseRuleText(field.value, ruleDefinitions.find((rule) => rule.key === key2)?.integer).length, 0);
-      status2.textContent = message || count + " \u6761\u89C4\u5219 \xB7 " + (isDirty() ? "\u6709\u672A\u4FDD\u5B58\u7684\u4FEE\u6539" : "\u5DF2\u4FDD\u5B58");
-      status2.dataset.dirty = String(isDirty());
-      status2.hidden = !isDirty() && !categories.some((category) => category.id === section);
-    }
-    for (const rule of ruleDefinitions) {
-      const field = element("textarea", "luna-editor");
-      field.id = "bili-rule-" + rule.key;
-      field.value = formatRuleText(snapshot[rule.key]);
-      field.spellcheck = false;
-      field.setAttribute("aria-label", rule.label);
-      field.addEventListener("input", () => updateStatus());
-      fields2.set(rule.key, field);
-      saved.set(rule.key, field.value);
-    }
-    let closing = false;
-    async function close() {
-      if (closing) return;
-      closing = true;
-      const feedback = soundTask();
-      if ((isDirty() || syncPanel?.isDirty()) && !await atelierConfirm("\u89C4\u5219\u6216\u540C\u6B65\u8BBE\u7F6E\u5C1A\u672A\u4FDD\u5B58\uFF0C\u786E\u5B9A\u653E\u5F03\u4FEE\u6539\u5E76\u5173\u95ED\u5417\uFF1F")) {
-        closing = false;
-        feedback.finish("cancel");
-        return;
-      }
-      events.abort();
-      syncPanel?.dispose();
-      soundPanel?.dispose();
-      followingPanel?.dispose();
-      cleanupPixels();
-      panel.remove();
-      activePanel = void 0;
-      if (previousFocus?.isConnected) previousFocus.focus();
-      feedback.finish("close");
-    }
-    function syncSavedRules(discardDrafts = false) {
-      const current = readRuleSnapshot();
-      for (const rule of ruleDefinitions) {
-        const field = fields2.get(rule.key);
-        if (discardDrafts || field.value === saved.get(rule.key)) {
-          field.value = formatRuleText(current[rule.key]);
-          saved.set(rule.key, field.value);
-        }
-      }
-      updateStatus();
-    }
-    function save() {
-      const changed = isDirty();
-      const latest = readRuleSnapshot();
-      for (const rule of ruleDefinitions) {
-        const field = fields2.get(rule.key);
-        if (field.value === saved.get(rule.key)) continue;
-        let next = parseRuleText(field.value, rule.integer);
-        if (rule.key === "precise_uid" || rule.key === "precise_name") {
-          const identity = (value) => String(value).trim().toLowerCase();
-          const baseline = new Set(parseRuleText(saved.get(rule.key), rule.integer).map(identity));
-          const draft = new Set(next.map(identity));
-          const current = latest[rule.key].filter((value) => !baseline.has(identity(value)) || draft.has(identity(value)));
-          const present = new Set(current.map(identity));
-          next = current.concat(next.filter((value) => !baseline.has(identity(value)) && !present.has(identity(value))));
-        }
-        writeRuleList(rule.key, next);
-      }
-      syncSavedRules(true);
-      onRulesChanged();
-      showInfoLog("\u5DF2\u4FDD\u5B58\u5C4F\u853D\u89C4\u5219", "success");
-      if (changed) sound("save");
-    }
-    const caption = element("header", "luna-caption");
-    const title = element("h1", "", "Bili Atelier");
-    title.id = "bili-atelier-title";
-    const captionActions = element("div", "luna-caption-actions");
-    function setCaptionImages(node, name) {
-      for (const state of ["normal", "hover", "pressed"])
-        node.style.setProperty("--" + state, 'url("' + luna[name + "_" + state] + '")');
-    }
-    function captionButton(name, label, action) {
-      const node = button2("", action, "luna-caption-button");
-      node.title = label;
-      node.setAttribute("aria-label", label);
-      setCaptionImages(node, name);
-      captionActions.appendChild(node);
-      return node;
-    }
-    const minimize = captionButton("minimize", "\u6700\u5C0F\u5316", () => {
-      const minimized = panel.dataset.minimized !== "true";
-      if (minimized) syncPanel?.hideSecrets();
-      panel.dataset.minimized = String(minimized);
-      updateWindowPosition();
-      minimize.title = minimized ? "\u5C55\u5F00\u7A97\u53E3" : "\u6700\u5C0F\u5316";
-      minimize.setAttribute("aria-label", minimize.title);
-      sound(minimized ? "minimize" : "restore");
-    });
-    const maximize = captionButton("maximize", "\u6700\u5927\u5316", () => {
-      panel.dataset.minimized = "false";
-      minimize.title = "\u6700\u5C0F\u5316";
-      minimize.setAttribute("aria-label", minimize.title);
-      const maximized = panel.dataset.maximized !== "true";
-      panel.dataset.maximized = String(maximized);
-      updateWindowPosition();
-      maximize.title = maximized ? "\u8FD8\u539F\u7A97\u53E3" : "\u6700\u5927\u5316";
-      maximize.setAttribute("aria-label", maximize.title);
-      setCaptionImages(maximize, maximized ? "restore" : "maximize");
-      sound(maximized ? "maximize" : "restore");
-    });
-    captionButton("close", "\u5173\u95ED\u7A97\u53E3", close);
-    caption.append(icon(atelierIcons.tv, 24), title, captionActions);
-    const updateWindowPosition = enableWindowDrag(panel, caption, events.signal);
-    const layout = element("div", "luna-layout");
-    const sidebar = element("aside", "luna-sidebar");
-    const nav = element("nav", "luna-nav");
-    nav.setAttribute("aria-label", "Atelier \u529F\u80FD\u76EE\u5F55");
-    function addNav(parent, id, label) {
-      const node = button2("", () => show(id, true), "luna-nav-button");
-      node.append(icon(atelierIcons[areaFor(id)], 24), document.createTextNode(label));
-      navButtons.set(id, node);
-      parent.appendChild(node);
-    }
-    atelierAreas.forEach((area) => addNav(nav, area.id, area.label));
-    sidebar.append(element("div", "luna-sidebar-title", "\u5DE5\u4F5C\u53F0"), nav);
-    const main = element("div", "luna-main");
-    const breadcrumb = element("div", "luna-breadcrumb");
-    const sectionTabs = element("nav", "luna-section-tabs");
-    sectionTabs.setAttribute("aria-label", "\u5F53\u524D\u680F\u76EE\u5B50\u9875\u9762");
-    const content = element("main", "luna-content");
-    const footer = element("footer", "luna-footer");
-    const saveRules = button2("\u4FDD\u5B58\u89C4\u5219", save, "luna-button luna-button-primary");
-    footer.append(status2, saveRules, button2("\u5173\u95ED", close));
-    main.append(breadcrumb, sectionTabs, content, footer);
-    layout.append(sidebar, main);
-    panel.append(caption, layout);
-    function showRules() {
-      const category = categories.find((item) => item.id === section);
-      if (!category.keys.includes(selectedKey)) selectedKey = category.keys[0];
-      content.append(element("h2", "", category.label + "\u5C4F\u853D\u89C4\u5219"), element("p", "luna-description", category.description));
-      const tabs = element("div", "luna-rule-tabs");
-      tabs.setAttribute("role", "tablist");
-      tabs.setAttribute("aria-label", category.label + "\u5339\u914D\u65B9\u5F0F");
-      const editorHost = element("div");
-      editorHost.setAttribute("role", "tabpanel");
-      editorHost.id = "bili-atelier-rule-editor";
-      const modeButtons = /* @__PURE__ */ new Map();
-      function selectMode(key2, user = false) {
-        if (user && selectedKey !== key2) sound("select");
-        selectedKey = key2;
-        for (const [mode, node] of modeButtons) {
-          node.setAttribute("aria-selected", String(mode === key2));
-          node.querySelector("img").src = mode === key2 ? luna.radio_checked : luna.radio_normal;
-          node.tabIndex = mode === key2 ? 0 : -1;
-        }
-        editorHost.setAttribute("aria-labelledby", "bili-atelier-mode-" + key2);
-        editorHost.replaceChildren(fields2.get(key2));
-      }
-      for (const key2 of category.keys) {
-        const tab = button2(modeLabels[key2], () => selectMode(key2, true), "luna-rule-tab");
-        tab.prepend(icon(luna.radio_normal, 20));
-        tab.id = "bili-atelier-mode-" + key2;
-        tab.setAttribute("role", "tab");
-        tab.setAttribute("aria-controls", editorHost.id);
-        tab.addEventListener("keydown", (event) => {
-          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
-          event.preventDefault();
-          const index = category.keys.indexOf(key2);
-          const next = event.key === "Home" ? 0 : event.key === "End" ? category.keys.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + category.keys.length) % category.keys.length;
-          selectMode(category.keys[next], true);
-          modeButtons.get(category.keys[next]).focus();
-        });
-        modeButtons.set(key2, tab);
-        tabs.appendChild(tab);
-      }
-      selectMode(selectedKey);
-      content.append(tabs, editorHost, element("p", "luna-hint", "\u6BCF\u884C\u4E00\u6761\u89C4\u5219"));
-    }
-    function dataGroup(title2, hint, actions) {
-      const group = element("section", "luna-data-group");
-      const row = element("div", "luna-button-row");
-      row.append(...actions);
-      group.append(element("h3", "", title2), element("p", "luna-hint", hint), row);
-      return group;
-    }
-    function downloadViewed() {
-      const data = exportViewedDataPackage();
-      download(data, "bili-atelier-viewed");
-      showInfoLog("\u5DF2\u751F\u6210 " + data.viewed.items.length + " \u6761\u5DF2\u770B\u8BB0\u5F55\u7684\u4E0B\u8F7D\u6587\u4EF6", "success");
-      sound("success");
-    }
-    async function importText(text2, mode) {
-      if (isDirty() && !await atelierConfirm("\u5BFC\u5165\u4F1A\u91CD\u65B0\u8F7D\u5165\u89C4\u5219\u5E76\u653E\u5F03\u5C1A\u672A\u4FDD\u5B58\u7684\u4FEE\u6539\u3002\u7EE7\u7EED\u5417\uFF1F")) return false;
-      if (mode === "overwrite" && !await atelierConfirm("\u8986\u76D6\u5BFC\u5165\u4F1A\u66FF\u6362\u5DF2\u770B\u8BB0\u5F55\u548C\u5BF9\u5E94\u5C4F\u853D\u89C4\u5219\u3002\u786E\u5B9A\u7EE7\u7EED\u5417\uFF1F")) return false;
-      if (!panel.isConnected) return false;
-      const result = importAtelierDataInput(JSON.parse(text2), mode);
-      syncSavedRules(true);
-      onRulesChanged();
-      updateStatus(result.res);
-      showInfoLog(result.res + "\uFF1B\u5DF2\u770B\u72B6\u6001\u53EF\u80FD\u9700\u8981\u5237\u65B0\u9875\u9762\u540E\u5B8C\u5168\u751F\u6548\u3002", "success", 5200);
-      return true;
-    }
-    async function pasteImport(mode) {
-      const feedback = soundTask(void 0, panel);
-      const text2 = await atelierPrompt("\u7C98\u8D34\u7EDF\u4E00\u6570\u636E JSON\uFF0C\u4E5F\u517C\u5BB9\u65E7\u5C4F\u853D/\u5DF2\u770B JSON");
-      if (!text2) {
-        feedback.finish("cancel");
-        return;
-      }
-      try {
-        feedback.finish(await importText(text2, mode) ? "success" : "cancel");
-      } catch (error) {
-        void atelierAlert("\u5BFC\u5165\u5931\u8D25\uFF1A" + String(error));
-        feedback.finish("error");
-      }
-    }
-    function fileImport(label, mode) {
-      const input = element("input");
-      input.type = "file";
-      input.accept = ".txt,.json,application/json,text/plain";
-      input.hidden = true;
-      input.addEventListener("change", async () => {
-        const feedback = soundTask("start", panel);
-        const file = input.files?.[0];
-        input.value = "";
-        if (!file) return;
-        try {
-          const text2 = await file.text();
-          if (panel.isConnected) feedback.finish(await importText(text2, mode) ? "success" : "cancel");
-        } catch (error) {
-          void atelierAlert("\u5BFC\u5165\u5931\u8D25\uFF1A" + String(error));
-          feedback.finish("error");
-        }
-      });
-      const wrapper = element("span");
-      wrapper.append(button2(label, () => input.click()), input);
-      return wrapper;
-    }
-    function showData() {
-      content.append(element("h2", "", "\u6570\u636E\u7BA1\u7406"), element("p", "luna-description", "\u5907\u4EFD\u4F60\u7684\u5DF2\u770B\u8BB0\u5F55\u548C\u5C4F\u853D\u89C4\u5219\uFF0C\u4E5F\u53EF\u5BFC\u5165\u5230\u624B\u673A\u3002"));
-      content.append(dataGroup("\u5BFC\u51FA\u4E0E\u624B\u673A\u5BFC\u5165", "\u5BFC\u51FA\u5F53\u524D\u5DF2\u4FDD\u5B58\u7684\u6570\u636E\uFF1B\u4FEE\u6539\u89C4\u5219\u540E\u8BF7\u5148\u4FDD\u5B58\u3002", [
-        button2("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
-        button2("\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", () => {
-          download(exportAtelierDataPackage(), "bili-atelier-data");
-          showInfoLog("\u5DF2\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u542B\u5DF2\u770B\u548C\u5C4F\u853D\u89C4\u5219\uFF09", "success");
-          sound("success");
-        }),
-        button2("\u5BFC\u51FA\u7EDF\u4E00 JSON", async () => {
-          const feedback = soundTask(void 0, panel);
-          const json = JSON.stringify(exportAtelierDataPackage(), null, 2);
-          let copied = false;
-          try {
-            if (navigator.clipboard?.writeText) {
-              await navigator.clipboard.writeText(json);
-              copied = true;
-            }
-          } catch {
-          }
-          await atelierPrompt(copied ? "\u7EDF\u4E00\u6570\u636E JSON\uFF08\u5DF2\u590D\u5236\u5230\u526A\u8D34\u677F\uFF09" : "\u7EDF\u4E00\u6570\u636E JSON\uFF08\u8BF7\u624B\u52A8\u590D\u5236\uFF09", json, true);
-          showInfoLog("\u5DF2\u5BFC\u51FA\u7EDF\u4E00 JSON", "success");
-          feedback.finish("success");
-        })
-      ]));
-      content.append(dataGroup("\u8FFD\u52A0\u5BFC\u5165", "\u5408\u5E76\u5E76\u53BB\u91CD\uFF0C\u4FDD\u7559\u5DF2\u6709\u8BB0\u5F55\u3002\u517C\u5BB9\u65E7\u5C4F\u853D / \u5DF2\u770B JSON\u3002", [
-        button2("\u8FFD\u52A0\u5BFC\u5165\u7EDF\u4E00 JSON", () => pasteImport("append")),
-        fileImport("\u4ECE\u6587\u4EF6\u8FFD\u52A0\u5BFC\u5165", "append")
-      ]));
-      content.append(dataGroup("\u8986\u76D6\u5BFC\u5165", "\u66FF\u6362\u5DF2\u770B\u8BB0\u5F55\u53CA\u5BFC\u5165\u6587\u4EF6\u4E2D\u7684\u89C4\u5219\u3002\u64CD\u4F5C\u524D\u4F1A\u518D\u6B21\u786E\u8BA4\u3002", [
-        button2("\u8986\u76D6\u5BFC\u5165\u7EDF\u4E00 JSON", () => pasteImport("overwrite")),
-        fileImport("\u4ECE\u6587\u4EF6\u8986\u76D6\u5BFC\u5165", "overwrite")
-      ]));
-    }
-    function showViewed() {
-      const snapshot2 = readViewedStorage();
-      content.append(
-        element("h2", "", "\u5DF2\u770B\u6807\u8BB0"),
-        element("p", "luna-description", "\u7EE7\u7EED\u4F7F\u7528\u89C6\u9891\u5361\u7247\u4E0A\u7684\u5DF2\u770B\u6309\u94AE\u7BA1\u7406\u89C2\u770B\u72B6\u6001\u3002"),
-        element("p", "", "\u5DF2\u4FDD\u5B58 " + snapshot2.items.length + " \u6761\u5DF2\u770B\u8BB0\u5F55")
-      );
-      const list = element("pre", "luna-viewed-list", snapshot2.items.length ? snapshot2.items.slice(0, 100).join("\n") : "\u8FD8\u6CA1\u6709\u5DF2\u770B\u8BB0\u5F55\u3002\u6807\u8BB0\u89C6\u9891\u540E\uFF0C\u8BB0\u5F55\u4F1A\u663E\u793A\u5728\u8FD9\u91CC\u3002");
-      list.setAttribute("aria-label", "\u5DF2\u770B\u89C6\u9891 ID");
-      content.append(list);
-      if (snapshot2.items.length > 100) content.append(element("p", "luna-hint", "\u6B64\u5904\u9884\u89C8\u524D 100 \u6761\uFF1B\u5BFC\u51FA\u6587\u4EF6\u5305\u542B\u5168\u90E8\u8BB0\u5F55\u3002"));
-      content.append(dataGroup("\u6570\u636E\u5907\u4EFD", "\u53EF\u5C06\u5DF2\u770B\u8BB0\u5F55\u4E0B\u8F7D\u5230\u624B\u673A\uFF0C\u6216\u8FDB\u5165\u6570\u636E\u7BA1\u7406\u5BFC\u5165\u5DF2\u6709\u8BB0\u5F55\u3002", [
-        button2("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
-        button2("\u5BFC\u5165\u5DF2\u770B\u8BB0\u5F55\u2026", () => show("data", true)),
-        button2("\u5237\u65B0\u8BB0\u5F55", () => show("viewed", true))
-      ]));
-    }
-    function refreshHistory() {
-      const container = content.querySelector(".luna-history");
-      if (container) renderHistory(container, () => {
-        syncSavedRules();
-        onRulesChanged();
-      });
-    }
-    function show(next, user = false) {
-      if (user && next !== section) sound("folder");
-      else if (user && panel.dataset.minimized === "true") sound("restore");
-      if (section === "sounds" && next !== "sounds") stopSoundPreview();
-      syncPanel?.hideSecrets();
-      section = next;
-      saveRules.hidden = !categories.some((category2) => category2.id === section);
-      panel.dataset.minimized = "false";
-      updateWindowPosition();
-      minimize.title = "\u6700\u5C0F\u5316";
-      minimize.setAttribute("aria-label", minimize.title);
-      syncSavedRules();
-      for (const [id, node] of navButtons) {
-        if (id === areaFor(section)) node.setAttribute("aria-current", "page");
-        else node.removeAttribute("aria-current");
-      }
-      const category = categories.find((item) => item.id === section);
-      const area = areaFor(section);
-      const label = atelierAreas.find((item) => item.id === area).label;
-      breadcrumb.replaceChildren(icon(atelierIcons[area], 20), document.createTextNode(label));
-      sectionTabs.replaceChildren();
-      const tabs = area === "video" ? [...categories.map((item) => [item.id, item.label]), ["history", "\u5C4F\u853D\u5386\u53F2"]] : area === "data" ? [["data", "\u5BFC\u5165\u4E0E\u5BFC\u51FA"], ["sync", "PC / Android \u540C\u6B65"]] : area === "settings" ? [["settings", "\u5916\u89C2"], ["sounds", "\u97F3\u6548"]] : [];
-      sectionTabs.hidden = !tabs.length;
-      for (const [id, label2] of tabs) {
-        const tab = button2(label2, () => show(id, true), "luna-section-tab");
-        if (id === section) tab.setAttribute("aria-current", "page");
-        sectionTabs.append(tab);
-      }
-      content.replaceChildren();
-      content.classList.toggle("luna-following-content", section === "following");
-      if (section === "following") {
-        followingPanel ??= mountLocalFollowingPanel();
-        content.append(followingPanel.host);
-      } else if (category) showRules();
-      else if (section === "viewed") showViewed();
-      else if (section === "data") showData();
-      else if (section === "settings") {
-        content.append(element("h2", "", "\u754C\u9762\u4E3B\u9898"));
-        const options = element("div", "atelier-appearance-options");
-        for (const [value, text2] of [["page", "\u8DDF\u968F\u7F51\u9875"], ["light", "\u6D45\u8272\u6A44\u6984\u7EFF"], ["dark", "\u6DF1\u8272\u6A44\u6984\u7EFF"]]) {
-          const label2 = element("label"), radio = element("input");
-          radio.type = "radio";
-          radio.name = "atelier-theme";
-          radio.value = value;
-          radio.checked = readUiPreferences().theme === value;
-          radio.addEventListener("change", () => {
-            if (radio.checked) saveUiPreferences({ theme: value });
-            sound("select");
-          });
-          label2.append(radio, document.createTextNode(text2));
-          options.append(label2);
-        }
-        content.append(options, element("p", "luna-hint", "\u83DC\u5355\u4E0E\u6309\u94AE\u4F7F\u7528\u50CF\u7D20\u6587\u5B57\uFF0C\u957F\u5185\u5BB9\u4FDD\u7559\u666E\u901A\u5B57\u4F53\u3002"), button2("\u91CD\u7F6E\u7535\u89C6\u5165\u53E3\u4F4D\u7F6E", () => {
-          saveUiPreferences({ edge: "right", y: 0.72 });
-          window.dispatchEvent(new Event("atelier-reset-launcher"));
-        }));
-      } else if (section === "sounds") {
-        soundPanel ??= mountSoundPanel();
-        content.append(soundPanel.host);
-      } else if (section === "sync") {
-        syncPanel ??= mountSyncPanel();
-        content.append(syncPanel.host);
-      } else {
-        content.append(element("h2", "", "\u5C4F\u853D\u5386\u53F2"), element("p", "luna-description", "\u67E5\u770B\u5DF2\u9690\u85CF\u7684\u5185\u5BB9\uFF0C\u4E5F\u53EF\u4EE5\u89E3\u9664\u5BF9\u5E94\u7684\u5C4F\u853D\u89C4\u5219\u3002"), element("div", "luna-history"));
-        refreshHistory();
-      }
-      content.scrollTop = 0;
-    }
-    panel.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        event.stopPropagation();
-        close();
-      }
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
-        event.preventDefault();
-        event.stopPropagation();
-        if (!saveRules.hidden) save();
-      }
-    });
-    window.addEventListener("atelier-sync-applied", () => {
-      syncSavedRules();
-      if (section === "viewed") show("viewed");
-    }, { signal: events.signal });
-    document.addEventListener(historyChangedEvent, () => {
-      if (section === "history") refreshHistory();
-    }, { signal: events.signal });
-    window.addEventListener("beforeunload", (event) => {
-      if (isDirty() || syncPanel?.isDirty()) {
-        event.preventDefault();
-        event.returnValue = "";
-      }
-    }, { signal: events.signal });
-    activePanel = { show: (next) => show(next, true), toggleHistory: () => {
-      if (section !== "history" || !panel.isConnected) return false;
-      minimize.click();
-      return true;
-    } };
-    document.body.appendChild(panel);
-    show(initialSection);
-    navButtons.get(areaFor(initialSection))?.focus();
-    sound("open");
-  }
-
-  // src/modules/blocker/visibility.ts
-  var showingBlocked = false;
-  var blockedVisibilityChangedEvent = "atelier-blocked-visibility-changed";
-  function isShowingBlocked() {
-    return showingBlocked;
-  }
-  function toggleBlockedVisibility() {
-    showingBlocked = !showingBlocked;
-    window.dispatchEvent(new Event(blockedVisibilityChangedEvent));
-  }
-
-  // src/modules/blocker/runtime.ts
-  var actionClass2 = "bili-blocker-action";
-  var inlineActionClass = "bili-blocker-inline-action";
-  var homeVideoActionClass = "bili-blocker-home-video-action";
-  var homeLiveActionClass = "bili-blocker-home-live-action";
-  var profileActionClass = "bili-blocker-profile-action";
-  var spaceProfileActionClass = "bili-blocker-space-profile-action";
-  var hiddenAttribute = "data-bili-blocker-hidden";
-  var previousDisplayAttribute = "data-bili-blocker-previous-display";
-  var previousDisplayPriorityAttribute = "data-bili-blocker-previous-display-priority";
-  var hiddenElements = /* @__PURE__ */ new Set();
-  var historyShortcutInstalled = false;
-  var commentExpandFastScanInstalled = false;
-  var userRuleKeys = /* @__PURE__ */ new Set(["precise_uid", "precise_name", "name", "nameCanonical"]);
-  var homeFeedCardSelectors = [
-    ".bili-feed-card",
-    ".feed-card",
-    ".bili-video-card",
-    ".bili-video-card__wrap",
-    ".floor-single-card",
-    ".recommend-card",
-    '[class*="feed-card"]',
-    '[class*="bili-video-card"]'
-  ];
-  var commentFastScanContainerSelectors = [
-    "bili-comments",
-    "#commentapp",
-    ".comment-container",
-    ".comment-list",
-    ".reply-list"
-  ];
-  var commentFastScanItemSelectors = [
-    "bili-comment-thread-renderer",
-    "bili-comment-reply-renderer",
-    ".reply-item",
-    ".sub-reply-item",
-    ".comment-item",
-    ".list-item"
-  ];
-  var commentFastScanRootSelectors = [...commentFastScanContainerSelectors, ...commentFastScanItemSelectors];
-  var commentExpandTextPattern = /展开|点击查看|更多回复|查看(?:全部)?回复|加载更多|共\s*\d+\s*条?回复|还有\s*\d+/;
-  function ensureRuntimeStyle() {
-    if (document.getElementById("bili-atelier-blocker-style")) {
-      return;
-    }
-    const style = document.createElement("style");
-    style.id = "bili-atelier-blocker-style";
-    style.textContent = `
-.${actionClass2}{position:absolute;top:4px;right:4px;z-index:20}
-.${inlineActionClass},.${homeVideoActionClass},.${homeLiveActionClass},.${profileActionClass},.${spaceProfileActionClass}{margin-left:8px;vertical-align:middle}
-.${homeVideoActionClass},.${homeLiveActionClass}{float:right;flex:0 0 auto;margin-left:auto}
-[${hiddenAttribute}="true"]:not([data-bili-blocker-revealed]){display:none!important}
-[data-bili-blocker-revealed]{outline:1px dashed #a33024;outline-offset:-1px}
-`;
-    document.head.appendChild(style);
-  }
-  function styleCompactButton(button3) {
-    button3.style.marginLeft = "8px";
-    styleAtelierAction(button3);
-  }
-  function decide(item, rules) {
-    if (item.el.closest("[data-bili-blocker-ui]")) {
-      return null;
-    }
-    return decideBlockableItem(item, rules);
-  }
-  function hideRawElement(el, decision) {
-    const newlyHidden = el.getAttribute(hiddenAttribute) !== "true";
-    if (newlyHidden) {
-      el.setAttribute(previousDisplayAttribute, el.style.getPropertyValue("display") || "");
-      el.setAttribute(previousDisplayPriorityAttribute, el.style.getPropertyPriority("display") || "");
-    }
-    el.setAttribute(hiddenAttribute, "true");
-    hiddenElements.add(el);
-    applyBlockedVisibility(el);
-    el.title = `Bili Atelier \u5DF2\u5C4F\u853D\uFF1A${decision.type} ${decision.matching}`;
-    return newlyHidden;
-  }
-  function applyBlockedVisibility(el) {
-    el.toggleAttribute("data-bili-blocker-revealed", isShowingBlocked());
-    if (isShowingBlocked()) {
-      el.style.removeProperty("display");
-      const previous = el.getAttribute(previousDisplayAttribute);
-      if (previous) el.style.setProperty("display", previous, el.getAttribute(previousDisplayPriorityAttribute) || "");
-    } else el.style.setProperty("display", "none", "important");
-  }
-  function hideElement(item, decision) {
-    const newlyHidden = hideRawElement(item.el, decision);
-    if (newlyHidden && decision.ruleKey) {
-      recordBlockHistory(item, decision);
-    }
-    debugLog("blocked", item.kind, decision, item);
-  }
-  function restoreElement(item) {
-    const el = item.el;
-    if (el.getAttribute(hiddenAttribute) !== "true") {
-      return;
-    }
-    const previousDisplay = el.getAttribute(previousDisplayAttribute) || "";
-    const previousDisplayPriority = el.getAttribute(previousDisplayPriorityAttribute) || "";
-    el.removeAttribute(hiddenAttribute);
-    hiddenElements.delete(el);
-    el.removeAttribute("data-bili-blocker-revealed");
-    el.removeAttribute(previousDisplayAttribute);
-    el.removeAttribute(previousDisplayPriorityAttribute);
-    el.style.removeProperty("display");
-    if (previousDisplay) {
-      el.style.setProperty("display", previousDisplay, previousDisplayPriority);
-    }
-  }
-  function isAdBlockPlaceholderText(value) {
-    const compactText2 = String(value || "").replace(/\s+/g, "");
-    return /该内容被.*(?:AdGuard|AdBlock).*插件屏蔽/i.test(compactText2) || /插件屏蔽.*恢复正常内容展示/.test(compactText2);
-  }
-  function removeHomeAdBlockPlaceholders() {
-    if (!isHomePageLocation()) {
-      return;
-    }
-    const candidates = Array.from(document.querySelectorAll(homeFeedCardSelectors.join(",")));
-    const cards = /* @__PURE__ */ new Set();
-    for (const candidate of candidates) {
-      const card = candidate.closest(
-        ".bili-feed-card,.feed-card,.bili-video-card,.floor-single-card,.recommend-card"
-      ) || candidate;
-      if (!isAdBlockPlaceholderText(card.textContent)) {
-        continue;
-      }
-      cards.add(card);
-    }
-    for (const card of cards) {
-      hideRawElement(card, { type: "\u9996\u9875\u5E7F\u544A\u5C4F\u853D\u5360\u4F4D", matching: "AdGuard/AdBlock" });
-    }
-  }
-  function formatHistoryTime(timestamp) {
-    return new Date(timestamp).toLocaleString();
-  }
-  function kindLabel(kind) {
-    if (kind === "comment") {
-      return "\u8BC4\u8BBA";
-    }
-    if (kind === "live") {
-      return "\u76F4\u64AD";
-    }
-    return "\u89C6\u9891";
-  }
-  function isUserRuleKey(ruleKey) {
-    return Boolean(ruleKey && userRuleKeys.has(ruleKey));
-  }
-  function compactText(value) {
-    return String(value ?? "").replace(/\s+/g, " ").trim();
-  }
-  function shortText(value, maxLength) {
-    const textValue = compactText(value);
-    if (!textValue) {
-      return "\u672A\u77E5\u5185\u5BB9";
-    }
-    return textValue.length > maxLength ? `${textValue.slice(0, maxLength)}...` : textValue;
-  }
-  function isLeakedStyleText(value) {
-    return /:host\s*\{|--bili-rich-text-|^\s*\.[\w-]+\s*\{/.test(value);
-  }
-  function shortReadableText(value, maxLength, fallback = "\u672A\u77E5\u5185\u5BB9") {
-    const textValue = compactText(value);
-    const readable = !textValue || isLeakedStyleText(textValue) ? fallback : textValue;
-    return readable.length > maxLength ? `${readable.slice(0, maxLength)}...` : readable;
-  }
-  function historyUserId(entry) {
-    if (entry.uid !== void 0) {
-      return String(entry.uid);
-    }
-    if (entry.ruleKey === "precise_uid" && entry.ruleValue !== void 0) {
-      return String(entry.ruleValue);
-    }
-    if (entry.ruleKey === "precise_uid" && entry.matching !== void 0) {
-      return String(entry.matching);
-    }
-    return "\u672A\u77E5";
-  }
-  function historyTypeLabel(entry) {
-    if (entry.kind === "comment" && isUserRuleKey(entry.ruleKey)) {
-      return "\u8BC4\u8BBA\u533A\u7528\u6237";
-    }
-    if (entry.kind === "video" && isUserRuleKey(entry.ruleKey)) {
-      return "UP";
-    }
-    if (entry.kind === "live" && isUserRuleKey(entry.ruleKey)) {
-      return "\u76F4\u64ADUP";
-    }
-    if (entry.ruleKey === "commentOn" || entry.ruleKey === "commentOnCanonical") {
-      return "\u8BC4\u8BBA\u5173\u952E\u8BCD";
-    }
-    if (entry.ruleKey === "title" || entry.ruleKey === "titleCanonical") {
-      return "\u89C6\u9891\u6807\u9898";
-    }
-    if (entry.ruleKey === "liveTitle" || entry.ruleKey === "liveTitleCanonical") {
-      return "\u76F4\u64AD\u6807\u9898";
-    }
-    if (entry.ruleKey === "precise_liveRoomId") {
-      return "\u76F4\u64AD\u95F4";
-    }
-    if (entry.ruleKey === "precise_partition") {
-      return "\u76F4\u64AD\u5206\u533A";
-    }
-    return kindLabel(entry.kind);
-  }
-  function historyEntrySummary(entry) {
-    const typeLabel = historyTypeLabel(entry);
-    if (typeLabel === "UP") {
-      const name = entry.name ? ` / ${entry.name}` : "";
-      return `UP ID\uFF1A${historyUserId(entry)}${name}`;
-    }
-    if (typeLabel === "\u8BC4\u8BBA\u533A\u7528\u6237") {
-      return `\u7528\u6237 ID\uFF1A${historyUserId(entry)} / \u8BC4\u8BBA\uFF1A${shortReadableText(entry.content || entry.summary, 28, "\u65E7\u8BB0\u5F55\u672A\u4FDD\u5B58\u8BC4\u8BBA\u6B63\u6587")}`;
-    }
-    if (typeLabel === "\u76F4\u64ADUP") {
-      const name = entry.name ? ` / ${entry.name}` : "";
-      return `\u76F4\u64AD UP ID\uFF1A${historyUserId(entry)}${name}`;
-    }
-    if (typeLabel === "\u8BC4\u8BBA\u5173\u952E\u8BCD") {
-      return shortReadableText(entry.content || entry.summary, 52, "\u65E7\u8BB0\u5F55\u672A\u4FDD\u5B58\u8BC4\u8BBA\u6B63\u6587");
-    }
-    if (typeLabel === "\u89C6\u9891\u6807\u9898") {
-      return shortText(entry.title || entry.summary, 52);
-    }
-    if (typeLabel === "\u76F4\u64AD\u6807\u9898") {
-      return shortText(entry.liveTitle || entry.summary, 52);
-    }
-    return shortText(entry.summary, 52);
-  }
-  function historyEntryDetail(entry) {
-    const typeLabel = historyTypeLabel(entry);
-    const parts = [];
-    if (typeLabel === "UP" || typeLabel === "\u8BC4\u8BBA\u533A\u7528\u6237" || typeLabel === "\u76F4\u64ADUP") {
-      if (entry.name) {
-        parts.push(`\u7528\u6237\u540D\uFF1A${entry.name}`);
-      }
-    } else if (entry.detail) {
-      parts.push(entry.detail);
-    }
-    if (entry.bv) {
-      parts.push(`BV\uFF1A${entry.bv}`);
-    }
-    if (entry.roomId) {
-      parts.push(`\u76F4\u64AD\u95F4\uFF1A${entry.roomId}`);
-    }
-    parts.push(`\u547D\u4E2D\uFF1A${entry.matching}`);
-    return parts.join(" / ");
-  }
-  function isEditableTarget(target) {
-    if (!(target instanceof HTMLElement)) {
-      return false;
-    }
-    const tagName = target.tagName;
-    return tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT" || target.isContentEditable || target.closest("[contenteditable=true]") !== null;
-  }
-  function appendText(parent, tagName, className, text2) {
-    const el = document.createElement(tagName);
-    el.className = className;
-    el.textContent = text2;
-    parent.appendChild(el);
-    return el;
-  }
-  function renderHistoryPanel(panel, rescan, embedded = false) {
-    panel.textContent = "";
-    panel.setAttribute("data-bili-blocker-ui", "true");
-    const header = document.createElement("div");
-    header.className = "bili-blocker-history-header";
-    appendText(header, "div", "", "\u5C4F\u853D\u5386\u53F2");
-    const headerActions = document.createElement("div");
-    headerActions.className = "bili-blocker-history-actions";
-    const refreshButton = document.createElement("button");
-    refreshButton.type = "button";
-    refreshButton.textContent = "\u5237\u65B0";
-    refreshButton.addEventListener("click", () => {
-      renderHistoryPanel(panel, rescan, embedded);
-      sound("click");
-    });
-    headerActions.appendChild(refreshButton);
-    const clearButton = document.createElement("button");
-    clearButton.type = "button";
-    clearButton.textContent = "\u6E05\u7A7A";
-    clearButton.addEventListener("click", () => {
-      const changed = readBlockHistory().length > 0;
-      writeBlockHistory([]);
-      renderHistoryPanel(panel, rescan, embedded);
-      sound(changed ? "delete" : "click");
-    });
-    headerActions.appendChild(clearButton);
-    const closeButton = document.createElement("button");
-    closeButton.type = "button";
-    closeButton.textContent = "\u5173\u95ED";
-    closeButton.addEventListener("click", () => {
-      panel.hidden = true;
-      sound("close");
-    });
-    if (!embedded) headerActions.appendChild(closeButton);
-    header.appendChild(headerActions);
-    panel.appendChild(header);
-    const body = document.createElement("div");
-    body.className = "bili-blocker-history-body";
-    const history = readBlockHistory();
-    if (history.length === 0) {
-      appendText(body, "div", "bili-blocker-history-empty", "\u8FD8\u6CA1\u6709\u5C4F\u853D\u8BB0\u5F55");
-      panel.appendChild(body);
-      return;
-    }
-    for (const entry of history) {
-      const item = document.createElement("div");
-      item.className = "bili-blocker-history-item";
-      appendText(item, "div", "bili-blocker-history-type-badge", historyTypeLabel(entry));
-      const meta = document.createElement("div");
-      meta.className = "bili-blocker-history-meta";
-      appendText(meta, "span", "", `${kindLabel(entry.kind)} \xB7 ${entry.type}`);
-      appendText(meta, "span", "", formatHistoryTime(entry.timestamp));
-      item.appendChild(meta);
-      appendText(item, "div", "bili-blocker-history-summary", historyEntrySummary(entry));
-      appendText(item, "div", "bili-blocker-history-detail", historyEntryDetail(entry));
-      const footer = document.createElement("div");
-      footer.className = "bili-blocker-history-footer";
-      const unblockButton = document.createElement("button");
-      unblockButton.type = "button";
-      const removableRules = entryRuleReferences(entry);
-      if (removableRules.length > 0) {
-        unblockButton.textContent = "\u89E3\u9664";
-        unblockButton.addEventListener("click", () => {
-          const feedback = soundTask(void 0, () => panel.isConnected && !panel.hidden);
-          const results = removableRules.map((rule) => removeRuleItem(rule.key, rule.value));
-          const failures2 = results.filter((result) => !result.status && result.res !== "\u89C4\u5219\u4E0D\u5B58\u5728");
-          if (failures2.length === 0) {
-            removeHistoryByRules(removableRules);
-            showInfoLog(`\u5DF2\u89E3\u9664\u5C4F\u853D\uFF1A${historyEntrySummary(entry)}`, "success");
-            rescan();
-            renderHistoryPanel(panel, rescan, embedded);
-            feedback.finish(results.some((result) => result.status) ? "success" : "click");
-            return;
-          }
-          void atelierAlert(String(failures2[0].res));
-          feedback.finish("error");
-        });
-      } else {
-        unblockButton.textContent = "\u4E0D\u53EF\u89E3\u9664";
-        unblockButton.disabled = true;
-      }
-      footer.appendChild(unblockButton);
-      item.appendChild(footer);
-      body.appendChild(item);
-    }
-    panel.appendChild(body);
-  }
-  function toggleHistoryPanel(rescan) {
-    toggleBlockerHistory(rescan, (container, scan) => renderHistoryPanel(container, scan, true));
-  }
-  function installHistoryShortcut(rescan) {
-    if (historyShortcutInstalled) {
-      return;
-    }
-    historyShortcutInstalled = true;
-    document.addEventListener("keydown", (event) => {
-      if (event.key !== "`" && event.code !== "Backquote" || event.ctrlKey || event.altKey || event.metaKey) {
-        return;
-      }
-      if (isEditableTarget(event.target)) {
-        return;
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      toggleHistoryPanel(rescan);
-    }, true);
-  }
-  function eventPathElements(event) {
-    const path = typeof event.composedPath === "function" ? event.composedPath() : [];
-    const fallback = event.target ? [event.target] : [];
-    return (path.length > 0 ? path : fallback).filter((node) => node instanceof Element);
-  }
-  function hasCommentContext(elements) {
-    const selector = commentFastScanRootSelectors.join(",");
-    return elements.some((element2) => Boolean(element2.closest(selector)));
-  }
-  function isCommentExpandClick(event) {
-    if (isEditableTarget(event.target)) {
-      return false;
-    }
-    const elements = eventPathElements(event);
-    if (elements.some((element2) => Boolean(element2.closest("[data-bili-blocker-ui]")))) {
-      return false;
-    }
-    if (!hasCommentContext(elements)) {
-      return false;
-    }
-    return elements.some((element2) => {
-      const textValue = compactText([
-        element2.textContent,
-        element2.getAttribute("aria-label"),
-        element2.getAttribute("title")
-      ].filter(Boolean).join(" "));
-      return commentExpandTextPattern.test(textValue);
-    });
-  }
-  function findCommentFastScanRoot(event) {
-    const elements = eventPathElements(event);
-    const containerSelector = commentFastScanContainerSelectors.join(",");
-    for (const element2 of elements) {
-      const root = element2.closest(containerSelector);
-      if (root) {
-        return root;
-      }
-    }
-    const itemSelector = commentFastScanItemSelectors.join(",");
-    for (const element2 of elements) {
-      const root = element2.closest(itemSelector);
-      if (root) {
-        return root;
-      }
-    }
-    return document;
-  }
-  function scheduleCommentFastScans(scanComments, root) {
-    const run = () => scanComments(root);
-    if (typeof window.requestAnimationFrame === "function") {
-      window.requestAnimationFrame(run);
-    } else {
-      window.setTimeout(run, 0);
-    }
-    for (const delayMs of [80, 180, 420, 900, 1600]) {
-      window.setTimeout(run, delayMs);
-    }
-  }
-  function commentMutationRoots(records2) {
-    const roots2 = /* @__PURE__ */ new Set();
-    const itemSelector = commentFastScanItemSelectors.join(",");
-    const isOwnUi = (node) => node instanceof Element && Boolean(node.closest(".atelier-control,[data-bili-blocker-ui]"));
-    for (const record of records2) {
-      const target = record.target instanceof Element ? record.target : record.target.parentElement;
-      if (target && isOwnUi(target)) continue;
-      const changed = [...record.addedNodes, ...record.removedNodes];
-      if (changed.length && changed.every(isOwnUi)) continue;
-      let node = record.target;
-      let owner = null;
-      while (node) {
-        if (node instanceof HTMLElement) owner = node.closest(itemSelector);
-        if (owner) break;
-        node = node instanceof ShadowRoot ? node.host : node.parentNode;
-      }
-      if (owner?.isConnected) roots2.add(owner);
-      else for (const added of record.addedNodes) {
-        if (added instanceof HTMLElement && added.isConnected && !isOwnUi(added)) roots2.add(added);
-      }
-    }
-    return roots2;
-  }
-  function installCommentExpandFastScan(scanComments) {
-    if (commentExpandFastScanInstalled) {
-      return;
-    }
-    commentExpandFastScanInstalled = true;
-    document.addEventListener("click", (event) => {
-      if (!(event instanceof MouseEvent) || !isCommentExpandClick(event)) {
-        return;
-      }
-      scheduleCommentFastScans(scanComments, findCommentFastScanRoot(event));
-    }, true);
-  }
-  function applyManualBlockChoice(item, rescan, choice, type = "\u624B\u52A8\u5C4F\u853D", feedback) {
-    applyManualBlockChoices(item, rescan, [choice], type, { feedback });
-  }
-  function applyManualBlockChoices(item, rescan, choices, type = "\u624B\u52A8\u5C4F\u853D", options = {}) {
-    const feedback = options.feedback ?? soundTask();
-    const hideCurrent = options.hideCurrent !== false;
-    const linkedRules = [];
-    let firstError = "";
-    let added = 0;
-    let primaryChoice;
-    for (const choice of choices) {
-      const result = addRuleItem(choice.key, choice.value);
-      if (result.status) added++;
-      if (result.status || result.res === "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9") {
-        const value = result.status && "value" in result ? result.value : choice.value;
-        const rule = { key: choice.key, value };
-        linkedRules.push(rule);
-        primaryChoice ||= rule;
-        continue;
-      }
-      firstError ||= String(result.res);
-    }
-    if (linkedRules.length > 0 && primaryChoice) {
-      const manualDecision = {
-        type,
-        matching: primaryChoice.value,
-        ruleKey: primaryChoice.key,
-        ruleValue: primaryChoice.value,
-        linkedRules
-      };
-      if (hideCurrent) {
-        hideElement(item, manualDecision);
-      } else {
-        recordBlockHistory(item, manualDecision);
-      }
-      showInfoLog(`${type}\uFF1A${shortReadableText(summarizeBlockedItem(item), 36)}`, "success");
-      rescan();
-      if (hideCurrent) {
-        hideElement(item, manualDecision);
-      }
-      feedback.finish(added > 0 ? "success" : "click");
-      return true;
-    }
-    void atelierAlert(firstError || "\u5F53\u524D\u5143\u7D20\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u5C4F\u853D\u5B57\u6BB5");
-    feedback.finish("error");
-    return false;
-  }
-  function alertManualFailure(message) {
-    const feedback = soundTask();
-    void atelierAlert(message);
-    feedback.finish("error");
-  }
-  async function handleManualBlock(item, rescan) {
-    const choices = getManualChoices(item);
-    if (choices.length === 0) {
-      alertManualFailure("\u5F53\u524D\u5143\u7D20\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u5C4F\u853D\u5B57\u6BB5");
-      return;
-    }
-    const feedback = soundTask();
-    const selected = await atelierDialog({ title: "\u9009\u62E9\u5C4F\u853D\u65B9\u5F0F", message: "\u9009\u62E9\u8981\u5C4F\u853D\u7684\u5B57\u6BB5", choices: choices.map((choice2, index) => ({ value: String(index), label: choice2.label })) });
-    const choice = selected === null ? void 0 : choices[Number(selected)];
-    if (!choice) {
-      feedback.finish("cancel");
-      return;
-    }
-    applyManualBlockChoice(item, rescan, choice, "\u624B\u52A8\u5C4F\u853D", feedback);
-  }
-  function handleCommentUserBlock(item, rescan) {
-    const choices = getCommentUserBlockChoices(item);
-    if (choices.length === 0) {
-      alertManualFailure("\u5F53\u524D\u8BC4\u8BBA\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u7528\u6237\u5B57\u6BB5");
-      return;
-    }
-    applyManualBlockChoices(item, rescan, choices, "\u624B\u52A8\u5C4F\u853D\u8BC4\u8BBA\u533A\u7528\u6237");
-  }
-  function handleHomeVideoOwnerBlock(item, rescan) {
-    const choices = getVideoOwnerBlockChoices(item);
-    if (choices.length === 0) {
-      alertManualFailure("\u5F53\u524D\u89C6\u9891\u5361\u7247\u6CA1\u6709\u53EF\u63D0\u53D6\u7684 UP \u5B57\u6BB5");
-      return;
-    }
-    applyManualBlockChoices(item, rescan, choices, "\u624B\u52A8\u5C4F\u853DUP");
-  }
-  function handleHomeLiveOwnerBlock(item, rescan) {
-    const choices = getLiveOwnerBlockChoices(item);
-    if (choices.length === 0) {
-      alertManualFailure("\u5F53\u524D\u76F4\u64AD\u5361\u7247\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u4E3B\u64AD\u6216\u76F4\u64AD\u95F4\u5B57\u6BB5");
-      return;
-    }
-    applyManualBlockChoices(item, rescan, choices, "\u624B\u52A8\u5C4F\u853D\u76F4\u64ADUP");
-  }
-  function hasManualActionButton(item) {
-    const selector = `.${actionClass2},.${inlineActionClass},.${homeVideoActionClass},.${homeLiveActionClass}`;
-    const insertionParent = item.insertionEl !== item.el ? item.insertionEl.parentElement : null;
-    return Boolean(
-      item.el.querySelector(selector) || item.el.shadowRoot?.querySelector(selector) || insertionParent?.querySelector(selector)
-    );
-  }
-  function createManualActionButton(item, rescan, className = actionClass2) {
-    const button3 = document.createElement("button");
-    button3.type = "button";
-    button3.className = className;
-    button3.textContent = "\u5C4F\u853D";
-    let confirmTimer;
-    button3.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (item.kind === "comment") {
-        if (button3.dataset.confirmBlock !== "true") {
-          button3.dataset.confirmBlock = "true";
-          button3.textContent = "\u786E\u8BA4\uFF1F";
-          sound("select");
-          if (confirmTimer !== void 0) {
-            window.clearTimeout(confirmTimer);
-          }
-          confirmTimer = window.setTimeout(() => {
-            if (button3.dataset.confirmBlock === "true") {
-              button3.dataset.confirmBlock = "";
-              button3.textContent = "\u5C4F\u853D";
-            }
-          }, 2500);
-          return;
-        }
-        if (confirmTimer !== void 0) {
-          window.clearTimeout(confirmTimer);
-        }
-        handleCommentUserBlock(item, rescan);
-        return;
-      }
-      handleManualBlock(item, rescan);
-    });
-    styleAtelierAction(button3);
-    return button3;
-  }
-  function createHomeVideoActionButton(item, rescan) {
-    const button3 = document.createElement("button");
-    button3.type = "button";
-    button3.className = homeVideoActionClass;
-    button3.textContent = "\u5C4F\u853D";
-    button3.title = item.uid !== void 0 ? `\u5C4F\u853D UP ${item.uid}` : `\u5C4F\u853D UP ${item.name || ""}`;
-    let confirmTimer;
-    button3.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (button3.dataset.confirmBlock !== "true") {
-        button3.dataset.confirmBlock = "true";
-        button3.textContent = "\u786E\u8BA4\uFF1F";
-        sound("select");
-        if (confirmTimer !== void 0) {
-          window.clearTimeout(confirmTimer);
-        }
-        confirmTimer = window.setTimeout(() => {
-          if (button3.dataset.confirmBlock === "true") {
-            button3.dataset.confirmBlock = "";
-            button3.textContent = "\u5C4F\u853D";
-          }
-        }, 2500);
-        return;
-      }
-      if (confirmTimer !== void 0) {
-        window.clearTimeout(confirmTimer);
-      }
-      handleHomeVideoOwnerBlock(item, rescan);
-    });
-    styleAtelierAction(button3);
-    return button3;
-  }
-  function createHomeLiveActionButton(item, rescan) {
-    const button3 = document.createElement("button");
-    button3.type = "button";
-    button3.className = homeLiveActionClass;
-    button3.textContent = "\u5C4F\u853D";
-    button3.title = item.uid !== void 0 ? `\u5C4F\u853D\u76F4\u64AD\u4E3B\u64AD ${item.uid}` : item.name ? `\u5C4F\u853D\u76F4\u64AD\u4E3B\u64AD ${item.name}` : `\u5C4F\u853D\u76F4\u64AD\u95F4 ${item.roomId || ""}`;
-    let confirmTimer;
-    button3.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (button3.dataset.confirmBlock !== "true") {
-        button3.dataset.confirmBlock = "true";
-        button3.textContent = "\u786E\u8BA4\uFF1F";
-        sound("select");
-        if (confirmTimer !== void 0) {
-          window.clearTimeout(confirmTimer);
-        }
-        confirmTimer = window.setTimeout(() => {
-          if (button3.dataset.confirmBlock === "true") {
-            button3.dataset.confirmBlock = "";
-            button3.textContent = "\u5C4F\u853D";
-          }
-        }, 2500);
-        return;
-      }
-      if (confirmTimer !== void 0) {
-        window.clearTimeout(confirmTimer);
-      }
-      handleHomeLiveOwnerBlock(item, rescan);
-    });
-    styleAtelierAction(button3);
-    return button3;
-  }
-  function findCommentActionTarget(item) {
-    const root = item.el.shadowRoot || item.el;
-    return (item.insertionEl !== item.el ? item.insertionEl : null) || root.querySelector("#user-name,.user-name,.sub-user-name,.name,.user,.reply-info,.info") || item.el;
-  }
-  function insertInlineActionButton(target, button3) {
-    if (target.tagName === "A" || target.matches("#user-name,.user-name,.sub-user-name,.name")) {
-      target.insertAdjacentElement("afterend", button3);
-    } else target.appendChild(button3);
-    styleCompactButton(button3);
-  }
-  function isHomeVideoItem(item) {
-    return item.kind === "video" && isHomePageLocation() && Boolean(item.el.closest(
-      ".bili-feed-card,.feed-card,.bili-video-card,.recommend-card,.floor-single-card,.video-card,.video-list-item"
-    ));
-  }
-  function isHomeLiveItem(item) {
-    return item.kind === "live" && (isHomePageLocation() || isSpacePageLocation()) && Boolean(item.el.closest(
-      ".bili-live-card,.live-card,.room-card,.bili-feed-card,.feed-card,.bili-video-card,.recommend-card,.floor-single-card,.video-list-item,.index_item_JSGkw"
-    ));
-  }
-  function findHomeVideoActionTarget(item) {
-    const root = item.el.shadowRoot || item.el;
-    return root.querySelector(
-      ".bili-video-card__info--bottom,.bili-video-card__info--owner,.video-card-info,.info,.meta"
-    ) || item.insertionEl || item.el;
-  }
-  function findHomeLiveActionTarget(item) {
-    const root = item.el.shadowRoot || item.el;
-    return root.querySelector(
-      ".bili-live-card__info--bottom,.bili-live-card__info,.bili-video-card__info--bottom,.bili-video-card__info--owner,.live-card__info,.room-card-info,.video-card-info,.info,.meta"
-    ) || item.insertionEl || item.el;
-  }
-  function insertHomeVideoActionButton(target, button3) {
-    if (target.tagName === "A") {
-      target.insertAdjacentElement("afterend", button3);
-      return;
-    }
-    target.appendChild(button3);
-  }
-  function insertHomeLiveActionButton(target, button3) {
-    if (target.tagName === "A") {
-      target.insertAdjacentElement("afterend", button3);
-      return;
-    }
-    target.appendChild(button3);
-  }
-  function ensureHomeVideoActionButton(item, rescan) {
-    if (!isHomeVideoItem(item) || item.uid === void 0 && !item.name) {
-      return;
-    }
-    const button3 = createHomeVideoActionButton(item, rescan);
-    insertHomeVideoActionButton(findHomeVideoActionTarget(item), button3);
-  }
-  function ensureHomeLiveActionButton(item, rescan) {
-    if (!isHomeLiveItem(item) || item.uid === void 0 && !item.name && !item.roomId) {
-      return;
-    }
-    const button3 = createHomeLiveActionButton(item, rescan);
-    insertHomeLiveActionButton(findHomeLiveActionTarget(item), button3);
-  }
-  function ensureActionButton(item, rescan) {
-    if (item.el.getAttribute(hiddenAttribute) === "true" || hasManualActionButton(item)) {
-      return;
-    }
-    if (item.kind === "video") {
-      if (item.collection) return;
-      ensureHomeVideoActionButton(item, rescan);
-      return;
-    }
-    if (item.kind === "live") {
-      ensureHomeLiveActionButton(item, rescan);
-      return;
-    }
-    if (item.kind === "comment") {
-      const button4 = createManualActionButton(item, rescan, inlineActionClass);
-      insertInlineActionButton(findCommentActionTarget(item), button4);
-      return;
-    }
-    const computedPosition = window.getComputedStyle(item.el).position;
-    if (computedPosition === "static") {
-      item.el.style.position = "relative";
-    }
-    const button3 = createManualActionButton(item, rescan);
-    item.el.appendChild(button3);
-  }
-  function findSpaceProfileNameTarget() {
-    for (const selector of [
-      "#h-name",
-      ".h-name",
-      ".n-name",
-      ".space-header .name",
-      ".h-basic .name",
-      ".user-info .name",
-      ".username",
-      ".nickname"
-    ]) {
-      const target = document.querySelector(selector);
-      if (target && !target.closest("[data-bili-blocker-ui]") && target.textContent?.trim()) {
-        return target;
-      }
-    }
-    return null;
-  }
-  function readSpaceProfileUser() {
-    if (!isSpacePageLocation()) {
-      return null;
-    }
-    const target = findSpaceProfileNameTarget();
-    if (!target) {
-      return null;
-    }
-    const uid = parseSpaceProfileUid();
-    const name = target.textContent?.replace(/\s+/g, " ").trim() || void 0;
-    if (uid === void 0 && !name) {
-      return null;
-    }
-    return { uid, name, target };
-  }
-  function handleSpaceProfileOwnerBlock(user, target, rescan) {
-    const choices = getVideoOwnerBlockChoices(user);
-    if (choices.length === 0) {
-      alertManualFailure("\u5F53\u524D\u4E2A\u4EBA\u4E3B\u9875\u6CA1\u6709\u53EF\u63D0\u53D6\u7684 UP \u5B57\u6BB5");
-      return false;
-    }
-    const item = {
-      kind: "video",
-      el: target,
-      insertionEl: target,
-      uid: user.uid,
-      name: user.name,
-      title: "UP \u4E2A\u4EBA\u4E3B\u9875"
-    };
-    return applyManualBlockChoices(item, rescan, choices, "\u624B\u52A8\u5C4F\u853DUP", { hideCurrent: false });
-  }
-  function spaceProfileUserKey(user) {
-    return `${user.uid ?? ""}|${user.name ?? ""}`;
-  }
-  function getSpaceProfileBlockedRules(user) {
-    const rules = readRuleSnapshot();
-    const blockedRules = [];
-    if (user.uid !== void 0) {
-      const uidMatch = exactMatch(rules.precise_uid, user.uid);
-      if (uidMatch) {
-        blockedRules.push({ key: "precise_uid", value: uidMatch.matching });
-      }
-    }
-    if (user.name) {
-      const nameMatch = exactMatch(rules.precise_name, user.name);
-      if (nameMatch) {
-        blockedRules.push({ key: "precise_name", value: nameMatch.matching });
-      }
-    }
-    return blockedRules;
-  }
-  function setSpaceProfileActionButtonState(button3, user) {
-    const blocked = getSpaceProfileBlockedRules(user).length > 0;
-    const label = user.uid !== void 0 ? `UP ${user.uid}` : `UP ${user.name || ""}`;
-    button3.dataset.userKey = spaceProfileUserKey(user);
-    button3.dataset.blocked = blocked ? "true" : "";
-    if (blocked) button3.dataset.confirmBlock = "";
-    const labelText = blocked ? "\u5DF2\u5C4F\u853D" : button3.dataset.confirmBlock === "true" ? "\u786E\u8BA4\uFF1F" : "\u5C4F\u853D";
-    if (button3.textContent !== labelText) button3.textContent = labelText;
-    button3.title = blocked ? `\u89E3\u9664\u5C4F\u853D ${label}` : `\u5C4F\u853D ${label}`;
-    button3.disabled = false;
-  }
-  function handleSpaceProfileOwnerUnblock(user, rescan) {
-    const blockedRules = getSpaceProfileBlockedRules(user);
-    if (blockedRules.length === 0) {
-      return false;
-    }
-    const failures2 = blockedRules.map((rule) => removeRuleItem(rule.key, rule.value)).filter((result) => !result.status);
-    if (failures2.length > 0) {
-      alertManualFailure(String(failures2[0].res));
-      return false;
-    }
-    removeHistoryByRules(blockedRules);
-    notifyBlockHistoryChanged();
-    showInfoLog(`\u5DF2\u89E3\u9664\u5C4F\u853D\uFF1A${user.name || user.uid || "\u5F53\u524DUP"}`, "success");
-    rescan();
-    sound("success");
-    return true;
-  }
-  function createSpaceProfileActionButton(user, target, rescan) {
-    const button3 = document.createElement("button");
-    button3.type = "button";
-    button3.className = spaceProfileActionClass;
-    let confirmTimer;
-    setSpaceProfileActionButtonState(button3, user);
-    button3.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (button3.dataset.blocked === "true") {
-        if (confirmTimer !== void 0) {
-          window.clearTimeout(confirmTimer);
-        }
-        button3.dataset.confirmBlock = "";
-        handleSpaceProfileOwnerUnblock(user, rescan);
-        setSpaceProfileActionButtonState(button3, user);
-        return;
-      }
-      if (button3.dataset.confirmBlock !== "true") {
-        button3.dataset.confirmBlock = "true";
-        button3.textContent = "\u786E\u8BA4\uFF1F";
-        sound("select");
-        if (confirmTimer !== void 0) {
-          window.clearTimeout(confirmTimer);
-        }
-        confirmTimer = window.setTimeout(() => {
-          if (button3.dataset.confirmBlock === "true") {
-            button3.dataset.confirmBlock = "";
-            setSpaceProfileActionButtonState(button3, user);
-          }
-        }, 2500);
-        return;
-      }
-      if (confirmTimer !== void 0) {
-        window.clearTimeout(confirmTimer);
-      }
-      if (handleSpaceProfileOwnerBlock(user, target, rescan)) {
-        button3.dataset.confirmBlock = "";
-        setSpaceProfileActionButtonState(button3, user);
-      }
-    });
-    styleAtelierAction(button3);
-    return button3;
-  }
-  function ensureSpaceProfileBlockButton(rescan) {
-    const profileUser = readSpaceProfileUser();
-    if (!profileUser) {
-      return;
-    }
-    const { target } = profileUser;
-    const existingButton = target.parentElement?.querySelector(`.${spaceProfileActionClass}`) || target.querySelector(`.${spaceProfileActionClass}`);
-    if (existingButton?.dataset.userKey === spaceProfileUserKey(profileUser)) {
-      setSpaceProfileActionButtonState(existingButton, profileUser);
-      return;
-    }
-    existingButton?.remove();
-    const button3 = createSpaceProfileActionButton(profileUser, target, rescan);
-    styleCompactButton(button3);
-    target.insertAdjacentElement("afterend", button3);
-  }
-  function extractProfileUser(container) {
-    const profileData = container.__data?.card;
-    const profileUid = Number.parseInt(String(profileData?.mid ?? ""), 10);
-    const profileName = String(profileData?.name ?? "").trim();
-    if (Number.isFinite(profileUid) || profileName) {
-      return { uid: Number.isFinite(profileUid) ? profileUid : void 0, name: profileName || void 0 };
-    }
-    const vueUserData = container.querySelector(".user-card-m-exp.card-loaded")?.__vue__?.userData;
-    const vueUid = Number.parseInt(String(vueUserData?.mid ?? ""), 10);
-    const vueName = String(vueUserData?.name ?? "").trim();
-    if (Number.isFinite(vueUid) || vueName) {
-      return { uid: Number.isFinite(vueUid) ? vueUid : void 0, name: vueName || void 0 };
-    }
-    const searchRoot = container.shadowRoot || container;
-    const link = searchRoot.querySelector('a[href*="space.bilibili.com/"]');
-    const uid = parseUid(link?.href) ?? parseUid(container.outerHTML.slice(0, 700));
-    const name = link?.textContent?.trim() || searchRoot.querySelector(".name,.nickname,.username,.user-name")?.textContent?.trim();
-    return { uid, name: name || void 0 };
-  }
-  function ensureProfileBlockButtons(rescan) {
-    const containers = Array.from(
-      document.querySelectorAll(".usercard-wrap,.up-panel-container,bili-user-profile,.bili-user-profile")
-    );
-    for (const container of containers) {
-      const searchRoot = container.shadowRoot || container;
-      if (container.closest("[data-bili-blocker-ui]")) {
-        continue;
-      }
-      const existing = searchRoot.querySelector(`.${profileActionClass}`);
-      if (existing) {
-        placeVideoUpAction(searchRoot, existing, "block");
-        continue;
-      }
-      const user = extractProfileUser(container);
-      if (user.uid === void 0 && !user.name) {
-        continue;
-      }
-      const target = searchRoot.querySelector("#action") || searchRoot.querySelector(".user,.name,.nickname,.username,.user-name") || searchRoot.querySelector('a[href*="space.bilibili.com/"]') || container;
-      const button3 = document.createElement("button");
-      button3.type = "button";
-      button3.className = profileActionClass;
-      button3.textContent = "\u5C4F\u853D";
-      button3.title = user.uid !== void 0 ? `\u5C4F\u853D UID ${user.uid}` : `\u5C4F\u853D\u7528\u6237 ${user.name}`;
-      styleCompactButton(button3);
-      button3.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        const feedback = soundTask();
-        const result = user.uid !== void 0 ? addRuleItem("precise_uid", user.uid) : addRuleItem("precise_name", user.name);
-        void atelierAlert(String(result.res));
-        feedback.finish(result.status ? "success" : result.res === "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" ? "click" : "error");
-        if (result.status) {
-          rescan();
-        }
-      });
-      if (placeVideoUpAction(searchRoot, button3, "block")) continue;
-      if (target.tagName === "A") {
-        target.insertAdjacentElement("afterend", button3);
-      } else {
-        target.appendChild(button3);
-      }
-    }
-  }
-  function debounce(callback, waitMs) {
-    let timer2;
-    return () => {
-      if (timer2 !== void 0) {
-        window.clearTimeout(timer2);
-      }
-      timer2 = window.setTimeout(callback, waitMs);
-    };
-  }
-  function observeElementShadowRoot(el, observer, observed) {
-    const shadowRoot = el.shadowRoot;
-    if (!shadowRoot || observed.has(shadowRoot)) {
-      return;
-    }
-    observed.add(shadowRoot);
-    ensurePageControls(shadowRoot);
-    observer.observe(shadowRoot, { childList: true, subtree: true });
-    observeOpenShadowRoots(shadowRoot, observer, observed);
-  }
-  function observeOpenShadowRoots(root, observer, observed) {
-    if (root instanceof HTMLElement) {
-      observeElementShadowRoot(root, observer, observed);
-    }
-    for (const el of Array.from(root.querySelectorAll("*"))) {
-      observeElementShadowRoot(el, observer, observed);
-    }
-  }
-  function scheduleStartupScans(scan) {
-    for (const delayMs of [250, 750, 1500, 3e3]) {
-      window.setTimeout(scan, delayMs);
-    }
-  }
-  function startBlocker() {
-    let observer = null;
-    const observedShadowRoots = /* @__PURE__ */ new WeakSet();
-    const scanComments = (root = document, rules = readRuleSnapshotWithHistoryAliases()) => {
-      if (observer) {
-        observeOpenShadowRoots(root, observer, observedShadowRoots);
-      }
-      for (const item of collectCommentItems(root)) {
-        const decision = decideComment(item, rules);
-        if (decision) {
-          hideElement(item, decision);
-        } else {
-          restoreElement(item);
-          ensureActionButton(item, scan);
-        }
-      }
-    };
-    const scan = () => {
-      for (const el of hiddenElements) if (!el.isConnected) hiddenElements.delete(el);
-      if (observer) {
-        observeOpenShadowRoots(document, observer, observedShadowRoots);
-      }
-      const rules = readRuleSnapshotWithHistoryAliases();
-      removeHomeAdBlockPlaceholders();
-      const items = [
-        ...collectVideoItems(document),
-        ...collectLiveItems(document)
-      ];
-      for (const item of items) {
-        const decision = decide(item, rules);
-        if (decision) {
-          hideElement(item, decision);
-        } else {
-          restoreElement(item);
-          ensureActionButton(item, scan);
-        }
-      }
-      scanComments(document, rules);
-      ensureProfileBlockButtons(scan);
-      ensureSpaceProfileBlockButton(scan);
-    };
-    const scheduleScan = debounce(scan, 300);
-    window.addEventListener(blockedVisibilityChangedEvent, () => {
-      for (const el of hiddenElements) {
-        if (el.isConnected) applyBlockedVisibility(el);
-        else hiddenElements.delete(el);
-      }
-      scan();
-    });
-    window.addEventListener("atelier-sync-applied", scheduleScan);
-    const start = () => {
-      ensureRuntimeStyle();
-      if (typeof GM_registerMenuCommand === "function") {
-        GM_registerMenuCommand("Bili Atelier \u5C4F\u853D\u89C4\u5219", () => openBlockerPanel(scan, (container, rescan) => renderHistoryPanel(container, rescan, true)));
-      }
-      installHistoryShortcut(scan);
-      installCommentExpandFastScan(scanComments);
-      observer = new MutationObserver((records2) => {
-        for (const root of commentMutationRoots(records2)) scanComments(root);
-        scheduleScan();
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-      scan();
-      scheduleStartupScans(scan);
-      debugLog("blocker started");
-    };
-    if (document.body) {
-      start();
-      return;
-    }
-    const bodyObserver = new MutationObserver(() => {
-      if (!document.body) {
-        return;
-      }
-      bodyObserver.disconnect();
-      start();
-    });
-    bodyObserver.observe(document.documentElement, { childList: true });
-    window.addEventListener("pagehide", () => observer?.disconnect(), { once: true });
-  }
-
   // src/ui/launcher.ts
   function startAtelierLauncher() {
     if (document.getElementById("atelier-launcher")) return;
@@ -17862,42 +23092,43 @@ var utils = {
     const host = document.createElement("div");
     host.id = "atelier-launcher";
     host.setAttribute("data-bili-blocker-ui", "");
-    const button3 = document.createElement("button");
-    button3.type = "button";
-    button3.className = "atelier-launcher-button";
-    button3.setAttribute("aria-label", "\u6253\u5F00 Atelier \u5FEB\u6377\u83DC\u5355");
-    button3.setAttribute("aria-haspopup", "menu");
-    button3.setAttribute("aria-expanded", "false");
-    button3.title = "Atelier \xB7 \u62D6\u52A8\u53EF\u8C03\u6574\u4F4D\u7F6E";
-    const image = document.createElement("img");
-    image.src = atelierIcons.tv;
-    image.alt = "";
-    image.draggable = false;
-    button3.append(image);
+    const button4 = document.createElement("button");
+    button4.type = "button";
+    button4.className = "atelier-launcher-button xp-button";
+    button4.setAttribute("aria-label", "\u6253\u5F00 Atelier \u5FEB\u6377\u83DC\u5355");
+    button4.setAttribute("aria-haspopup", "menu");
+    button4.setAttribute("aria-expanded", "false");
+    button4.title = "Atelier \xB7 \u62D6\u52A8\u53EF\u8C03\u6574\u4F4D\u7F6E";
+    const image3 = document.createElement("img");
+    image3.src = atelierIcons.tv;
+    image3.alt = "";
+    image3.draggable = false;
+    button4.append(image3);
     const menu = document.createElement("nav");
-    menu.className = "atelier-quick-menu";
+    menu.className = "atelier-quick-menu xp-menu";
     menu.hidden = true;
     menu.id = "atelier-quick-menu";
     menu.setAttribute("role", "menu");
     menu.setAttribute("aria-label", "Atelier \u5FEB\u6377\u83DC\u5355");
-    button3.setAttribute("aria-controls", menu.id);
+    button4.setAttribute("aria-controls", menu.id);
     const title = document.createElement("h2");
     title.textContent = "Bili Atelier";
     menu.append(title);
     const entries = [];
     const toggle = (open, focus = false) => {
       menu.hidden = !open;
-      button3.setAttribute("aria-expanded", String(open));
+      button4.setAttribute("aria-expanded", String(open));
       if (open) {
         const above = host.getBoundingClientRect().top + 44 >= menu.offsetHeight;
         menu.style.top = above ? "auto" : "0";
         menu.style.bottom = above ? "0" : "auto";
       }
-      if (focus) (open ? entries[0] : button3)?.focus();
+      if (focus) (open ? entries[0] : button4)?.focus();
     };
     for (const area of atelierAreas) {
       const entry = document.createElement("button");
       entry.type = "button";
+      entry.className = "xp-menu-item";
       entry.setAttribute("role", "menuitem");
       const icon2 = document.createElement("img");
       icon2.src = atelierIcons[area.id];
@@ -17912,6 +23143,7 @@ var utils = {
     }
     const visibility = document.createElement("button");
     visibility.type = "button";
+    visibility.className = "xp-menu-item";
     visibility.setAttribute("role", "menuitemcheckbox");
     const check = document.createElement("span");
     check.className = "atelier-menu-check";
@@ -17927,7 +23159,9 @@ var utils = {
     });
     window.addEventListener(blockedVisibilityChangedEvent, updateVisibility);
     updateVisibility();
-    menu.append(visibility);
+    const separator = document.createElement("div");
+    separator.className = "xp-menu-separator";
+    menu.append(separator, visibility);
     entries.push(visibility);
     let edge = readUiPreferences().edge, y = readUiPreferences().y;
     const position = () => {
@@ -17937,12 +23171,12 @@ var utils = {
       host.style.top = `${Math.max(6, Math.min(innerHeight - 54, y * (innerHeight - 48)))}px`;
     };
     let drag, suppressClick = false;
-    button3.addEventListener("pointerdown", (event) => {
+    button4.addEventListener("pointerdown", (event) => {
       if (event.button !== 0) return;
       drag = { id: event.pointerId, x: event.clientX, y: event.clientY, top: host.getBoundingClientRect().top, moved: false };
-      button3.setPointerCapture(event.pointerId);
+      button4.setPointerCapture(event.pointerId);
     });
-    button3.addEventListener("pointermove", (event) => {
+    button4.addEventListener("pointermove", (event) => {
       if (!drag || drag.id !== event.pointerId) return;
       if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 5) drag.moved = true;
       if (!drag.moved) return;
@@ -17965,9 +23199,9 @@ var utils = {
         suppressClick = false;
       }, 0);
     };
-    button3.addEventListener("pointerup", release);
-    button3.addEventListener("pointercancel", release);
-    button3.addEventListener("click", () => {
+    button4.addEventListener("pointerup", release);
+    button4.addEventListener("pointercancel", release);
+    button4.addEventListener("click", () => {
       if (suppressClick) {
         suppressClick = false;
         return;
@@ -18004,9 +23238,9 @@ var utils = {
       ({ edge, y } = readUiPreferences());
       position();
     });
-    host.append(menu, button3);
+    host.append(menu, button4);
     document.body.append(host);
-    observePixelLabels(menu);
+    observeCrispText(menu);
     position();
   }
 
@@ -18078,12 +23312,12 @@ var utils = {
       warnLog("\u5DF2\u770B\u6A21\u5757\u9700\u8981 GM_* \u5B58\u50A8\u6743\u9650\uFF0C\u5F53\u524D\u73AF\u5883\u4E0D\u53EF\u7528\u3002");
       return;
     }
-    let started5 = false;
+    let started6 = false;
     const start = () => {
-      if (started5) {
+      if (started6) {
         return;
       }
-      started5 = true;
+      started6 = true;
       try {
         startViewedMarker();
         debugLog("viewed-marker started");
