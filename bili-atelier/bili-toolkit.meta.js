@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.3.2
+// @version      0.4.0
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -11,8 +11,7 @@
 // @match        https://t.bilibili.com/*
 // @exclude      https://member.bilibili.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=bilibili.com
-// @homepageURL  https://github.com/dukeNashor/bili-atelier
-// @supportURL   https://github.com/dukeNashor/bili-atelier/issues
+// @homepageURL  https://dukenashor.github.io/bili-atelier/
 // @run-at       document-start
 // @grant        unsafeWindow
 // @grant        GM_setValue
@@ -27,7 +26,7 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_getResourceURL
 // @grant        GM_getResourceText
-// @license      MIT
+// @license      CC-BY-NC-SA-4.0
 // @resource     atelier_xp_simsun_12_bold_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-12-bold.dc3fef4f30a1a0227505e99c4ccf77657fb19ac04e8bd319f2a1b598673fa6ce.woff#sha256=dc3fef4f30a1a0227505e99c4ccf77657fb19ac04e8bd319f2a1b598673fa6ce
 // @resource     atelier_xp_simsun_12_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-12.fc911e4307d83bd87b76bd8aff89fd490b22e96ebc2ba36d07c0ceacdd797d2f.woff#sha256=fc911e4307d83bd87b76bd8aff89fd490b22e96ebc2ba36d07c0ceacdd797d2f
 // @resource     atelier_xp_simsun_15_bold_woff https://dukenashor.github.io/bili-atelier/resources/xp-simsun-15-bold.a7e6845efb689319b1560634465640e7ffb56f41190fb3e2f802f520d57d395a.woff#sha256=a7e6845efb689319b1560634465640e7ffb56f41190fb3e2f802f520d57d395a
