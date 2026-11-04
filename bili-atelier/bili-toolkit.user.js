@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.4.1
+// @version      0.4.2
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -19228,8 +19228,10 @@ ${wide} .vl-wmp{width:var(--vl-player-w)}
 .vl-wmp-button:disabled{background-position:calc(-3 * var(--w)) 0}
 .vl-wmp-button:is([data-art=pause],[data-art=rew],[data-art=ffwd],[data-art=menu]):disabled{background-position:0 0;opacity:.5}
 .vl-wmp-button:focus-visible{outline:1px dotted var(--xp-ink);outline-offset:-2px}
-.vl-wmp-button[data-art=rew]{--art:var(--wmp-rew);--w:34px;left:4px;top:0;width:34px;height:20px}
-.vl-wmp-button[data-art=ffwd]{--art:var(--wmp-ffwd);--w:34px;right:4px;top:0;width:34px;height:20px}
+/* \u25C4\u25C4 \u25BA\u25BA lie over the seek bar's ends, as the layout stacks them (5 and 15
+   over its 2): the green track comes out from under them. */
+.vl-wmp-button[data-art=rew]{--art:var(--wmp-rew);--w:34px;left:4px;top:0;width:34px;height:20px;z-index:1}
+.vl-wmp-button[data-art=ffwd]{--art:var(--wmp-ffwd);--w:34px;right:4px;top:0;width:34px;height:20px;z-index:1}
 .vl-wmp-button[data-art=menu]{--art:var(--wmp-menu);--w:20px;left:11px;top:20px;width:20px;height:19px}
 .vl-wmp-button[data-art=play]{--art:var(--wmp-play);--w:30px;left:33px;top:22px;width:30px;height:30px}
 .vl-wmp-button[data-art=pause]{--art:var(--wmp-pause);--w:32px;left:32px;top:21px;width:32px;height:32px}
