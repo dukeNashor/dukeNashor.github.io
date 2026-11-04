@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.4.0
+// @version      0.4.1
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -2557,12 +2557,12 @@
     if (!validation.status) {
       return validation;
     }
-    const current3 = readRuleList(key3);
-    if (current3.includes(validation.res)) {
+    const current4 = readRuleList(key3);
+    if (current4.includes(validation.res)) {
       return { status: false, res: "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" };
     }
-    current3.push(validation.res);
-    writeRuleList(key3, current3);
+    current4.push(validation.res);
+    writeRuleList(key3, current4);
     return { status: true, res: "\u6DFB\u52A0\u6210\u529F", value: validation.res };
   }
   function removeRuleItem(key3, value2) {
@@ -2570,13 +2570,13 @@
     if (!validation.status) {
       return validation;
     }
-    const current3 = readRuleList(key3);
-    const index = current3.findIndex((item) => item === validation.res);
+    const current4 = readRuleList(key3);
+    const index = current4.findIndex((item) => item === validation.res);
     if (index < 0) {
       return { status: false, res: "\u89C4\u5219\u4E0D\u5B58\u5728" };
     }
-    current3.splice(index, 1);
-    writeRuleList(key3, current3);
+    current4.splice(index, 1);
+    writeRuleList(key3, current4);
     return { status: true, res: "\u5DF2\u89E3\u9664\u5C4F\u853D", value: validation.res };
   }
   function importRuleSnapshot(data, mode2) {
@@ -2594,9 +2594,9 @@
         changed += written.length;
         continue;
       }
-      const current3 = readRuleList(rule.key);
-      const merged = writeRuleList(rule.key, current3.concat(incoming));
-      changed += Math.max(0, merged.length - current3.length);
+      const current4 = readRuleList(rule.key);
+      const merged = writeRuleList(rule.key, current4.concat(incoming));
+      changed += Math.max(0, merged.length - current4.length);
     }
     return { status: true, res: `\u5BFC\u5165\u5B8C\u6210\uFF0C\u53D8\u66F4 ${changed} \u6761` };
   }
@@ -3080,8 +3080,8 @@
       if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(id)) throw new Error("\u8FDC\u7AEF\u672C\u5730\u5173\u6CE8\u6279\u6B21\u540D\u79F0\u65E0\u6548");
       return [id, parseLocalFollowBatch(raw)];
     });
-    const current3 = localFollowRecords();
-    const all = new Map(current3);
+    const current4 = localFollowRecords();
+    const all = new Map(current4);
     for (const [id, incoming] of parsed) {
       const existing = all.get(id);
       if (existing && canonicalBatch(existing) !== canonicalBatch(incoming)) throw new Error("\u672C\u5730\u5173\u6CE8\u6279\u6B21 ID \u51B2\u7A81");
@@ -3094,7 +3094,7 @@
         version: 1,
         createdAt: (/* @__PURE__ */ new Date()).toISOString(),
         snapshot: localFollowSnapshot(),
-        batches: Object.fromEntries(current3)
+        batches: Object.fromEntries(current4)
       });
     }
     if (parsed.length) GM_setValue(prefix + "pull_" + uuid(), Object.fromEntries(parsed));
@@ -3213,9 +3213,9 @@
   }
   function writeLocalFollowCache(uid, patch) {
     if (!normalizeLocalUid(uid)) return;
-    const current3 = readLocalFollowCache(uid), updates = { ...current3.updates };
+    const current4 = readLocalFollowCache(uid), updates = { ...current4.updates };
     for (const [kind, value2] of Object.entries(patch.updates ?? {})) if (Number.isSafeInteger(value2) && value2 > (updates[kind] ?? 0)) updates[kind] = value2;
-    GM_setValue(prefix + "cache_" + uid, { ...current3, ...patch, updates });
+    GM_setValue(prefix + "cache_" + uid, { ...current4, ...patch, updates });
     pulse();
     notify(false);
   }
@@ -3262,8 +3262,8 @@
     ].filter(validKey));
   }
   function apply() {
-    const desired = materialize(known()), current3 = localKeys();
-    if (desired.size === current3.size && [...desired].every((k) => current3.has(k))) return;
+    const desired = materialize(known()), current4 = localKeys();
+    if (desired.size === current4.size && [...desired].every((k) => current4.has(k))) return;
     applyFromSync(() => {
       const viewed2 = readViewedStorage().items.filter((v) => !validKey(`v:${v}`));
       writeViewedStorage({ items: [...viewed2, ...[...desired].filter((k) => k.startsWith("v:")).map((k) => k.slice(2))] }, "overwrite");
@@ -4047,7 +4047,6 @@
       this.scheduled = false;
       this.lastId = "";
       this.lastAt = -Infinity;
-      this.playingPriority = 0;
     }
     request(request2, action, valid = () => true) {
       if (!soundCategories.includes(request2.category)) return;
@@ -4073,14 +4072,10 @@
       if (!(gain > 0) || !this.transport.ready(request2.asset.id)) return;
       const now = this.now();
       if (!request2.preview && now - this.lastAt < (this.lastId === request2.asset.id ? 180 : 55)) return;
-      if (this.transport.playing()) {
-        if (!request2.preview && request2.priority <= this.playingPriority) return;
-        this.transport.stop();
-      }
+      if (this.transport.playing()) this.transport.stop();
       if (this.transport.play(request2.asset.id, gain)) {
         this.lastAt = now;
         this.lastId = request2.asset.id;
-        this.playingPriority = request2.priority;
       }
     }
   };
@@ -4226,28 +4221,40 @@
   var WebAudioTransport = class {
     constructor() {
       this.buffers = /* @__PURE__ */ new Map();
-      this.decoding = false;
+      this.loading = /* @__PURE__ */ new Set();
+      this.failures = /* @__PURE__ */ new Map();
       this.supported = typeof window.AudioContext === "function";
     }
+    /** Decodes every clip not decoded or on its way. A bad clip disables that
+     * clip only; it is never replaced by a download. */
     prepare(decoder) {
-      if (this.decoding) return;
-      this.decoding = true;
       for (const [id, source] of Object.entries(soundSources)) {
+        if (this.buffers.has(id) || this.loading.has(id)) continue;
+        const scheme = /^(blob|data):/.exec(source)?.[1] ?? "";
+        const fail = (stage) => (error) => {
+          this.loading.delete(id);
+          const { name, message } = error ?? {};
+          const text3 = typeof message === "string" ? typeof name === "string" && name !== "Error" ? `${name}: ${message}` : message : String(error);
+          this.failures.set(id, { stage, scheme, message: text3 });
+        };
+        const decode2 = (bytes) => decoder.decodeAudioData(bytes).then((buffer) => {
+          this.loading.delete(id);
+          this.failures.delete(id);
+          this.buffers.set(id, buffer);
+        }, fail("\u89E3\u7801"));
+        this.loading.add(id);
         try {
-          if (source.startsWith("blob:")) {
+          if (scheme === "blob") {
             void fetch(source).then((response) => {
-              if (!response.ok) throw new Error("Cached sound unavailable");
+              if (!response.ok) throw new Error(`HTTP ${response.status}`);
               return response.arrayBuffer();
-            }).then((bytes2) => decoder.decodeAudioData(bytes2)).then((buffer) => this.buffers.set(id, buffer)).catch(() => {
-            });
-            continue;
-          }
-          if (!source.startsWith("data:")) continue;
-          const encoded = source.slice(source.indexOf(",") + 1), binary = atob(encoded);
-          const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
-          void decoder.decodeAudioData(bytes.buffer).then((buffer) => this.buffers.set(id, buffer)).catch(() => {
-          });
-        } catch {
+            }).then(decode2, fail("\u8BFB\u53D6"));
+          } else if (scheme === "data") {
+            const binary = atob(source.slice(source.indexOf(",") + 1));
+            void decode2(Uint8Array.from(binary, (character) => character.charCodeAt(0)).buffer);
+          } else fail("\u8BFB\u53D6")(new Error("Tampermonkey \u6CA1\u6709\u7ED9\u51FA\u8FD9\u4E2A\u8D44\u6E90"));
+        } catch (error) {
+          fail("\u8BFB\u53D6")(error);
         }
       }
     }
@@ -4260,13 +4267,18 @@
     unlock() {
       if (!this.supported) return;
       try {
-        this.context ??= new AudioContext();
-        this.prepare(this.context);
+        if (!this.context) {
+          this.context = new AudioContext();
+          this.prepare(this.context);
+        }
         if (this.context.state !== "running") void this.context.resume().catch(() => {
         });
       } catch {
         this.supported = false;
       }
+    }
+    clips() {
+      return { total: Object.keys(soundSources).length, loaded: this.buffers.size, loading: this.loading.size, failure: [...this.failures.values()][0] };
     }
     available() {
       return this.supported;
@@ -4383,10 +4395,16 @@
     if (!prefs.enabled) return "\u97F3\u6548\u5DF2\u5173\u95ED";
     if (prefs.volume === 0) return "\u603B\u97F3\u91CF\u4E3A\u96F6";
     if (transport && !transport.available()) return "\u5F53\u524D\u6D4F\u89C8\u5668\u65E0\u6CD5\u4F7F\u7528 Web Audio";
+    const clips2 = transport?.clips();
+    if (clips2 && !clips2.loading && clips2.failure) {
+      const { stage, scheme, message } = clips2.failure;
+      return `\u58F0\u97F3\u6CA1\u6709\u8F7D\u5165\uFF08${clips2.loaded}/${clips2.total}\uFF09\uFF1A${scheme ? `${scheme}: \u5730\u5740${stage}\u5931\u8D25` : "\u6CA1\u6709\u62FF\u5230\u8D44\u6E90\u5730\u5740"}\uFF08${message}\uFF09`;
+    }
     if (monitor?.blocked()) return "\u68C0\u6D4B\u5230\u5A92\u4F53\u64AD\u653E\uFF0C\u97F3\u6548\u6682\u65F6\u5B89\u9759";
     if (!foreground()) return "\u53EA\u5728\u5F53\u524D\u524D\u53F0\u7A97\u53E3\u64AD\u653E";
     if (!transport?.unlocked()) return "\u9996\u6B21\u70B9\u51FB\u540E\u53EF\u64AD\u653E\uFF1B\u6D4F\u89C8\u5668\u963B\u6B62\u7684\u58F0\u97F3\u4E0D\u4F1A\u8865\u64AD";
-    return "\u5DF2\u5C31\u7EEA \xB7 \u8BD5\u542C\u4E5F\u9075\u5B88\u97F3\u91CF\u3001\u5206\u7C7B\u5F00\u5173\u548C\u5A92\u4F53\u907F\u8BA9";
+    if (clips2?.loading) return `\u58F0\u97F3\u8F7D\u5165\u4E2D\uFF08${clips2.loaded}/${clips2.total}\uFF09`;
+    return `\u5DF2\u5C31\u7EEA \xB7 ${clips2?.loaded ?? 0}/${clips2?.total ?? 0} \u4E2A\u58F0\u97F3\u5DF2\u8F7D\u5165 \xB7 \u8BD5\u542C\u4E5F\u9075\u5B88\u97F3\u91CF\u3001\u5206\u7C7B\u5F00\u5173\u548C\u5A92\u4F53\u907F\u8BA9`;
   }
   function startSounds() {
     if (started2) return;
@@ -4409,9 +4427,9 @@
       const activate = (event) => {
         if (!event.isTrusted || !foreground()) return;
         transport.unlock();
-        const current3 = gesture = ++sequence;
+        const current4 = gesture = ++sequence;
         window.setTimeout(() => {
-          if (gesture === current3) gesture = 0;
+          if (gesture === current4) gesture = 0;
         }, 0);
       };
       for (const name of ["pointerdown", "click", "keydown", "change", "submit"]) document.addEventListener(name, activate, true);
@@ -6322,9 +6340,9 @@
   }
   function xpFontCss(dpr) {
     const faces = Object.entries(strikes).flatMap(([strike, [regular, bold]]) => [[regular, 400], [bold, 700]].filter(([url]) => url).map(([url, weight]) => `@font-face{font-family:"Atelier XP ${strike}";src:url("${url}") format("woff");font-weight:${weight};font-display:block}`));
-    const body2 = xpTextFor(9, dpr), caption2 = xpTextFor(10, dpr);
+    const body2 = xpTextFor(9, dpr), caption2 = xpTextFor(10, dpr), title = xpTextFor(12, dpr);
     const family = (text3) => `"Atelier XP ${text3.strike}",SimSun,"NSimSun",monospace`;
-    return { faces: faces.join("\n"), vars: `--xp-font:${family(body2)};--xp-font-size:${body2.size}px;--xp-line:${body2.line}px;--xp-caption-font:${family(caption2)};--xp-caption-size:${caption2.size}px;--xp-dot:${body2.factor / dpr}px;--xp-crisp:${xpCrispFilter}` };
+    return { faces: faces.join("\n"), vars: `--xp-font:${family(body2)};--xp-font-size:${body2.size}px;--xp-line:${body2.line}px;--xp-caption-font:${family(caption2)};--xp-caption-size:${caption2.size}px;--xp-title-font:${family(title)};--xp-title-size:${title.size}px;--xp-dot:${body2.factor / dpr}px;--xp-crisp:${xpCrispFilter}` };
   }
   var fallback = /[^\u0000-\u007e\u00a0-\u024f\u2000-\u206f\u2e80-\u9fff\uff00-\uffef]/u;
   var graphemes;
@@ -6625,11 +6643,11 @@ ${xpButtonCss(".atelier-control", true)}
 ${xpControlCss}`;
     (document.head || document.documentElement).append(...styles);
     ensureCrispFilter(document);
-    let current3 = "", fontDpr = 0;
+    let current4 = "", fontDpr = 0;
     const update = () => {
       const { scheme, dark, dpr } = appearanceState(), key3 = `${scheme}|${dark}|${dpr}`;
-      if (key3 === current3) return;
-      current3 = key3;
+      if (key3 === current4) return;
+      current4 = key3;
       const font = xpFontCss(dpr);
       if (fontDpr !== dpr) {
         fonts.textContent = font.faces;
@@ -6656,7 +6674,7 @@ ${xpControlCss}`;
       const base = `${Object.entries(tokens).map(([name, value2]) => `--xp-${name.replace(/[A-Z]/g, (letter) => "-" + letter.toLowerCase())}:${value2}`).join(";")};${Object.entries(aliases2).map(([name, value2]) => `--atelier-${name}:${value2}`).join(";")};${font.vars};color-scheme:${dark ? "dark" : "light"}`;
       theme2.textContent = `:root{${base}}`;
       void lunaImageVars(scheme, dark, dpr).then((images2) => {
-        if (current3 === key3 && images2) theme2.textContent = `:root{${base};${images2}}`;
+        if (current4 === key3 && images2) theme2.textContent = `:root{${base};${images2}}`;
       });
       watchScale(dpr);
     };
@@ -10898,6 +10916,16 @@ a.lh-item{color:var(--xp-ink)}
   function setVideoLunaEnabled(enabled) {
     if (typeof GM_setValue === "function") GM_setValue(key2, { enabled });
   }
+  var coverKey = "BiliAtelier_VideoCover";
+  var videoCoverChanged = "atelier-video-cover-changed";
+  function videoCoverEnabled() {
+    const stored = typeof GM_getValue === "function" ? GM_getValue(coverKey, null) : null;
+    return stored?.enabled !== false;
+  }
+  function setVideoCoverEnabled(enabled) {
+    if (typeof GM_setValue === "function") GM_setValue(coverKey, { enabled });
+    window.dispatchEvent(new Event(videoCoverChanged));
+  }
   var isLunaVideoLocation = (where = location) => where.hostname === "www.bilibili.com" && (/^\/video\/(?:BV|av)/i.test(where.pathname) || isLunaListPath(where.pathname) || isLunaBangumiPath(where.pathname));
   var isLunaListPath = (pathname) => /^\/list\/(?:ml\d+|watchlater|\d+)\/?$/i.test(pathname);
   var isLunaBangumiPath = (pathname) => /^\/bangumi\/play\/(?:ep|ss)\d+\/?$/i.test(pathname);
@@ -11039,6 +11067,7 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       row("\u660E\u6697(D):", choice([["page", "\u8DDF\u968F\u7F51\u9875"], ["light", "\u6D45\u8272"], ["dark", "\u6DF1\u8272"]], prefs.theme, (value2) => saveUiPreferences({ theme: value2 }))),
       element("p", "luna-hint", "\u6587\u5B57\u4F7F\u7528 Windows XP \u5B8B\u4F53\u7684\u539F\u751F\u70B9\u9635\uFF0C\u6309\u5C4F\u5E55\u7F29\u653E\u9009\u62E9\u6700\u63A5\u8FD1\u7684\u5C3A\u5BF8\u3002"),
       videoLunaRow(),
+      videoCoverRow(),
       button2("\u91CD\u7F6E\u7535\u89C6\u5165\u53E3\u4F4D\u7F6E", () => {
         saveUiPreferences({ edge: "right", y: 0.72 });
         window.dispatchEvent(new Event("atelier-reset-launcher"));
@@ -11060,12 +11089,24 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     line.append(box, element("span", "", "\u89C6\u9891\u64AD\u653E\u9875\u4F7F\u7528 Luna \u754C\u9762\uFF08\u5173\u95ED\u540E\u663E\u793A B \u7AD9\u539F\u6765\u7684\u9875\u9762\uFF09"));
     return line;
   }
-  function download(data, stem) {
+  function videoCoverRow() {
+    const line = element("label", "atelier-appearance-row atelier-check-row");
+    const box = element("input");
+    box.type = "checkbox";
+    box.checked = videoCoverEnabled();
+    box.addEventListener("change", () => {
+      sound("select");
+      setVideoCoverEnabled(box.checked);
+    });
+    line.append(box, element("span", "", "\u8FDB\u5165\u89C6\u9891\u65F6\u663E\u793A\u5C01\u9762\uFF08\u6307\u5411\u753B\u9762\u65F6\u663E\u793A\u9996\u5E27\uFF0C\u5F00\u59CB\u64AD\u653E\u540E\u4E0D\u518D\u663E\u793A\uFF09"));
+    return line;
+  }
+  function download(data, stem2) {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link3 = element("a");
     link3.href = url;
-    link3.download = stem + "-" + (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) + ".json";
+    link3.download = stem2 + "-" + (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) + ".json";
     document.body.appendChild(link3);
     link3.click();
     link3.remove();
@@ -11136,11 +11177,11 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       feedback.finish("close");
     }
     function syncSavedRules(discardDrafts = false) {
-      const current3 = readRuleSnapshot();
+      const current4 = readRuleSnapshot();
       for (const rule of ruleDefinitions) {
         const field = fields2.get(rule.key);
         if (discardDrafts || field.value === saved.get(rule.key)) {
-          field.value = formatRuleText(current3[rule.key]);
+          field.value = formatRuleText(current4[rule.key]);
           saved.set(rule.key, field.value);
         }
       }
@@ -11157,9 +11198,9 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
           const identity = (value2) => String(value2).trim().toLowerCase();
           const baseline = new Set(parseRuleText(saved.get(rule.key), rule.integer).map(identity));
           const draft = new Set(next.map(identity));
-          const current3 = latest[rule.key].filter((value2) => !baseline.has(identity(value2)) || draft.has(identity(value2)));
-          const present = new Set(current3.map(identity));
-          next = current3.concat(next.filter((value2) => !baseline.has(identity(value2)) && !present.has(identity(value2))));
+          const current4 = latest[rule.key].filter((value2) => !baseline.has(identity(value2)) || draft.has(identity(value2)));
+          const present = new Set(current4.map(identity));
+          next = current4.concat(next.filter((value2) => !baseline.has(identity(value2)) && !present.has(identity(value2))));
         }
         writeRuleList(rule.key, next);
       }
@@ -13664,10 +13705,10 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}` : person.name;
         else if (folder) sections.push(Object.assign(document.createElement("p"), { className: "afp-empty", textContent: "\u8FD9\u4E2A\u5206\u7EC4\u8FD8\u6CA1\u6709 UP \u4E3B\uFF0C\u53F3\u952E\u6587\u4EF6\u5939\u53EF\u4EE5\u7BA1\u7406\u5206\u7EC4" }));
       }
       view.replaceChildren(...sections);
-      const list = tiles(), current3 = list.find((node4) => `${node4.dataset.kind}:${node4.dataset.uid}` === focused) ?? list.find((node4) => node4.getAttribute("aria-selected") === "true") ?? list[0];
-      if (current3) {
-        current3.tabIndex = 0;
-        if (hadFocus) current3.focus();
+      const list = tiles(), current4 = list.find((node4) => `${node4.dataset.kind}:${node4.dataset.uid}` === focused) ?? list.find((node4) => node4.getAttribute("aria-selected") === "true") ?? list[0];
+      if (current4) {
+        current4.tabIndex = 0;
+        if (hadFocus) current4.focus();
       }
     }
     observeCrispText(panel);
@@ -13761,7 +13802,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       fold();
     });
     fold();
-    const current3 = () => {
+    const current4 = () => {
       for (const card2 of options.list.children) {
         if (!(card2 instanceof HTMLElement) || !card2.classList.contains("adc-card")) continue;
         const rect = card2.getBoundingClientRect();
@@ -13770,7 +13811,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       return null;
     };
     toTop.addEventListener("click", () => {
-      const card2 = current3();
+      const card2 = current4();
       if (card2) window.scrollTo({ top: card2.getBoundingClientRect().top + window.scrollY - stickyTop(), behavior: "instant" });
     });
     const paintNight = () => night.setAttribute("aria-pressed", String(options.loggedIn && biliTheme() === "dark"));
@@ -13786,7 +13827,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     let frame2 = 0;
     const update = () => {
       frame2 = 0;
-      toTop.disabled = !current3();
+      toTop.disabled = !current4();
       const right = options.feedWindow.getBoundingClientRect().right;
       win.style.left = `${Math.max(0, Math.min(right + gap, window.innerWidth - width - margin))}px`;
     };
@@ -14619,17 +14660,17 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
           const feedback = soundTask(void 0, () => !!node4?.isConnected);
           event.preventDefault();
           event.stopPropagation();
-          const current3 = getProfile();
-          if (!current3) return;
-          if (localFollowSnapshot().accounts.some((account) => account.uid === current3.uid)) {
-            removeLocalFollow(current3.uid);
+          const current4 = getProfile();
+          if (!current4) return;
+          if (localFollowSnapshot().accounts.some((account) => account.uid === current4.uid)) {
+            removeLocalFollow(current4.uid);
             scan();
             feedback.finish("delete");
             return;
           }
           node4.disabled = true;
           try {
-            const profile2 = current3.name ? current3 : await new LocalFollowApi().profile(current3.uid, new AbortController().signal);
+            const profile2 = current4.name ? current4 : await new LocalFollowApi().profile(current4.uid, new AbortController().signal);
             const before = JSON.stringify(localFollowSnapshot());
             addLocalFollow(profile2);
             writeLocalFollowCache(profile2.uid, profile2);
@@ -14772,7 +14813,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
   function toggleViewedVideo(id) {
     const viewed2 = !isViewedVideo(id), changed = setViewedVideo(id, viewed2);
     showInfoLog((viewed2 ? "\u5DF2\u6807\u8BB0\u5DF2\u770B\uFF1A" : "\u5DF2\u6807\u8BB0\u672A\u770B\uFF1A") + id, "success");
-    sound(changed ? "success" : "click");
+    sound("click");
     return viewed2;
   }
 
@@ -15891,7 +15932,10 @@ ${page.css ?? ""}`;
     button5.dataset.kind = kind;
     button5.title = label;
     button5.setAttribute("aria-label", label);
-    button5.addEventListener("click", action);
+    button5.addEventListener("click", () => {
+      sound("click");
+      action();
+    });
     return button5;
   }
   var foldKey = "BiliAtelier_VideoWindows";
@@ -15905,11 +15949,15 @@ ${page.css ?? ""}`;
   };
   function foldable(window2, name) {
     let folded = readFolded(name);
-    const button5 = captionButton(window2.caption, "minimize", "\u6700\u5C0F\u5316", () => {
+    const toggle = () => {
       folded = !folded;
       sound(folded ? "minimize" : "restore");
       writeFolded(name, folded);
       paint2();
+    };
+    const button5 = captionButton(window2.caption, "minimize", "\u6700\u5C0F\u5316", toggle);
+    window2.caption.addEventListener("click", (event) => {
+      if (!event.target.closest(".xp-caption-button")) toggle();
     });
     const paint2 = () => {
       window2.body.hidden = folded;
@@ -15925,6 +15973,7 @@ ${page.css ?? ""}`;
   function tool(label, icon2, title = "") {
     const button5 = el2("button", "xp-tool");
     button5.type = "button";
+    button5.addEventListener("click", () => sound("click"));
     if (icon2) button5.append(icon2);
     if (label) button5.append(el2("span", "vl-tool-label", label));
     if (title) button5.title = title;
@@ -15934,7 +15983,10 @@ ${page.css ?? ""}`;
   function xpButton(label, action, className = "") {
     const button5 = el2("button", `xp-button ${className}`.trim(), label);
     button5.type = "button";
-    button5.addEventListener("click", action);
+    button5.addEventListener("click", () => {
+      sound("click");
+      action();
+    });
     return button5;
   }
   var openMenuHost = null;
@@ -16194,9 +16246,8 @@ ${page.css ?? ""}`;
     const like = tool("\u70B9\u8D5E", icons.like(), "\u70B9\u8D5E\uFF08\u957F\u6309\u4E00\u79D2\u4E00\u952E\u4E09\u8FDE\uFF09");
     const coin = tool("\u6295\u5E01", icons.coin()), favorite = tool("\u6536\u85CF", icons.star()), share = tool("\u5206\u4EAB", icons.share());
     share.append(dropArrow());
-    const more = tool("", icons.more(), "\u66F4\u591A");
-    more.append(dropArrow());
-    toolbar.append(like, coin, favorite, share, el2("span", "xp-tool-separator"), more);
+    const later = tool("\u7A0D\u540E\u518D\u770B", shellIcon(21, 16), "\u6DFB\u52A0\u5230\u7A0D\u540E\u518D\u770B");
+    toolbar.append(like, coin, favorite, share, later);
     const content = win.body.appendChild(el2("div", "vl-info"));
     const desc = content.appendChild(el2("fieldset", "xp-groupbox vl-desc"));
     desc.append(el2("legend", "", "\u7B80\u4ECB"));
@@ -16209,7 +16260,7 @@ ${page.css ?? ""}`;
     let counts = { like: 0, coin: 0, favorite: 0, share: 0 };
     const aid = () => Number(state2?.aid) || 0;
     const signedIn = !!context.me;
-    for (const control of [like, coin, favorite]) if (!signedIn) {
+    for (const control of [like, coin, favorite, later]) if (!signedIn) {
       control.disabled = true;
       control.title = guestTitle;
     }
@@ -16297,13 +16348,11 @@ ${page.css ?? ""}`;
       paint2();
       try {
         await context.actions.like(aid(), on5);
-        sound(on5 ? "success" : "click");
       } catch (error) {
         mine = before;
         counts = beforeCounts;
         paint2();
         note(failure2(error), "error");
-        sound("error");
       }
     }
     async function triple() {
@@ -16323,10 +16372,8 @@ ${page.css ?? ""}`;
         }
         paint2();
         note("\u4E09\u8FDE\u6210\u529F", "success");
-        sound("success");
       } catch (error) {
         note(failure2(error), "error");
-        sound("error");
       }
     }
     coin.addEventListener("click", () => void giveCoins());
@@ -16372,10 +16419,8 @@ ${page.css ?? ""}`;
         }
         paint2();
         note("\u6295\u5E01\u6210\u529F\uFF0C\u611F\u8C22\u652F\u6301", "success");
-        sound("success");
       } catch (error) {
         note(failure2(error), "error");
-        sound("error");
       }
     }
     favorite.addEventListener("click", () => void chooseFolders());
@@ -16385,7 +16430,6 @@ ${page.css ?? ""}`;
         folders = await context.actions.folders(aid(), context.me);
       } catch (error) {
         note(failure2(error), "error");
-        sound("error");
         return;
       }
       const before = new Set(folders.filter((folder) => folder.faved).map((folder) => folder.id));
@@ -16409,9 +16453,9 @@ ${page.css ?? ""}`;
         const add2 = create.appendChild(el2("button", "atelier-control", "\u65B0\u5EFA"));
         add2.type = "button";
         add2.addEventListener("click", async () => {
+          sound("click");
           const title = name.value.trim();
           if (!title) {
-            sound("error");
             name.focus();
             return;
           }
@@ -16421,11 +16465,9 @@ ${page.css ?? ""}`;
             if (id) {
               row({ id, title, count: 0, faved: true });
               name.value = "";
-              sound("success");
             }
           } catch (error) {
             note(failure2(error), "error");
-            sound("error");
           } finally {
             add2.disabled = false;
           }
@@ -16442,10 +16484,8 @@ ${page.css ?? ""}`;
         counts.favorite += Number(mine.favorite) - Number(was);
         paint2();
         note(mine.favorite ? "\u5DF2\u6536\u85CF" : "\u5DF2\u53D6\u6D88\u6536\u85CF", "success");
-        sound("success");
       } catch (error) {
         note(failure2(error), "error");
-        sound("error");
       }
     }
     share.addEventListener("click", () => {
@@ -16462,18 +16502,14 @@ ${page.css ?? ""}`;
         { label: "\u590D\u5236 BV \u53F7", disabled: !bvid, action: () => copy(bvid, " BV \u53F7") }
       ], share);
     });
-    more.addEventListener("click", () => openMenu([
-      { label: "\u6DFB\u52A0\u5230\u7A0D\u540E\u518D\u770B", disabled: !signedIn, title: signedIn ? "" : guestTitle, action: async () => {
-        try {
-          await context.actions.watchLater(aid());
-          note("\u5DF2\u6DFB\u52A0\u5230\u7A0D\u540E\u518D\u770B", "success");
-          sound("success");
-        } catch (error) {
-          note(failure2(error), "error");
-          sound("error");
-        }
-      } }
-    ], more));
+    later.addEventListener("click", async () => {
+      try {
+        await context.actions.watchLater(aid());
+        note("\u5DF2\u6DFB\u52A0\u5230\u7A0D\u540E\u518D\u770B", "success");
+      } catch (error) {
+        note(failure2(error), "error");
+      }
+    });
     return {
       element: win.root,
       render(next) {
@@ -16519,7 +16555,186 @@ ${page.css ?? ""}`;
     };
   }
 
+  // src/modules/video-luna/cover.ts
+  var coverUrl = (pic) => String(pic ?? "").replace(/@[^/]*$/, "").replace(/^(?:https?:)?\/\//, "https://");
+  function createCover() {
+    const cover = el2("div", "vl-cover");
+    cover.setAttribute("aria-hidden", "true");
+    cover.setAttribute("data-bili-blocker-ui", "true");
+    const image5 = cover.appendChild(el2("img"));
+    image5.alt = "";
+    image5.referrerPolicy = "no-referrer";
+    image5.decoding = "async";
+    let played = false, src = "";
+    const paint2 = () => {
+      cover.hidden = played || !src || !videoCoverEnabled();
+    };
+    const gone = () => {
+      if (!played) {
+        played = true;
+        paint2();
+      }
+    };
+    window.addEventListener(videoCoverChanged, paint2);
+    document.addEventListener("pointerdown", (event) => {
+      if (event.button === 0 && event.target?.closest?.(".bpx-player-video-area .bpx-player-video-perch")) gone();
+    }, true);
+    document.addEventListener("playing", (event) => {
+      if (event.target?.closest?.(".bpx-player-video-area")) gone();
+    }, true);
+    return {
+      element: cover,
+      render(state2) {
+        const next = coverUrl(state2?.videoData?.pic);
+        if (next !== src) {
+          src = next;
+          if (src) image5.src = src;
+          else image5.removeAttribute("src");
+        }
+        paint2();
+      },
+      playback(state2) {
+        if (!state2.paused && state2.time > 0) gone();
+      },
+      place() {
+        const area = document.querySelector(".bpx-player-video-area");
+        const after = area?.querySelector(":scope > .bpx-player-video-poster") ?? area?.querySelector(":scope > .bpx-player-video-perch");
+        if (after && after.nextElementSibling !== cover) after.after(cover);
+      }
+    };
+  }
+
+  // src/modules/video-luna/image-window.ts
+  var current3 = null;
+  function showImageWindow(image5) {
+    (current3 ??= createImageWindow()).show(image5);
+  }
+  function createImageWindow() {
+    const win = xpWindow({ className: "vl-image-window", icon: shellIcon(224, 16), title: "" });
+    const root2 = win.root;
+    root2.setAttribute("data-bili-blocker-ui", "true");
+    root2.setAttribute("role", "dialog");
+    const close = win.caption.appendChild(el2("button", "xp-caption-button"));
+    close.type = "button";
+    close.title = "\u5173\u95ED";
+    close.setAttribute("aria-label", "\u5173\u95ED");
+    const view = win.body.appendChild(el2("div", "vl-image-view"));
+    const picture = view.appendChild(el2("img"));
+    picture.alt = "";
+    picture.referrerPolicy = "no-referrer";
+    const status2 = win.body.appendChild(el2("div", "xp-status vl-image-status"));
+    const size = status2.appendChild(el2("span", "xp-status-pane"));
+    status2.appendChild(el2("span", "xp-status-pane vl-status-spring"));
+    let shown2 = null;
+    const save = status2.appendChild(xpButton("\u4FDD\u5B58\u2026", () => void download2()));
+    observeCrispText(root2);
+    let dragged = false;
+    const center = () => {
+      if (dragged || !root2.isConnected) return;
+      root2.style.left = `${Math.max(0, Math.round((innerWidth - root2.offsetWidth) / 2))}px`;
+      root2.style.top = `${Math.max(0, Math.round((innerHeight - root2.offsetHeight) / 2))}px`;
+    };
+    picture.addEventListener("load", () => {
+      size.textContent = `${picture.naturalWidth}\xD7${picture.naturalHeight}`;
+      center();
+    });
+    picture.addEventListener("error", () => {
+      size.textContent = "\u56FE\u7247\u8BFB\u53D6\u5931\u8D25";
+    });
+    close.addEventListener("click", () => {
+      sound("close");
+      dispose();
+    });
+    function dispose() {
+      shown2?.dispose?.();
+      shown2 = null;
+      root2.remove();
+      current3 = null;
+    }
+    async function download2() {
+      const image5 = shown2;
+      if (!image5) return;
+      try {
+        const url = URL.createObjectURL(await image5.save());
+        const link3 = el2("a");
+        link3.href = url;
+        link3.download = image5.name;
+        document.body.append(link3);
+        link3.click();
+        link3.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1e4);
+      } catch {
+        note("\u4FDD\u5B58\u5931\u8D25\uFF0C\u53EF\u4EE5\u53F3\u952E\u56FE\u7247\u53E6\u5B58\u4E3A", "error");
+      }
+    }
+    win.caption.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || event.target.closest(".xp-caption-button")) return;
+      event.preventDefault();
+      const rect = root2.getBoundingClientRect(), dx = event.clientX - rect.left, dy = event.clientY - rect.top;
+      dragged = true;
+      win.caption.setPointerCapture?.(event.pointerId);
+      const move = (next) => {
+        root2.style.left = `${Math.round(Math.min(Math.max(next.clientX - dx, 40 - rect.width), innerWidth - 40))}px`;
+        root2.style.top = `${Math.round(Math.min(Math.max(next.clientY - dy, 0), innerHeight - 30))}px`;
+      };
+      const done = () => {
+        win.caption.removeEventListener("pointermove", move);
+        win.caption.removeEventListener("pointerup", done);
+        win.caption.removeEventListener("pointercancel", done);
+      };
+      win.caption.addEventListener("pointermove", move);
+      win.caption.addEventListener("pointerup", done);
+      win.caption.addEventListener("pointercancel", done);
+    });
+    return {
+      show(image5) {
+        shown2?.dispose?.();
+        shown2 = image5;
+        win.title.textContent = image5.title;
+        root2.setAttribute("aria-label", image5.title);
+        size.textContent = "";
+        save.disabled = false;
+        picture.src = image5.src;
+        if (!root2.isConnected) {
+          dragged = false;
+          (document.fullscreenElement ?? document.body).append(root2);
+        }
+        center();
+      }
+    };
+  }
+
   // src/modules/video-luna/player-window.ts
+  var stem = (state2) => state2?.kind === "bangumi" ? `ep${state2.epId}` : `${state2?.bvid || "video"}${(state2?.videoData?.pages?.length ?? 0) > 1 ? `_P${Number(state2.p) || 1}` : ""}`;
+  var fileClock = (seconds2) => {
+    const total = Math.floor(seconds2);
+    return [total / 3600, total % 3600 / 60, total % 60].map((value2) => String(Math.floor(value2)).padStart(2, "0")).join("-");
+  };
+  async function captureFrame() {
+    const video2 = document.querySelector(".bpx-player-video-area video");
+    if (!video2?.videoWidth) throw new Error("\u753B\u9762\u8FD8\u6CA1\u6709\u52A0\u8F7D\u51FA\u6765");
+    const canvas = document.createElement("canvas");
+    canvas.width = video2.videoWidth;
+    canvas.height = video2.videoHeight;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("\u8FD9\u4E2A\u89C6\u9891\u4E0D\u80FD\u622A\u53D6\u753B\u9762");
+    try {
+      context.drawImage(video2, 0, 0);
+      if (video2.mediaKeys) {
+        const probe = document.createElement("canvas");
+        probe.width = 16;
+        probe.height = 9;
+        const small = probe.getContext("2d");
+        small.drawImage(canvas, 0, 0, 16, 9);
+        if (small.getImageData(0, 0, 16, 9).data.every((value2, index) => index % 4 === 3 || value2 < 16)) throw new Error("protected");
+      }
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+      if (!blob) throw new Error("empty");
+      return { blob, seconds: video2.currentTime };
+    } catch {
+      throw new Error("\u8FD9\u4E2A\u89C6\u9891\u4E0D\u80FD\u622A\u53D6\u753B\u9762");
+    }
+  }
   function createPlayerWindow() {
     const win = xpWindow({ className: "vl-player-window", icon: shellIcon(224, 16), title: "", label: "\u64AD\u653E\u5668" });
     win.root.classList.remove("xp-window");
@@ -16537,6 +16752,46 @@ ${page.css ?? ""}`;
     const pane = (className = "") => status2.appendChild(el2("span", `xp-status-pane ${className}`.trim()));
     const views2 = pane(), danmaku = pane(), date = pane(), rights = pane();
     pane("vl-status-spring");
+    let latest = null;
+    const toolsPane = pane("vl-status-tools");
+    const tools = toolsPane.appendChild(tool("\u5DE5\u5177", void 0, "\u5C01\u9762\u5927\u56FE\u3001\u5F53\u524D\u5E27\u56FE\u7247"));
+    tools.append(dropArrow());
+    tools.setAttribute("aria-haspopup", "menu");
+    tools.addEventListener("click", () => openMenu([
+      { label: "\u5C01\u9762\u5927\u56FE\u2026", disabled: !coverUrl(latest?.videoData?.pic), action: showCover },
+      { label: "\u5F53\u524D\u5E27\u56FE\u7247\u2026", action: () => void showFrame() }
+    ], tools));
+    function showCover() {
+      const url = coverUrl(latest?.videoData?.pic);
+      if (!url) return;
+      const type = /.(?:jpe?g|png|webp|gif|avif)$/i.exec(url)?.[0] ?? ".jpg";
+      showImageWindow({
+        title: "\u5C01\u9762\u5927\u56FE",
+        src: url,
+        name: `${stem(latest)}_\u5C01\u9762${type}`,
+        save: () => fetch(url, { referrerPolicy: "no-referrer" }).then((response) => {
+          if (!response.ok) throw new Error(String(response.status));
+          return response.blob();
+        })
+      });
+    }
+    async function showFrame() {
+      let frame3;
+      try {
+        frame3 = await captureFrame();
+      } catch (error) {
+        note(error.message, "error");
+        return;
+      }
+      const url = URL.createObjectURL(frame3.blob), clock = formatDuration(frame3.seconds);
+      showImageWindow({
+        title: `\u5F53\u524D\u5E27 \xB7 ${clock}`,
+        src: url,
+        name: `${stem(latest)}_${fileClock(frame3.seconds)}.png`,
+        save: async () => frame3.blob,
+        dispose: () => URL.revokeObjectURL(url)
+      });
+    }
     const viewedPane = pane("vl-status-viewed");
     const viewedLabel = viewedPane.appendChild(el2("label", "vl-status-check"));
     const check2 = viewedLabel.appendChild(el2("input", "xp-check"));
@@ -16553,7 +16808,7 @@ ${page.css ?? ""}`;
     check2.addEventListener("change", () => {
       if (viewedId) {
         setViewedVideo(viewedId, check2.checked);
-        sound(check2.checked ? "success" : "click");
+        sound("click");
       }
     });
     window.addEventListener(viewedMarksChanged, paintViewed);
@@ -16562,6 +16817,7 @@ ${page.css ?? ""}`;
       status: status2,
       grip,
       render(state2) {
+        latest = state2;
         const video2 = state2.videoData ?? {}, stat = video2.stat ?? {};
         win.title.textContent = String(video2.title ?? "");
         win.root.title = String(video2.title ?? "");
@@ -16610,10 +16866,8 @@ ${page.css ?? ""}`;
         subscribed = on5;
         paintSubscribe();
         note(on5 ? "\u5DF2\u8BA2\u9605\u5408\u96C6" : "\u5DF2\u53D6\u6D88\u8BA2\u9605", "success");
-        sound("success");
       } catch (error) {
         note(failure2(error), "error");
-        sound("error");
       } finally {
         subscribe.disabled = !context.me;
       }
@@ -16643,18 +16897,18 @@ ${page.css ?? ""}`;
       if (!season) return partRows(false);
       const episodes = sections()[section]?.episodes ?? [];
       return episodes.flatMap((episode, index) => {
-        const current3 = episode.bvid === bvid;
+        const current4 = episode.bvid === bvid;
         const row = {
           key: String(episode.bvid),
           index: String(index + 1),
           title: String(episode.title ?? episode.arc?.title ?? ""),
           duration: Number(episode.arc?.duration ?? episode.page?.duration) || 0,
           viewedId: viewedIdFromBvid(String(episode.bvid)),
-          current: current3,
+          current: current4,
           aid: Number(episode.aid),
           target: { aid: Number(episode.aid), bvid: String(episode.bvid), cid: Number(episode.cid) }
         };
-        return current3 && pages.length > 1 ? [row, ...partRows(true)] : [row];
+        return current4 && pages.length > 1 ? [row, ...partRows(true)] : [row];
       });
     }
     function draw() {
@@ -16680,7 +16934,7 @@ ${page.css ?? ""}`;
         check2.addEventListener("click", (event) => event.stopPropagation());
         check2.addEventListener("change", () => {
           setViewedVideo(item.viewedId, check2.checked);
-          sound(check2.checked ? "success" : "click");
+          sound("click");
         });
         row.title = item.title;
         row.addEventListener("click", (event) => {
@@ -16715,8 +16969,8 @@ ${page.css ?? ""}`;
       }));
       if (fresh !== lastKey) {
         lastKey = fresh;
-        const current3 = rows.querySelector("[data-current]");
-        if (current3) rows.scrollTop = Math.max(0, current3.offsetTop - rows.clientHeight / 2 + current3.offsetHeight / 2);
+        const current4 = rows.querySelector("[data-current]");
+        if (current4) rows.scrollTop = Math.max(0, current4.offsetTop - rows.clientHeight / 2 + current4.offsetHeight / 2);
       }
     }
     function drawTabs() {
@@ -16834,10 +17088,8 @@ ${page.css ?? ""}`;
         fav.disabled = false;
         if (ok3) {
           note(was ? "\u5DF2\u53D6\u6D88\u6536\u85CF" : "\u5DF2\u6536\u85CF\u6B64\u5217\u8868", "success");
-          sound("success");
         } else {
           note(was ? "\u53D6\u6D88\u6536\u85CF\u5931\u8D25" : "\u6536\u85CF\u5931\u8D25", "error");
-          sound("error");
         }
       };
       if (list.faved) openMenu([{ label: "\u53D6\u6D88\u6536\u85CF", action: () => void run() }], fav);
@@ -16849,10 +17101,8 @@ ${page.css ?? ""}`;
       const ok3 = await command({ op: "remove", key: item.key });
       if (ok3) {
         note(list?.type === watchLater ? "\u5DF2\u4ECE\u7A0D\u540E\u518D\u770B\u4E2D\u79FB\u9664" : "\u5DF2\u4ECE\u6536\u85CF\u5939\u4E2D\u79FB\u9664", "success");
-        sound("success");
       } else {
         note("\u79FB\u9664\u5931\u8D25", "error");
-        sound("error");
       }
     }
     function removeButton(item) {
@@ -16883,7 +17133,7 @@ ${page.css ?? ""}`;
       });
       return button5;
     }
-    function row(item, page, current3, open) {
+    function row(item, page, current4, open) {
       const invalid = (item.attr & 1) !== 0, playable = !invalid && !!item.bvid && (item.type === ugc || item.type === ogv);
       const multi = item.pages.length > 1, p2 = page?.p;
       const node4 = el2("a", "vl-lv-row");
@@ -16891,7 +17141,7 @@ ${page.css ?? ""}`;
       node4.setAttribute("role", "listitem");
       const url = playable ? listUrl(item, p2) : "";
       if (url) node4.href = url;
-      if (current3) {
+      if (current4) {
         node4.dataset.current = "";
         node4.setAttribute("aria-current", "true");
       }
@@ -16899,7 +17149,7 @@ ${page.css ?? ""}`;
       if (invalid) node4.dataset.invalid = "";
       const viewedId = item.bvid ? viewedIdFromBvid(item.bvid, page && multi ? page.p : void 0) : "";
       const viewed2 = !!viewedId && isViewedVideo(viewedId);
-      if (viewed2 && !current3) node4.dataset.viewed = "";
+      if (viewed2 && !current4) node4.dataset.viewed = "";
       const duration = page ? page.duration : item.pages.reduce((sum, part) => sum + (Number(part.duration) || 0), 0);
       const title = el2("span", "vl-lv-cell vl-ellipsis");
       if (multi && !page) {
@@ -16933,7 +17183,7 @@ ${page.css ?? ""}`;
         check2.addEventListener("click", (event) => event.stopPropagation());
         check2.addEventListener("change", () => {
           setViewedVideo(viewedId, check2.checked);
-          sound(check2.checked ? "success" : "click");
+          sound("click");
         });
       }
       if (!page && removable(item)) node4.append(removeButton(item));
@@ -16951,7 +17201,7 @@ ${page.css ?? ""}`;
           draw();
           return;
         }
-        if (current3) return;
+        if (current4) return;
         context.open({ aid: item.aid, bvid: item.bvid, cid: page?.cid ?? item.cid, p: p2 ?? 1, type: item.type, episodeId: item.episodeId, seasonId: item.seasonId, url });
       });
       node4.addEventListener("contextmenu", (event) => {
@@ -16968,10 +17218,8 @@ ${page.css ?? ""}`;
             try {
               await context.actions.watchLater(item.aid);
               note("\u5DF2\u6DFB\u52A0\u5230\u7A0D\u540E\u518D\u770B", "success");
-              sound("success");
             } catch (error) {
               note(failure2(error), "error");
-              sound("error");
             }
           } }],
           { label: seen ? "\u6807\u8BB0\u4E3A\u672A\u770B" : "\u6807\u8BB0\u4E3A\u5DF2\u770B", disabled: !viewedId, action: () => {
@@ -16988,16 +17236,16 @@ ${page.css ?? ""}`;
       const top = [...rows.children].find((node4) => node4.offsetTop + node4.offsetHeight > rows.scrollTop);
       const anchor = top?.dataset.rowKey, offset = top ? rows.scrollTop - top.offsetTop : 0;
       rows.replaceChildren(...list.items.flatMap((item) => {
-        const current3 = item.bvid === bvid, open = item.pages.length > 1 && (expanded.get(item.key) ?? current3);
-        const parent = row(item, void 0, current3 && !open, open);
-        return open ? [parent, ...item.pages.map((page) => row(item, page, current3 && page.p === p2))] : [parent];
+        const current4 = item.bvid === bvid, open = item.pages.length > 1 && (expanded.get(item.key) ?? current4);
+        const parent = row(item, void 0, current4 && !open, open);
+        return open ? [parent, ...item.pages.map((page) => row(item, page, current4 && page.p === p2))] : [parent];
       }));
       if (!list.items.length) rows.append(el2("p", "vl-empty vl-muted", "\u5217\u8868\u662F\u7A7A\u7684"));
       const fresh = `${list.type}:${list.id}:${bvid}:${p2}`;
       if (fresh !== lastKey) {
         lastKey = fresh;
-        const current3 = rows.querySelector("[data-current]");
-        if (current3) rows.scrollTop = Math.max(0, current3.offsetTop - rows.clientHeight / 2 + current3.offsetHeight / 2);
+        const current4 = rows.querySelector("[data-current]");
+        if (current4) rows.scrollTop = Math.max(0, current4.offsetTop - rows.clientHeight / 2 + current4.offsetHeight / 2);
       } else if (anchor) {
         const again = [...rows.children].find((node4) => node4.dataset.rowKey === anchor);
         if (again) rows.scrollTop = again.offsetTop + offset;
@@ -17111,6 +17359,8 @@ ${page.css ?? ""}`;
         pubdate: episode?.pub_time,
         copyright: 0,
         pages: [],
+        // The episode's own cover, else the season's.
+        pic: String(episode?.cover || season.cover || ""),
         stat: { view: stat.view, danmaku: stat.dm, like: stat.like, coin: stat.coin, favorite: stat.favorite, share: stat.share },
         owner: { mid: up?.mid }
       },
@@ -17257,17 +17507,17 @@ ${page.css ?? ""}`;
       return reversed ? slice.reverse() : slice;
     }
     function row(episode, index, stats) {
-      const id = episodeId(episode), current3 = id === Number(state2?.epId), url = bangumiUrl(`ep${id}`);
+      const id = episodeId(episode), current4 = id === Number(state2?.epId), url = bangumiUrl(`ep${id}`);
       const node4 = el2("a", "vl-lv-row");
       node4.href = url;
       node4.setAttribute("role", "listitem");
       node4.dataset.index = String(index);
-      if (current3) {
+      if (current4) {
         node4.dataset.current = "";
         node4.setAttribute("aria-current", "true");
       }
       const viewedId = bangumiViewedId("ep", id), viewed2 = !!viewedId && isViewedVideo(viewedId);
-      if (viewed2 && !current3) node4.dataset.viewed = "";
+      if (viewed2 && !current4) node4.dataset.viewed = "";
       const number = numberOf(episode, index);
       const title = String(episode.long_title || episode.show_title || episode.title || "");
       const published = formatDate(episode.pub_time), stat = stats?.get(id);
@@ -17287,7 +17537,7 @@ ${page.css ?? ""}`;
           check2.addEventListener("click", (event) => event.stopPropagation());
           check2.addEventListener("change", () => {
             setViewedVideo(viewedId, check2.checked);
-            sound(check2.checked ? "success" : "click");
+            sound("click");
           });
         }
       }
@@ -17302,7 +17552,7 @@ ${page.css ?? ""}`;
       node4.addEventListener("click", (event) => {
         if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
         event.preventDefault();
-        if (!current3) context.open({ aid: Number(episode.aid), bvid: String(episode.bvid ?? ""), cid: Number(episode.cid), path: `/bangumi/play/ep${id}`, episodeId: id, url });
+        if (!current4) context.open({ aid: Number(episode.aid), bvid: String(episode.bvid ?? ""), cid: Number(episode.cid), path: `/bangumi/play/ep${id}`, episodeId: id, url });
       });
       node4.addEventListener("contextmenu", (event) => {
         if (event.shiftKey) return;
@@ -17318,10 +17568,8 @@ ${page.css ?? ""}`;
             try {
               await context.actions.watchLater(aid);
               note("\u5DF2\u6DFB\u52A0\u5230\u7A0D\u540E\u518D\u770B", "success");
-              sound("success");
             } catch (error) {
               note(failure2(error), "error");
-              sound("error");
             }
           } },
           { label: seen ? "\u6807\u8BB0\u4E3A\u672A\u770B" : "\u6807\u8BB0\u4E3A\u5DF2\u770B", disabled: !viewedId, action: () => {
@@ -17406,8 +17654,8 @@ ${page.css ?? ""}`;
       const fresh = `${shown2}:${tab}:${block}:${state2?.epId}`;
       if (fresh !== lastKey) {
         lastKey = fresh;
-        const current3 = rows.querySelector("[data-current]");
-        rows.scrollTop = current3 ? Math.max(0, current3.offsetTop - (rows.clientHeight + head.offsetHeight) / 2 + current3.offsetHeight / 2) : 0;
+        const current4 = rows.querySelector("[data-current]");
+        rows.scrollTop = current4 ? Math.max(0, current4.offsetTop - (rows.clientHeight + head.offsetHeight) / 2 + current4.offsetHeight / 2) : 0;
       }
       followScroll();
     }
@@ -17469,7 +17717,67 @@ ${page.css ?? ""}`;
     return null;
   }
   var columnSelectors = { video: [".left-container", ".right-container"], list: [".playlist-container--left", ".playlist-container--right"] };
+  var stickyColumns = { video: ".right-container-inner", list: ".playlist-container--right", bangumi: ".plp-r" };
+  var bottomGaps = { video: 0, list: 0, bangumi: 280 };
   var on3 = `html[${videoAttribute}=luna]`;
+  function followTop(at, target, dy) {
+    if (Math.abs(at - target) < 0.5) return at;
+    const next = at > target ? Math.max(target, at - Math.max(dy, 0)) : Math.min(target, at - Math.min(dy, 0));
+    return Math.abs(next - target) < 0.5 ? null : next;
+  }
+  function placeColumn(kind) {
+    let column = null, width2 = -1, height = -1, hold = null, lastY = scrollY;
+    const set = (top) => {
+      hold = top;
+      const host = column?.parentElement;
+      if (top === null) host?.style.removeProperty("--vl-hold-top");
+      else host?.style.setProperty("--vl-hold-top", `${top}px`);
+    };
+    const place = () => {
+      if (!column?.parentElement) return;
+      const header = document.getElementById("biliMainHeader")?.clientHeight || headerHeight();
+      column.parentElement.style.setProperty("--vl-stick", `${Math.min(header, innerHeight - column.offsetHeight - bottomGaps[kind])}px`);
+    };
+    const free = (element2) => {
+      const held = hold;
+      set(null);
+      const top = element2.getBoundingClientRect().top;
+      set(held);
+      return top;
+    };
+    const sizes = typeof ResizeObserver === "function" ? new ResizeObserver((entries) => {
+      const rect = entries[entries.length - 1].contentRect, resized = rect.width !== width2;
+      if (!column || !resized && rect.height === height) return;
+      width2 = rect.width;
+      height = rect.height;
+      const at = column.getBoundingClientRect().top;
+      place();
+      if (resized) set(null);
+      else if (Math.abs(free(column) - at) > 0.5) set(at);
+    }) : null;
+    const watch = () => {
+      const next = document.querySelector(stickyColumns[kind]);
+      if (next === column) return;
+      set(null);
+      if (column) sizes?.unobserve(column);
+      column = next;
+      width2 = height = -1;
+      if (column) sizes?.observe(column);
+    };
+    watch();
+    window.addEventListener("scroll", () => {
+      const dy = scrollY - lastY;
+      lastY = scrollY;
+      watch();
+      if (hold === null || !column) return;
+      const at = column.getBoundingClientRect().top, next = followTop(at, free(column), dy);
+      if (next === null || next !== at) set(next);
+    }, { passive: true });
+    window.addEventListener("resize", () => {
+      set(null);
+      place();
+    });
+  }
   var sized = `${on3}:not([data-atelier-screen=wide],[data-atelier-screen=web],[data-atelier-screen=full])`;
   function startLayout(kind) {
     const root2 = document.documentElement;
@@ -17508,6 +17816,8 @@ ${on3} .plp-layout[style*="--vl-grid:"]{grid-template-columns:var(--vl-grid)!imp
 ${dm2} .bpx-player-wraplist{height:var(--vl-dm-h)!important}
 ${dm2} :is(.bpx-player-dm-wrap,.bpx-player-dm-load-status){height:var(--vl-dm-list)!important}
 ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
+${on3} :is(${Object.values(stickyColumns).join(",")}){overflow-anchor:none}
+${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).scroll-sticky{top:var(--vl-hold-top,var(--vl-stick))!important}
 `;
     const mark2 = (selector, values) => {
       const element2 = document.querySelector(selector);
@@ -17702,6 +18012,7 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
       }
     });
     measureColumns();
+    placeColumn(kind);
     return {
       /** Bilibili resized its columns (a new mode): measure them again. */
       measure: measureColumns,
@@ -17795,10 +18106,10 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
   var exit_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAASCAYAAAAQeC39AAAFYElEQVR42t2Xz4tdZx3GP++Pc+7NdCZQ0kXWzXIiBpoOCnYxhkK3zqR7NVCqUilKtJ1qE03TNkhpEaxmdFHcBZPaxLX6F1QqNIsJpl3YRRIINDAz57w/vy7ec957b7WQ6kZy4HAv59z3Od/n+zzP970HHtBDAZw8+bT8LyCXL//h/w5HnTz5tBw79mXW1h4n50xKiRgjMUZCCPS9w3tP13WEEIgxkXMiZ+HWrVvcu3ePrusA2Nj4BsePP1YxQgiEEIb1Pc459vf3ca5glvuRGzduLOAsLy9jrSFnQSQvfOacEZF6fvZo25au67AAa2uP88kn/8S5gPcO7wPOOQC8d4gI3kdCKMXkXB5ijGFlZaUWdPz4Y9y9exfnPM71OOfp+54YI13XEWOg7z3eu6FJkZyFgwcPknOuOJPJhJWVZZzz96GPoJRCBKxtOHToYT744O+FWEoJ5wJPPPE1VleP3pfc169/yPb2b1laWubOnTsAhBBxzvPII4e+EM7ly1dYXp7hgCACm5sbPProEUA+L0X13s2bN3nvvauEEAEKsRgj3jtWV49y/vz5oaMRESGEMMiucM4hCCkmXn/9PM55mqatjyrW7VhdPcqlS5fo+w7nisrOOVJKiAh97xGEnBLPP/99chZSSjMNBLTWHDlyhDfffAsZ7YeQswBCFsgpVWs+99z36Pu+EtXFbh7vQ7VeCLFmoBDy7O3tEmNg68UfI2MHFSilakHeO/q+WLjrOvre0XXdQEpwzrO/v08IjlPf/mZd27TNAs5ifgZCkokxEVPGh4h3nhgTp059q65t2xat9YxYyYSrdiqXNc4F3njjF3gfSDlz8eJvOHv259UEk7bFWlsLGomU7z0hJFLK9L3j9Okf4n0gpsy5c+e4eHG7rls6cGABpxDLAEURFFkgpsSLL/wIEUEpeOknW7zzzu8xxqCUZmlpqeLYsbveuwEIfHB411e/PvXUk2xsbPLMM88OCws1rQvgeHRdV4mFkHDO4eZwjh37Ehsbm5w5c5a2naC1GTo9WcCZn3opCzEEhIzkcu2rX1lj/esnePXV11BA07YoBYKqilmAvb09spQLvevxziGA0moY45u8++4VzHSKihHb2IGYwphZQbu7u4RYstL1Ha7vySI15yMOtsVaw3Q6GaZgu4AjUrIkgHe+ZGogJcD6+gn++pc/Y5oJjVa12YrEdDqdWTHGCIP0KUYEkJxLipkV9etfvkU7aTEDYaVmHSqWdsRQshpDIEsmp/RvOD/76RZLDx1gMimDp2maBZxCrKwb9y+GnI3xXl8/wQunf0DbtihVrGltQ9u2M8W89+zu7jKO/jKFCsCz3/kuWhu0AmUbrJJahFIardVcxvqKM07TEmzFuVdeQWtLYw3KNjw0bWsRxZYznJwzzntECo+UIlprjNZcuHCBtp0AmawMrVFDxopyxpjFce+c4/r1D3n77V/d9/7znxQbcc6cefm+cT6r2Lg9ffTRP3hpa4txYM5PzvH72LiPP76JtWaRmAhMp1O2t3+H1qpIrzUISE6IZJTSqCF3o1JKaeaeRYyRtm24evUa1679CVBoY9Bao1XJYztM0qYptmmahqZpF3CUUkwmLVeu/BGlFCFGrNFYa7G2AQRrTf230TR2IGWr8rYAlU2phlYEksw9SNc9XrIAiZRK6OenWdmAy9+bgikoQA82KSRsLdAYg9aG27dvLeB47+umrRSVlDEWa4epZxtEhKYp9iv3TJ3YFmBn50b1+/yhtS7eNkXiUer58/btO/X377//t/8a59NP79Xfj3Y6fPgwSpXGGlPWzxS3JfsLzlHs7Ow82K8tD+p7Jv8C+kaF0RPswkMAAAAASUVORK5CYII=";
 
   // src/ui/assets/wmp9/ffwd.png
-  var ffwd_default = "data:image/png;base64,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";
+  var ffwd_default = "data:image/png;base64,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";
 
   // src/ui/assets/wmp9/menu.png
-  var menu_default = "data:image/png;base64,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";
+  var menu_default = "data:image/png;base64,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";
 
   // src/ui/assets/wmp9/mute.png
   var mute_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAUCAYAAAAa2LrXAAANk0lEQVR42p2YeZCU5Z3HP+/R/fY9fczJDOPMIOByg2AQTelqxErKWNHVTaxkNydu3BAtzGYTZFVE8djgsV6RsAbNBoG1jKhZ703CrkfigQwKhYAcwzD39H28/R7Ps3/00OOEnizlU/VWdff7PN/+/b6/+1H4C2vDg4/LhkSEcDCCbZsc7x9hOJnknrU/VvgMa8NDj8lEIkgiGiNtpxnqyTMw0s+G2277THjfW/G4LIsCZtEBTxFvWCMY0PjFz/75M+Hdde9G2dwYpbE+TjZXoG8gyUhyhLvWTo5X88Xjv9ouL/78fBINZ+D3eVFVFSEEJ/pT9A0l+eRID/v3dnPHrT86LUGf2LJVnrvkbNqmTsXwelBQEFJweOAo/X1JevoPsmfXwdMm8ppv/JsM+kN0djXR0VGPP+LF65NknBwDAwMMD42QHCqeNpGb/2O7vPC8+TQ1n4FheMdokfT2pRgcHuXA4R72fvRBTSIn/HDb3Rvl8r9exMIFCzC8es0/G06apDN5BgdH2b3nfXr7+yb1yHV3PyaXX3wui+bPxOMxauIdSfWSzKToH+qh+71u0kPWpESuXLNVDh7uZ8G8GZw1v53ZXY3E6sN4AjZ5p4BZcEk6SYZG0vQOHOHjvf1EtRZuW/VtZTKPO2/ZOXz+c7NB8dSUb2g0SyZrMTg4ynvduxga6J1AZPXDPfdvkl+78lLa29smc0wAShYMDecpmg6ZzDB/2rWXnqMfct/6W5Q/D9evXvFlWqe0oCi18Sxhk7FzDA4PUSiXGB7tm5TE61Y+Ie2yy4KF01i2tIvW9gQNcT+KomAJm0K5SN4pkC5lyVg5slaOVHaUg/sOopvN3Pzd7yp/Tt7Xr/4iU6dO/YveaVowNJInX7RJp0d5r/sD+vpOcM8tqxQA9eTGKy+7cAzsVGWlBLMsyOQsctk8AJqqEIrEmTVzNkak/pQzX770oknJc4VLtlwiY+fIF4sVS6qSuniU+Yvn42lMn3Imnc6wbNlMvnDRWcye20pjIjCpYU4uX8jH9FnTceuOnfLuqssvoq2treY5IWRF36JDNpet6KupRKIxZs1egOIb91YVYPvTz8muri4mk+fI8SEMr4pEx2sEiMZDBINBVM1LKBZh3sIlrFi1Wp7cv+3552VXZ9ekCh4b7Mfn0REliSE1gvEQvoiBRzUIN3iZubiL61avqOJdfc19cs7saSw790ymTWvAq6unJnNdqZHgVYyYTfsiH7duWV/F2/qfO8b0rS1fOptF10C6AlQDn8+H4fWial6CoQhzFy3l2hvXyCqBS89ZiKqqNcF+92Y331i1FkWBaFglGlb5x7UPsvnltwj4PGiGQbihifrm8VA4b9HZ6LpWE2/nu+9wxXduxqt6iEUiTIm38KPVT7Jj+240j4biFSSiDUTaxnNmfSLOwqXTmXpGDL0GeaWy4NixZOWzdMcjBwGAoccJt2XH5Vu6aFJ9jx8/zvO/fQWpKPi8OrGIl60vvMjujz7Bo2tohkEs0UC8uaXigffcv0nGEw01wZ597lVW/OSOCWROO/9qwokGrr/yfIqmDYCuhGjq7OAHP71VbnjoMRlPxGvivfjqf/PNH64nFIlVvv/pfaZfcA2xlnb+7lsXYFnlisIxlbZpLay86Xr5vRWPy7bWemZ0NuI3PDWSfJGrvr2K3p4krhBI28ERJkIRY6nBwevXiE+t49GXNsu77t0o6+tr63vo0CGeefEN8jKGqsDHRwb4h9VrifgbWbJwBrZTMY6qhGntOJOV/7Je6h1tjQT83glAia4FAAQicWJTOvG3zgJg3uxZHPyf7aiqyokhB0cROLpK0OfQFG1gV8mkPl6HzzsRr37awkpOCsdJtLTjiVdyz/yz2uh+bQsFmaY/34/QbFzFQrcDhGMhMvmPcEp5OjpmEw55qyFXNC02PbeFsN7Iw5ufpmhVvKmslLGxEK7EFhaSMngqSnsND0Mco2PqgrFW5VMF5b5HMTx+pK6jB+rwGwFcAS1NCe5fezOOUEmnbByo6huP15McHUYPR+qo5c2hRCuRlk5C8UZ8Yx3N8GiBF97dj1uKEohZLOjsQjoCxdARPi+WbROPhWvmllBDO6HEFDyROF5/AEvYJDMpXnz94+qehed7kJqG1Gx0TUd4TRzXpa7RgydgYwkbRSpkcwVuX/Mw3kAdkeYOos1TUdUQlmvjCJMiFkK64LFAd1E0ieKG0QMjRAhOkE9KMDx+HE3DCNThCYaxPRKEIJe32fNxz1i18BJrbgTXRjF0GIsGPZfNIKU6oYCEEq3UNTQTijeie/0I3V8hMJXj9dffwfGGmTt9GnOmGUAJTQhU00JxHQpuESkliqIgkKgohBraqYvFCTW14TH8GB4d03Y43l/g9T9+iD8U5KymAIQSKJagLMxxYTyVKm3bLmk7h9dfseanyQPIBAdIWAmKjo0tK96nqA4nK4fUcgBkc4UJnYbrChxNQ+gNeII+pPSiKAaWo1Aslvjw0BEA4rFOYs0gFdCEgLKNAPSBwVGOHB+iq70RV0g0VcEXbUQP1aN7/Xh8fiKGimkLzp7bypbF1yMlHBtxSBZtpKJQkoJUviLgiaNJ9g8cYtaUGeTLJkGPt+p5HsNfFbxMicWLOlh+zkIKToFBPiFVGIJqmOaRpoHPEyHj5EiRIqD4KZvgwUOkuYNgvAWP11fFLIocQhEIUfE+6bdQNImQFSP49Qh9A0mOnximva0BV0iEkEh/hJA+cXBwXIg1xPjOVZeQK7okywLbdpGqQskVpFNZVEDvGxllaCRDXSRBKKySywn2vPxLDE3hgw+P8k+bfjvm6irPvLSbB57ayrV/fxnLzz+fomoCCsVcgVRykFAgyMBIP8Mn0vT5+vEEDUbNUX7/m/UE9SAf7+vnJ5tfHiPQ4rnn9/KLLc9z7dcv54LLI2geDUeUsfIuwz0p6sJhsrJAfzJJOhvF8tpjXgkbH7mWoNXKL1/7PfsPVfrGvJOl7JaRnhwEK6SpGggHrLKNYTfTk84wOJwiGIoRDmmkCw7f/+plaKgc7Uux84P96GYZs2yz/1APW174HV+69BJmzuiipOQBBTOXJznSR8gfrPjyb3a8IufMW0TA78dx5Xj0+H0MJwe5fcv/8vPrv4ZlO5S9Gj9c9wjnLpjHZV9cSrZoMjw6yCu/3sym++9SAH713K/lrHnz8HsNhBDjfVkIckc9bHr5LW78/hJc18UwfKxes43Fs5u48Jo2bEoM9Q7z0pM72XzPUwrADRvulBdfvIxYfaCKpesaAgfd8PHEk7uZMb2eM+fpmGIEjDLoLppXoqgutlWm//AANyy5e4K+huGb2DcqGplCkTf3HeELC+cicCnpOi88+yItnXOZMacJIQT9A7288sx2Nv9snaID7Or+iIbmDhL1jWjqeH4oWwX8gQZ++rfLGU7nyDsu3miA9beuHMsneXKpDL2fHGI0laqe27PrILHmKA2JKSjquEFIgZZQ+OYVXWRKQ9hmGU+9y7p/XU7WGq2Md6ZF74EBCoXCeJ83qNM7cAQt0j4+LdhjhrHTfOlvmjHLWUxhVT1P0SrkSRzymSK6Fa6efXd3Nw3NHcQTDWjapyuoi2H4WfJX0yg4FqbjQlDhkq9cWhnrhIvpWBzdd4BccnjiLPzQxi1y8eIlBINRFK2SD8SY7g4gdZUyCmKMYKEpmGWTE4cP8eqOp9n26H0TSu8dj6yX8xfPJ1IXRdO1SlUE0AVCmiheAR4XRRNI3R0zmMnRA8fYueOPbNnw7AS8GzbcKZdcfCa+kA8FtdokV1oVq1Iw/FZl7PKOk1fMmoz2jVa97+S6/7Gn5DlnLyEcrkPT9Kqu7thzUl+pVh6hgFk2OfzRfna+8gzbfv7AxFm4t7+PN97axf6RQUplk6JUMFHI6xqmrmEqY+SpleqaG0lx4vAh/vBfO5hRY6ZMD1l0v9dNNpPGUXMIrYj053G8aZSgDYZdJU+qokre2y900x6bcwpeVGvh4L6D5M0TCE+mkueMFIQq+e5kwahFXkJfdArewNAgb7/7NgcGByiWTIooFFEofErfKnlCUBhJcuKTQ7zz5mt0Nk2pfZ11y533ybLl0nH252hvm4qm1FEXVnDHGkXLdSjmCpjC5PAHu9i16x1mtLWx7qYbaw6Va9avl5Z/kOmzptPSmcCIqRhKEKm4Y7cxJlbJpVjI03tggPff2E17bA53rbm9Jt69T26TueA+2maG8NdF8Pq1arhWIqZY3ZvPFMmNZun0LOXyBV+piXfL7Q/IspR0zFtM+xmtaEr0FH3NXJ5sOc/RfQfY/e5OOpum1L7O+vRasWq1rG+eSlNnB03RBoSv0rlnRkZJJQc5uncP+WKBrRsfPK0Ly+tWr5DRtgBTpjUSjoUIhH1YRYfUSJpsMseh7h7KBcFTD287Lbxbt6yX4bYs0XgCX7xyRHHDSC2HVbbJjWbRrTA/OG/NaeFde+MaGW9uobXjTOLx+mqTnB4YJTnSx+HDByjnszw1Frb/7430yXXjmnUyVyyRK5dxLRN/MEx9KHjK3d/prpU3XS8BUtZxbFOQCDeiKX4evvPBz4T37394XJY9A5ScykVBNJ5AJ8y35l73mfB+fPOdMlMokC8VsKwykVCYoN/HQ3evmxTv/wB1UzuPm+KDqwAAAABJRU5ErkJggg==";
@@ -17819,7 +18130,7 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
   var prev_default = "data:image/png;base64,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";
 
   // src/ui/assets/wmp9/rew.png
-  var rew_default = "data:image/png;base64,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";
+  var rew_default = "data:image/png;base64,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";
 
   // src/ui/assets/wmp9/seek-buffered.png
   var seek_buffered_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAANCAYAAACHMDjlAAAAaElEQVR42u3ZsQ2AMAwEwCASIMnALMEI7Aoz2AWiuBvhm9fbpQAAAHxlOe/rEQMAUbVtqxQAiBdI36sUAIgXyDGbFABILJCuQABIFMiYTlgAZE5YwwIBIHXCskAAyCwQPxAAAAAAfu0FZ1gDbZUiQwIAAAAASUVORK5CYII=";
@@ -17828,7 +18139,7 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
   var seek_played_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAANCAYAAACHMDjlAAAAXElEQVR42u3XsQ2AMBAEQT9y/z0h1/LZp0AINZgAWWimhE1O1xoAAMBXYhz7LQMAs3pmqgDA/IBUlQoATNskAODVA2kRKgDggQBgQAAwIAD8TT/HpQIAAAAAC3sAeCkLt7XcBgQAAAAASUVORK5CYII=";
 
   // src/ui/assets/wmp9/seek-thumb.png
-  var seek_thumb_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAAANCAYAAADhT5ObAAACxUlEQVR42u3WX0hTURwH8O/d7tacTtfUYhPD/qISRiVEVP5BXA4iqOghRJEwg7KXeiiJmOJDhClJRVEhVkREDz1ErNpK1Arp39BKJVByMAflpt7p3XJ3Oz1I5yruYVfuffP3dH6Xe86H+7v3nPsDViLhYBYmFXVWMmwaBJ82g2p/reTFHqR3IDm4Gvmze/Gi/T4T7x7bmSoylPIefOoUqv3Hl2XoOSPyZvbAcf1hXONsfS3J1Q/AnMqje6pCslFsfAkfp8cwX4C2G/eowf4fHLxrI1sKc1FsKAEAXNjYIBlJHzEBAPzBP/hrsRHXeceihylqKiPGbRys2t0AgBZbi2SDc/gAAME5DkUZZaTH/maR0dlYTg6XskgyWAEAB7Y3SzYEtw4AEApOoCCjnNQ0Ohn6ZR1pOURySrLxOPCUTvBax+Gd4BMGHK4e2E3il3LMdBSjT2bw7GoHAwA1t6uIOjuCrl+v6T0jp/ySjcuBSpqX5ljx26nD82udDAC03jpBTlrcSM76LE7aSSQbtZttNJ/1FqL57Q5cab/DsADwKdSHTar1iyZFhBh8E1xCgIZVLbnGqli4U97QvHeyG2Xr9slqqBk1BtK6aG7xu6HKgqyGigG2Gr7OjwGAT+YVORBnDdPi9lk1rYjBp4rrZmqVeQ6zISQWi2hiiiAxTVQcs8obOlaZv6BOQ8RirURioQIAdUiZV6IJa8XzRSkjJBpTIWWKxIXVYrFSwgYIMUFWQIgJyIyspXkSr0eURGU1oiSK9Lk1NB8PaxAjMm9zAkxGjGKxRu0extnvlBVxDbjw7eIg7YHGmrzMh7GPshp9ni/4cWmIGnXN/cx3T1hWY9ATQaW9l1nSwVtemel7aQp0SF54YZ81vt8Xt7vecNNEjQbTI8nGwj5r9HQgrvGuLZ8aQ+ZWyUae79z8FtcK2FX/k1k5rZcR/wD2GQVHOtLKAwAAAABJRU5ErkJggg==";
+  var seek_thumb_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAAANCAYAAADhT5ObAAACyElEQVR42u3WX0hTURwH8O/d7tacTtfUYhPD/qISRiVEVP5BXA4iqOghRJEwg7KXeiiJmOJDhClJRVEhVkREDz1ErNpK1Arp39BKJVByMAflpt7p3XJ3Oz1I5yruYVfuffM8nd/lnPvhd8495/6AlZZwYxYGFXVWMmwaBJ82g2p/reSXPUjvQHJwNfJn9+JF+30m3piz9bUkVz8AcyqP7qkKyUax8SV8nB7DfAHabtyLa9jOVJGhlPfgU6dQ7T++rDz0nBF5M3vguP6QGuz/zsG7NrKlMBfFhhIAwIWNDZKR9BETAMAf/IO/FhtxnXcsSqazsZwcLmWRZLACAA5sb5ZsCG4dACAUnEBBRjmpaXQuMoqayohxGwerdjcAoMXWItngHD4AQHCOQ1FGGemxv2Hol3Wk5RDJKcnG48BTOsFrHYd3gk8YcLh6YDeJu3jMdBSjT2bw7GoHAwCtt06QkxY3krM+i5N2EslG7WYbjWe9hWh+uwNX2u8wAFBzu4qosyPo+vWajhk55ZdsXA5U0rg0x4rfTh2eX+tkWAD4FOrDJtX6RZMiQgy+CS4hQMOqljxjVSzcKW9obPG7ocqCrIaKAbYavtK4d7IbZev2yWqoGTUG0rrmPQDgk3lFLsRZwzTtZ2qVMcyGkHh8Vk0rYvCp0+JiEU1MESSmidK+jlXmD6XTENFjlc1DtVIQJN5UAKAOKbPtmrCW9qdCyiTAhdXi/aJUHiGtuFgpYQOEmCArIMQEZEbW0ng8rEGMyHw8CDAZMdI4idcjSqKyGlESRfrcGnGxRu0extnvlBVxDbjw7eIgrYHqmvuZ756wrMagJ4JKey81xpq8zIexj7IafZ4v+HFpiFlSwVtemeneNwU6JL94YZ01vt8Xt7p+15ZPjSFzq2Qjz3du/mhoBeyq/xnX2HDTRI0G0yPJxsI6a/R0gFm5rZfR/gGxmAVHlCLEQgAAAABJRU5ErkJggg==";
 
   // src/ui/assets/wmp9/stop.png
   var stop_default = "data:image/png;base64,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";
@@ -17843,7 +18154,7 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
   var volume_fill_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEkAAAASCAYAAAAXOvPoAAABZklEQVR42u2VvUoEMRSFv5OM4g9Y2omVPoOlvSBsIViJjSCCD2ChoLBY+wDK4g/6euIuu846icUkMxkLGxH8yWnuJTmT3HNuJoGMjIyMjF8F/XcDLp8GHsHYPYNEQcHZ7pH+tEn9x4EHmLoRld6oKCn9GEm1WAkUhIeoMLZQLHHaO9avO0n9h1vvqHBBLPJM3AtSW72kTkSEeQUT4ljCC5zCGmwhVubX2N/s6cf8bhf3Nx7vmDAE4NUP8bhuh5NWi273o+DWgHrSSMiEGHJJGBNyI6yErLBWWCPmi0UONw707XfS+d21Byj9EIdj6idUlMkOqnUknZdpx6SQm3bOqMszkW/U5LX4movUmNSul3wTOaY1cnl2le31LX354j4ZXPmKkimjsGksJB7bKAhoiomF1cunotKOx/XMB/GSqfm2Kzg1gWgS9b4NT0lDwimMfARWMGPm2Fnd+/ePVkZGRkZGRsaneAdH3kcHXma4GAAAAABJRU5ErkJggg==";
 
   // src/ui/assets/wmp9/volume-thumb.png
-  var volume_thumb_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAARCAYAAAAsT9czAAACx0lEQVR42q3Uy09UZxjH8e97OHMcBmZkrky4zYyIkYszKUaahqRNSk26cEHirhv/A9OYuPYv6K6JicYNC0wIlUYTgybslF4sVrSlSIiHQKtAUUidG8N7cWNMx8E5LnjWn/ye35u8eQTA3J8vzPzvD1hdeUa5XEIIQSQSo3cgx5nTp8RBGXH/4Yq5eWOczi+ihDubOdToQxtD/lWR1Z+36G0foqMzxc0b40RPOoTaDuE0OhhtyG8X2XhUIHfk83dmdDhKd3szgbdma6fA3V//paXrU8T3VyaM7nrJ3dAtiqrI/yfjS9MxM0g8nmS39TnTheuUZbnKJAPt9D39mng8ySeJVYZi1xBWqcqUi11898tZbNdd5vhwBHfdZVvuVKFoMMJLuUHezZPKOWw8XidfeV1lWvxhtiovyLt5vsnuYpkVLF/1Ml9BIMrPsUUDJP5OcWfwN96fhcUnTKop/A2Q2u7l9uhCrfnrCROPJwk2CB7sDNF/cqvGLJXm0foHbKUUAV8jiRY/88ubVSgUDKOURmlFwGna34TCKGVQKKwPmEAwitIaW2lDvZFSo6hvlNRIyyvHYEul6wcZjdT1jTQa5ZWjNLZUHo2URnq8XimNxKOQ1tjaM8igjbdRwsNog6VM/UZaG7yM0t6FtDZYngi8g/iIZcZgA9y7/xOL7mZdfBDGLpYU8dEmLm9eqrkgw8HPsB6lKJYUzV9prv5xseaC9Mez2CbH67Li25H/CIlzNReksp3h/NwZrGRbhrwLQoh9f1nQjpNsy1Bec/Ztu6ckh30JWtvSzP0TQli1bs8KIZ1W7L7cKWanpzj2ZZY1Zxlp7QHg32uG+RjdRweIJTuYnZkinc2y6ltCvTNNOItpuntOEEt2MDbzI5HTIyQcF5+QABSkn+nFAdI9WQTA2J2nZmnhIetrz6hUdgE4HI6ROdrPhXMjB2beABWanm2fVQlXAAAAAElFTkSuQmCC";
+  var volume_thumb_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAARCAYAAAAsT9czAAACyElEQVR42q3Uy2tTaRjH8e97enJs0yQ218beklgVa2uCih2kMIJVcOGi4G42/gciguv5C2Y3IChuXDggakVBqtCd13HqWJ3p1FI8pfXS1nZaNLem72U2IsbUnFn0WX/4/Z4XXh4BMPb3ezP+51NmZ15TLpcQQhCJxOjpy3Hi2EGxWUY8eDZjbt24QufhKOHOAFuafGhjyP9bZPbxEj3t/XR0prh14wpDA1G62wP4mxyMNiytFrj3+wdaun74YqIHHEJtW3A+m/xKkYXnBXLbf0T8euGq0V3L3AvdpqiKfD0ZX5qO0f3E40n2JWbpj11CWKUqUy528cuTk0Tj21hrfcdI4TfKslxlkv529rw6ju260+weiODOu6zI1SoUDUZYlgvk3Tw/ZdewzAyWr7rMVxCI8jtct0Aq57DwYp585VOVaWkMs1R5jy0aIPEmxd39f/DtTEy+5JoaJtAgeLraT++BpRozVRpH6+uIBkit9HBnaKI255+XXH1xDVsphd/XRKKlkfHpxSoUCoZRSqO0wnKaNzT+YBSlNQqF/zsmFAqjlMFW2lBvpNRIvIxBWfWNkhpbKl0fGY3SHkZppKlvpNHYUnlsrTTSo0xqjTTGcyFbay9kUF5B2qCFd46lPJ6vtUF7lGlt8MpR2mB5BoF3mfkfC2GwAe4/eMSku1gXb4axiyVFfKiZ84s/11yQgeAhrOcpPpUUZwY/EhKnai5IZSXD6bETFEuKwFHNxb/O1VyQ3ngW2+Swkm0Z8i4IITb8QUE7TmtbmrG3IYTl1Jh1K4R0Wkm2ZSjPORu+aF1JtvoS2HtyB3k4MsyuI1nmnGmktQ5A43oAxmN07+gjluzg8uhNIscGSTguPiEBKMhGRib7SO/MEkt28HB0mHQ2y6xvCvUlpxlnMk33zr0IgMt3X5mpiWfMz72mUlkDYGs4RmZHL2dPDW6a+Q9viZ9QnIb/6wAAAABJRU5ErkJggg==";
 
   // src/modules/video-luna/media-art.ts
   var art = {
@@ -17969,6 +18280,7 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
       node4.dataset.art = art2;
       node4.title = title;
       node4.setAttribute("aria-label", title.replace(/（.*）/, ""));
+      node4.addEventListener("click", () => sound("click"));
       return node4;
     };
     const rew = button5("rew", "\u540E\u9000 5 \u79D2\uFF08\u2190\uFF09"), ffwd = button5("ffwd", "\u524D\u8FDB 5 \u79D2\uFF08\u2192\uFF09");
@@ -17993,6 +18305,7 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
       node4.type = "button";
       node4.title = title;
       node4.setAttribute("aria-label", title.replace(/（.*）/, ""));
+      node4.addEventListener("click", () => sound("click"));
       if (icon2) {
         const image5 = node4.appendChild(el2("img"));
         image5.src = icon2;
@@ -18287,6 +18600,7 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
     const paintPin = () => {
       pin.classList.toggle("vl-wmp-on", pinned);
       pin.setAttribute("aria-pressed", String(pinned));
+      root2.toggleAttribute("data-pinned", pinned);
       pin.title = pinned ? "\u53D6\u6D88\u56FA\u5B9A\u63A7\u4EF6" : "\u56FA\u5B9A\u63A7\u4EF6";
       pin.setAttribute("aria-label", pin.title);
     };
@@ -18298,6 +18612,7 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
       paintPin();
     });
     exit.addEventListener("click", () => {
+      sound("click");
       const screen = document.querySelector(".bpx-player-container")?.getAttribute("data-screen");
       document.querySelector(screen === "full" ? ".bpx-player-ctrl-full" : ".bpx-player-ctrl-web")?.click();
     });
@@ -18309,6 +18624,10 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
       });
       part.addEventListener("pointerleave", () => {
         over = false;
+      });
+      part.addEventListener("pointerdown", () => {
+        const field = document.activeElement;
+        if (field instanceof HTMLElement && field.matches("input:not([type]),input[type=text],input[type=search],textarea,[contenteditable]:not([contenteditable=false])")) field.blur();
       });
     }
     root2.addEventListener("pointermove", (event) => {
@@ -18397,10 +18716,8 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
             try {
               await context.actions.watchLater(Number(item.aid));
               note("\u5DF2\u6DFB\u52A0\u5230\u7A0D\u540E\u518D\u770B", "success");
-              sound("success");
             } catch (error) {
               note(failure2(error), "error");
-              sound("error");
             }
           } },
           { label: seen ? "\u6807\u8BB0\u4E3A\u672A\u770B" : "\u6807\u8BB0\u4E3A\u5DF2\u770B", disabled: !id, action: () => {
@@ -18410,7 +18727,6 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
           { label: `\u5C4F\u853D UP \u4E3B\uFF1A${item?.owner?.name ?? ""}`, disabled: !config.blocker.enabled || !mid && !item?.owner?.name, action: () => {
             const result = mid ? addRuleItem("precise_uid", mid) : addRuleItem("precise_name", String(item.owner.name));
             void atelierAlert(String(result.res));
-            sound(result.status ? "success" : "click");
             if (result.status) context.rescan();
           } }
         ], { x: event.clientX, y: event.clientY });
@@ -18647,10 +18963,8 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
           if (on5) followStatus = 2;
           paintFollow();
           note(on5 ? `\u5DF2${word}` : `\u5DF2\u53D6\u6D88${word}`, "success");
-          sound(on5 ? "success" : "click");
         } catch (error) {
           note(failure2(error), "error");
-          sound("error");
         } finally {
           follow.disabled = !signedIn;
         }
@@ -18667,10 +18981,8 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
             followStatus = value2;
             paintFollow();
             note(`\u5DF2\u6807\u8BB0\u4E3A\u300C${label}\u300D`, "success");
-            sound("success");
           } catch (error) {
             note(failure2(error), "error");
-            sound("error");
           }
         } })),
         "separator",
@@ -18698,11 +19010,9 @@ ${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
           await context.actions.follow(String(up.mid), on5 ? 1 : 2);
           upFollowed = on5;
           note(on5 ? "\u5DF2\u5173\u6CE8" : "\u5DF2\u53D6\u6D88\u5173\u6CE8", "success");
-          sound(on5 ? "success" : "click");
           paintProducer(up);
         } catch (error) {
           note(failure2(error), "error");
-          sound("error");
           button5.disabled = false;
         }
       }, "vl-follow-small"));
@@ -18884,13 +19194,30 @@ ${on4}{--vl-status-h:24px}
 ${wide} .vl-player-status{width:var(--vl-player-w)}
 .vl-player-status>.xp-status-pane{flex:none}
 .vl-player-status>.vl-status-spring{flex:1 1 auto}
+/* \u5DE5\u5177 \u25BE (player-window.ts): a flat button filling its pane. */
+.vl-player-status>.vl-status-tools{padding:0}
+.vl-status-tools>.xp-tool{height:100%;min-height:0;padding-top:0;padding-bottom:0}
+/* The cover over the picture until the page first plays (cover.ts); the
+   pointer on the picture shows the first frame instead. */
+.bpx-player-video-area>.vl-cover{position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0;background:#000;pointer-events:none}
+.bpx-player-video-area>.vl-cover:is([hidden],:hover),.bpx-player-video-area:hover>.vl-cover{display:none}
+.vl-cover>img{display:block;width:100%;height:100%;object-fit:contain}
+/* The picture window (image-window.ts), over the page: the picture at its
+   own size, the whole window at most 90 % of the viewport. */
+.vl-image-window{position:fixed;z-index:2147483000;margin:0}
+.vl-image-view{line-height:0;background:#000}
+.vl-image-view>img{display:block;max-width:calc(90vw - 8px);max-height:calc(90vh - 64px);width:auto;height:auto}
+.vl-image-status{display:flex;align-items:center}
+.vl-image-status>.vl-status-spring{flex:1 1 auto}
 .vl-status-check{display:inline-flex;align-items:center;gap:3px;cursor:default}
 .vl-status-check .xp-check{margin:0}
 .vl-status-grip{flex:none;align-self:flex-end;width:var(--xp-gripper-w,13px);height:var(--xp-gripper-h,13px);background:var(--xp-gripper-0) right bottom no-repeat}
 
 /* The Media Player bar (media-bar.ts) under the player, inside its frame.
    Its art is on <html> as --wmp-*, tinted for the theme; each sprite holds
-   its states side by side: normal, hover, down, disabled. */
+   its states side by side: normal, hover, down, disabled. Places are those of
+   Media Player's FULLSCREENBOTTOMLAYOUT.WSZ: each button covers its socket
+   in the bar art exactly. */
 ${on4}[data-vl-wmp]{--vl-wmp-h:57px}
 .vl-wmp{position:relative;z-index:2;height:57px;margin:0;background:var(--wmp-bar-left) left top no-repeat,var(--wmp-bar-right) right top no-repeat,var(--wmp-bar-fill) left top repeat-x;${xpFont};color:var(--xp-ink);user-select:none;pointer-events:auto}
 .vl-wmp *{box-sizing:border-box}
@@ -18903,14 +19230,14 @@ ${wide} .vl-wmp{width:var(--vl-player-w)}
 .vl-wmp-button:focus-visible{outline:1px dotted var(--xp-ink);outline-offset:-2px}
 .vl-wmp-button[data-art=rew]{--art:var(--wmp-rew);--w:34px;left:4px;top:0;width:34px;height:20px}
 .vl-wmp-button[data-art=ffwd]{--art:var(--wmp-ffwd);--w:34px;right:4px;top:0;width:34px;height:20px}
-.vl-wmp-button[data-art=menu]{--art:var(--wmp-menu);--w:20px;left:10px;top:21px;width:20px;height:19px}
+.vl-wmp-button[data-art=menu]{--art:var(--wmp-menu);--w:20px;left:11px;top:20px;width:20px;height:19px}
 .vl-wmp-button[data-art=play]{--art:var(--wmp-play);--w:30px;left:33px;top:22px;width:30px;height:30px}
 .vl-wmp-button[data-art=pause]{--art:var(--wmp-pause);--w:32px;left:32px;top:21px;width:32px;height:32px}
 .vl-wmp-button[data-art=stop]{--art:var(--wmp-stop);--w:20px;left:68px;top:27px;width:20px;height:20px}
 .vl-wmp-button[data-art=prev]{--art:var(--wmp-prev);--w:20px;left:106px;top:27px;width:20px;height:20px}
 .vl-wmp-button[data-art=next]{--art:var(--wmp-next);--w:20px;left:131px;top:27px;width:20px;height:20px}
 .vl-wmp-button[data-art=mute]{--art:var(--wmp-mute);--w:20px;left:169px;top:27px;width:20px;height:20px}
-.vl-wmp-seek{position:absolute;left:33px;right:40px;top:4px;height:13px;outline:0}
+.vl-wmp-seek{position:absolute;left:33px;right:40px;top:2px;height:13px;outline:0}
 .vl-wmp-seek>b{position:absolute;left:0;top:0;height:13px;overflow:hidden;pointer-events:none}
 .vl-wmp-seek>b::before{content:"";position:absolute;left:0;top:0;width:var(--track,400px);height:13px;background:var(--wmp-seek-played) 0 0/100% 13px no-repeat}
 .vl-wmp-seek>.vl-wmp-buffered{opacity:.4}
@@ -18918,7 +19245,7 @@ ${wide} .vl-wmp{width:var(--vl-player-w)}
 .vl-wmp-thumb{position:absolute;top:0;width:25px;height:13px;margin-left:-12px;background:var(--wmp-seek-thumb) 0 0 no-repeat;pointer-events:none}
 .vl-wmp-seek:hover .vl-wmp-thumb{background-position:-25px 0}
 .vl-wmp-seek[data-drag] .vl-wmp-thumb{background-position:-50px 0}
-.vl-wmp-volume{position:absolute;left:193px;top:24px;width:73px;height:18px;outline:0}
+.vl-wmp-volume{position:absolute;left:194px;top:28px;width:73px;height:18px;outline:0}
 .vl-wmp-volume>b{position:absolute;left:0;top:0;height:18px;overflow:hidden;background:var(--wmp-volume-fill) 0 0 no-repeat;pointer-events:none}
 .vl-wmp-volume>i{position:absolute;top:0;width:9px;height:17px;margin-left:-4px;background:var(--wmp-volume-thumb) 0 0 no-repeat;pointer-events:none}
 .vl-wmp-volume:hover>i{background-position:-9px 0}
@@ -18948,14 +19275,22 @@ ${on4}[data-vl-wmp]:not([data-atelier-screen=web],[data-atelier-screen=full],[da
    gives way to ours. They hide with Bilibili's controls when the pointer
    rests (data-ctrl-hidden). */
 .vl-wmp-fs{display:none}
-${full} .vl-wmp-fs{display:block;position:absolute;inset:0;z-index:70;pointer-events:none;${xpFont};color:var(--xp-ink)}
+/* Window chrome, as the bar under the player: a click on it leaves no text
+   caret (one blinked on in the header left of the pin). */
+${full} .vl-wmp-fs{display:block;position:absolute;inset:0;z-index:70;pointer-events:none;${xpFont};color:var(--xp-ink);user-select:none}
 .vl-wmp-fs *{box-sizing:border-box}
 .vl-wmp-fs-top,.vl-wmp-fs-bottom{position:absolute;left:0;right:0;pointer-events:auto;transition:opacity .2s}
-.bpx-player-container[data-ctrl-hidden=true] .vl-wmp-fs :is(.vl-wmp-fs-top,.vl-wmp-fs-bottom){opacity:0;pointer-events:none}
-.vl-wmp-fs-top{top:0;height:43px;background:var(--wmp-top-left) left top no-repeat,var(--wmp-top-fill) left top repeat-x}
-.vl-wmp-fs-title{position:absolute;left:150px;right:44px;top:0;font-weight:bold;line-height:43px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vl-wmp-button[data-art=pin]{--art:var(--wmp-pin);--w:24px;left:117px;top:15px;width:24px;height:24px}
-.vl-wmp-button[data-art=exit]{--art:var(--wmp-exit);--w:18px;right:12px;top:12px;width:18px;height:18px}
+.bpx-player-container[data-ctrl-hidden=true] .vl-wmp-fs:not([data-pinned]) :is(.vl-wmp-fs-top,.vl-wmp-fs-bottom){opacity:0;pointer-events:none}
+/* Media Player's top bar is 32 rows of its 43: its pin hangs in a round
+   socket into the 11 black rows under it, over the picture. Here the header
+   is the bar alone: the left of its art (the Windows logo) without the
+   socket, the pin in the bar, cut to its round button. The title is 12 pt
+   in the XP pixel font (--xp-title-*), centred on the bar. */
+.vl-wmp-fs-top{top:0;height:32px;background:var(--wmp-top-fill) left top repeat-x}
+.vl-wmp-fs-top::before{content:"";position:absolute;left:0;top:0;width:110px;height:32px;background:var(--wmp-top-left) left top no-repeat;pointer-events:none}
+.vl-wmp-fs-title{position:absolute;left:150px;right:44px;top:0;font:bold var(--xp-title-size,15px)/32px var(--xp-title-font,var(--xp-font));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vl-wmp-button[data-art=pin]{--art:var(--wmp-pin);--w:24px;left:118px;top:4px;width:24px;height:24px;clip-path:circle(11.5px at 12px 12px)}
+.vl-wmp-button[data-art=exit]{--art:var(--wmp-exit);--w:18px;right:12px;top:7px;width:18px;height:18px}
 .vl-wmp-fs :is(.vl-wmp-button[data-art=pin],.vl-wmp-button[data-art=exit]):disabled{background-position:0 0;opacity:.5}
 .vl-wmp-fs-bottom{bottom:0}
 .vl-wmp-fs-strip{display:flex;align-items:center;justify-content:space-between;gap:16px;height:34px;padding:0 8px;background:#000;color:#fff}
@@ -19039,6 +19374,12 @@ ${wide} .vl-list-view .vl-lv-rows{max-height:344px}
    player's height below the top (runtime.ts pads it). The page's 30 px under
    the header goes, so the windows start under it as on /video/ and /list/. */
 ${on4} .main-container:has(>.plp-layout){margin-top:0!important}
+/* Bilibili sticks the shorter column at min(header + 14 px, viewport - column
+   - 280 px); the 14 px sat inside that margin. Under the header now, a column
+   short enough (a window minimized) would drop 14 px, the windows above too.
+   layout.ts places it by the same rule (--vl-stick) without the delay, and
+   holds it in place (--vl-hold-top) when a window minimized would move it. */
+${on4} .main-container .plp-r.sticky{top:var(--vl-hold-top,var(--vl-stick,min(var(--plp-right-sticky-top,0px),${headerBottomCss})))!important}
 .vl-season{display:flex;gap:9px;padding:9px 9px 6px}
 .vl-season-cover{flex:none;display:block;width:72px;height:96px;border:1px solid var(--xp-edge);background:var(--xp-window)}
 .vl-season-cover img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:auto}
@@ -19126,8 +19467,9 @@ ${dm}{margin:0 0 8px!important}
    it would show under our caption. */
 ${dm} :is(.danmaku-wrap,.bpx-docker){min-height:0!important;background:none!important;border-radius:0!important}
 ${dm} .bui-collapse-wrap{position:relative;box-sizing:border-box;width:100%;${frame};background:linear-gradient(var(--xp-face),var(--xp-face)) 0 var(--xp-caption-h,29px)/100% 100% no-repeat;border-radius:0;box-shadow:none;${xpFont};color:var(--xp-ink)}
-/* The caption is the player's collapse header. As in XP, a click on it does
-   nothing: only the minimize button (the player's arrow) folds the window. */
+/* The caption is the player's collapse header. It lets the pointer through,
+   so its tabs stay apart from it; runtime.ts folds the window from a click on
+   the caption, as our windows fold, through the player's arrow. */
 ${dm} .bui-collapse-header{${caption};position:static!important;width:auto!important;height:auto;border-radius:0;cursor:default;pointer-events:none}
 ${dm} .bui-collapse-header::before{content:"";flex:none;width:16px;height:16px;background:var(--vl-dm-icon) no-repeat;image-rendering:pixelated}
 ${dm} .bpx-player-filter{order:1;flex:1;min-width:0;width:auto;height:auto;margin:0!important;padding:0!important;position:static!important}
@@ -19417,10 +19759,8 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
           await context.actions.follow(person.mid, 1);
           states[person.mid] = 2;
           note(`\u5DF2\u5173\u6CE8 ${person.name}`, "success");
-          sound("success");
         } catch (error) {
           note(failure2(error), "error");
-          sound("error");
         } finally {
           button5.disabled = false;
           repaint();
@@ -19436,22 +19776,19 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
             await context.actions.follow(person.mid, attribute === 1 ? 4 : 2);
             states[person.mid] = 0;
             note(`\u5DF2\u53D6\u6D88\u5173\u6CE8 ${person.name}`, "success");
-            sound("success");
           } catch (error) {
             note(failure2(error), "error");
-            sound("error");
           }
           repaint();
         } }
       ], button5);
     }
     async function chooseTags(person) {
-      let tags, current3;
+      let tags, current4;
       try {
-        [tags, current3] = await Promise.all([context.actions.followTags(), context.actions.userTags(person.mid)]);
+        [tags, current4] = await Promise.all([context.actions.followTags(), context.actions.userTags(person.mid)]);
       } catch (error) {
         note(failure2(error), "error");
-        sound("error");
         return;
       }
       const picked = await videoDialog({ title: `\u8BBE\u7F6E\u5206\u7EC4 - ${person.name}`, build: (body2) => {
@@ -19460,7 +19797,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
           const label = list.appendChild(el2("label", "vl-choice vl-folder"));
           const box = label.appendChild(el2("input"));
           box.type = "checkbox";
-          box.checked = current3.includes(tag.id);
+          box.checked = current4.includes(tag.id);
           label.append(el2("span", "vl-folder-name", tag.name));
           return [tag.id, box];
         });
@@ -19471,10 +19808,8 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
       try {
         await context.actions.setUserTags(person.mid, picked);
         note("\u5206\u7EC4\u5DF2\u4FDD\u5B58", "success");
-        sound("success");
       } catch (error) {
         note(failure2(error), "error");
-        sound("error");
       }
     }
     function localButton(person) {
@@ -19487,13 +19822,11 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
       };
       button5.addEventListener("click", () => {
         const on5 = localFollowSnapshot().accounts.some((account) => account.uid === person.mid);
-        if (on5) {
-          removeLocalFollow(person.mid);
-          sound("delete");
-        } else {
+        sound("click");
+        if (on5) removeLocalFollow(person.mid);
+        else {
           addLocalFollow({ uid: person.mid, name: person.name, face: person.face });
           writeLocalFollowCache(person.mid, { name: person.name, face: person.face });
-          sound("success");
         }
         paint2();
       });
@@ -19671,6 +20004,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
       rescan: () => recommendations2?.rescan()
     };
     const player = createPlayerWindow(), info = createInfoWindow(context);
+    const cover = createCover();
     const recommendations2 = bangumi ? null : createRecWindow(context);
     const up = bangumi ? createSeasonWindow(context) : createUpWindow(context);
     const pod = bangumi ? createEpisodeWindow(context) : createPodWindow(context);
@@ -19701,6 +20035,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
       warnLog("Luna \u89C6\u9891\u9875\uFF1A\u64AD\u653E\u63A7\u5236\u6761\u51FA\u9519\uFF0C\u5DF2\u6062\u590D B \u7AD9\u7684\u63A7\u5236\u680F", error);
     };
     bridge.onPlayback((state2) => {
+      cover.playback(state2);
       if (!bar) return;
       try {
         bar.playback(state2);
@@ -19724,6 +20059,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
           warnLog(`Luna \u89C6\u9891\u9875\uFF1A${area} \u7A97\u53E3\u51FA\u9519\uFF0C\u5DF2\u6062\u590D\u539F\u751F\u533A\u5757`, error);
         }
       }
+      cover.render(latest);
       try {
         bar?.render(latest);
         fullBar?.render(latest);
@@ -19738,6 +20074,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
       const wrap = document.getElementById(bangumi ? "bilibili-player-wrap" : "playerWrap");
       const inner = document.querySelector(bangumi ? ".plp-r" : ".right-container-inner,.playlist-container--right");
       if (!wrap?.parentElement || !inner) return false;
+      cover.place();
       if (!failed.has("head") && player.element.nextElementSibling !== wrap) wrap.before(player.element);
       const toolbar = document.querySelector(bangumi ? ".plp-l .toolbar" : "#arc_toolbar_report,#playlistToolbar");
       const under = bangumi ? toolbar : toolbar?.parentElement === wrap.parentElement ? toolbar : wrap;
@@ -19844,11 +20181,25 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
       if (dmSeen === null) {
         dmSeen = folded;
         if (readFolded("danmaku", true) !== folded) wrap.querySelector(".bui-collapse-header")?.click();
+        let click = null;
+        wrap.addEventListener("click", (event) => {
+          if (!event.isTrusted) return;
+          const arrow = wrap.querySelector(".bui-collapse-arrow"), head = wrap.querySelector(".bui-collapse-header")?.getBoundingClientRect();
+          const caption2 = event.target === wrap && !!head && event.clientY >= head.top && event.clientY < head.bottom;
+          if (!caption2 && !arrow?.contains(event.target)) return;
+          const task = click = soundTask();
+          window.setTimeout(() => {
+            if (click === task) click = null;
+          }, 0);
+          if (caption2) arrow?.click();
+        }, true);
         new MutationObserver(() => {
           const now = wrap.classList.contains("bui-collapse-wrap-folded");
           if (now !== dmSeen) {
             dmSeen = now;
             writeFolded("danmaku", now);
+            click?.finish(now ? "minimize" : "restore");
+            click = null;
           }
         }).observe(wrap, { attributes: true, attributeFilter: ["class"] });
       }
