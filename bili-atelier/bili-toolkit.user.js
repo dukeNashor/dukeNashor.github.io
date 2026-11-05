@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.4.3
+// @version      0.5.0
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -1901,25 +1901,25 @@
         }
         const dataBits = createData(version, errorCorrectionLevel, segments);
         const moduleCount = Utils.getSymbolSize(version);
-        const modules = new BitMatrix(moduleCount);
-        setupFinderPattern(modules, version);
-        setupTimingPattern(modules);
-        setupAlignmentPattern(modules, version);
-        setupFormatInfo(modules, errorCorrectionLevel, 0);
+        const modules2 = new BitMatrix(moduleCount);
+        setupFinderPattern(modules2, version);
+        setupTimingPattern(modules2);
+        setupAlignmentPattern(modules2, version);
+        setupFormatInfo(modules2, errorCorrectionLevel, 0);
         if (version >= 7) {
-          setupVersionInfo(modules, version);
+          setupVersionInfo(modules2, version);
         }
-        setupData(modules, dataBits);
+        setupData(modules2, dataBits);
         if (isNaN(maskPattern)) {
           maskPattern = MaskPattern.getBestMask(
-            modules,
-            setupFormatInfo.bind(null, modules, errorCorrectionLevel)
+            modules2,
+            setupFormatInfo.bind(null, modules2, errorCorrectionLevel)
           );
         }
-        MaskPattern.applyMask(maskPattern, modules);
-        setupFormatInfo(modules, errorCorrectionLevel, maskPattern);
+        MaskPattern.applyMask(maskPattern, modules2);
+        setupFormatInfo(modules2, errorCorrectionLevel, maskPattern);
         return {
-          modules,
+          modules: modules2,
           version,
           errorCorrectionLevel,
           maskPattern,
@@ -2207,1723 +2207,72 @@
     }
   });
 
-  // src/modules/sync/change-bus.ts
-  var listener;
-  var applying = false;
-  function onSyncMutation(callback) {
-    listener = callback;
+  // src/core/config.ts
+  var config = {
+    viewedMarker: {
+      enabled: true
+    },
+    commentLocation: {
+      enabled: true,
+      videoPageHeaderGate: true,
+      videoPageHeaderGateTimeoutMs: 3e3
+    },
+    blocker: {
+      enabled: true
+    },
+    debug: false
+  };
+
+  // src/core/logger.ts
+  function debugLog(...args) {
+    if (config.debug) {
+      console.debug("[BiliToolkit]", ...args);
+    }
   }
-  function syncMutation(before, after) {
-    if (!applying) listener?.(before, after);
+  function warnLog(...args) {
+    console.warn("[BiliToolkit]", ...args);
   }
-  function applyFromSync(callback) {
-    const previous = applying;
-    applying = true;
-    try {
+
+  // src/core/video-page-ready.ts
+  function runAfterVideoPageReady(callback) {
+    if (location.hostname !== "www.bilibili.com" || !/^\/(?:video|list|bangumi\/play)\//i.test(location.pathname)) {
       callback();
-    } finally {
-      applying = previous;
+      return;
     }
-  }
-
-  // src/modules/viewed/storage.ts
-  function getViewedGroupId(value2) {
-    const id = String(value2 || "").trim();
-    if (/^(ep|ss)[1-9][0-9]*$/.test(id)) return `${id.slice(0, 2)}${id.slice(-1)}`;
-    if (id.length < 5) {
-      return "";
-    }
-    if (id.startsWith("ep")) {
-      return `ep${id.slice(-1)}`;
-    }
-    if (id.startsWith("ss")) {
-      return `ss${id.slice(-1)}`;
-    }
-    if (id.length === 10) {
-      return id.charAt(1);
-    }
-    if (id.length > 10 && id.indexOf("-") === 10) {
-      return id.charAt(1);
-    }
-    return "";
-  }
-  function getLegacyViewedGroupId(value2) {
-    const id = String(value2);
-    if (/^(ep|ss)[1-9][0-9]*$/.test(id)) return `${id.slice(0, 2)}${id.slice(-1)}`;
-    if (id.length < 5) {
-      return "";
-    }
-    if (id.startsWith("ep")) {
-      return `ep${id.slice(-1)}`;
-    }
-    if (id.startsWith("ss")) {
-      return `ss${id.slice(-1)}`;
-    }
-    if (id.length === 10) {
-      return id.charAt(1);
-    }
-    if (id.length > 10 && id.indexOf("-") === 10) {
-      return id.charAt(1);
-    }
-    return "";
-  }
-  function normalizeViewedId(value2) {
-    let id = String(value2 || "").trim();
-    if (!id) {
-      return null;
-    }
-    id = id.replace(/^BV/i, "");
-    return getViewedGroupId(id) ? id : null;
-  }
-  function groupViewedItems(values) {
-    const groups = {};
-    const seen = /* @__PURE__ */ new Set();
-    for (const value2 of values) {
-      const id = normalizeViewedId(value2);
-      if (!id || seen.has(id)) {
-        continue;
-      }
-      seen.add(id);
-      const groupId = getViewedGroupId(id);
-      if (!groups[groupId]) {
-        groups[groupId] = [];
-      }
-      groups[groupId].push(id);
-    }
-    return groups;
-  }
-  function flattenViewedGroups(groups) {
-    const items = [];
-    const seen = /* @__PURE__ */ new Set();
-    for (const value2 of Object.values(groups)) {
-      if (!Array.isArray(value2)) {
-        continue;
-      }
-      for (const item of value2) {
-        const id = normalizeViewedId(item);
-        if (!id || seen.has(id)) {
-          continue;
-        }
-        seen.add(id);
-        items.push(id);
-      }
-    }
-    return items;
-  }
-  function viewedGroupStorageKey(groupId) {
-    return `BiliViewed_${groupId}`;
-  }
-  function listViewedGroupKeys() {
-    if (typeof GM_listValues !== "function") {
-      return [];
-    }
-    return GM_listValues().filter((key3) => String(key3).startsWith("BiliViewed_"));
-  }
-  function readViewedGroup(groupId, fallback2 = null) {
-    return GM_getValue(viewedGroupStorageKey(groupId), fallback2);
-  }
-  function writeViewedGroup(groupId, values) {
-    const before = new Set(readViewedGroup(groupId, []).map((v) => `v:${v}`));
-    syncMutation(before, new Set(values.map((v) => `v:${v}`)));
-    GM_setValue(viewedGroupStorageKey(groupId), values);
-  }
-  function deleteViewedGroup(groupId) {
-    const before = new Set(readViewedGroup(groupId, []).map((v) => `v:${v}`));
-    syncMutation(before, /* @__PURE__ */ new Set());
-    GM_deleteValue(viewedGroupStorageKey(groupId));
-  }
-  function readViewedStorage() {
-    const groups = {};
-    for (const key3 of listViewedGroupKeys()) {
-      const groupId = String(key3).slice("BiliViewed_".length);
-      groups[groupId] = flattenViewedGroups({ [groupId]: readViewedGroup(groupId, []) });
-    }
-    return { items: flattenViewedGroups(groups), groups };
-  }
-  function clearViewedStorage() {
-    for (const key3 of listViewedGroupKeys()) {
-      deleteViewedGroup(String(key3).slice("BiliViewed_".length));
-    }
-  }
-  function writeViewedStorage(snapshot, mode2) {
-    const incomingItems = snapshot.items?.length ? snapshot.items : snapshot.groups ? flattenViewedGroups(snapshot.groups) : [];
-    const currentItems = mode2 === "append" ? readViewedStorage().items : [];
-    const groups = groupViewedItems(currentItems.concat(incomingItems));
-    syncMutation(new Set(readViewedStorage().items.map((v) => "v:" + v)), new Set(flattenViewedGroups(groups).map((v) => "v:" + v)));
-    applyFromSync(() => {
-      if (mode2 === "overwrite") clearViewedStorage();
-      for (const [groupId, values] of Object.entries(groups)) writeViewedGroup(groupId, values);
-    });
-    return { items: flattenViewedGroups(groups), groups };
-  }
-  function isLegacyViewedExport(value2) {
-    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key3) => key3.startsWith("BiliViewed_"));
-  }
-  function normalizeLegacyViewedExport(value2) {
-    const groups = {};
-    for (const [key3, items] of Object.entries(value2)) {
-      if (!key3.startsWith("BiliViewed_") || !Array.isArray(items)) {
-        continue;
-      }
-      const groupId = key3.slice("BiliViewed_".length);
-      groups[groupId] = flattenViewedGroups({ [groupId]: items });
-    }
-    return { items: flattenViewedGroups(groups), groups };
-  }
-
-  // src/modules/blocker/matching.ts
-  var defaultMatchOptions = {
-    caseInsensitive: false,
-    collapseWhitespace: true
-  };
-  function resolveOptions(options = {}) {
-    return { ...defaultMatchOptions, ...options };
-  }
-  function normalizeText(value2, options = {}) {
-    if (value2 === null || value2 === void 0) {
-      return null;
-    }
-    const resolvedOptions = resolveOptions(options);
-    let text3 = String(value2).trim();
-    if (text3.length === 0) {
-      return null;
-    }
-    if (resolvedOptions.collapseWhitespace) {
-      text3 = text3.replace(/[\t\r\f\n\s]+/g, "");
-    }
-    if (resolvedOptions.caseInsensitive) {
-      text3 = text3.toLowerCase();
-    }
-    return text3.length > 0 ? text3 : null;
-  }
-  function normalizeRuleValue(value2, options = {}) {
-    if (typeof value2 === "number") {
-      return Number.isFinite(value2) ? value2 : null;
-    }
-    return normalizeText(value2, options);
-  }
-  function validateRuleInput(value2, integerRule = false) {
-    if (value2 === null || value2 === void 0) {
-      return { status: false, res: "\u5185\u5BB9\u4E0D\u80FD\u4E3A\u7A7A" };
-    }
-    const trimmed = String(value2).trim();
-    if (trimmed.length === 0) {
-      return { status: false, res: "\u5185\u5BB9\u4E0D\u80FD\u4E3A\u7A7A" };
-    }
-    if (!integerRule) {
-      return { status: true, res: trimmed };
-    }
-    const parsed = Number.parseInt(trimmed, 10);
-    if (!Number.isFinite(parsed)) {
-      return { status: false, res: "\u8BF7\u8F93\u5165\u6570\u5B57\uFF01" };
-    }
-    return { status: true, res: parsed };
-  }
-  function exactMatch(ruleList, value2, options = {}) {
-    if (!Array.isArray(ruleList)) {
-      return null;
-    }
-    const normalizedValue = normalizeRuleValue(value2, options);
-    if (normalizedValue === null) {
-      return null;
-    }
-    for (const rule of ruleList) {
-      const normalizedRule = normalizeRuleValue(rule, options);
-      if (normalizedRule === null) {
-        continue;
-      }
-      if (normalizedRule === normalizedValue) {
-        return { kind: "exact", matching: rule };
-      }
-    }
-    return null;
-  }
-  function fuzzyMatch(ruleList, value2, options = {}) {
-    if (!Array.isArray(ruleList)) {
-      return null;
-    }
-    const normalizedValue = normalizeText(value2, options);
-    if (normalizedValue === null) {
-      return null;
-    }
-    for (const rule of ruleList) {
-      const normalizedRule = normalizeText(rule, options);
-      if (normalizedRule === null) {
-        continue;
-      }
-      if (normalizedValue.includes(normalizedRule)) {
-        return { kind: "fuzzy", matching: rule };
-      }
-    }
-    return null;
-  }
-  function regexMatch(ruleList, value2, options = {}) {
-    if (!Array.isArray(ruleList)) {
-      return null;
-    }
-    const normalizedValue = normalizeText(value2, options);
-    if (normalizedValue === null) {
-      return null;
-    }
-    for (const rule of ruleList) {
-      const normalizedRule = normalizeText(rule, { ...options, collapseWhitespace: false });
-      if (normalizedRule === null) {
-        continue;
-      }
-      try {
-        const regexp = new RegExp(normalizedRule, options.caseInsensitive ? "i" : "");
-        if (regexp.test(normalizedValue)) {
-          return { kind: "regex", matching: rule };
-        }
-      } catch (error) {
-        options.onInvalidRule?.({ rule: String(rule), error });
-      }
-    }
-    return null;
-  }
-  function blockExactFuzzyRegex(value2, config2) {
-    const exact = exactMatch(config2.exactRules, value2, config2.options);
-    if (exact) {
-      return exact;
-    }
-    const fuzzy = fuzzyMatch(config2.fuzzyRules, value2, config2.options);
-    if (fuzzy) {
-      return fuzzy;
-    }
-    return regexMatch(config2.regexRules, value2, {
-      ...config2.options,
-      onInvalidRule: config2.onInvalidRegexRule
-    });
-  }
-
-  // src/modules/blocker/rules.ts
-  var ruleDefinitions = [
-    { key: "precise_uid", label: "\u7528\u6237 UID\uFF08\u7CBE\u786E\uFF09", integer: true },
-    { key: "precise_uid_white", label: "\u7528\u6237 UID \u767D\u540D\u5355\uFF08\u7CBE\u786E\uFF09", integer: true },
-    { key: "name", label: "\u7528\u6237\u540D\uFF08\u6A21\u7CCA\uFF09" },
-    { key: "precise_name", label: "\u7528\u6237\u540D\uFF08\u7CBE\u786E\uFF09" },
-    { key: "nameCanonical", label: "\u7528\u6237\u540D\uFF08\u6B63\u5219\uFF09" },
-    { key: "title", label: "\u89C6\u9891\u6807\u9898\uFF08\u6A21\u7CCA\uFF09" },
-    { key: "titleCanonical", label: "\u89C6\u9891\u6807\u9898\uFF08\u6B63\u5219\uFF09" },
-    { key: "commentOn", label: "\u8BC4\u8BBA\u5173\u952E\u8BCD\uFF08\u6A21\u7CCA\uFF09", textarea: true },
-    { key: "commentOnCanonical", label: "\u8BC4\u8BBA\u5173\u952E\u8BCD\uFF08\u6B63\u5219\uFF09", textarea: true },
-    { key: "dynamic", label: "\u52A8\u6001\u5173\u952E\u8BCD\uFF08\u6A21\u7CCA\uFF09", textarea: true },
-    { key: "dynamicCanonical", label: "\u52A8\u6001\u5173\u952E\u8BCD\uFF08\u6B63\u5219\uFF09", textarea: true },
-    { key: "liveTitle", label: "\u76F4\u64AD\u6807\u9898\uFF08\u6A21\u7CCA\uFF09" },
-    { key: "liveTitleCanonical", label: "\u76F4\u64AD\u6807\u9898\uFF08\u6B63\u5219\uFF09" },
-    { key: "precise_liveRoomId", label: "\u76F4\u64AD\u95F4 ID\uFF08\u7CBE\u786E\uFF09" },
-    { key: "precise_partition", label: "\u76F4\u64AD\u5206\u533A\uFF08\u7CBE\u786E\uFF09" }
-  ];
-  var integerRuleKeys = new Set(ruleDefinitions.filter((rule) => rule.integer).map((rule) => rule.key));
-  function emptySnapshot() {
-    return Object.fromEntries(ruleDefinitions.map((rule) => [rule.key, []]));
-  }
-  function normalizeStoredRules(value2, integer = false) {
-    if (!Array.isArray(value2)) {
-      return [];
-    }
-    const normalized = [];
-    for (const item of value2) {
-      const validation = validateRuleInput(item, integer);
-      if (!validation.status || normalized.includes(validation.res)) {
-        continue;
-      }
-      normalized.push(validation.res);
-    }
-    return normalized;
-  }
-  function readRuleList(key3) {
-    const integer = integerRuleKeys.has(key3);
-    return normalizeStoredRules(GM_getValue(key3, []), integer);
-  }
-  function writeRuleList(key3, values) {
-    const integer = integerRuleKeys.has(key3);
-    const normalized = normalizeStoredRules(values, integer);
-    const before = readRuleList(key3);
-    const prefix3 = key3 === "precise_uid" ? "u:" : key3 === "precise_name" ? "n:" : "";
-    if (prefix3) syncMutation(new Set(before.map((v) => prefix3 + String(v).trim().toLowerCase())), new Set(normalized.map((v) => prefix3 + String(v).trim().toLowerCase())));
-    GM_setValue(key3, normalized);
-    return normalized;
-  }
-  function readRuleSnapshot() {
-    const snapshot = emptySnapshot();
-    for (const rule of ruleDefinitions) {
-      snapshot[rule.key] = readRuleList(rule.key);
-    }
-    return snapshot;
-  }
-  function addRuleItem(key3, value2) {
-    const validation = validateRuleInput(value2, integerRuleKeys.has(key3));
-    if (!validation.status) {
-      return validation;
-    }
-    const current4 = readRuleList(key3);
-    if (current4.includes(validation.res)) {
-      return { status: false, res: "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" };
-    }
-    current4.push(validation.res);
-    writeRuleList(key3, current4);
-    return { status: true, res: "\u6DFB\u52A0\u6210\u529F", value: validation.res };
-  }
-  function removeRuleItem(key3, value2) {
-    const validation = validateRuleInput(value2, integerRuleKeys.has(key3));
-    if (!validation.status) {
-      return validation;
-    }
-    const current4 = readRuleList(key3);
-    const index = current4.findIndex((item) => item === validation.res);
-    if (index < 0) {
-      return { status: false, res: "\u89C4\u5219\u4E0D\u5B58\u5728" };
-    }
-    current4.splice(index, 1);
-    writeRuleList(key3, current4);
-    return { status: true, res: "\u5DF2\u89E3\u9664\u5C4F\u853D", value: validation.res };
-  }
-  function importRuleSnapshot(data, mode2) {
-    if (!data || typeof data !== "object") {
-      return { status: false, res: "\u89C4\u5219\u5185\u5BB9\u5FC5\u987B\u662F\u5BF9\u8C61" };
-    }
-    let changed = 0;
-    for (const rule of ruleDefinitions) {
-      const incoming = data[rule.key];
-      if (!Array.isArray(incoming)) {
-        continue;
-      }
-      if (mode2 === "overwrite") {
-        const written = writeRuleList(rule.key, incoming);
-        changed += written.length;
-        continue;
-      }
-      const current4 = readRuleList(rule.key);
-      const merged = writeRuleList(rule.key, current4.concat(incoming));
-      changed += Math.max(0, merged.length - current4.length);
-    }
-    return { status: true, res: `\u5BFC\u5165\u5B8C\u6210\uFF0C\u53D8\u66F4 ${changed} \u6761` };
-  }
-  function exportNonEmptyRuleSnapshot() {
-    const snapshot = readRuleSnapshot();
-    const result = {};
-    for (const rule of ruleDefinitions) {
-      if (snapshot[rule.key].length > 0) {
-        result[rule.key] = snapshot[rule.key];
-      }
-    }
-    return result;
-  }
-  function parseRuleText(value2, integer = false) {
-    const lines = value2.split(/\r?\n/g);
-    return normalizeStoredRules(lines, integer);
-  }
-  function formatRuleText(values) {
-    return values.join("\n");
-  }
-
-  // src/core/data-package.ts
-  var atelierDataSchema = "bili-atelier-data";
-  var atelierDataVersion = 1;
-  var ruleKeySet = new Set(ruleDefinitions.map((rule) => rule.key));
-  function splitLegacyBlockerExport(value2) {
-    const rules = {};
-    const legacySettings = {};
-    for (const [key3, data] of Object.entries(value2)) {
-      if (ruleKeySet.has(key3) && Array.isArray(data)) {
-        rules[key3] = data;
-      } else if (!key3.startsWith("BiliViewed_")) {
-        legacySettings[key3] = data;
-      }
-    }
-    return { rules, legacySettings };
-  }
-  function createAtelierDataPackage(input = {}) {
-    return {
-      schema: atelierDataSchema,
-      version: atelierDataVersion,
-      exportedAt: (/* @__PURE__ */ new Date()).toISOString(),
-      viewed: input.viewed || readViewedStorage(),
-      blocker: {
-        rules: input.blockerRules || exportNonEmptyRuleSnapshot(),
-        legacySettings: input.legacySettings
-      }
+    const bangumi = /^\/bangumi\/play\//i.test(location.pathname);
+    const isReady = () => {
+      if (document.readyState === "loading") return false;
+      if (bangumi) return !!document.querySelector("#bilibili-player .bpx-player-container");
+      const app = document.getElementById("app");
+      return app !== null && app.childElementCount > 0 && !app.hasAttribute("data-server-rendered");
     };
-  }
-  function exportAtelierDataPackage() {
-    return createAtelierDataPackage({
-      viewed: readViewedStorage(),
-      blockerRules: exportNonEmptyRuleSnapshot()
+    if (isReady()) {
+      callback();
+      return;
+    }
+    let done = false;
+    const observer = new MutationObserver(check2);
+    function check2() {
+      if (done || !isReady()) return;
+      finish();
+    }
+    function finish() {
+      done = true;
+      observer.disconnect();
+      document.removeEventListener("DOMContentLoaded", check2);
+      callback();
+    }
+    if (bangumi) window.setTimeout(() => {
+      if (!done) finish();
+    }, 2e4);
+    observer.observe(document.documentElement || document, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-server-rendered"]
     });
+    document.addEventListener("DOMContentLoaded", check2);
   }
-  function exportViewedDataPackage() {
-    return createAtelierDataPackage({
-      viewed: readViewedStorage(),
-      blockerRules: {}
-    });
-  }
-  function normalizeAtelierDataInput(value2) {
-    if (!value2 || typeof value2 !== "object") {
-      throw new Error("\u5BFC\u5165\u5185\u5BB9\u5FC5\u987B\u662F JSON \u5BF9\u8C61");
-    }
-    const data = value2;
-    if (data.schema === atelierDataSchema) {
-      return createAtelierDataPackage({
-        viewed: data.viewed || { items: [], groups: {} },
-        blockerRules: data.blocker?.rules || {},
-        legacySettings: data.blocker?.legacySettings
-      });
-    }
-    if (isLegacyViewedExport(data)) {
-      return createAtelierDataPackage({
-        viewed: normalizeLegacyViewedExport(data),
-        blockerRules: {},
-        legacySettings: {}
-      });
-    }
-    const blocker = splitLegacyBlockerExport(data);
-    return createAtelierDataPackage({
-      viewed: { items: [], groups: {} },
-      blockerRules: blocker.rules,
-      legacySettings: blocker.legacySettings
-    });
-  }
-  function importAtelierDataInput(value2, mode2) {
-    const normalized = normalizeAtelierDataInput(value2);
-    const viewed2 = writeViewedStorage(normalized.viewed, mode2);
-    const rulesResult = importRuleSnapshot(normalized.blocker.rules, mode2);
-    return {
-      status: true,
-      res: `\u5BFC\u5165\u5B8C\u6210\uFF1A\u5DF2\u770B ${viewed2.items.length} \u6761\uFF1B${rulesResult.res}`,
-      viewed: viewed2,
-      rules: readRuleSnapshot()
-    };
-  }
-
-  // src/modules/sync/protocol.ts
-  var seedId = (key3) => `seed:${key3}`;
-  function validKey(key3) {
-    const value2 = key3.slice(2);
-    if (key3.startsWith("v:")) return /^(1[0-9A-Za-z]{9}(?:-[1-9][0-9]*)?|(ep|ss)[1-9][0-9]*)$/.test(value2);
-    if (key3.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
-    return key3.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
-  }
-  function batch(operations) {
-    return { schema: "bili-atelier-sync", version: 1, operations };
-  }
-  function parseBatch(value2) {
-    const b = value2;
-    if (!b || b.schema !== "bili-atelier-sync" || b.version !== 1 || !Array.isArray(b.operations) || b.operations.length > 1e4) throw new Error("\u4E0D\u652F\u6301\u7684\u540C\u6B65\u6570\u636E\u683C\u5F0F\u6216\u7248\u672C");
-    const ids = /* @__PURE__ */ new Set();
-    for (const o of b.operations) {
-      if (!o || typeof o.key !== "string" || !validKey(o.key) || typeof o.id !== "string" || !(o.id === seedId(o.key) || /^[0-9a-f-]{36}$/.test(o.id)) || typeof o.present !== "boolean" || !Array.isArray(o.parents) || o.parents.some((p2) => typeof p2 !== "string" || p2 === o.id) || ids.has(o.id) || o.id === seedId(o.key) && (!o.present || o.parents.length !== 0)) throw new Error("\u540C\u6B65\u8BB0\u5F55\u635F\u574F\uFF0C\u672A\u5E94\u7528");
-      ids.add(o.id);
-    }
-    return b;
-  }
-  function mergeOperations(...groups) {
-    const map = /* @__PURE__ */ new Map();
-    for (const o of groups.flat()) {
-      const previous = map.get(o.id);
-      if (previous && (previous.key !== o.key || previous.present !== o.present || [...previous.parents].sort().join() !== [...o.parents].sort().join())) throw new Error("\u540C\u6B65\u64CD\u4F5C ID \u51B2\u7A81");
-      map.set(o.id, o);
-    }
-    const degrees = /* @__PURE__ */ new Map(), children = /* @__PURE__ */ new Map();
-    for (const o of map.values()) {
-      degrees.set(o.id, 0);
-      for (const p2 of o.parents) {
-        if (!map.has(p2)) {
-          if (p2 !== seedId(o.key)) throw new Error("\u540C\u6B65\u5386\u53F2\u4E0D\u5B8C\u6574\uFF0C\u8BF7\u6062\u590D\u88AB\u5220\u9664\u7684\u4E91\u7AEF\u6587\u4EF6");
-          continue;
-        }
-        if (map.get(p2).key !== o.key) throw new Error("\u540C\u6B65\u64CD\u4F5C\u5F15\u7528\u4E86\u5176\u4ED6\u6761\u76EE");
-        degrees.set(o.id, degrees.get(o.id) + 1);
-        children.set(p2, [...children.get(p2) || [], o.id]);
-      }
-    }
-    const queue = [...degrees].filter(([, n]) => n === 0).map(([id]) => id);
-    for (let i = 0; i < queue.length; i++) for (const id of children.get(queue[i]) || []) {
-      degrees.set(id, degrees.get(id) - 1);
-      if (degrees.get(id) === 0) queue.push(id);
-    }
-    if (queue.length !== map.size) throw new Error("\u540C\u6B65\u5386\u53F2\u5B58\u5728\u5FAA\u73AF\u5F15\u7528\uFF0C\u672A\u5E94\u7528");
-    return [...map.values()];
-  }
-  function frontier(operations) {
-    const removed = new Set(operations.flatMap((o) => o.parents));
-    const result = /* @__PURE__ */ new Map();
-    for (const o of operations) if (!removed.has(o.id)) result.set(o.key, [...result.get(o.key) || [], o]);
-    return result;
-  }
-  function materialize(operations) {
-    return new Set([...frontier(operations)].filter(([, ops]) => ops.every((o) => o.present)).map(([key3]) => key3));
-  }
-  function changes(before, after, known2, uuid2) {
-    const heads = frontier(known2);
-    return [.../* @__PURE__ */ new Set([...before, ...after])].filter((k) => validKey(k) && before.has(k) !== after.has(k)).map((key3) => ({
-      id: uuid2(),
-      key: key3,
-      present: after.has(key3),
-      parents: [.../* @__PURE__ */ new Set([seedId(key3), ...(heads.get(key3) || []).map((o) => o.id)])]
-    }));
-  }
-
-  // src/modules/sync/b2.ts
-  function parseConfig(input) {
-    const c = input;
-    if (!c || c.schema !== "bili-atelier-b2-config" || c.version !== 1 || ![c.keyId, c.applicationKey, c.bucketId].every((v) => typeof v === "string" && /^[A-Za-z0-9]+$/.test(v)) || typeof c.prefix !== "string" || !/^[A-Za-z0-9_-]+\/$/.test(c.prefix)) throw new Error("\u8BF7\u586B\u5199\u6709\u6548\u7684 Key ID\u3001\u5E94\u7528\u5BC6\u94A5\u3001Bucket ID \u548C\u76EE\u5F55\uFF08\u4F8B\u5982 atelier/\uFF09");
-    return { schema: c.schema, version: c.version, keyId: c.keyId, applicationKey: c.applicationKey, bucketId: c.bucketId, prefix: c.prefix };
-  }
-  function b2Url(value2) {
-    const u = new URL(value2);
-    if (u.protocol !== "https:" || !["backblazeb2.com", "backblaze.com"].some((domain) => u.hostname.endsWith(`.${domain}`)) || u.port || u.username || u.password) throw new Error("B2 \u8FD4\u56DE\u4E86\u4E0D\u5B89\u5168\u7684\u670D\u52A1\u5730\u5740");
-    return value2;
-  }
-  var gmRequest = (url, method, headers, data) => new Promise((resolve, reject) => {
-    GM_xmlhttpRequest({
-      url: b2Url(url),
-      method,
-      headers,
-      data,
-      anonymous: true,
-      timeout: 2e4,
-      onload: (r) => {
-        if (r.responseText?.length > 32 * 1024 * 1024) {
-          reject(new Error("\u540C\u6B65\u6587\u4EF6\u8D85\u8FC7 32 MB\uFF0C\u672A\u5E94\u7528"));
-          return;
-        }
-        if (r.finalUrl) {
-          try {
-            b2Url(r.finalUrl);
-          } catch (e) {
-            reject(e);
-            return;
-          }
-        }
-        if (r.status < 200 || r.status >= 300) {
-          reject(new Error(`B2 HTTP ${r.status}\uFF1A${r.status === 401 ? "\u5BC6\u94A5\u65E0\u6548\u6216\u5DF2\u8FC7\u671F" : r.status === 403 ? "\u6743\u9650\u4E0D\u8DB3\u6216\u8FBE\u5230\u7528\u91CF\u4E0A\u9650" : "\u8BF7\u6C42\u5931\u8D25\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5"}`));
-          return;
-        }
-        try {
-          resolve(JSON.parse(r.responseText));
-        } catch {
-          reject(new Error("B2 \u8FD4\u56DE\u4E86\u65E0\u6548 JSON"));
-        }
-      },
-      onerror: () => reject(new Error("B2 \u7F51\u7EDC\u8FDE\u63A5\u5931\u8D25")),
-      ontimeout: () => reject(new Error("B2 \u8FDE\u63A5\u8D85\u65F6"))
-    });
-  });
-  var B2 = class {
-    constructor(config2, request2 = gmRequest) {
-      this.config = config2;
-      this.request = request2;
-    }
-    async authorize() {
-      this.auth = await this.request("https://api.backblazeb2.com/b2api/v4/b2_authorize_account", "GET", { Authorization: `Basic ${btoa(`${this.config.keyId}:${this.config.applicationKey}`)}` });
-      const api3 = this.auth.apiInfo.storageApi;
-      b2Url(api3.apiUrl);
-      b2Url(api3.downloadUrl);
-      const allowed = api3.allowed;
-      if (!["listFiles", "readFiles", "writeFiles"].every((p2) => allowed.capabilities.includes(p2)) || allowed.buckets && !allowed.buckets.some((b) => b.id === this.config.bucketId) || allowed.namePrefix && !this.config.prefix.startsWith(allowed.namePrefix)) throw new Error("\u5E94\u7528\u5BC6\u94A5\u9700\u8981\u76EE\u6807\u76EE\u5F55\u7684 listFiles\u3001readFiles\u3001writeFiles \u6743\u9650");
-    }
-    call(name, body2) {
-      return this.request(`${this.auth.apiInfo.storageApi.apiUrl}/b2api/v3/${name}`, "POST", { Authorization: this.auth.authorizationToken, "Content-Type": "application/json" }, JSON.stringify(body2));
-    }
-    list() {
-      return this.listDirectory("ops");
-    }
-    listLocalFollowing() {
-      return this.listDirectory("local-following-ops");
-    }
-    async listDirectory(directory) {
-      const files = [];
-      let startFileName;
-      do {
-        const r = await this.call("b2_list_file_names", { bucketId: this.config.bucketId, prefix: `${this.config.prefix}${directory}/`, maxFileCount: 1e3, startFileName });
-        files.push(...r.files);
-        if (r.nextFileName && r.nextFileName === startFileName) throw new Error("B2 \u5206\u9875\u672A\u524D\u8FDB");
-        startFileName = r.nextFileName || void 0;
-      } while (startFileName);
-      return files;
-    }
-    download(fileId) {
-      return this.request(`${this.auth.apiInfo.storageApi.downloadUrl}/b2api/v3/b2_download_file_by_id?fileId=${encodeURIComponent(fileId)}`, "GET", { Authorization: this.auth.authorizationToken });
-    }
-    async upload(name, value2) {
-      const upload = await this.call("b2_get_upload_url", { bucketId: this.config.bucketId });
-      const bytes = new TextEncoder().encode(JSON.stringify(value2));
-      const hash = [...new Uint8Array(await crypto.subtle.digest("SHA-1", bytes))].map((b) => b.toString(16).padStart(2, "0")).join("");
-      return this.request(b2Url(upload.uploadUrl), "POST", {
-        Authorization: upload.authorizationToken,
-        "X-Bz-File-Name": encodeURIComponent(name),
-        "Content-Type": "application/json",
-        "X-Bz-Content-Sha1": hash
-      }, bytes.buffer);
-    }
-  };
-
-  // src/modules/local-following/protocol.ts
-  var uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-  var lexical = (a, b) => a < b ? -1 : a > b ? 1 : 0;
-  var validUuid = (value2) => typeof value2 === "string" && value2.length === 36 && uuidPattern.test(value2);
-  var validUid = (value2) => /^[1-9][0-9]*$/.exec(value2)?.[0] === value2 && Number.isSafeInteger(Number(value2));
-  function fields(value2, names4) {
-    return value2 !== null && typeof value2 === "object" && !Array.isArray(value2) && Object.keys(value2).length === names4.length && names4.every((name) => Object.prototype.hasOwnProperty.call(value2, name));
-  }
-  function validFace(value2) {
-    if (typeof value2 !== "string") return false;
-    if (value2 === "") return true;
-    if (!/^https?:\/\//.test(value2) || /\s/.test(value2)) return false;
-    try {
-      const url = new URL(value2);
-      return Boolean(url.hostname) && !url.username && !url.password;
-    } catch {
-      return false;
-    }
-  }
-  function readKey(key3) {
-    if (typeof key3 !== "string") throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
-    const parts2 = key3.split(":");
-    if (parts2.length === 2 && parts2[0] === "follow" && validUid(parts2[1])) return { kind: "follow", uid: parts2[1] };
-    if (parts2.length === 2 && parts2[0] === "group" && validUuid(parts2[1])) return { kind: "group", group: parts2[1] };
-    if (parts2.length === 2 && parts2[0] === "group-icon" && validUuid(parts2[1])) return { kind: "icon", group: parts2[1] };
-    if (parts2.length === 4 && parts2[0] === "member" && validUid(parts2[1]) && validUuid(parts2[2]) && validUuid(parts2[3]))
-      return { kind: "member", uid: parts2[1], generation: parts2[2], group: parts2[3] };
-    if (key3 === "group-order") return { kind: "order" };
-    throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
-  }
-  function readValue(key3, value2) {
-    switch (key3.kind) {
-      case "follow":
-        if (value2 === null) return null;
-        if (fields(value2, ["name", "face", "addedAt"]) && typeof value2.name === "string" && validFace(value2.face) && typeof value2.addedAt === "number" && Number.isSafeInteger(value2.addedAt) && value2.addedAt >= 0)
-          return { name: value2.name, face: value2.face, addedAt: value2.addedAt };
-        break;
-      case "group":
-        if (value2 === null) return null;
-        if (typeof value2 === "string" && value2.length > 0 && value2 === value2.trim()) return value2;
-        break;
-      case "member":
-        if (typeof value2 === "boolean") return value2;
-        break;
-      case "icon":
-        if (Number.isInteger(value2) && value2 > 0 && value2 <= 65535) return value2;
-        break;
-      case "order":
-        if (Array.isArray(value2) && value2.every(validUuid) && new Set(value2).size === value2.length) return [...value2];
-    }
-    throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u503C\u635F\u574F");
-  }
-  function readOperation(input) {
-    if (!fields(input, ["id", "key", "value", "parents"]) || !validUuid(input.id) || !Array.isArray(input.parents) || !input.parents.every(validUuid) || new Set(input.parents).size !== input.parents.length || input.parents.includes(input.id))
-      throw new Error("\u672C\u5730\u5173\u6CE8\u64CD\u4F5C\u635F\u574F");
-    const key3 = readKey(input.key);
-    return { id: input.id, key: input.key, value: readValue(key3, input.value), parents: [...input.parents].sort(lexical) };
-  }
-  function parseLocalFollowBatch(input) {
-    if (!fields(input, ["schema", "version", "operations"]) || input.schema !== "bili-atelier-local-following" || input.version !== 1 && input.version !== 2 || !Array.isArray(input.operations) || input.operations.length > 1e4)
-      throw new Error("\u4E0D\u652F\u6301\u7684\u672C\u5730\u5173\u6CE8\u540C\u6B65\u683C\u5F0F\u6216\u7248\u672C");
-    const operations = input.operations.map(readOperation);
-    if (new Set(operations.map((o) => o.id)).size !== operations.length) throw new Error("\u672C\u5730\u5173\u6CE8\u6279\u6B21\u5305\u542B\u91CD\u590D\u64CD\u4F5C ID");
-    return { schema: "bili-atelier-local-following", version: input.version, operations };
-  }
-  function localFollowBatch(operations) {
-    const version = operations.some((o) => o.key.startsWith("group-icon:")) ? 2 : 1;
-    return parseLocalFollowBatch({ schema: "bili-atelier-local-following", version, operations });
-  }
-  function mergeLocalFollowOperations(...arrays) {
-    const map = /* @__PURE__ */ new Map();
-    for (const array of arrays) for (const input of array) {
-      const op = readOperation(input), previous = map.get(op.id);
-      if (previous && JSON.stringify(previous) !== JSON.stringify(op)) throw new Error("\u672C\u5730\u5173\u6CE8\u64CD\u4F5C ID \u51B2\u7A81");
-      map.set(op.id, op);
-    }
-    const groupKeys = new Set([...map.values()].filter((o) => o.key.startsWith("group:")).map((o) => o.key));
-    const degrees = /* @__PURE__ */ new Map(), children = /* @__PURE__ */ new Map();
-    for (const op of map.values()) {
-      degrees.set(op.id, op.parents.length);
-      for (const parentId of op.parents) {
-        const parent = map.get(parentId);
-        if (!parent) throw new Error("\u672C\u5730\u5173\u6CE8\u5386\u53F2\u4E0D\u5B8C\u6574\uFF0C\u8BF7\u6062\u590D\u7F3A\u5931\u6587\u4EF6");
-        if (parent.key !== op.key) throw new Error("\u672C\u5730\u5173\u6CE8\u64CD\u4F5C\u8DE8\u6761\u76EE\u5F15\u7528\u7236\u8BB0\u5F55");
-        if (!children.has(parentId)) children.set(parentId, []);
-        children.get(parentId).push(op.id);
-      }
-      const key3 = readKey(op.key);
-      if (key3.kind === "member") {
-        const generation = map.get(key3.generation);
-        if (!generation || generation.key !== `follow:${key3.uid}` || generation.value === null || !groupKeys.has(`group:${key3.group}`))
-          throw new Error("\u672C\u5730\u5173\u6CE8\u6210\u5458\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u8D26\u53F7\u4EE3\u6216\u5206\u7EC4");
-      }
-      if (key3.kind === "icon" && !groupKeys.has(`group:${key3.group}`)) throw new Error("\u672C\u5730\u5173\u6CE8\u56FE\u6807\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
-      if (key3.kind === "order" && op.value.some((id) => !groupKeys.has(`group:${id}`)))
-        throw new Error("\u672C\u5730\u5173\u6CE8\u6392\u5E8F\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
-    }
-    const queue = [...degrees].filter(([, n]) => n === 0).map(([id]) => id);
-    for (let i = 0; i < queue.length; i++) for (const id of children.get(queue[i]) || []) {
-      degrees.set(id, degrees.get(id) - 1);
-      if (degrees.get(id) === 0) queue.push(id);
-    }
-    if (queue.length !== map.size) throw new Error("\u672C\u5730\u5173\u6CE8\u5386\u53F2\u5B58\u5728\u5FAA\u73AF\u5F15\u7528");
-    return [...map.values()].sort((a, b) => lexical(a.id, b.id));
-  }
-  function headsOf(operations) {
-    const covered = new Set(operations.flatMap((o) => o.parents));
-    const heads = /* @__PURE__ */ new Map();
-    for (const op of operations) if (!covered.has(op.id)) {
-      if (!heads.has(op.key)) heads.set(op.key, []);
-      heads.get(op.key).push(op);
-    }
-    return heads;
-  }
-  function localFollowFrontier(operations) {
-    return headsOf(mergeLocalFollowOperations(operations));
-  }
-  function winner(heads) {
-    return heads.find((o) => o.value === null || o.value === false) || heads[heads.length - 1];
-  }
-  function materializeLocalFollow(operations) {
-    const heads = localFollowFrontier(operations), groupMap = /* @__PURE__ */ new Map();
-    for (const [key3, ops] of heads) if (key3.startsWith("group:")) {
-      const value2 = winner(ops).value;
-      if (value2 === null) continue;
-      const id = key3.slice(6), icon2 = heads.get(`group-icon:${id}`);
-      groupMap.set(id, icon2 ? { id, name: value2, icon: winner(icon2).value } : { id, name: value2 });
-    }
-    const orderHeads = heads.get("group-order");
-    const order = orderHeads ? winner(orderHeads).value.filter((id) => groupMap.has(id)) : [];
-    const ordered = new Set(order);
-    order.push(...[...groupMap.keys()].filter((id) => !ordered.has(id)).sort(lexical));
-    const groups = order.map((id) => groupMap.get(id));
-    const accounts = [];
-    for (const [key3, ops] of heads) if (key3.startsWith("follow:")) {
-      const chosen = winner(ops);
-      if (chosen.value === null) continue;
-      const uid = key3.slice(7), generations = ops.map((o) => o.id);
-      const groupIds = order.filter((group) => {
-        const memberships = generations.flatMap((generation) => heads.get(`member:${uid}:${generation}:${group}`) || []);
-        return memberships.some((o) => o.value === true) && !memberships.some((o) => o.value === false);
-      });
-      accounts.push({ uid, ...chosen.value, generations, groupIds });
-    }
-    accounts.sort((a, b) => a.uid.length - b.uid.length || lexical(a.uid, b.uid));
-    return { accounts, groups };
-  }
-
-  // src/modules/local-following/store.ts
-  var prefix = "AtelierLocalFollow_";
-  var localFollowChangedEvent = "atelier-local-following-changed";
-  var listeners = /* @__PURE__ */ new Set();
-  var uuid = () => crypto.randomUUID();
-  var recordKeys = () => GM_listValues().filter((key3) => key3.startsWith(prefix + "record_") || key3.startsWith(prefix + "pull_")).sort();
-  function localFollowRecords(keys = recordKeys()) {
-    const result = /* @__PURE__ */ new Map();
-    const add = (id, raw) => {
-      if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(id)) throw new Error("\u672C\u5730\u5173\u6CE8\u65E5\u5FD7\u6587\u4EF6\u540D\u635F\u574F");
-      const batch2 = parseLocalFollowBatch(raw);
-      const old = result.get(id);
-      if (old && canonicalBatch(old) !== canonicalBatch(batch2)) {
-        throw new Error("\u672C\u5730\u5173\u6CE8\u6279\u6B21 ID \u51B2\u7A81");
-      }
-      result.set(id, batch2);
-    };
-    for (const key3 of keys) {
-      if (key3.startsWith(prefix + "record_")) add(key3.slice((prefix + "record_").length), GM_getValue(key3));
-      else if (key3.startsWith(prefix + "pull_")) {
-        const value2 = GM_getValue(key3);
-        if (!value2 || typeof value2 !== "object" || Array.isArray(value2)) throw new Error("\u672C\u5730\u5173\u6CE8\u62C9\u53D6\u65E5\u5FD7\u635F\u574F");
-        for (const [id, raw] of Object.entries(value2)) add(id, raw);
-      }
-    }
-    return [...result].sort(([a], [b]) => a.localeCompare(b));
-  }
-  var memo;
-  var localFollowKnown = () => {
-    const keys = recordKeys(), names4 = keys.join("\n");
-    if (memo?.names !== names4) memo = { names: names4, known: mergeLocalFollowOperations(...localFollowRecords(keys).map(([, batch2]) => batch2.operations)) };
-    return memo.known;
-  };
-  var localFollowSnapshot = () => {
-    const known2 = localFollowKnown();
-    return memo.snapshot ??= materializeLocalFollow(known2);
-  };
-  var localFollowIsSent = (id) => GM_getValue(prefix + "sent_" + id, false) === true;
-  var markLocalFollowSent = (id) => {
-    GM_setValue(prefix + "sent_" + id, true);
-  };
-  var localFollowPending = () => localFollowRecords().filter(([id]) => !localFollowIsSent(id)).reduce((n, [, batch2]) => n + batch2.operations.length, 0);
-  var localFollowHasMerged = () => GM_getValue(prefix + "merged", false) === true;
-  var localFollowBackup = () => GM_getValue(prefix + "backup", null);
-  function onLocalFollowMutation(listener2) {
-    listeners.add(listener2);
-    return () => {
-      listeners.delete(listener2);
-    };
-  }
-  function notify(local) {
-    window.dispatchEvent(new Event(localFollowChangedEvent));
-    if (local) for (const listener2 of listeners) listener2();
-  }
-  function pulse() {
-    GM_setValue(prefix + "pulse", uuid());
-  }
-  var started = false;
-  function startLocalFollowingStore() {
-    if (started) return;
-    started = true;
-    if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(prefix + "pulse", (_, __, ___, remote) => {
-      if (remote) notify(false);
-    });
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) notify(false);
-    });
-  }
-  function mergeRemoteLocalFollow(remote) {
-    const parsed = remote.map(([id, raw]) => {
-      if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(id)) throw new Error("\u8FDC\u7AEF\u672C\u5730\u5173\u6CE8\u6279\u6B21\u540D\u79F0\u65E0\u6548");
-      return [id, parseLocalFollowBatch(raw)];
-    });
-    const current4 = localFollowRecords();
-    const all = new Map(current4);
-    for (const [id, incoming] of parsed) {
-      const existing = all.get(id);
-      if (existing && canonicalBatch(existing) !== canonicalBatch(incoming)) throw new Error("\u672C\u5730\u5173\u6CE8\u6279\u6B21 ID \u51B2\u7A81");
-      all.set(id, incoming);
-    }
-    mergeLocalFollowOperations(...[...all.values()].map((batch2) => batch2.operations));
-    if (!localFollowHasMerged()) {
-      if (localFollowBackup() === null) GM_setValue(prefix + "backup", {
-        schema: "bili-atelier-local-following-backup",
-        version: 1,
-        createdAt: (/* @__PURE__ */ new Date()).toISOString(),
-        snapshot: localFollowSnapshot(),
-        batches: Object.fromEntries(current4)
-      });
-    }
-    if (parsed.length) GM_setValue(prefix + "pull_" + uuid(), Object.fromEntries(parsed));
-    for (const [id] of parsed) markLocalFollowSent(id);
-    GM_setValue(prefix + "merged", true);
-    pulse();
-    notify(false);
-  }
-  function canonicalBatch(batch2) {
-    return JSON.stringify(batch2.operations.map((op) => ({ id: op.id, key: op.key, value: op.value, parents: [...op.parents].sort() })).sort((a, b) => a.id.localeCompare(b.id)));
-  }
-  function edit(intent) {
-    const known2 = localFollowKnown();
-    const changes2 = intent(materializeLocalFollow(known2));
-    if (!changes2.length) return;
-    const heads = localFollowFrontier(known2);
-    const operations = [];
-    for (const [key3, value2] of changes2) {
-      const operation = { id: uuid(), key: key3, value: value2, parents: (heads.get(key3) ?? []).map((head) => head.id).sort() };
-      operations.push(operation);
-      heads.set(key3, [operation]);
-    }
-    mergeLocalFollowOperations(known2, operations);
-    if (operations.length <= 1e4) GM_setValue(prefix + "record_" + uuid(), localFollowBatch(operations));
-    else {
-      const transaction = {};
-      for (let index = 0; index < operations.length; index += 1e4) transaction[uuid()] = localFollowBatch(operations.slice(index, index + 1e4));
-      GM_setValue(prefix + "pull_" + uuid(), transaction);
-    }
-    pulse();
-    notify(true);
-  }
-  function normalizeLocalUid(value2) {
-    const text3 = String(value2 ?? "").trim();
-    return /^[1-9]\d*$/.test(text3) && Number.isSafeInteger(Number(text3)) ? text3 : null;
-  }
-  function parseLocalFollowInput(value2) {
-    const direct = normalizeLocalUid(value2);
-    if (direct) return direct;
-    try {
-      const url = new URL(value2.trim().replace(/^\/\//, "https://"));
-      if (url.hostname !== "space.bilibili.com" || !/^https?:$/.test(url.protocol) || url.username || url.password || url.port) return null;
-      return normalizeLocalUid(url.pathname.match(/^\/(\d+)(?:\/|$)/)?.[1]);
-    } catch {
-      return null;
-    }
-  }
-  function safeLocalFace(value2) {
-    if (typeof value2 !== "string" || !value2) return "";
-    try {
-      const url = new URL(value2.startsWith("//") ? "https:" + value2 : value2);
-      return /^https?:$/.test(url.protocol) && !url.username && !url.password ? url.href : "";
-    } catch {
-      return "";
-    }
-  }
-  function addLocalFollow(profile, now = Date.now()) {
-    const uid = normalizeLocalUid(profile.uid);
-    if (!uid) throw new Error("\u65E0\u6548\u7684\u8D26\u53F7 UID");
-    edit((snapshot) => snapshot.accounts.some((account) => account.uid === uid) ? [] : [
-      [`follow:${uid}`, { name: String(profile.name).trim(), face: safeLocalFace(profile.face), addedAt: now }]
-    ]);
-  }
-  function removeLocalFollow(uid) {
-    removeLocalFollows([uid]);
-  }
-  function removeLocalFollows(uids) {
-    const selected = new Set(uids);
-    edit((snapshot) => snapshot.accounts.filter((account) => selected.has(account.uid)).map((account) => [`follow:${account.uid}`, null]));
-  }
-  function createLocalFollowGroup(name) {
-    const id = uuid();
-    edit((snapshot) => [[`group:${id}`, name.trim()], ["group-order", [...snapshot.groups.map((group) => group.id), id]]]);
-    return id;
-  }
-  function renameLocalFollowGroup(id, name) {
-    edit((snapshot) => {
-      if (!snapshot.groups.some((group) => group.id === id)) throw new Error("\u8BE5\u5206\u7EC4\u5DF2\u88AB\u5220\u9664");
-      return [[`group:${id}`, name.trim()]];
-    });
-  }
-  function deleteLocalFollowGroup(id) {
-    edit((snapshot) => snapshot.groups.some((group) => group.id === id) ? [[`group:${id}`, null]] : []);
-  }
-  function moveLocalFollowGroup(id, direction) {
-    edit((snapshot) => {
-      const order = snapshot.groups.map((group) => group.id), index = order.indexOf(id);
-      if (index < 0 || index + direction < 0 || index + direction >= order.length) return [];
-      [order[index], order[index + direction]] = [order[index + direction], order[index]];
-      return [["group-order", order]];
-    });
-  }
-  function setLocalFollowGroupIcon(id, icon2) {
-    edit((snapshot) => {
-      const group = snapshot.groups.find((group2) => group2.id === id);
-      if (!group) throw new Error("\u8BE5\u5206\u7EC4\u5DF2\u88AB\u5220\u9664");
-      return group.icon === icon2 ? [] : [[`group-icon:${id}`, icon2]];
-    });
-  }
-  function invertLocalFollowMembership(uids, groupId) {
-    const chosen = new Set(uids);
-    edit((snapshot) => {
-      if (!snapshot.groups.some((group) => group.id === groupId)) throw new Error("\u8BE5\u5206\u7EC4\u5DF2\u88AB\u5220\u9664");
-      return snapshot.accounts.filter((account) => chosen.has(account.uid)).flatMap((account) => account.generations.map((generation) => [`member:${account.uid}:${generation}:${groupId}`, !account.groupIds.includes(groupId)]));
-    });
-  }
-  function setLocalFollowMembership(uids, groupId, member) {
-    const chosen = new Set(uids);
-    edit((snapshot) => {
-      if (!snapshot.groups.some((group) => group.id === groupId)) throw new Error("\u8BE5\u5206\u7EC4\u5DF2\u88AB\u5220\u9664");
-      return snapshot.accounts.filter((account) => chosen.has(account.uid)).flatMap((account) => account.generations.map((generation) => [`member:${account.uid}:${generation}:${groupId}`, member]));
-    });
-  }
-  function readLocalFollowCache(uid) {
-    return GM_getValue(prefix + "cache_" + uid, {}) || {};
-  }
-  function writeLocalFollowCache(uid, patch) {
-    if (!normalizeLocalUid(uid)) return;
-    const current4 = readLocalFollowCache(uid), updates = { ...current4.updates };
-    for (const [kind, value2] of Object.entries(patch.updates ?? {})) if (Number.isSafeInteger(value2) && value2 > (updates[kind] ?? 0)) updates[kind] = value2;
-    GM_setValue(prefix + "cache_" + uid, { ...current4, ...patch, updates });
-    pulse();
-    notify(false);
-  }
-  function recordLocalFollowVisit(uid, now = Date.now()) {
-    if (localFollowSnapshot().accounts.some((account) => account.uid === uid)) writeLocalFollowCache(uid, { viewedAt: now });
-  }
-  var readLocalFollowPreferences = () => GM_getValue(prefix + "preferences", null);
-  var writeLocalFollowPreferences = (value2) => GM_setValue(prefix + "preferences", value2);
-
-  // src/modules/sync/service.ts
-  var prefix2 = "AtelierSync_";
-  var recordsPrefix = `${prefix2}record_`;
-  var getConfig = () => GM_getValue(`${prefix2}config`, null);
-  var paused = () => GM_getValue(`${prefix2}paused`, true);
-  function setPaused(value2) {
-    GM_setValue(`${prefix2}paused`, value2);
-    notify2();
-    if (!value2) schedule();
-  }
-  function saveConfig(value2) {
-    if (busy) throw new Error("\u540C\u6B65\u6B63\u5728\u8FDB\u884C\uFF0C\u8BF7\u5B8C\u6210\u540E\u518D\u4FEE\u6539\u8FDE\u63A5\u914D\u7F6E");
-    const c = parseConfig(value2), old = getConfig();
-    if (old && GM_getValue(prefix2 + "merged", false) && (old.bucketId !== c.bucketId || old.prefix !== c.prefix)) throw new Error("\u5DF2\u6709\u540C\u6B65\u5386\u53F2\uFF0C\u4E0D\u80FD\u76F4\u63A5\u5207\u6362\u5B58\u50A8\u6876\u6216\u76EE\u5F55\uFF1B\u8BF7\u7EE7\u7EED\u4F7F\u7528\u539F\u540C\u6B65\u7A7A\u95F4");
-    GM_setValue(`${prefix2}config`, c);
-    retryAfter = 0;
-    notify2();
-  }
-  function records() {
-    const local = GM_listValues().filter((k) => k.startsWith(recordsPrefix)).map((k) => [k.slice(recordsPrefix.length), parseBatch(GM_getValue(k))]);
-    const pulls = GM_listValues().filter((k) => k.startsWith(prefix2 + "pull_")).flatMap((k) => Object.entries(GM_getValue(k)).map(([id, b]) => [id, parseBatch(b)]));
-    return [...new Map([...local, ...pulls]).entries()];
-  }
-  function known() {
-    return mergeOperations(...records().map(([, b]) => b.operations));
-  }
-  function saveOperations(ops) {
-    for (let i = 0; i < ops.length; i += 1e3) GM_setValue(recordsPrefix + crypto.randomUUID(), batch(ops.slice(i, i + 1e3)));
-  }
-  function localKeys() {
-    return new Set([
-      ...readViewedStorage().items.map((v) => `v:${v}`),
-      ...readRuleList("precise_uid").map((v) => `u:${v}`),
-      ...readRuleList("precise_name").map((v) => `n:${String(v).trim().toLowerCase()}`)
-    ].filter(validKey));
-  }
-  function apply() {
-    const desired = materialize(known()), current4 = localKeys();
-    if (desired.size === current4.size && [...desired].every((k) => current4.has(k))) return;
-    applyFromSync(() => {
-      const viewed2 = readViewedStorage().items.filter((v) => !validKey(`v:${v}`));
-      writeViewedStorage({ items: [...viewed2, ...[...desired].filter((k) => k.startsWith("v:")).map((k) => k.slice(2))] }, "overwrite");
-      for (const [type, key3] of [["u:", "precise_uid"], ["n:", "precise_name"]]) {
-        const unsupported = readRuleList(key3).filter((v) => !validKey(`${type}${String(v).trim().toLowerCase()}`));
-        writeRuleList(key3, [...unsupported, ...[...desired].filter((k) => k.startsWith(type)).map((k) => k.slice(2))]);
-      }
-    });
-    window.dispatchEvent(new Event("atelier-sync-applied"));
-  }
-  function notify2() {
-    window.dispatchEvent(new Event("atelier-sync-status"));
-  }
-  function status() {
-    const viewedAndBlockedPending = records().filter(([id]) => !GM_getValue(`${prefix2}sent_${id}`, false)).reduce((n, [, b]) => n + b.operations.length, 0);
-    const followingPending = localFollowPending();
-    return { pending: viewedAndBlockedPending + followingPending, followingPending, busy, lastSuccess: GM_getValue(`${prefix2}success`, ""), error: GM_getValue(`${prefix2}error`, "") };
-  }
-  var timer = 0;
-  var busy = false;
-  var failures = 0;
-  var retryAfter = 0;
-  function schedule() {
-    window.clearTimeout(timer);
-    timer = window.setTimeout(() => {
-      if (!document.hidden) void synchronize();
-    }, 3e3);
-  }
-  async function testConnection(config2) {
-    const b2 = new B2(parseConfig(config2));
-    await b2.authorize();
-    await b2.list();
-    await b2.listLocalFollowing();
-  }
-  async function synchronize(manual = false) {
-    const config2 = getConfig();
-    if (!config2 || paused() || busy || !manual && Date.now() < retryAfter) return "skipped";
-    busy = true;
-    notify2();
-    try {
-      const b2 = new B2(parseConfig(config2));
-      await b2.authorize();
-      const files = await b2.list();
-      const remote = [];
-      const cached = new Set(records().map(([id]) => id));
-      for (const file of files) {
-        if (paused()) return "cancelled";
-        if (!file.fileName.startsWith(`${config2.prefix}ops/`)) throw new Error("\u540C\u6B65\u6587\u4EF6\u76EE\u5F55\u4E0D\u5339\u914D");
-        const match = file.fileName.slice(`${config2.prefix}ops/`.length).match(/^([0-9a-f-]{36})\.json$/);
-        if (!match) throw new Error("\u540C\u6B65\u76EE\u5F55\u542B\u672A\u77E5\u6587\u4EF6\uFF0C\u8BF7\u4F7F\u7528\u72EC\u7ACB\u7684 atelier/ \u76EE\u5F55");
-        const id = match[1];
-        if (!cached.has(id)) remote.push([id, parseBatch(await b2.download(file.fileId))]);
-      }
-      const followingRemote = [];
-      const followingCached = new Set(localFollowRecords().map(([id]) => id));
-      for (const file of await b2.listLocalFollowing()) {
-        if (paused()) return "cancelled";
-        const base = `${config2.prefix}local-following-ops/`;
-        if (!file.fileName.startsWith(base)) throw new Error("\u672C\u5730\u5173\u6CE8\u540C\u6B65\u6587\u4EF6\u76EE\u5F55\u4E0D\u5339\u914D");
-        const match = file.fileName.slice(base.length).match(/^([0-9a-f-]{36})\.json$/);
-        if (!match) throw new Error("\u672C\u5730\u5173\u6CE8\u540C\u6B65\u76EE\u5F55\u542B\u672A\u77E5\u6587\u4EF6\uFF0C\u672A\u5E94\u7528");
-        if (!followingCached.has(match[1])) followingRemote.push([match[1], parseLocalFollowBatch(await b2.download(file.fileId))]);
-      }
-      if (paused()) return "cancelled";
-      mergeOperations(known(), ...remote.map(([, b]) => b.operations));
-      mergeLocalFollowOperations(localFollowKnown(), ...followingRemote.map(([, b]) => b.operations));
-      if (!GM_getValue(prefix2 + "merged", false)) {
-        GM_setValue(prefix2 + "backup", exportAtelierDataPackage());
-        GM_setValue(prefix2 + "merged", true);
-      }
-      mergeRemoteLocalFollow(followingRemote);
-      if (remote.length) GM_setValue(prefix2 + "pull_" + crypto.randomUUID(), Object.fromEntries(remote));
-      for (const [id] of remote) GM_setValue(prefix2 + "sent_" + id, true);
-      apply();
-      for (const [id, b] of records()) {
-        if (paused()) break;
-        if (GM_getValue(`${prefix2}sent_${id}`, false)) continue;
-        await b2.upload(`${config2.prefix}ops/${id}.json`, b);
-        GM_setValue(`${prefix2}sent_${id}`, true);
-      }
-      for (const [id, b] of localFollowRecords()) {
-        if (paused()) break;
-        if (localFollowIsSent(id)) continue;
-        await b2.upload(`${config2.prefix}local-following-ops/${id}.json`, b);
-        markLocalFollowSent(id);
-      }
-      if (paused()) return "cancelled";
-      GM_setValue(`${prefix2}success`, (/* @__PURE__ */ new Date()).toISOString());
-      GM_setValue(`${prefix2}error`, "");
-      failures = 0;
-      retryAfter = 0;
-      GM_setValue(`${prefix2}pulse`, crypto.randomUUID());
-      return "success";
-    } catch (e) {
-      GM_setValue(`${prefix2}error`, e instanceof Error ? e.message : "\u540C\u6B65\u5931\u8D25");
-      retryAfter = Date.now() + Math.min(15 * 6e4, 3e4 * 2 ** Math.min(failures++, 5));
-      return "error";
-    } finally {
-      busy = false;
-      notify2();
-    }
-  }
-  function downloadBackup() {
-    const value2 = GM_getValue(`${prefix2}backup`, null);
-    const url = URL.createObjectURL(new Blob([JSON.stringify(value2, null, 2)], { type: "application/json" }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "atelier-before-sync.json";
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1e3);
-  }
-  function downloadLocalFollowBackup() {
-    const value2 = localFollowBackup();
-    if (value2 == null) throw new Error("\u672C\u5730\u5173\u6CE8\u5C1A\u672A\u9996\u6B21\u5408\u5E76\uFF0C\u5907\u4EFD\u5C06\u5728\u9996\u6B21\u5408\u5E76\u524D\u4FDD\u5B58");
-    const url = URL.createObjectURL(new Blob([JSON.stringify(value2, null, 2)], { type: "application/json" }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "atelier-local-following-before-sync.json";
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1e3);
-  }
-  function startSync() {
-    if (!GM_getValue(`${prefix2}initialized`, false)) {
-      if (!GM_getValue(`${prefix2}backup`, null)) GM_setValue(`${prefix2}backup`, exportAtelierDataPackage());
-      saveOperations([...localKeys()].map((key3) => ({ id: seedId(key3), key: key3, present: true, parents: [] })));
-      GM_setValue(`${prefix2}initialized`, true);
-    }
-    apply();
-    onSyncMutation((before, after) => {
-      saveOperations(changes(before, after, known(), () => crypto.randomUUID()));
-      GM_setValue(`${prefix2}pulse`, crypto.randomUUID());
-      notify2();
-      schedule();
-    });
-    onLocalFollowMutation(() => {
-      notify2();
-      schedule();
-    });
-    if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(`${prefix2}pulse`, (_, __, ___, remote) => {
-      if (remote) {
-        apply();
-        notify2();
-      }
-    });
-    window.addEventListener("online", schedule);
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) {
-        apply();
-        schedule();
-      }
-    });
-    window.setInterval(() => {
-      if (!document.hidden) void synchronize();
-    }, 6e4);
-    schedule();
-  }
-
-  // src/ui/assets/xp-sounds/catalog.json
-  var catalog_default = {
-    schema: "bili-atelier-xp-sounds",
-    version: 1,
-    defaultVolume: 0.55,
-    source: {
-      imageName: "xp sp3 official.iso",
-      bytes: 630237184,
-      volume: "GRTMPVOL_CN"
-    },
-    categories: [
-      {
-        id: "navigation",
-        name: "\u5BFC\u822A\u4E0E\u7A97\u53E3",
-        sample: "xpstart",
-        defaultVolume: 1,
-        defaultEnabled: true
-      },
-      {
-        id: "controls",
-        name: "\u6309\u94AE\u4E0E\u9009\u62E9",
-        sample: "xpmenu",
-        defaultVolume: 1,
-        defaultEnabled: true
-      }
-    ],
-    cues: {
-      control: {
-        sound: "xpmenu",
-        category: "controls",
-        priority: 10
-      },
-      navigate: {
-        sound: "xpstart",
-        category: "navigation",
-        priority: 40
-      },
-      open: {
-        sound: "xprestor",
-        category: "navigation",
-        priority: 40
-      },
-      close: {
-        sound: "xpmin",
-        category: "navigation",
-        priority: 40
-      },
-      expand: {
-        sound: "xprestor",
-        category: "navigation",
-        priority: 40
-      },
-      collapse: {
-        sound: "xpmin",
-        category: "navigation",
-        priority: 40
-      }
-    },
-    sounds: [
-      {
-        id: "xpballn",
-        file: "xpballn.wav",
-        name: "Windows XP \u6C14\u7403",
-        previewOnly: true,
-        durationMs: 144,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -18.24,
-        rmsDbFS: -33.71,
-        gain: 0.81655,
-        bytes: 6400,
-        sha256: "c9de87a87b68dd754fa29f2989c240949ad9b1f0423d019ca68afcd86e107639",
-        source: "I386/XPBALLN.WA_",
-        compressedSha256: "1c8d7665108ad4af42bec4ef940d3dad949d4053d9418e63616284a2d1ad5ffb"
-      },
-      {
-        id: "xpbatcrt",
-        file: "xpbatcrt.wav",
-        name: "Windows XP \u7535\u6C60\u7535\u529B\u4E25\u91CD\u77ED\u7F3A",
-        previewOnly: true,
-        durationMs: 836,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -0.17,
-        rmsDbFS: -12.84,
-        gain: 0.10194,
-        bytes: 36910,
-        sha256: "cb02dd9f8b4d18aab9a5c51a26faac12e861dd362800a12292f243432a982325",
-        source: "I386/XPBATCRT.WA_",
-        compressedSha256: "aa2b39585f31ae73645fe7a5e3b986a2e44e0c4722712da9ee00daf32c6ffc3f"
-      },
-      {
-        id: "xpbatlow",
-        file: "xpbatlow.wav",
-        name: "Windows XP \u7535\u6C60\u4E0D\u8DB3",
-        previewOnly: true,
-        durationMs: 1220,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -1.31,
-        rmsDbFS: -16.43,
-        gain: 0.11624,
-        bytes: 53864,
-        sha256: "bd4a58b1e2b8e93bcf5b76df3e4a9f67ce0926107a5702ed6bac0e63466a22fd",
-        source: "I386/XPBATLOW.WA_",
-        compressedSha256: "f002dee050cb80f908c08eb7b713aa1c75096419537342533571781e4c1c4fdc"
-      },
-      {
-        id: "xpblkpop",
-        file: "xpblkpop.wav",
-        name: "Windows XP \u5F39\u51FA\u7A97\u53E3\u5DF2\u963B\u6B62",
-        previewOnly: true,
-        durationMs: 167,
-        channels: 2,
-        sampleRate: 44100,
-        bits: 16,
-        peakDbFS: -13.98,
-        rmsDbFS: -34.22,
-        gain: 0.50005,
-        bytes: 29444,
-        sha256: "df7cad111688dadb00469203dd7228df99e49e86ae7ba937e308d947cd9790f2",
-        source: "I386/XPBLKPOP.WA_",
-        compressedSha256: "baae17740810abd3d43d5c703ff801df8be3ebf63726a02d2c29f424ba55a0b0"
-      },
-      {
-        id: "xpcrtstp",
-        file: "xpcrtstp.wav",
-        name: "Windows XP \u5173\u952E\u6027\u7EC8\u6B62",
-        previewOnly: true,
-        durationMs: 892,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -3.2,
-        rmsDbFS: -16.48,
-        gain: 0.14448,
-        bytes: 39382,
-        sha256: "1b86a1b8b7b5925f9346b64115b0b92744a142b06b09f44263a57419bc2bb6e6",
-        source: "I386/XPCRTSTP.WA_",
-        compressedSha256: "8dff0499e501012337f14551e4350d017a2a88fa5f36b7ee84c7c6442cd62b8e"
-      },
-      {
-        id: "xpdef",
-        file: "xpdef.wav",
-        name: "Windows XP \u9ED8\u8BA4\u503C",
-        previewOnly: true,
-        durationMs: 555,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -9.77,
-        rmsDbFS: -27.31,
-        gain: 0.30791,
-        bytes: 24530,
-        sha256: "d0426433cb153f860f02320408a1922558742bc3d170eb47715192ff86a66a16",
-        source: "I386/XPDEF.WA_",
-        compressedSha256: "1d3258f9f2b9070370d49a069d3cf79ca5a89163063b84f479af7a0d641d3fa7"
-      },
-      {
-        id: "xpding",
-        file: "xpding.wav",
-        name: "Windows XP \u53EE\u5F53\u58F0",
-        previewOnly: true,
-        durationMs: 387,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -11.74,
-        rmsDbFS: -21.34,
-        gain: 0.38651,
-        bytes: 17132,
-        sha256: "20fc59d9f846bc32b899880fae0878208856718b75e6158526308b900af8a9bd",
-        source: "I386/XPDING.WA_",
-        compressedSha256: "3fa29e9bcb7f38b6dfc1aec0865270840ae69c9261ecc48eea4c5e81d0fdecd7"
-      },
-      {
-        id: "xperror",
-        file: "xperror.wav",
-        name: "Windows XP \u9519\u8BEF",
-        previewOnly: true,
-        durationMs: 1e3,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -6.98,
-        rmsDbFS: -23.56,
-        gain: 0.22343,
-        bytes: 44136,
-        sha256: "4b51ec1b1b14889bc2c2cdad8c80dafc974d78b9292c3ccb344e44e93383cac4",
-        source: "I386/XPERROR.WA_",
-        compressedSha256: "cb1b985cab19466befd27b5d9628165dda8a1cabbc880dc3c9bfec68a26ae8d1"
-      },
-      {
-        id: "xpexcl",
-        file: "xpexcl.wav",
-        name: "Windows XP \u60CA\u53F9\u53F7",
-        previewOnly: true,
-        durationMs: 964,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -16.42,
-        rmsDbFS: -32.09,
-        gain: 0.66185,
-        bytes: 42576,
-        sha256: "b57b8e8818c424452ca4fb8abb219ae01c0e31db2f955e1f85d9fcb5a0dabfbe",
-        source: "I386/XPEXCL.WA_",
-        compressedSha256: "0bc7bb68966af22cac6444392a3ea9956cb98177ef2648dbc8d025051118eea6"
-      },
-      {
-        id: "xphdfail",
-        file: "xphdfail.wav",
-        name: "Windows XP \u786C\u4EF6\u6545\u969C",
-        previewOnly: true,
-        durationMs: 829,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -12.98,
-        rmsDbFS: -25.32,
-        gain: 0.44558,
-        bytes: 36614,
-        sha256: "fe6e852ff646c0a896995632f76a3e390bea6163b40639c87bf45c1d8a7475c2",
-        source: "I386/XPHDFAIL.WA_",
-        compressedSha256: "7daa31c4f966dd10d85f992b6f601f9ec107a2f4d6c44539474ee3a6e6a97678"
-      },
-      {
-        id: "xphdinst",
-        file: "xphdinst.wav",
-        name: "Windows XP \u786C\u4EF6\u63D2\u5165",
-        previewOnly: true,
-        durationMs: 830,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -14.91,
-        rmsDbFS: -28.67,
-        gain: 0.55624,
-        bytes: 36636,
-        sha256: "a3e44db9179591a705baed6daa00efb988197c0698a9747980126d5939e9d506",
-        source: "I386/XPHDINST.WA_",
-        compressedSha256: "59692e7ac46240e9cf8b9ad16007bc837b4f05a9a81787cf79120ae855ab9d79"
-      },
-      {
-        id: "xphdrem",
-        file: "xphdrem.wav",
-        name: "Windows XP \u786C\u4EF6\u5220\u9664",
-        previewOnly: true,
-        durationMs: 828,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -15.55,
-        rmsDbFS: -28.3,
-        gain: 0.59938,
-        bytes: 36538,
-        sha256: "c4d09c6ad6a9090c4e611330a7501f7a84abc7c777c6e3d1915179f8d1ed45f3",
-        source: "I386/XPHDREM.WA_",
-        compressedSha256: "1af16d0041acfdc07c2268ed2186a6dd16c1e602c11e39e4ef17b27d9e7e57fb"
-      },
-      {
-        id: "xpinfbar",
-        file: "xpinfbar.wav",
-        name: "Windows XP \u4FE1\u606F\u680F",
-        previewOnly: true,
-        durationMs: 109,
-        channels: 2,
-        sampleRate: 44100,
-        bits: 16,
-        peakDbFS: -4.2,
-        rmsDbFS: -11.08,
-        gain: 0.16218,
-        bytes: 20336,
-        sha256: "b4dfbdfd8d6a102123a7966da358781bd32bb6d78e833514705cb7de76efa410",
-        source: "I386/XPINFBAR.WA_",
-        compressedSha256: "17ec22ddf2a76dd9b77a42271491228a905accbf0cd1028691fbc89d248b071e"
-      },
-      {
-        id: "xplogoff",
-        file: "xplogoff.wav",
-        name: "Windows XP \u6CE8\u9500\u97F3",
-        previewOnly: true,
-        durationMs: 2037,
-        channels: 2,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -10.39,
-        rmsDbFS: -27.7,
-        gain: 0.33066,
-        bytes: 179704,
-        sha256: "e0c0e5dea2550c8f235c0bb1584d9011a35ca23bc18597bf7ac6581efcd7b7aa",
-        source: "I386/XPLOGOFF.WA_",
-        compressedSha256: "47fbfa45e605ca3c84a13243267b02972c33f0ef879b31133412c2b528555f53"
-      },
-      {
-        id: "xplogon",
-        file: "xplogon.wav",
-        name: "Windows XP \u767B\u5F55\u97F3",
-        previewOnly: true,
-        durationMs: 2156,
-        channels: 2,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -10.04,
-        rmsDbFS: -27.67,
-        gain: 0.31758,
-        bytes: 190208,
-        sha256: "8d71fba4267fb3454030c7289079421a08fc3e773caa47107d832f855ae85396",
-        source: "I386/XPLOGON.WA_",
-        compressedSha256: "3e48b114a7a3956ced53f0a469a7d85717bd00b77522c335d85b77b3726e5f03"
-      },
-      {
-        id: "xpmenu",
-        file: "xpmenu.wav",
-        name: "Windows XP \u83DC\u5355\u547D\u4EE4",
-        previewOnly: false,
-        durationMs: 31,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -20.6,
-        rmsDbFS: -36.23,
-        gain: 1,
-        bytes: 1404,
-        sha256: "da4fc6f8917b97725e6de85bb45b574c7895ec46672e6eb439a462cfd9940ac7",
-        source: "I386/XPMENU.WA_",
-        compressedSha256: "2c73d31fdd47a2f456b64682f568ab6362a7ce8f6a6b6d38cc0ee8132b59d8f5"
-      },
-      {
-        id: "xpmin",
-        file: "xpmin.wav",
-        name: "Windows XP \u6700\u5C0F\u5316",
-        previewOnly: false,
-        durationMs: 511,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -24.38,
-        rmsDbFS: -37.4,
-        gain: 1,
-        bytes: 22580,
-        sha256: "974da6baee4187c37e514186b99691132988140cca95402589c6fdc1417e5926",
-        source: "I386/XPMIN.WA_",
-        compressedSha256: "37a5861aa70198e03c83ecdd5252e51d8a6be4cf13e241dda491e46bd4201de2"
-      },
-      {
-        id: "xpnotify",
-        file: "xpnotify.wav",
-        name: "Windows XP \u901A\u77E5",
-        previewOnly: true,
-        durationMs: 1110,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -18.71,
-        rmsDbFS: -36.89,
-        gain: 0.86164,
-        bytes: 48988,
-        sha256: "760cdd5685008255d6e188a8c528ebcb74daf806bb24a81c2a36086df6a95c76",
-        source: "I386/XPNOTIFY.WA_",
-        compressedSha256: "2f9684cd2952a85245a86b9d06973b13e7149ff6cf3ffafe82bcdce16a2dc1f3"
-      },
-      {
-        id: "xpprint",
-        file: "xpprint.wav",
-        name: "Windows XP \u6253\u5370\u7ED3\u675F",
-        previewOnly: true,
-        durationMs: 991,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -18.3,
-        rmsDbFS: -34.52,
-        gain: 0.82249,
-        bytes: 43762,
-        sha256: "e411c02471876c4d1075ec8fcd406e99ac7c9a5e0c6322ed579de50c8ca3b844",
-        source: "I386/XPPRINT.WA_",
-        compressedSha256: "324d91096b47c0f0fc35e65ab37e067ba403793b7eb211feb9a56288b119c763"
-      },
-      {
-        id: "xprecycl",
-        file: "xprecycl.wav",
-        name: "Windows XP \u56DE\u6536",
-        previewOnly: true,
-        durationMs: 516,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -17.06,
-        rmsDbFS: -38.1,
-        gain: 0.71312,
-        bytes: 22816,
-        sha256: "a8a7028f9fe989cdde61bf22b73f0ff23ae291dbf8e056bb09682a7487c49ad7",
-        source: "I386/XPRECYCL.WA_",
-        compressedSha256: "a2b79e1e62ec0b453982b30a38ad861838e7e09bc1498717466ca480abfe78e6"
-      },
-      {
-        id: "xprestor",
-        file: "xprestor.wav",
-        name: "Windows XP \u8FD8\u539F",
-        previewOnly: false,
-        durationMs: 440,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -24.36,
-        rmsDbFS: -37.68,
-        gain: 1,
-        bytes: 19458,
-        sha256: "480dea5b1808dd67c5a5946e7a47e8e582d5cb1c7fdce4b037140157da0ecadf",
-        source: "I386/XPRESTOR.WA_",
-        compressedSha256: "bf362bfb0c53d25d64075f046d9406da9b071c688f066c1c9edfc38174dd231e"
-      },
-      {
-        id: "xpringin",
-        file: "xpringin.wav",
-        name: "Windows XP \u7535\u8BDD\u62E8\u5165\u58F0",
-        previewOnly: true,
-        durationMs: 882,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -22.82,
-        rmsDbFS: -34.27,
-        gain: 1,
-        bytes: 38930,
-        sha256: "b2cd4e4a977606abb8c35b7d446d6c322ee4bda4c0c722ef240f0c51d7ddc713",
-        source: "I386/XPRINGIN.WA_",
-        compressedSha256: "4061db3507f25e2cefdd4b7bbf9f73042c45525c01f4bdb017e354bd43c552da"
-      },
-      {
-        id: "xprngout",
-        file: "xprngout.wav",
-        name: "Windows XP \u7535\u8BDD\u62E8\u51FA\u58F0",
-        previewOnly: true,
-        durationMs: 499,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -20.25,
-        rmsDbFS: -26.76,
-        gain: 1,
-        bytes: 22070,
-        sha256: "d994081372c2794642da68212d49c6a64263f88a9fde5cc96583b43574c26bb0",
-        source: "I386/XPRNGOUT.WA_",
-        compressedSha256: "32da90bd18459eb03356f9e977df35e9440e52b5baf3df727e343c666c75e8a8"
-      },
-      {
-        id: "xpshutdn",
-        file: "xpshutdn.wav",
-        name: "Windows XP \u5173\u673A",
-        previewOnly: true,
-        durationMs: 3204,
-        channels: 2,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -5.08,
-        rmsDbFS: -21.12,
-        gain: 0.17957,
-        bytes: 282608,
-        sha256: "3d937337075a647950f6aa557bca23dea6e17cf6d14814ca7dbc55b827678a0b",
-        source: "I386/XPSHUTDN.WA_",
-        compressedSha256: "dbd8c3522091971481245e330803b9dca3ad96f17ef289ef781e84fc4770d8c2"
-      },
-      {
-        id: "xpstart",
-        file: "xpstart.wav",
-        name: "Windows XP \u5F00\u59CB",
-        previewOnly: false,
-        durationMs: 49,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -19.66,
-        rmsDbFS: -36.72,
-        gain: 0.96122,
-        bytes: 2202,
-        sha256: "d5712a8963eb3e1e181b25649ecff3080ede89c96350eb07e7d7cad429e959ea",
-        source: "I386/XPSTART.WA_",
-        compressedSha256: "501e2d3dd60d27514d2cf4e0349a360e5b09ce149427e8c9642dd665dc9add18"
-      },
-      {
-        id: "xpstartu",
-        file: "xpstartu.wav",
-        name: "Windows XP \u542F\u52A8",
-        previewOnly: true,
-        durationMs: 4814,
-        channels: 2,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -5.32,
-        rmsDbFS: -20.9,
-        gain: 0.18453,
-        bytes: 424644,
-        sha256: "8f859ebb90247036ced11db854848abe1434dc3ffdfa5795f7c5f06db9a423d5",
-        source: "I386/XPSTARTU.WA_",
-        compressedSha256: "2e19628930cbe38457bd186747793f5cb29c6e360206303c219bdce514032559"
-      }
-    ]
-  };
 
   // src/ui/resource-cache.ts
   var warned = false;
@@ -3940,531 +2289,6 @@
     }
     unavailable();
     return "";
-  }
-
-  // src/ui/assets/xp-sounds/xpballn.wav
-  var xpballn_default = readCachedResourceUrl("atelier_xpballn_wav");
-
-  // src/ui/assets/xp-sounds/xpbatcrt.wav
-  var xpbatcrt_default = readCachedResourceUrl("atelier_xpbatcrt_wav");
-
-  // src/ui/assets/xp-sounds/xpbatlow.wav
-  var xpbatlow_default = readCachedResourceUrl("atelier_xpbatlow_wav");
-
-  // src/ui/assets/xp-sounds/xpblkpop.wav
-  var xpblkpop_default = readCachedResourceUrl("atelier_xpblkpop_wav");
-
-  // src/ui/assets/xp-sounds/xpcrtstp.wav
-  var xpcrtstp_default = readCachedResourceUrl("atelier_xpcrtstp_wav");
-
-  // src/ui/assets/xp-sounds/xpdef.wav
-  var xpdef_default = readCachedResourceUrl("atelier_xpdef_wav");
-
-  // src/ui/assets/xp-sounds/xpding.wav
-  var xpding_default = readCachedResourceUrl("atelier_xpding_wav");
-
-  // src/ui/assets/xp-sounds/xperror.wav
-  var xperror_default = readCachedResourceUrl("atelier_xperror_wav");
-
-  // src/ui/assets/xp-sounds/xpexcl.wav
-  var xpexcl_default = readCachedResourceUrl("atelier_xpexcl_wav");
-
-  // src/ui/assets/xp-sounds/xphdfail.wav
-  var xphdfail_default = readCachedResourceUrl("atelier_xphdfail_wav");
-
-  // src/ui/assets/xp-sounds/xphdinst.wav
-  var xphdinst_default = readCachedResourceUrl("atelier_xphdinst_wav");
-
-  // src/ui/assets/xp-sounds/xphdrem.wav
-  var xphdrem_default = readCachedResourceUrl("atelier_xphdrem_wav");
-
-  // src/ui/assets/xp-sounds/xpinfbar.wav
-  var xpinfbar_default = readCachedResourceUrl("atelier_xpinfbar_wav");
-
-  // src/ui/assets/xp-sounds/xplogoff.wav
-  var xplogoff_default = readCachedResourceUrl("atelier_xplogoff_wav");
-
-  // src/ui/assets/xp-sounds/xplogon.wav
-  var xplogon_default = readCachedResourceUrl("atelier_xplogon_wav");
-
-  // src/ui/assets/xp-sounds/xpmenu.wav
-  var xpmenu_default = readCachedResourceUrl("atelier_xpmenu_wav");
-
-  // src/ui/assets/xp-sounds/xpmin.wav
-  var xpmin_default = readCachedResourceUrl("atelier_xpmin_wav");
-
-  // src/ui/assets/xp-sounds/xpnotify.wav
-  var xpnotify_default = readCachedResourceUrl("atelier_xpnotify_wav");
-
-  // src/ui/assets/xp-sounds/xpprint.wav
-  var xpprint_default = readCachedResourceUrl("atelier_xpprint_wav");
-
-  // src/ui/assets/xp-sounds/xprecycl.wav
-  var xprecycl_default = readCachedResourceUrl("atelier_xprecycl_wav");
-
-  // src/ui/assets/xp-sounds/xprestor.wav
-  var xprestor_default = readCachedResourceUrl("atelier_xprestor_wav");
-
-  // src/ui/assets/xp-sounds/xpringin.wav
-  var xpringin_default = readCachedResourceUrl("atelier_xpringin_wav");
-
-  // src/ui/assets/xp-sounds/xprngout.wav
-  var xprngout_default = readCachedResourceUrl("atelier_xprngout_wav");
-
-  // src/ui/assets/xp-sounds/xpshutdn.wav
-  var xpshutdn_default = readCachedResourceUrl("atelier_xpshutdn_wav");
-
-  // src/ui/assets/xp-sounds/xpstart.wav
-  var xpstart_default = readCachedResourceUrl("atelier_xpstart_wav");
-
-  // src/ui/assets/xp-sounds/xpstartu.wav
-  var xpstartu_default = readCachedResourceUrl("atelier_xpstartu_wav");
-
-  // src/modules/sounds/assets.ts
-  var soundSources = { xpballn: xpballn_default, xpbatcrt: xpbatcrt_default, xpbatlow: xpbatlow_default, xpblkpop: xpblkpop_default, xpcrtstp: xpcrtstp_default, xpdef: xpdef_default, xpding: xpding_default, xperror: xperror_default, xpexcl: xpexcl_default, xphdfail: xphdfail_default, xphdinst: xphdinst_default, xphdrem: xphdrem_default, xpinfbar: xpinfbar_default, xplogoff: xplogoff_default, xplogon: xplogon_default, xpmenu: xpmenu_default, xpmin: xpmin_default, xpnotify: xpnotify_default, xpprint: xpprint_default, xprecycl: xprecycl_default, xprestor: xprestor_default, xpringin: xpringin_default, xprngout: xprngout_default, xpshutdn: xpshutdn_default, xpstart: xpstart_default, xpstartu: xpstartu_default };
-
-  // src/modules/sounds/engine.ts
-  var soundCategories = ["navigation", "controls"];
-  var volume = (value2, fallback2) => typeof value2 === "number" && Number.isFinite(value2) ? Math.max(0, Math.min(1, value2)) : fallback2;
-  function normalizeSoundPreferences(raw) {
-    const value2 = raw;
-    return {
-      enabled: typeof value2?.enabled === "boolean" ? value2.enabled : true,
-      volume: volume(value2?.volume, 0.55),
-      categories: Object.fromEntries(soundCategories.map((category) => [category, {
-        enabled: typeof value2?.categories?.[category]?.enabled === "boolean" ? value2.categories[category].enabled : true,
-        volume: volume(value2?.categories?.[category]?.volume, 1)
-      }]))
-    };
-  }
-  var SoundEngine = class {
-    constructor(transport2, preferences, allowed, now, defer) {
-      this.transport = transport2;
-      this.preferences = preferences;
-      this.allowed = allowed;
-      this.now = now;
-      this.defer = defer;
-      this.scheduled = false;
-      this.lastId = "";
-      this.lastAt = -Infinity;
-    }
-    request(request2, action, valid = () => true) {
-      if (!soundCategories.includes(request2.category)) return;
-      if (!valid() || !this.allowed() || request2.asset.previewOnly && !request2.preview) return;
-      if (!this.pending || this.pending.action !== action || request2.priority >= this.pending.request.priority) this.pending = { request: request2, action, valid };
-      if (!this.scheduled) {
-        this.scheduled = true;
-        this.defer(() => this.flush());
-      }
-    }
-    stop() {
-      this.pending = void 0;
-      this.transport.stop();
-    }
-    flush() {
-      this.scheduled = false;
-      const pending2 = this.pending;
-      this.pending = void 0;
-      if (!pending2 || !pending2.valid() || !this.allowed()) return;
-      const { request: request2 } = pending2, prefs = this.preferences(), category = prefs.categories[request2.category];
-      if (!prefs.enabled || !category.enabled) return;
-      const gain = prefs.volume * category.volume * request2.asset.gain;
-      if (!(gain > 0) || !this.transport.ready(request2.asset.id)) return;
-      const now = this.now();
-      if (!request2.preview && now - this.lastAt < (this.lastId === request2.asset.id ? 180 : 55)) return;
-      if (this.transport.playing()) this.transport.stop();
-      if (this.transport.play(request2.asset.id, gain)) {
-        this.lastAt = now;
-        this.lastId = request2.asset.id;
-      }
-    }
-  };
-  var soundMediaPrefix = "AtelierSounds_media_";
-  var soundMediaLeaseMs = 15e4;
-  function activeMediaHeartbeat(raw, now) {
-    const value2 = raw;
-    return value2?.version === 1 && value2.playing === true && typeof value2.at === "number" && Number.isFinite(value2.at) && value2.at <= now + 5e3 && now - value2.at <= soundMediaLeaseMs;
-  }
-
-  // src/modules/sounds/media.ts
-  var pulseKey = "AtelierSounds_mediaPulse";
-  function startSoundMediaMonitor(changed) {
-    const key3 = soundMediaPrefix + crypto.randomUUID();
-    const media2 = /* @__PURE__ */ new Set(), roots2 = /* @__PURE__ */ new WeakSet(), frames = /* @__PURE__ */ new WeakSet();
-    let suspended = false, playing = false, published = false;
-    const events = new AbortController();
-    const observer = new MutationObserver((records2) => {
-      for (const record of records2) for (const node4 of record.addedNodes) if (node4.nodeType === 1) discover(node4);
-      update();
-    });
-    function signal() {
-      GM_setValue(pulseKey, crypto.randomUUID());
-    }
-    function publish(force = false) {
-      if (playing && !suspended) {
-        if (force || !published) {
-          GM_setValue(key3, { version: 1, at: Date.now(), playing: true });
-          signal();
-        }
-        published = true;
-      } else if (published) {
-        GM_deleteValue(key3);
-        published = false;
-        signal();
-      }
-    }
-    function track(node4) {
-      if (media2.has(node4)) return;
-      media2.add(node4);
-      for (const name of ["play", "playing", "pause", "ended", "emptied", "abort"]) node4.addEventListener(name, update, { signal: events.signal });
-    }
-    function discover(root2) {
-      if (root2 instanceof HTMLMediaElement) track(root2);
-      if (root2.shadowRoot) watch(root2.shadowRoot);
-      for (const node4 of root2.querySelectorAll("video,audio")) track(node4);
-      for (const node4 of root2.querySelectorAll("*")) if (node4.shadowRoot) watch(node4.shadowRoot);
-      const foundFrames = [...root2.querySelectorAll("iframe")];
-      if (root2.tagName === "IFRAME") foundFrames.unshift(root2);
-      for (const frame2 of foundFrames) {
-        const read2 = () => {
-          try {
-            if (frame2.contentDocument) watch(frame2.contentDocument);
-          } catch {
-          }
-        };
-        if (!frames.has(frame2)) {
-          frames.add(frame2);
-          frame2.addEventListener("load", read2, { signal: events.signal });
-        }
-        read2();
-      }
-    }
-    function watch(root2) {
-      if (roots2.has(root2)) return;
-      roots2.add(root2);
-      observer.observe(root2, { childList: true, subtree: true });
-      root2.addEventListener("play", (event) => {
-        const target = event.target;
-        if (target && (target.tagName === "VIDEO" || target.tagName === "AUDIO" || target instanceof HTMLMediaElement)) track(target);
-        update();
-      }, { capture: true, signal: events.signal });
-      discover(root2);
-    }
-    function update() {
-      let next = false;
-      for (const node4 of media2) {
-        let connected = node4.isConnected;
-        try {
-          const frame2 = node4.ownerDocument.defaultView?.frameElement;
-          if (frame2 && !frame2.isConnected) connected = false;
-        } catch {
-        }
-        if (!connected) {
-          media2.delete(node4);
-          continue;
-        }
-        if (!node4.paused && !node4.ended) next = true;
-      }
-      const was = playing;
-      playing = next;
-      publish();
-      if (was !== next) changed();
-    }
-    function blocked() {
-      if (!suspended) update();
-      if (playing && !suspended) return true;
-      const now = Date.now();
-      for (const other of GM_listValues()) {
-        if (!other.startsWith(soundMediaPrefix) || other === key3) continue;
-        if (activeMediaHeartbeat(GM_getValue(other), now)) return true;
-      }
-      return false;
-    }
-    watch(document);
-    update();
-    const heartbeat = window.setInterval(() => {
-      if (!suspended) {
-        discover(document);
-        update();
-        publish(true);
-      }
-    }, 1e4);
-    if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(pulseKey, (_, __, ___, remote) => {
-      if (remote) changed();
-    });
-    window.addEventListener("pagehide", () => {
-      suspended = true;
-      publish();
-      changed();
-    }, { signal: events.signal });
-    window.addEventListener("pageshow", () => {
-      suspended = false;
-      discover(document);
-      update();
-      publish(true);
-    }, { signal: events.signal });
-    for (const old of GM_listValues()) if (old.startsWith(soundMediaPrefix) && !activeMediaHeartbeat(GM_getValue(old), Date.now())) GM_deleteValue(old);
-    return { blocked, dispose() {
-      suspended = true;
-      publish();
-      events.abort();
-      observer.disconnect();
-      window.clearInterval(heartbeat);
-    } };
-  }
-
-  // src/modules/sounds/service.ts
-  var aliases = { folder: "navigate", open: "open", close: "close", minimize: "collapse", maximize: "expand", restore: "expand", menu: "control", select: "control", click: "control", start: "control", cancel: "control" };
-  var preferenceKey = "AtelierSounds_preferences";
-  var soundPreferencesChanged = "atelier-sound-preferences-changed";
-  var clips = new Map(catalog_default.sounds.map((asset) => [asset.id, asset]));
-  var WebAudioTransport = class {
-    constructor() {
-      this.buffers = /* @__PURE__ */ new Map();
-      this.loading = /* @__PURE__ */ new Set();
-      this.failures = /* @__PURE__ */ new Map();
-      this.supported = typeof window.AudioContext === "function";
-    }
-    /** Decodes every clip not decoded or on its way. A bad clip disables that
-     * clip only; it is never replaced by a download. */
-    prepare(decoder) {
-      for (const [id, source] of Object.entries(soundSources)) {
-        if (this.buffers.has(id) || this.loading.has(id)) continue;
-        const scheme = /^(blob|data):/.exec(source)?.[1] ?? "";
-        const fail = (stage) => (error) => {
-          this.loading.delete(id);
-          const { name, message } = error ?? {};
-          const text3 = typeof message === "string" ? typeof name === "string" && name !== "Error" ? `${name}: ${message}` : message : String(error);
-          this.failures.set(id, { stage, scheme, message: text3 });
-        };
-        const decode2 = (bytes) => decoder.decodeAudioData(bytes).then((buffer) => {
-          this.loading.delete(id);
-          this.failures.delete(id);
-          this.buffers.set(id, buffer);
-        }, fail("\u89E3\u7801"));
-        this.loading.add(id);
-        try {
-          if (scheme === "blob") {
-            void fetch(source).then((response) => {
-              if (!response.ok) throw new Error(`HTTP ${response.status}`);
-              return response.arrayBuffer();
-            }).then(decode2, fail("\u8BFB\u53D6"));
-          } else if (scheme === "data") {
-            const binary = atob(source.slice(source.indexOf(",") + 1));
-            void decode2(Uint8Array.from(binary, (character) => character.charCodeAt(0)).buffer);
-          } else fail("\u8BFB\u53D6")(new Error("Tampermonkey \u6CA1\u6709\u7ED9\u51FA\u8FD9\u4E2A\u8D44\u6E90"));
-        } catch (error) {
-          fail("\u8BFB\u53D6")(error);
-        }
-      }
-    }
-    preload() {
-      try {
-        if (typeof window.OfflineAudioContext === "function") this.prepare(new OfflineAudioContext(1, 1, 44100));
-      } catch {
-      }
-    }
-    unlock() {
-      if (!this.supported) return;
-      try {
-        if (!this.context) {
-          this.context = new AudioContext();
-          this.prepare(this.context);
-        }
-        if (this.context.state !== "running") void this.context.resume().catch(() => {
-        });
-      } catch {
-        this.supported = false;
-      }
-    }
-    clips() {
-      return { total: Object.keys(soundSources).length, loaded: this.buffers.size, loading: this.loading.size, failure: [...this.failures.values()][0] };
-    }
-    available() {
-      return this.supported;
-    }
-    unlocked() {
-      return this.context?.state === "running";
-    }
-    ready(id) {
-      return this.unlocked() && this.buffers.has(id);
-    }
-    playing() {
-      return !!this.source;
-    }
-    play(id, gain) {
-      if (!this.ready(id)) return false;
-      try {
-        const source = this.context.createBufferSource(), volume2 = this.context.createGain();
-        source.buffer = this.buffers.get(id);
-        volume2.gain.value = gain;
-        source.connect(volume2);
-        volume2.connect(this.context.destination);
-        this.source = source;
-        source.onended = () => {
-          source.disconnect();
-          volume2.disconnect();
-          if (this.source === source) this.source = void 0;
-        };
-        source.start();
-        return true;
-      } catch {
-        this.source = void 0;
-        return false;
-      }
-    }
-    stop() {
-      const source = this.source;
-      this.source = void 0;
-      if (source) try {
-        source.stop();
-      } catch {
-      }
-    }
-  };
-  var engine;
-  var transport;
-  var monitor;
-  var gesture = 0;
-  var sequence = 0;
-  var foregroundEpoch = 0;
-  var started2 = false;
-  var previewPlaying = false;
-  var foreground = () => window.top === window.self && !document.hidden && document.hasFocus();
-  var readSoundPreferences = () => normalizeSoundPreferences(typeof GM_getValue === "function" ? GM_getValue(preferenceKey, null) : null);
-  function writeSoundPreferences(value2) {
-    GM_setValue(preferenceKey, normalizeSoundPreferences(value2));
-    engine?.stop();
-    window.dispatchEvent(new Event(soundPreferencesChanged));
-  }
-  function request(cue) {
-    const alias = aliases[cue];
-    if (!alias) return;
-    const value2 = catalog_default.cues[alias];
-    return { asset: clips.get(value2.sound), category: value2.category, priority: value2.priority };
-  }
-  function enqueue(cue, action, valid) {
-    if (!action) return;
-    try {
-      const mapped = request(cue);
-      if (!mapped) return;
-      if (previewPlaying) {
-        engine?.stop();
-        previewPlaying = false;
-      }
-      engine?.request(mapped, action, valid);
-    } catch {
-    }
-  }
-  function sound(cue) {
-    try {
-      enqueue(cue, gesture);
-    } catch {
-    }
-  }
-  function soundTask(startCue, owner) {
-    const action = gesture, epoch = foregroundEpoch;
-    let finished = false;
-    const valid = () => epoch === foregroundEpoch && (!owner || (typeof owner === "function" ? owner() : owner.isConnected && !owner.hidden));
-    if (startCue) enqueue(startCue, action, valid);
-    return {
-      finish(cue) {
-        if (finished) return;
-        finished = true;
-        if (["folder", "open", "close", "minimize", "maximize", "restore", "cancel"].includes(cue)) enqueue(cue, action, valid);
-      },
-      cancel() {
-        finished = true;
-      }
-    };
-  }
-  function previewSound(id, category) {
-    const asset = clips.get(id);
-    if (!asset || !gesture) return;
-    previewPlaying = true;
-    engine?.request({ asset, category, priority: 100, preview: true }, gesture);
-  }
-  function stopSoundPreview() {
-    if (previewPlaying) {
-      engine?.stop();
-      previewPlaying = false;
-    }
-  }
-  function soundPlaybackStatus() {
-    const prefs = readSoundPreferences();
-    if (!prefs.enabled) return "\u97F3\u6548\u5DF2\u5173\u95ED";
-    if (prefs.volume === 0) return "\u603B\u97F3\u91CF\u4E3A\u96F6";
-    if (transport && !transport.available()) return "\u5F53\u524D\u6D4F\u89C8\u5668\u65E0\u6CD5\u4F7F\u7528 Web Audio";
-    const clips2 = transport?.clips();
-    if (clips2 && !clips2.loading && clips2.failure) {
-      const { stage, scheme, message } = clips2.failure;
-      return `\u58F0\u97F3\u6CA1\u6709\u8F7D\u5165\uFF08${clips2.loaded}/${clips2.total}\uFF09\uFF1A${scheme ? `${scheme}: \u5730\u5740${stage}\u5931\u8D25` : "\u6CA1\u6709\u62FF\u5230\u8D44\u6E90\u5730\u5740"}\uFF08${message}\uFF09`;
-    }
-    if (monitor?.blocked()) return "\u68C0\u6D4B\u5230\u5A92\u4F53\u64AD\u653E\uFF0C\u97F3\u6548\u6682\u65F6\u5B89\u9759";
-    if (!foreground()) return "\u53EA\u5728\u5F53\u524D\u524D\u53F0\u7A97\u53E3\u64AD\u653E";
-    if (!transport?.unlocked()) return "\u9996\u6B21\u70B9\u51FB\u540E\u53EF\u64AD\u653E\uFF1B\u6D4F\u89C8\u5668\u963B\u6B62\u7684\u58F0\u97F3\u4E0D\u4F1A\u8865\u64AD";
-    if (clips2?.loading) return `\u58F0\u97F3\u8F7D\u5165\u4E2D\uFF08${clips2.loaded}/${clips2.total}\uFF09`;
-    return `\u5DF2\u5C31\u7EEA \xB7 ${clips2?.loaded ?? 0}/${clips2?.total ?? 0} \u4E2A\u58F0\u97F3\u5DF2\u8F7D\u5165 \xB7 \u8BD5\u542C\u4E5F\u9075\u5B88\u97F3\u91CF\u3001\u5206\u7C7B\u5F00\u5173\u548C\u5A92\u4F53\u907F\u8BA9`;
-  }
-  function startSounds() {
-    if (started2) return;
-    started2 = true;
-    try {
-      transport = new WebAudioTransport();
-      transport.preload();
-      monitor = startSoundMediaMonitor(() => {
-        if (monitor?.blocked()) engine?.stop();
-      });
-      engine = new SoundEngine(transport, readSoundPreferences, () => foreground() && !monitor.blocked(), Date.now, (run) => {
-        window.setTimeout(() => {
-          try {
-            run();
-          } catch {
-            transport?.stop();
-          }
-        }, 0);
-      });
-      const activate = (event) => {
-        if (!event.isTrusted || !foreground()) return;
-        transport.unlock();
-        const current4 = gesture = ++sequence;
-        window.setTimeout(() => {
-          if (gesture === current4) gesture = 0;
-        }, 0);
-      };
-      for (const name of ["pointerdown", "click", "keydown", "change", "submit"]) document.addEventListener(name, activate, true);
-      const leave = () => {
-        foregroundEpoch++;
-        gesture = 0;
-        engine?.stop();
-      };
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) leave();
-      });
-      window.addEventListener("pagehide", leave);
-      window.addEventListener("blur", () => {
-        window.setTimeout(() => {
-          if (!document.hasFocus()) leave();
-        }, 0);
-      });
-      if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(preferenceKey, (_, __, ___, remote) => {
-        if (remote) {
-          engine?.stop();
-          window.dispatchEvent(new Event(soundPreferencesChanged));
-        }
-      });
-    } catch {
-      transport?.stop();
-    }
-  }
-
-  // src/core/inject-page-script.ts
-  function injectPageScript(source) {
-    const script = document.createElement("script");
-    script.textContent = source;
-    script.setAttribute("data-bili-toolkit", "comment-location");
-    (document.documentElement || document.head || document.body).appendChild(script);
-    script.remove();
   }
 
   // src/ui/assets/luna/blue.png
@@ -6602,7 +4426,9 @@ ${xpButtonCss(".atelier-control", true)}
       // Olive used to be the only scheme, never a choice; everyone starts on XP's default blue.
       scheme: isLunaScheme(stored?.scheme) ? stored.scheme : "blue",
       edge: stored?.edge === "left" ? "left" : "right",
-      y: Number.isFinite(stored?.y) ? Math.max(0, Math.min(1, stored.y)) : 0.72
+      y: Number.isFinite(stored?.y) ? Math.max(0, Math.min(1, stored.y)) : 0.72,
+      // " · 本地隐藏 N" after reply counts; this browser only, on unless turned off.
+      hiddenCount: stored?.hiddenCount !== false
     };
   }
   function saveUiPreferences(change) {
@@ -6629,10 +4455,10 @@ ${xpButtonCss(".atelier-control", true)}
     const { theme: theme2, scheme } = readUiPreferences();
     return { scheme, dark: theme2 === "dark" || theme2 === "page" && pageIsDark(), dpr: window.devicePixelRatio || 1 };
   }
-  var started3 = false;
+  var started = false;
   function ensureAppearance() {
-    if (started3) return;
-    started3 = true;
+    if (started) return;
+    started = true;
     const styles = ["atelier-appearance", "atelier-fonts", "atelier-controls"].map((id) => {
       const style = document.createElement("style");
       style.id = id;
@@ -6808,8 +4634,3268 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     return true;
   }
 
-  // src/modules/local-following/api.ts
-  var LocalFollowReadError = class extends Error {
+  // src/core/info-log.ts
+  var rootId = "bili-atelier-info-log";
+  var styleId = "bili-atelier-info-log-style";
+  var maxItems = 6;
+  function ensureInfoLogStyle() {
+    ensureAppearance();
+    if (document.getElementById(styleId)) {
+      return;
+    }
+    const style = document.createElement("style");
+    style.id = styleId;
+    style.textContent = `
+#${rootId} {
+  position: fixed;
+  top: 84px;
+  right: 24px;
+  z-index: 2147483640;
+  width: min(360px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  pointer-events: none;
+  font: var(--xp-font-size)/var(--xp-line) var(--xp-font);
+}
+#${rootId} .bili-atelier-info-log-item {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 180px;
+  padding: 5px 8px 6px 10px;
+  border: 1px solid var(--xp-ink);
+  border-left: 4px solid var(--xp-highlight);
+  background: var(--xp-info);
+  color: var(--xp-info-ink);
+  box-shadow: 2px 2px 2px #0005;
+  opacity: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+#${rootId} .bili-atelier-info-log-item.is-visible { opacity: 1; }
+#${rootId} .bili-atelier-info-log-item.is-leaving { display: none; }
+#${rootId} .bili-atelier-info-log-success { border-left-color: #3fb34f; }
+#${rootId} .bili-atelier-info-log-warning { border-left-color: #f7b500; }
+#${rootId} .bili-atelier-info-log-error { border-left-color: var(--xp-danger); }
+`;
+    (document.head || document.documentElement).appendChild(style);
+  }
+  function ensureInfoLogRoot() {
+    if (!document.body) {
+      return null;
+    }
+    ensureInfoLogStyle();
+    let root2 = document.getElementById(rootId);
+    if (!root2) {
+      root2 = document.createElement("div");
+      root2.id = rootId;
+      root2.setAttribute("data-bili-blocker-ui", "true");
+      root2.setAttribute("data-bili-atelier-ui", "info-log");
+      root2.setAttribute("role", "status");
+      root2.setAttribute("aria-live", "polite");
+      document.body.appendChild(root2);
+    }
+    return root2;
+  }
+  function showInfoLog(message, tone = "info", durationMs = 3600) {
+    const text3 = String(message || "").replace(/\s+/g, " ").trim();
+    if (!text3) {
+      return;
+    }
+    const root2 = ensureInfoLogRoot();
+    if (!root2) {
+      document.addEventListener("DOMContentLoaded", () => showInfoLog(text3, tone, durationMs), { once: true });
+      return;
+    }
+    const item = document.createElement("div");
+    item.className = `bili-atelier-info-log-item bili-atelier-info-log-${tone}`;
+    const label = item.appendChild(document.createElement("span"));
+    label.className = "xp-text";
+    label.textContent = text3;
+    root2.prepend(item);
+    item.style.maxHeight = `${Math.max(48, item.scrollHeight + 20)}px`;
+    window.requestAnimationFrame(() => item.classList.add("is-visible"));
+    while (root2.children.length > maxItems) {
+      root2.lastElementChild?.remove();
+    }
+    window.setTimeout(() => {
+      item.classList.add("is-leaving");
+      window.setTimeout(() => item.remove(), 320);
+    }, durationMs);
+  }
+
+  // src/ui/assets/xp-sounds/catalog.json
+  var catalog_default = {
+    schema: "bili-atelier-xp-sounds",
+    version: 1,
+    defaultVolume: 0.55,
+    source: {
+      imageName: "xp sp3 official.iso",
+      bytes: 630237184,
+      volume: "GRTMPVOL_CN"
+    },
+    categories: [
+      {
+        id: "navigation",
+        name: "\u5BFC\u822A\u4E0E\u7A97\u53E3",
+        sample: "xpstart",
+        defaultVolume: 1,
+        defaultEnabled: true
+      },
+      {
+        id: "controls",
+        name: "\u6309\u94AE\u4E0E\u9009\u62E9",
+        sample: "xpmenu",
+        defaultVolume: 1,
+        defaultEnabled: true
+      }
+    ],
+    cues: {
+      control: {
+        sound: "xpmenu",
+        category: "controls",
+        priority: 10
+      },
+      navigate: {
+        sound: "xpstart",
+        category: "navigation",
+        priority: 40
+      },
+      open: {
+        sound: "xprestor",
+        category: "navigation",
+        priority: 40
+      },
+      close: {
+        sound: "xpmin",
+        category: "navigation",
+        priority: 40
+      },
+      expand: {
+        sound: "xprestor",
+        category: "navigation",
+        priority: 40
+      },
+      collapse: {
+        sound: "xpmin",
+        category: "navigation",
+        priority: 40
+      }
+    },
+    sounds: [
+      {
+        id: "xpballn",
+        file: "xpballn.wav",
+        name: "Windows XP \u6C14\u7403",
+        previewOnly: true,
+        durationMs: 144,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -18.24,
+        rmsDbFS: -33.71,
+        gain: 0.81655,
+        bytes: 6400,
+        sha256: "c9de87a87b68dd754fa29f2989c240949ad9b1f0423d019ca68afcd86e107639",
+        source: "I386/XPBALLN.WA_",
+        compressedSha256: "1c8d7665108ad4af42bec4ef940d3dad949d4053d9418e63616284a2d1ad5ffb"
+      },
+      {
+        id: "xpbatcrt",
+        file: "xpbatcrt.wav",
+        name: "Windows XP \u7535\u6C60\u7535\u529B\u4E25\u91CD\u77ED\u7F3A",
+        previewOnly: true,
+        durationMs: 836,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -0.17,
+        rmsDbFS: -12.84,
+        gain: 0.10194,
+        bytes: 36910,
+        sha256: "cb02dd9f8b4d18aab9a5c51a26faac12e861dd362800a12292f243432a982325",
+        source: "I386/XPBATCRT.WA_",
+        compressedSha256: "aa2b39585f31ae73645fe7a5e3b986a2e44e0c4722712da9ee00daf32c6ffc3f"
+      },
+      {
+        id: "xpbatlow",
+        file: "xpbatlow.wav",
+        name: "Windows XP \u7535\u6C60\u4E0D\u8DB3",
+        previewOnly: true,
+        durationMs: 1220,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -1.31,
+        rmsDbFS: -16.43,
+        gain: 0.11624,
+        bytes: 53864,
+        sha256: "bd4a58b1e2b8e93bcf5b76df3e4a9f67ce0926107a5702ed6bac0e63466a22fd",
+        source: "I386/XPBATLOW.WA_",
+        compressedSha256: "f002dee050cb80f908c08eb7b713aa1c75096419537342533571781e4c1c4fdc"
+      },
+      {
+        id: "xpblkpop",
+        file: "xpblkpop.wav",
+        name: "Windows XP \u5F39\u51FA\u7A97\u53E3\u5DF2\u963B\u6B62",
+        previewOnly: true,
+        durationMs: 167,
+        channels: 2,
+        sampleRate: 44100,
+        bits: 16,
+        peakDbFS: -13.98,
+        rmsDbFS: -34.22,
+        gain: 0.50005,
+        bytes: 29444,
+        sha256: "df7cad111688dadb00469203dd7228df99e49e86ae7ba937e308d947cd9790f2",
+        source: "I386/XPBLKPOP.WA_",
+        compressedSha256: "baae17740810abd3d43d5c703ff801df8be3ebf63726a02d2c29f424ba55a0b0"
+      },
+      {
+        id: "xpcrtstp",
+        file: "xpcrtstp.wav",
+        name: "Windows XP \u5173\u952E\u6027\u7EC8\u6B62",
+        previewOnly: true,
+        durationMs: 892,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -3.2,
+        rmsDbFS: -16.48,
+        gain: 0.14448,
+        bytes: 39382,
+        sha256: "1b86a1b8b7b5925f9346b64115b0b92744a142b06b09f44263a57419bc2bb6e6",
+        source: "I386/XPCRTSTP.WA_",
+        compressedSha256: "8dff0499e501012337f14551e4350d017a2a88fa5f36b7ee84c7c6442cd62b8e"
+      },
+      {
+        id: "xpdef",
+        file: "xpdef.wav",
+        name: "Windows XP \u9ED8\u8BA4\u503C",
+        previewOnly: true,
+        durationMs: 555,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -9.77,
+        rmsDbFS: -27.31,
+        gain: 0.30791,
+        bytes: 24530,
+        sha256: "d0426433cb153f860f02320408a1922558742bc3d170eb47715192ff86a66a16",
+        source: "I386/XPDEF.WA_",
+        compressedSha256: "1d3258f9f2b9070370d49a069d3cf79ca5a89163063b84f479af7a0d641d3fa7"
+      },
+      {
+        id: "xpding",
+        file: "xpding.wav",
+        name: "Windows XP \u53EE\u5F53\u58F0",
+        previewOnly: true,
+        durationMs: 387,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -11.74,
+        rmsDbFS: -21.34,
+        gain: 0.38651,
+        bytes: 17132,
+        sha256: "20fc59d9f846bc32b899880fae0878208856718b75e6158526308b900af8a9bd",
+        source: "I386/XPDING.WA_",
+        compressedSha256: "3fa29e9bcb7f38b6dfc1aec0865270840ae69c9261ecc48eea4c5e81d0fdecd7"
+      },
+      {
+        id: "xperror",
+        file: "xperror.wav",
+        name: "Windows XP \u9519\u8BEF",
+        previewOnly: true,
+        durationMs: 1e3,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -6.98,
+        rmsDbFS: -23.56,
+        gain: 0.22343,
+        bytes: 44136,
+        sha256: "4b51ec1b1b14889bc2c2cdad8c80dafc974d78b9292c3ccb344e44e93383cac4",
+        source: "I386/XPERROR.WA_",
+        compressedSha256: "cb1b985cab19466befd27b5d9628165dda8a1cabbc880dc3c9bfec68a26ae8d1"
+      },
+      {
+        id: "xpexcl",
+        file: "xpexcl.wav",
+        name: "Windows XP \u60CA\u53F9\u53F7",
+        previewOnly: true,
+        durationMs: 964,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -16.42,
+        rmsDbFS: -32.09,
+        gain: 0.66185,
+        bytes: 42576,
+        sha256: "b57b8e8818c424452ca4fb8abb219ae01c0e31db2f955e1f85d9fcb5a0dabfbe",
+        source: "I386/XPEXCL.WA_",
+        compressedSha256: "0bc7bb68966af22cac6444392a3ea9956cb98177ef2648dbc8d025051118eea6"
+      },
+      {
+        id: "xphdfail",
+        file: "xphdfail.wav",
+        name: "Windows XP \u786C\u4EF6\u6545\u969C",
+        previewOnly: true,
+        durationMs: 829,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -12.98,
+        rmsDbFS: -25.32,
+        gain: 0.44558,
+        bytes: 36614,
+        sha256: "fe6e852ff646c0a896995632f76a3e390bea6163b40639c87bf45c1d8a7475c2",
+        source: "I386/XPHDFAIL.WA_",
+        compressedSha256: "7daa31c4f966dd10d85f992b6f601f9ec107a2f4d6c44539474ee3a6e6a97678"
+      },
+      {
+        id: "xphdinst",
+        file: "xphdinst.wav",
+        name: "Windows XP \u786C\u4EF6\u63D2\u5165",
+        previewOnly: true,
+        durationMs: 830,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -14.91,
+        rmsDbFS: -28.67,
+        gain: 0.55624,
+        bytes: 36636,
+        sha256: "a3e44db9179591a705baed6daa00efb988197c0698a9747980126d5939e9d506",
+        source: "I386/XPHDINST.WA_",
+        compressedSha256: "59692e7ac46240e9cf8b9ad16007bc837b4f05a9a81787cf79120ae855ab9d79"
+      },
+      {
+        id: "xphdrem",
+        file: "xphdrem.wav",
+        name: "Windows XP \u786C\u4EF6\u5220\u9664",
+        previewOnly: true,
+        durationMs: 828,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -15.55,
+        rmsDbFS: -28.3,
+        gain: 0.59938,
+        bytes: 36538,
+        sha256: "c4d09c6ad6a9090c4e611330a7501f7a84abc7c777c6e3d1915179f8d1ed45f3",
+        source: "I386/XPHDREM.WA_",
+        compressedSha256: "1af16d0041acfdc07c2268ed2186a6dd16c1e602c11e39e4ef17b27d9e7e57fb"
+      },
+      {
+        id: "xpinfbar",
+        file: "xpinfbar.wav",
+        name: "Windows XP \u4FE1\u606F\u680F",
+        previewOnly: true,
+        durationMs: 109,
+        channels: 2,
+        sampleRate: 44100,
+        bits: 16,
+        peakDbFS: -4.2,
+        rmsDbFS: -11.08,
+        gain: 0.16218,
+        bytes: 20336,
+        sha256: "b4dfbdfd8d6a102123a7966da358781bd32bb6d78e833514705cb7de76efa410",
+        source: "I386/XPINFBAR.WA_",
+        compressedSha256: "17ec22ddf2a76dd9b77a42271491228a905accbf0cd1028691fbc89d248b071e"
+      },
+      {
+        id: "xplogoff",
+        file: "xplogoff.wav",
+        name: "Windows XP \u6CE8\u9500\u97F3",
+        previewOnly: true,
+        durationMs: 2037,
+        channels: 2,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -10.39,
+        rmsDbFS: -27.7,
+        gain: 0.33066,
+        bytes: 179704,
+        sha256: "e0c0e5dea2550c8f235c0bb1584d9011a35ca23bc18597bf7ac6581efcd7b7aa",
+        source: "I386/XPLOGOFF.WA_",
+        compressedSha256: "47fbfa45e605ca3c84a13243267b02972c33f0ef879b31133412c2b528555f53"
+      },
+      {
+        id: "xplogon",
+        file: "xplogon.wav",
+        name: "Windows XP \u767B\u5F55\u97F3",
+        previewOnly: true,
+        durationMs: 2156,
+        channels: 2,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -10.04,
+        rmsDbFS: -27.67,
+        gain: 0.31758,
+        bytes: 190208,
+        sha256: "8d71fba4267fb3454030c7289079421a08fc3e773caa47107d832f855ae85396",
+        source: "I386/XPLOGON.WA_",
+        compressedSha256: "3e48b114a7a3956ced53f0a469a7d85717bd00b77522c335d85b77b3726e5f03"
+      },
+      {
+        id: "xpmenu",
+        file: "xpmenu.wav",
+        name: "Windows XP \u83DC\u5355\u547D\u4EE4",
+        previewOnly: false,
+        durationMs: 31,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -20.6,
+        rmsDbFS: -36.23,
+        gain: 1,
+        bytes: 1404,
+        sha256: "da4fc6f8917b97725e6de85bb45b574c7895ec46672e6eb439a462cfd9940ac7",
+        source: "I386/XPMENU.WA_",
+        compressedSha256: "2c73d31fdd47a2f456b64682f568ab6362a7ce8f6a6b6d38cc0ee8132b59d8f5"
+      },
+      {
+        id: "xpmin",
+        file: "xpmin.wav",
+        name: "Windows XP \u6700\u5C0F\u5316",
+        previewOnly: false,
+        durationMs: 511,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -24.38,
+        rmsDbFS: -37.4,
+        gain: 1,
+        bytes: 22580,
+        sha256: "974da6baee4187c37e514186b99691132988140cca95402589c6fdc1417e5926",
+        source: "I386/XPMIN.WA_",
+        compressedSha256: "37a5861aa70198e03c83ecdd5252e51d8a6be4cf13e241dda491e46bd4201de2"
+      },
+      {
+        id: "xpnotify",
+        file: "xpnotify.wav",
+        name: "Windows XP \u901A\u77E5",
+        previewOnly: true,
+        durationMs: 1110,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -18.71,
+        rmsDbFS: -36.89,
+        gain: 0.86164,
+        bytes: 48988,
+        sha256: "760cdd5685008255d6e188a8c528ebcb74daf806bb24a81c2a36086df6a95c76",
+        source: "I386/XPNOTIFY.WA_",
+        compressedSha256: "2f9684cd2952a85245a86b9d06973b13e7149ff6cf3ffafe82bcdce16a2dc1f3"
+      },
+      {
+        id: "xpprint",
+        file: "xpprint.wav",
+        name: "Windows XP \u6253\u5370\u7ED3\u675F",
+        previewOnly: true,
+        durationMs: 991,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -18.3,
+        rmsDbFS: -34.52,
+        gain: 0.82249,
+        bytes: 43762,
+        sha256: "e411c02471876c4d1075ec8fcd406e99ac7c9a5e0c6322ed579de50c8ca3b844",
+        source: "I386/XPPRINT.WA_",
+        compressedSha256: "324d91096b47c0f0fc35e65ab37e067ba403793b7eb211feb9a56288b119c763"
+      },
+      {
+        id: "xprecycl",
+        file: "xprecycl.wav",
+        name: "Windows XP \u56DE\u6536",
+        previewOnly: true,
+        durationMs: 516,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -17.06,
+        rmsDbFS: -38.1,
+        gain: 0.71312,
+        bytes: 22816,
+        sha256: "a8a7028f9fe989cdde61bf22b73f0ff23ae291dbf8e056bb09682a7487c49ad7",
+        source: "I386/XPRECYCL.WA_",
+        compressedSha256: "a2b79e1e62ec0b453982b30a38ad861838e7e09bc1498717466ca480abfe78e6"
+      },
+      {
+        id: "xprestor",
+        file: "xprestor.wav",
+        name: "Windows XP \u8FD8\u539F",
+        previewOnly: false,
+        durationMs: 440,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -24.36,
+        rmsDbFS: -37.68,
+        gain: 1,
+        bytes: 19458,
+        sha256: "480dea5b1808dd67c5a5946e7a47e8e582d5cb1c7fdce4b037140157da0ecadf",
+        source: "I386/XPRESTOR.WA_",
+        compressedSha256: "bf362bfb0c53d25d64075f046d9406da9b071c688f066c1c9edfc38174dd231e"
+      },
+      {
+        id: "xpringin",
+        file: "xpringin.wav",
+        name: "Windows XP \u7535\u8BDD\u62E8\u5165\u58F0",
+        previewOnly: true,
+        durationMs: 882,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -22.82,
+        rmsDbFS: -34.27,
+        gain: 1,
+        bytes: 38930,
+        sha256: "b2cd4e4a977606abb8c35b7d446d6c322ee4bda4c0c722ef240f0c51d7ddc713",
+        source: "I386/XPRINGIN.WA_",
+        compressedSha256: "4061db3507f25e2cefdd4b7bbf9f73042c45525c01f4bdb017e354bd43c552da"
+      },
+      {
+        id: "xprngout",
+        file: "xprngout.wav",
+        name: "Windows XP \u7535\u8BDD\u62E8\u51FA\u58F0",
+        previewOnly: true,
+        durationMs: 499,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -20.25,
+        rmsDbFS: -26.76,
+        gain: 1,
+        bytes: 22070,
+        sha256: "d994081372c2794642da68212d49c6a64263f88a9fde5cc96583b43574c26bb0",
+        source: "I386/XPRNGOUT.WA_",
+        compressedSha256: "32da90bd18459eb03356f9e977df35e9440e52b5baf3df727e343c666c75e8a8"
+      },
+      {
+        id: "xpshutdn",
+        file: "xpshutdn.wav",
+        name: "Windows XP \u5173\u673A",
+        previewOnly: true,
+        durationMs: 3204,
+        channels: 2,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -5.08,
+        rmsDbFS: -21.12,
+        gain: 0.17957,
+        bytes: 282608,
+        sha256: "3d937337075a647950f6aa557bca23dea6e17cf6d14814ca7dbc55b827678a0b",
+        source: "I386/XPSHUTDN.WA_",
+        compressedSha256: "dbd8c3522091971481245e330803b9dca3ad96f17ef289ef781e84fc4770d8c2"
+      },
+      {
+        id: "xpstart",
+        file: "xpstart.wav",
+        name: "Windows XP \u5F00\u59CB",
+        previewOnly: false,
+        durationMs: 49,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -19.66,
+        rmsDbFS: -36.72,
+        gain: 0.96122,
+        bytes: 2202,
+        sha256: "d5712a8963eb3e1e181b25649ecff3080ede89c96350eb07e7d7cad429e959ea",
+        source: "I386/XPSTART.WA_",
+        compressedSha256: "501e2d3dd60d27514d2cf4e0349a360e5b09ce149427e8c9642dd665dc9add18"
+      },
+      {
+        id: "xpstartu",
+        file: "xpstartu.wav",
+        name: "Windows XP \u542F\u52A8",
+        previewOnly: true,
+        durationMs: 4814,
+        channels: 2,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -5.32,
+        rmsDbFS: -20.9,
+        gain: 0.18453,
+        bytes: 424644,
+        sha256: "8f859ebb90247036ced11db854848abe1434dc3ffdfa5795f7c5f06db9a423d5",
+        source: "I386/XPSTARTU.WA_",
+        compressedSha256: "2e19628930cbe38457bd186747793f5cb29c6e360206303c219bdce514032559"
+      }
+    ]
+  };
+
+  // src/ui/assets/xp-sounds/xpballn.wav
+  var xpballn_default = readCachedResourceUrl("atelier_xpballn_wav");
+
+  // src/ui/assets/xp-sounds/xpbatcrt.wav
+  var xpbatcrt_default = readCachedResourceUrl("atelier_xpbatcrt_wav");
+
+  // src/ui/assets/xp-sounds/xpbatlow.wav
+  var xpbatlow_default = readCachedResourceUrl("atelier_xpbatlow_wav");
+
+  // src/ui/assets/xp-sounds/xpblkpop.wav
+  var xpblkpop_default = readCachedResourceUrl("atelier_xpblkpop_wav");
+
+  // src/ui/assets/xp-sounds/xpcrtstp.wav
+  var xpcrtstp_default = readCachedResourceUrl("atelier_xpcrtstp_wav");
+
+  // src/ui/assets/xp-sounds/xpdef.wav
+  var xpdef_default = readCachedResourceUrl("atelier_xpdef_wav");
+
+  // src/ui/assets/xp-sounds/xpding.wav
+  var xpding_default = readCachedResourceUrl("atelier_xpding_wav");
+
+  // src/ui/assets/xp-sounds/xperror.wav
+  var xperror_default = readCachedResourceUrl("atelier_xperror_wav");
+
+  // src/ui/assets/xp-sounds/xpexcl.wav
+  var xpexcl_default = readCachedResourceUrl("atelier_xpexcl_wav");
+
+  // src/ui/assets/xp-sounds/xphdfail.wav
+  var xphdfail_default = readCachedResourceUrl("atelier_xphdfail_wav");
+
+  // src/ui/assets/xp-sounds/xphdinst.wav
+  var xphdinst_default = readCachedResourceUrl("atelier_xphdinst_wav");
+
+  // src/ui/assets/xp-sounds/xphdrem.wav
+  var xphdrem_default = readCachedResourceUrl("atelier_xphdrem_wav");
+
+  // src/ui/assets/xp-sounds/xpinfbar.wav
+  var xpinfbar_default = readCachedResourceUrl("atelier_xpinfbar_wav");
+
+  // src/ui/assets/xp-sounds/xplogoff.wav
+  var xplogoff_default = readCachedResourceUrl("atelier_xplogoff_wav");
+
+  // src/ui/assets/xp-sounds/xplogon.wav
+  var xplogon_default = readCachedResourceUrl("atelier_xplogon_wav");
+
+  // src/ui/assets/xp-sounds/xpmenu.wav
+  var xpmenu_default = readCachedResourceUrl("atelier_xpmenu_wav");
+
+  // src/ui/assets/xp-sounds/xpmin.wav
+  var xpmin_default = readCachedResourceUrl("atelier_xpmin_wav");
+
+  // src/ui/assets/xp-sounds/xpnotify.wav
+  var xpnotify_default = readCachedResourceUrl("atelier_xpnotify_wav");
+
+  // src/ui/assets/xp-sounds/xpprint.wav
+  var xpprint_default = readCachedResourceUrl("atelier_xpprint_wav");
+
+  // src/ui/assets/xp-sounds/xprecycl.wav
+  var xprecycl_default = readCachedResourceUrl("atelier_xprecycl_wav");
+
+  // src/ui/assets/xp-sounds/xprestor.wav
+  var xprestor_default = readCachedResourceUrl("atelier_xprestor_wav");
+
+  // src/ui/assets/xp-sounds/xpringin.wav
+  var xpringin_default = readCachedResourceUrl("atelier_xpringin_wav");
+
+  // src/ui/assets/xp-sounds/xprngout.wav
+  var xprngout_default = readCachedResourceUrl("atelier_xprngout_wav");
+
+  // src/ui/assets/xp-sounds/xpshutdn.wav
+  var xpshutdn_default = readCachedResourceUrl("atelier_xpshutdn_wav");
+
+  // src/ui/assets/xp-sounds/xpstart.wav
+  var xpstart_default = readCachedResourceUrl("atelier_xpstart_wav");
+
+  // src/ui/assets/xp-sounds/xpstartu.wav
+  var xpstartu_default = readCachedResourceUrl("atelier_xpstartu_wav");
+
+  // src/modules/sounds/assets.ts
+  var soundSources = { xpballn: xpballn_default, xpbatcrt: xpbatcrt_default, xpbatlow: xpbatlow_default, xpblkpop: xpblkpop_default, xpcrtstp: xpcrtstp_default, xpdef: xpdef_default, xpding: xpding_default, xperror: xperror_default, xpexcl: xpexcl_default, xphdfail: xphdfail_default, xphdinst: xphdinst_default, xphdrem: xphdrem_default, xpinfbar: xpinfbar_default, xplogoff: xplogoff_default, xplogon: xplogon_default, xpmenu: xpmenu_default, xpmin: xpmin_default, xpnotify: xpnotify_default, xpprint: xpprint_default, xprecycl: xprecycl_default, xprestor: xprestor_default, xpringin: xpringin_default, xprngout: xprngout_default, xpshutdn: xpshutdn_default, xpstart: xpstart_default, xpstartu: xpstartu_default };
+
+  // src/modules/sounds/engine.ts
+  var soundCategories = ["navigation", "controls"];
+  var volume = (value2, fallback2) => typeof value2 === "number" && Number.isFinite(value2) ? Math.max(0, Math.min(1, value2)) : fallback2;
+  function normalizeSoundPreferences(raw) {
+    const value2 = raw;
+    return {
+      enabled: typeof value2?.enabled === "boolean" ? value2.enabled : true,
+      volume: volume(value2?.volume, 0.55),
+      categories: Object.fromEntries(soundCategories.map((category) => [category, {
+        enabled: typeof value2?.categories?.[category]?.enabled === "boolean" ? value2.categories[category].enabled : true,
+        volume: volume(value2?.categories?.[category]?.volume, 1)
+      }]))
+    };
+  }
+  var SoundEngine = class {
+    constructor(transport2, preferences, allowed, now, defer) {
+      this.transport = transport2;
+      this.preferences = preferences;
+      this.allowed = allowed;
+      this.now = now;
+      this.defer = defer;
+      this.scheduled = false;
+      this.lastId = "";
+      this.lastAt = -Infinity;
+    }
+    request(request2, action, valid = () => true) {
+      if (!soundCategories.includes(request2.category)) return;
+      if (!valid() || !this.allowed() || request2.asset.previewOnly && !request2.preview) return;
+      if (!this.pending || this.pending.action !== action || request2.priority >= this.pending.request.priority) this.pending = { request: request2, action, valid };
+      if (!this.scheduled) {
+        this.scheduled = true;
+        this.defer(() => this.flush());
+      }
+    }
+    stop() {
+      this.pending = void 0;
+      this.transport.stop();
+    }
+    flush() {
+      this.scheduled = false;
+      const pending2 = this.pending;
+      this.pending = void 0;
+      if (!pending2 || !pending2.valid() || !this.allowed()) return;
+      const { request: request2 } = pending2, prefs = this.preferences(), category = prefs.categories[request2.category];
+      if (!prefs.enabled || !category.enabled) return;
+      const gain = prefs.volume * category.volume * request2.asset.gain;
+      if (!(gain > 0) || !this.transport.ready(request2.asset.id)) return;
+      const now = this.now();
+      if (!request2.preview && now - this.lastAt < (this.lastId === request2.asset.id ? 180 : 55)) return;
+      if (this.transport.playing()) this.transport.stop();
+      if (this.transport.play(request2.asset.id, gain)) {
+        this.lastAt = now;
+        this.lastId = request2.asset.id;
+      }
+    }
+  };
+  var soundMediaPrefix = "AtelierSounds_media_";
+  var soundMediaLeaseMs = 15e4;
+  function activeMediaHeartbeat(raw, now) {
+    const value2 = raw;
+    return value2?.version === 1 && value2.playing === true && typeof value2.at === "number" && Number.isFinite(value2.at) && value2.at <= now + 5e3 && now - value2.at <= soundMediaLeaseMs;
+  }
+
+  // src/modules/sounds/media.ts
+  var pulseKey = "AtelierSounds_mediaPulse";
+  function startSoundMediaMonitor(changed) {
+    const key3 = soundMediaPrefix + crypto.randomUUID();
+    const media2 = /* @__PURE__ */ new Set(), roots2 = /* @__PURE__ */ new WeakSet(), frames = /* @__PURE__ */ new WeakSet();
+    let suspended = false, playing = false, published = false;
+    const events = new AbortController();
+    const observer = new MutationObserver((records2) => {
+      for (const record of records2) for (const node4 of record.addedNodes) if (node4.nodeType === 1) discover(node4);
+      update();
+    });
+    function signal() {
+      GM_setValue(pulseKey, crypto.randomUUID());
+    }
+    function publish(force = false) {
+      if (playing && !suspended) {
+        if (force || !published) {
+          GM_setValue(key3, { version: 1, at: Date.now(), playing: true });
+          signal();
+        }
+        published = true;
+      } else if (published) {
+        GM_deleteValue(key3);
+        published = false;
+        signal();
+      }
+    }
+    function track(node4) {
+      if (media2.has(node4)) return;
+      media2.add(node4);
+      for (const name of ["play", "playing", "pause", "ended", "emptied", "abort"]) node4.addEventListener(name, update, { signal: events.signal });
+    }
+    function discover(root2) {
+      if (root2 instanceof HTMLMediaElement) track(root2);
+      if (root2.shadowRoot) watch(root2.shadowRoot);
+      for (const node4 of root2.querySelectorAll("video,audio")) track(node4);
+      for (const node4 of root2.querySelectorAll("*")) if (node4.shadowRoot) watch(node4.shadowRoot);
+      const foundFrames = [...root2.querySelectorAll("iframe")];
+      if (root2.tagName === "IFRAME") foundFrames.unshift(root2);
+      for (const frame2 of foundFrames) {
+        const read2 = () => {
+          try {
+            if (frame2.contentDocument) watch(frame2.contentDocument);
+          } catch {
+          }
+        };
+        if (!frames.has(frame2)) {
+          frames.add(frame2);
+          frame2.addEventListener("load", read2, { signal: events.signal });
+        }
+        read2();
+      }
+    }
+    function watch(root2) {
+      if (roots2.has(root2)) return;
+      roots2.add(root2);
+      observer.observe(root2, { childList: true, subtree: true });
+      root2.addEventListener("play", (event) => {
+        const target = event.target;
+        if (target && (target.tagName === "VIDEO" || target.tagName === "AUDIO" || target instanceof HTMLMediaElement)) track(target);
+        update();
+      }, { capture: true, signal: events.signal });
+      discover(root2);
+    }
+    function update() {
+      let next = false;
+      for (const node4 of media2) {
+        let connected = node4.isConnected;
+        try {
+          const frame2 = node4.ownerDocument.defaultView?.frameElement;
+          if (frame2 && !frame2.isConnected) connected = false;
+        } catch {
+        }
+        if (!connected) {
+          media2.delete(node4);
+          continue;
+        }
+        if (!node4.paused && !node4.ended) next = true;
+      }
+      const was = playing;
+      playing = next;
+      publish();
+      if (was !== next) changed();
+    }
+    function blocked() {
+      if (!suspended) update();
+      if (playing && !suspended) return true;
+      const now = Date.now();
+      for (const other of GM_listValues()) {
+        if (!other.startsWith(soundMediaPrefix) || other === key3) continue;
+        if (activeMediaHeartbeat(GM_getValue(other), now)) return true;
+      }
+      return false;
+    }
+    watch(document);
+    update();
+    const heartbeat = window.setInterval(() => {
+      if (!suspended) {
+        discover(document);
+        update();
+        publish(true);
+      }
+    }, 1e4);
+    if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(pulseKey, (_, __, ___, remote) => {
+      if (remote) changed();
+    });
+    window.addEventListener("pagehide", () => {
+      suspended = true;
+      publish();
+      changed();
+    }, { signal: events.signal });
+    window.addEventListener("pageshow", () => {
+      suspended = false;
+      discover(document);
+      update();
+      publish(true);
+    }, { signal: events.signal });
+    for (const old of GM_listValues()) if (old.startsWith(soundMediaPrefix) && !activeMediaHeartbeat(GM_getValue(old), Date.now())) GM_deleteValue(old);
+    return { blocked, dispose() {
+      suspended = true;
+      publish();
+      events.abort();
+      observer.disconnect();
+      window.clearInterval(heartbeat);
+    } };
+  }
+
+  // src/modules/sounds/service.ts
+  var aliases = { folder: "navigate", open: "open", close: "close", minimize: "collapse", maximize: "expand", restore: "expand", menu: "control", select: "control", click: "control", start: "control", cancel: "control" };
+  var preferenceKey = "AtelierSounds_preferences";
+  var soundPreferencesChanged = "atelier-sound-preferences-changed";
+  var clips = new Map(catalog_default.sounds.map((asset) => [asset.id, asset]));
+  var WebAudioTransport = class {
+    constructor() {
+      this.buffers = /* @__PURE__ */ new Map();
+      this.loading = /* @__PURE__ */ new Set();
+      this.failures = /* @__PURE__ */ new Map();
+      this.supported = typeof window.AudioContext === "function";
+    }
+    /** Decodes every clip not decoded or on its way. A bad clip disables that
+     * clip only; it is never replaced by a download. */
+    prepare(decoder) {
+      for (const [id, source] of Object.entries(soundSources)) {
+        if (this.buffers.has(id) || this.loading.has(id)) continue;
+        const scheme = /^(blob|data):/.exec(source)?.[1] ?? "";
+        const fail = (stage) => (error) => {
+          this.loading.delete(id);
+          const { name, message } = error ?? {};
+          const text3 = typeof message === "string" ? typeof name === "string" && name !== "Error" ? `${name}: ${message}` : message : String(error);
+          this.failures.set(id, { stage, scheme, message: text3 });
+        };
+        const decode2 = (bytes) => decoder.decodeAudioData(bytes).then((buffer) => {
+          this.loading.delete(id);
+          this.failures.delete(id);
+          this.buffers.set(id, buffer);
+        }, fail("\u89E3\u7801"));
+        this.loading.add(id);
+        try {
+          if (scheme === "blob") {
+            void fetch(source).then((response) => {
+              if (!response.ok) throw new Error(`HTTP ${response.status}`);
+              return response.arrayBuffer();
+            }).then(decode2, fail("\u8BFB\u53D6"));
+          } else if (scheme === "data") {
+            const binary = atob(source.slice(source.indexOf(",") + 1));
+            void decode2(Uint8Array.from(binary, (character) => character.charCodeAt(0)).buffer);
+          } else fail("\u8BFB\u53D6")(new Error("Tampermonkey \u6CA1\u6709\u7ED9\u51FA\u8FD9\u4E2A\u8D44\u6E90"));
+        } catch (error) {
+          fail("\u8BFB\u53D6")(error);
+        }
+      }
+    }
+    preload() {
+      try {
+        if (typeof window.OfflineAudioContext === "function") this.prepare(new OfflineAudioContext(1, 1, 44100));
+      } catch {
+      }
+    }
+    unlock() {
+      if (!this.supported) return;
+      try {
+        if (!this.context) {
+          this.context = new AudioContext();
+          this.prepare(this.context);
+        }
+        if (this.context.state !== "running") void this.context.resume().catch(() => {
+        });
+      } catch {
+        this.supported = false;
+      }
+    }
+    clips() {
+      return { total: Object.keys(soundSources).length, loaded: this.buffers.size, loading: this.loading.size, failure: [...this.failures.values()][0] };
+    }
+    available() {
+      return this.supported;
+    }
+    unlocked() {
+      return this.context?.state === "running";
+    }
+    ready(id) {
+      return this.unlocked() && this.buffers.has(id);
+    }
+    playing() {
+      return !!this.source;
+    }
+    play(id, gain) {
+      if (!this.ready(id)) return false;
+      try {
+        const source = this.context.createBufferSource(), volume2 = this.context.createGain();
+        source.buffer = this.buffers.get(id);
+        volume2.gain.value = gain;
+        source.connect(volume2);
+        volume2.connect(this.context.destination);
+        this.source = source;
+        source.onended = () => {
+          source.disconnect();
+          volume2.disconnect();
+          if (this.source === source) this.source = void 0;
+        };
+        source.start();
+        return true;
+      } catch {
+        this.source = void 0;
+        return false;
+      }
+    }
+    stop() {
+      const source = this.source;
+      this.source = void 0;
+      if (source) try {
+        source.stop();
+      } catch {
+      }
+    }
+  };
+  var engine;
+  var transport;
+  var monitor;
+  var gesture = 0;
+  var sequence = 0;
+  var foregroundEpoch = 0;
+  var started2 = false;
+  var previewPlaying = false;
+  var foreground = () => window.top === window.self && !document.hidden && document.hasFocus();
+  var readSoundPreferences = () => normalizeSoundPreferences(typeof GM_getValue === "function" ? GM_getValue(preferenceKey, null) : null);
+  function writeSoundPreferences(value2) {
+    GM_setValue(preferenceKey, normalizeSoundPreferences(value2));
+    engine?.stop();
+    window.dispatchEvent(new Event(soundPreferencesChanged));
+  }
+  function request(cue) {
+    const alias = aliases[cue];
+    if (!alias) return;
+    const value2 = catalog_default.cues[alias];
+    return { asset: clips.get(value2.sound), category: value2.category, priority: value2.priority };
+  }
+  function enqueue(cue, action, valid) {
+    if (!action) return;
+    try {
+      const mapped = request(cue);
+      if (!mapped) return;
+      if (previewPlaying) {
+        engine?.stop();
+        previewPlaying = false;
+      }
+      engine?.request(mapped, action, valid);
+    } catch {
+    }
+  }
+  function sound(cue) {
+    try {
+      enqueue(cue, gesture);
+    } catch {
+    }
+  }
+  function soundTask(startCue, owner) {
+    const action = gesture, epoch = foregroundEpoch;
+    let finished = false;
+    const valid = () => epoch === foregroundEpoch && (!owner || (typeof owner === "function" ? owner() : owner.isConnected && !owner.hidden));
+    if (startCue) enqueue(startCue, action, valid);
+    return {
+      finish(cue) {
+        if (finished) return;
+        finished = true;
+        if (["folder", "open", "close", "minimize", "maximize", "restore", "cancel"].includes(cue)) enqueue(cue, action, valid);
+      },
+      cancel() {
+        finished = true;
+      }
+    };
+  }
+  function previewSound(id, category) {
+    const asset = clips.get(id);
+    if (!asset || !gesture) return;
+    previewPlaying = true;
+    engine?.request({ asset, category, priority: 100, preview: true }, gesture);
+  }
+  function stopSoundPreview() {
+    if (previewPlaying) {
+      engine?.stop();
+      previewPlaying = false;
+    }
+  }
+  function soundPlaybackStatus() {
+    const prefs = readSoundPreferences();
+    if (!prefs.enabled) return "\u97F3\u6548\u5DF2\u5173\u95ED";
+    if (prefs.volume === 0) return "\u603B\u97F3\u91CF\u4E3A\u96F6";
+    if (transport && !transport.available()) return "\u5F53\u524D\u6D4F\u89C8\u5668\u65E0\u6CD5\u4F7F\u7528 Web Audio";
+    const clips2 = transport?.clips();
+    if (clips2 && !clips2.loading && clips2.failure) {
+      const { stage, scheme, message } = clips2.failure;
+      return `\u58F0\u97F3\u6CA1\u6709\u8F7D\u5165\uFF08${clips2.loaded}/${clips2.total}\uFF09\uFF1A${scheme ? `${scheme}: \u5730\u5740${stage}\u5931\u8D25` : "\u6CA1\u6709\u62FF\u5230\u8D44\u6E90\u5730\u5740"}\uFF08${message}\uFF09`;
+    }
+    if (monitor?.blocked()) return "\u68C0\u6D4B\u5230\u5A92\u4F53\u64AD\u653E\uFF0C\u97F3\u6548\u6682\u65F6\u5B89\u9759";
+    if (!foreground()) return "\u53EA\u5728\u5F53\u524D\u524D\u53F0\u7A97\u53E3\u64AD\u653E";
+    if (!transport?.unlocked()) return "\u9996\u6B21\u70B9\u51FB\u540E\u53EF\u64AD\u653E\uFF1B\u6D4F\u89C8\u5668\u963B\u6B62\u7684\u58F0\u97F3\u4E0D\u4F1A\u8865\u64AD";
+    if (clips2?.loading) return `\u58F0\u97F3\u8F7D\u5165\u4E2D\uFF08${clips2.loaded}/${clips2.total}\uFF09`;
+    return `\u5DF2\u5C31\u7EEA \xB7 ${clips2?.loaded ?? 0}/${clips2?.total ?? 0} \u4E2A\u58F0\u97F3\u5DF2\u8F7D\u5165 \xB7 \u8BD5\u542C\u4E5F\u9075\u5B88\u97F3\u91CF\u3001\u5206\u7C7B\u5F00\u5173\u548C\u5A92\u4F53\u907F\u8BA9`;
+  }
+  function startSounds() {
+    if (started2) return;
+    started2 = true;
+    try {
+      transport = new WebAudioTransport();
+      transport.preload();
+      monitor = startSoundMediaMonitor(() => {
+        if (monitor?.blocked()) engine?.stop();
+      });
+      engine = new SoundEngine(transport, readSoundPreferences, () => foreground() && !monitor.blocked(), Date.now, (run) => {
+        window.setTimeout(() => {
+          try {
+            run();
+          } catch {
+            transport?.stop();
+          }
+        }, 0);
+      });
+      const activate = (event) => {
+        if (!event.isTrusted || !foreground()) return;
+        transport.unlock();
+        const current4 = gesture = ++sequence;
+        window.setTimeout(() => {
+          if (gesture === current4) gesture = 0;
+        }, 0);
+      };
+      for (const name of ["pointerdown", "click", "keydown", "change", "submit"]) document.addEventListener(name, activate, true);
+      const leave = () => {
+        foregroundEpoch++;
+        gesture = 0;
+        engine?.stop();
+      };
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) leave();
+      });
+      window.addEventListener("pagehide", leave);
+      window.addEventListener("blur", () => {
+        window.setTimeout(() => {
+          if (!document.hasFocus()) leave();
+        }, 0);
+      });
+      if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(preferenceKey, (_, __, ___, remote) => {
+        if (remote) {
+          engine?.stop();
+          window.dispatchEvent(new Event(soundPreferencesChanged));
+        }
+      });
+    } catch {
+      transport?.stop();
+    }
+  }
+
+  // src/ui/dialogs.ts
+  var pending = Promise.resolve();
+  function atelierDialog(options) {
+    const run = () => new Promise((resolve) => {
+      ensureLunaTheme();
+      const before = document.activeElement;
+      const dialog = document.createElement("dialog");
+      dialog.className = "atelier-dialog xp-window";
+      dialog.setAttribute("data-bili-blocker-ui", "");
+      const caption2 = document.createElement("header");
+      caption2.className = "xp-caption";
+      const heading = document.createElement("h2");
+      heading.id = "atelier-dialog-title";
+      heading.textContent = options.title;
+      const dismiss = document.createElement("button");
+      dismiss.type = "button";
+      dismiss.className = "xp-caption-button";
+      dismiss.dataset.kind = "close";
+      dismiss.setAttribute("aria-label", "\u5173\u95ED");
+      dismiss.title = "\u5173\u95ED";
+      caption2.append(heading, dismiss);
+      dialog.setAttribute("aria-labelledby", heading.id);
+      const message = document.createElement("p");
+      message.textContent = options.message;
+      const body2 = document.createElement("div");
+      body2.className = "atelier-dialog-body";
+      body2.append(message);
+      let input;
+      if (options.input !== void 0) {
+        input = document.createElement(options.multiline ? "textarea" : "input");
+        input.value = options.input;
+        input.readOnly = !!options.readOnly;
+        input.setAttribute("aria-label", options.title);
+        body2.append(input);
+      }
+      const actions = document.createElement("div");
+      actions.className = "atelier-dialog-actions";
+      let settled = false;
+      const cleanupPixels = observeCrispText(dialog);
+      dismiss.addEventListener("click", () => {
+        sound("click");
+        finish(null);
+      });
+      const finish = (result2) => {
+        if (settled) return;
+        settled = true;
+        cleanupPixels();
+        dialog.remove();
+        if (before?.isConnected) before.focus();
+        resolve(result2);
+      };
+      const add = (label, value2, parent = actions) => {
+        const button5 = document.createElement("button");
+        button5.type = "button";
+        button5.className = "atelier-control";
+        button5.textContent = label;
+        button5.addEventListener("click", () => {
+          sound("click");
+          finish(value2());
+        });
+        parent.append(button5);
+        return button5;
+      };
+      if (options.choices) {
+        const choices = document.createElement("div");
+        choices.className = "atelier-dialog-choices";
+        for (const choice of options.choices) add(choice.label, () => choice.value, choices);
+        body2.append(choices);
+      } else add(options.confirmLabel || (options.readOnly || options.alert ? "\u5173\u95ED" : "\u786E\u5B9A"), () => input?.value ?? "ok");
+      if (!options.alert && !options.readOnly) add(options.cancelLabel || "\u53D6\u6D88", () => null);
+      dialog.append(caption2, body2, actions);
+      dialog.addEventListener("cancel", (event) => {
+        event.preventDefault();
+        finish(null);
+      });
+      dialog.addEventListener("keydown", (event) => {
+        event.stopPropagation();
+        if (event.key === "Escape") {
+          event.preventDefault();
+          finish(null);
+        }
+        if (event.key === "Enter" && event.target === input && !options.multiline) {
+          event.preventDefault();
+          finish(input.value);
+        }
+      });
+      document.body.append(dialog);
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+      (input || dialog.querySelector("button"))?.focus();
+      if (options.readOnly) input?.select();
+    });
+    const result = pending.then(run, run);
+    pending = result;
+    return result;
+  }
+  async function atelierConfirm(message, title = "\u786E\u8BA4\u64CD\u4F5C") {
+    return await atelierDialog({ title, message }) !== null;
+  }
+  function atelierAlert(message, title = "\u64CD\u4F5C\u63D0\u793A") {
+    return atelierDialog({ title, message, alert: true });
+  }
+  function atelierPrompt(message, value2 = "", readOnly = false) {
+    return atelierDialog({ title: readOnly ? "\u5BFC\u51FA\u6570\u636E" : "\u5BFC\u5165\u6570\u636E", message, input: value2, multiline: true, readOnly });
+  }
+
+  // src/modules/blocker/history.ts
+  var historyChangedEvent = "bili-atelier-block-history-changed";
+  var historyStorageKey = "BiliAtelier_BlockHistory";
+  var historyLimit = 200;
+  function summarizeBlockedItem(item) {
+    return item.title || item.content || item.liveTitle || item.name || item.bv || item.roomId || item.partition || "\u672A\u77E5\u5185\u5BB9";
+  }
+  function detailBlockedItem(item) {
+    const parts2 = [];
+    if (item.name) {
+      parts2.push(`\u7528\u6237\uFF1A${item.name}`);
+    }
+    if (item.uid !== void 0) {
+      parts2.push(`UID\uFF1A${item.uid}`);
+    }
+    if (item.bv) {
+      parts2.push(`BV\uFF1A${item.bv}`);
+    }
+    if (item.roomId) {
+      parts2.push(`\u76F4\u64AD\u95F4\uFF1A${item.roomId}`);
+    }
+    return parts2.join(" / ");
+  }
+  function readBlockHistory() {
+    const value2 = GM_getValue(historyStorageKey, []);
+    if (!Array.isArray(value2)) {
+      return [];
+    }
+    return value2.filter((entry) => entry && typeof entry === "object" && typeof entry.id === "string").slice(0, historyLimit);
+  }
+  function writeBlockHistory(history2) {
+    GM_setValue(historyStorageKey, history2.slice(0, historyLimit));
+  }
+  function notifyBlockHistoryChanged() {
+    document.dispatchEvent(new CustomEvent(historyChangedEvent));
+  }
+  function decisionRuleReferences(decision) {
+    if (decision.linkedRules?.length) {
+      return decision.linkedRules;
+    }
+    if (decision.ruleKey && decision.ruleValue !== void 0) {
+      return [{ key: decision.ruleKey, value: decision.ruleValue }];
+    }
+    return [];
+  }
+  function ruleIdentity(rules) {
+    return rules.map((rule) => `${rule.key}=${String(rule.value)}`).sort().join("&");
+  }
+  function createHistoryId(item, decision) {
+    const identity = ruleIdentity(decisionRuleReferences(decision));
+    if (identity) {
+      return [item.kind, identity].join("|");
+    }
+    return [
+      item.kind,
+      decision.ruleKey || decision.type,
+      String(decision.ruleValue ?? decision.matching)
+    ].join("|");
+  }
+  function entryRuleReferences(entry) {
+    if (entry.linkedRules?.length) {
+      return entry.linkedRules;
+    }
+    if (entry.ruleKey && entry.ruleValue !== void 0) {
+      return [{ key: entry.ruleKey, value: entry.ruleValue }];
+    }
+    return [];
+  }
+  function entryMatchesRule(entry, ruleKey, normalizedValue) {
+    return entryRuleReferences(entry).some((rule) => {
+      return rule.key === ruleKey && String(rule.value) === normalizedValue;
+    });
+  }
+  function isDuplicateHistoryEntry(entry, kind, id, rules) {
+    if (entry.id === id) {
+      return true;
+    }
+    if (entry.kind !== kind || rules.length === 0) {
+      return false;
+    }
+    const existingRules = entryRuleReferences(entry);
+    return existingRules.some((existingRule) => {
+      return rules.some((rule) => existingRule.key === rule.key && String(existingRule.value) === String(rule.value));
+    });
+  }
+  function recordBlockHistory(item, decision) {
+    const id = createHistoryId(item, decision);
+    const history2 = readBlockHistory();
+    const rules = decisionRuleReferences(decision);
+    if (history2.some((entry2) => isDuplicateHistoryEntry(entry2, item.kind, id, rules))) {
+      return;
+    }
+    const entry = {
+      id,
+      timestamp: Date.now(),
+      kind: item.kind,
+      type: decision.type,
+      matching: decision.matching,
+      ruleKey: decision.ruleKey,
+      ruleValue: decision.ruleValue,
+      linkedRules: decision.linkedRules,
+      uid: item.uid,
+      name: item.name,
+      title: item.title?.slice(0, 160),
+      content: item.content?.slice(0, 220),
+      bv: item.bv,
+      liveTitle: item.liveTitle?.slice(0, 160),
+      roomId: item.roomId,
+      partition: item.partition,
+      summary: summarizeBlockedItem(item).slice(0, 140),
+      detail: detailBlockedItem(item),
+      url: location.href
+    };
+    writeBlockHistory([entry, ...history2]);
+    notifyBlockHistoryChanged();
+  }
+  function removeHistoryByRules(rules) {
+    writeBlockHistory(readBlockHistory().filter((entry) => {
+      return !rules.some((rule) => entryMatchesRule(entry, rule.key, String(rule.value)));
+    }));
+  }
+
+  // src/modules/blocker/conceal.ts
+  var showingBlocked = false;
+  var blockedVisibilityChangedEvent = "atelier-blocked-visibility-changed";
+  function isShowingBlocked() {
+    return showingBlocked;
+  }
+  function toggleBlockedVisibility() {
+    showingBlocked = !showingBlocked;
+    for (const el3 of hiddenElements) {
+      if (el3.isConnected) applyBlockedVisibility(el3);
+      else hiddenElements.delete(el3);
+    }
+    window.dispatchEvent(new Event(blockedVisibilityChangedEvent));
+  }
+  var hiddenAttribute = "data-bili-blocker-hidden";
+  var previousDisplayAttribute = "data-bili-blocker-previous-display";
+  var previousDisplayPriorityAttribute = "data-bili-blocker-previous-display-priority";
+  var hiddenElements = /* @__PURE__ */ new Set();
+  var concealCss = `[${hiddenAttribute}="true"]:not([data-bili-blocker-revealed]){display:none!important}
+[data-bili-blocker-revealed]{outline:1px dashed #a33024;outline-offset:-1px}`;
+  var isHiddenElement = (el3) => el3.getAttribute(hiddenAttribute) === "true";
+  var concealedElements = () => hiddenElements;
+  function forgetDetached() {
+    for (const el3 of hiddenElements) if (!el3.isConnected) hiddenElements.delete(el3);
+  }
+  function hideRawElement(el3, decision) {
+    const newlyHidden = el3.getAttribute(hiddenAttribute) !== "true";
+    if (newlyHidden) {
+      el3.setAttribute(previousDisplayAttribute, el3.style.getPropertyValue("display") || "");
+      el3.setAttribute(previousDisplayPriorityAttribute, el3.style.getPropertyPriority("display") || "");
+    }
+    el3.setAttribute(hiddenAttribute, "true");
+    hiddenElements.add(el3);
+    applyBlockedVisibility(el3);
+    el3.title = `Bili Atelier \u5DF2\u5C4F\u853D\uFF1A${decision.type} ${decision.matching}`;
+    return newlyHidden;
+  }
+  function applyBlockedVisibility(el3) {
+    el3.toggleAttribute("data-bili-blocker-revealed", isShowingBlocked());
+    if (isShowingBlocked()) {
+      el3.style.removeProperty("display");
+      const previous = el3.getAttribute(previousDisplayAttribute);
+      if (previous) el3.style.setProperty("display", previous, el3.getAttribute(previousDisplayPriorityAttribute) || "");
+    } else el3.style.setProperty("display", "none", "important");
+  }
+  function hideElement(item, decision) {
+    const newlyHidden = hideRawElement(item.el, decision);
+    if (newlyHidden && decision.ruleKey) {
+      recordBlockHistory(item, decision);
+    }
+    debugLog("blocked", item.kind, decision, item);
+  }
+  function restoreElement(item) {
+    const el3 = item.el;
+    if (el3.getAttribute(hiddenAttribute) !== "true") {
+      return;
+    }
+    const previousDisplay = el3.getAttribute(previousDisplayAttribute) || "";
+    const previousDisplayPriority = el3.getAttribute(previousDisplayPriorityAttribute) || "";
+    el3.removeAttribute(hiddenAttribute);
+    hiddenElements.delete(el3);
+    el3.removeAttribute("data-bili-blocker-revealed");
+    el3.removeAttribute(previousDisplayAttribute);
+    el3.removeAttribute(previousDisplayPriorityAttribute);
+    el3.style.removeProperty("display");
+    if (previousDisplay) {
+      el3.style.setProperty("display", previousDisplay, previousDisplayPriority);
+    }
+  }
+
+  // src/modules/blocker/matching.ts
+  var defaultMatchOptions = {
+    caseInsensitive: false,
+    collapseWhitespace: true
+  };
+  function resolveOptions(options = {}) {
+    return { ...defaultMatchOptions, ...options };
+  }
+  function normalizeText(value2, options = {}) {
+    if (value2 === null || value2 === void 0) {
+      return null;
+    }
+    const resolvedOptions = resolveOptions(options);
+    let text3 = String(value2).trim();
+    if (text3.length === 0) {
+      return null;
+    }
+    if (resolvedOptions.collapseWhitespace) {
+      text3 = text3.replace(/[\t\r\f\n\s]+/g, "");
+    }
+    if (resolvedOptions.caseInsensitive) {
+      text3 = text3.toLowerCase();
+    }
+    return text3.length > 0 ? text3 : null;
+  }
+  function normalizeRuleValue(value2, options = {}) {
+    if (typeof value2 === "number") {
+      return Number.isFinite(value2) ? value2 : null;
+    }
+    return normalizeText(value2, options);
+  }
+  function validateRuleInput(value2, integerRule = false) {
+    if (value2 === null || value2 === void 0) {
+      return { status: false, res: "\u5185\u5BB9\u4E0D\u80FD\u4E3A\u7A7A" };
+    }
+    const trimmed = String(value2).trim();
+    if (trimmed.length === 0) {
+      return { status: false, res: "\u5185\u5BB9\u4E0D\u80FD\u4E3A\u7A7A" };
+    }
+    if (!integerRule) {
+      return { status: true, res: trimmed };
+    }
+    const parsed = /^-?\d+$/.test(trimmed) ? Number.parseInt(trimmed, 10) : Number.NaN;
+    if (!Number.isFinite(parsed)) {
+      return { status: false, res: "\u8BF7\u8F93\u5165\u6570\u5B57\uFF01" };
+    }
+    return { status: true, res: parsed };
+  }
+  function exactMatch(ruleList, value2, options = {}) {
+    if (!Array.isArray(ruleList)) {
+      return null;
+    }
+    const normalizedValue = normalizeRuleValue(value2, options);
+    if (normalizedValue === null) {
+      return null;
+    }
+    for (const rule of ruleList) {
+      const normalizedRule = normalizeRuleValue(rule, options);
+      if (normalizedRule === null) {
+        continue;
+      }
+      if (normalizedRule === normalizedValue) {
+        return { kind: "exact", matching: rule };
+      }
+    }
+    return null;
+  }
+  function fuzzyMatch(ruleList, value2, options = {}) {
+    if (!Array.isArray(ruleList)) {
+      return null;
+    }
+    const normalizedValue = normalizeText(value2, options);
+    if (normalizedValue === null) {
+      return null;
+    }
+    for (const rule of ruleList) {
+      const normalizedRule = normalizeText(rule, options);
+      if (normalizedRule === null) {
+        continue;
+      }
+      if (normalizedValue.includes(normalizedRule)) {
+        return { kind: "fuzzy", matching: rule };
+      }
+    }
+    return null;
+  }
+  function regexMatch(ruleList, value2, options = {}) {
+    if (!Array.isArray(ruleList)) {
+      return null;
+    }
+    const normalizedValue = normalizeText(value2, options);
+    if (normalizedValue === null) {
+      return null;
+    }
+    for (const rule of ruleList) {
+      const normalizedRule = normalizeText(rule, { ...options, collapseWhitespace: false });
+      if (normalizedRule === null) {
+        continue;
+      }
+      try {
+        const regexp = new RegExp(normalizedRule, options.caseInsensitive ? "i" : "");
+        if (regexp.test(normalizedValue)) {
+          return { kind: "regex", matching: rule };
+        }
+      } catch (error) {
+        options.onInvalidRule?.({ rule: String(rule), error });
+      }
+    }
+    return null;
+  }
+  function blockExactFuzzyRegex(value2, config2) {
+    const exact = exactMatch(config2.exactRules, value2, config2.options);
+    if (exact) {
+      return exact;
+    }
+    const fuzzy = fuzzyMatch(config2.fuzzyRules, value2, config2.options);
+    if (fuzzy) {
+      return fuzzy;
+    }
+    return regexMatch(config2.regexRules, value2, {
+      ...config2.options,
+      onInvalidRule: config2.onInvalidRegexRule
+    });
+  }
+
+  // src/modules/viewed/id.ts
+  var strict = /^(?:1[0-9A-Za-z]{9}(?:-[1-9][0-9]*)?|(?:ep|ss)[1-9][0-9]*)$/;
+  var isViewedId = (value2) => typeof value2 === "string" && strict.test(value2);
+  var withoutBv = (value2) => value2.trim().replace(/^BV/i, "");
+  function parseViewedId(value2) {
+    if (typeof value2 !== "string") return null;
+    const id = withoutBv(value2);
+    return strict.test(id) ? id : null;
+  }
+  function viewedIdFromBvid(bvid, part) {
+    const body2 = String(bvid ?? "");
+    return parseViewedId(part && Number.isSafeInteger(part) && part > 0 ? `${body2}-${part}` : body2) ?? "";
+  }
+  function viewedGroup(value2) {
+    const id = String(value2 ?? "");
+    if (/^(ep|ss)[1-9][0-9]*$/.test(id)) return `${id.slice(0, 2)}${id.slice(-1)}`;
+    if (id.length < 5) return "";
+    if (id.startsWith("ep") || id.startsWith("ss")) return `${id.slice(0, 2)}${id.slice(-1)}`;
+    if (id.length === 10 || id.length > 10 && id.indexOf("-") === 10) return id.charAt(1);
+    return "";
+  }
+  function parseStoredViewedId(value2) {
+    const id = withoutBv(String(value2 || ""));
+    return id && viewedGroup(id) ? id : null;
+  }
+  var alphabet = "FcwAPNKTMug3GV5Lj7EJnHpWsx4tb8haYeviqBz6rkCy12mUSDQX9RdoZf";
+  function bvidFromAid(aid) {
+    if (!Number.isSafeInteger(aid) || aid <= 0 || aid >= 2 ** 51) return "";
+    let rest = (BigInt(aid) | 1n << 51n) ^ 23442827791579n;
+    const digits = [];
+    for (let i = 0; i < 9; i++) {
+      digits.unshift(alphabet[Number(rest % 58n)]);
+      rest /= 58n;
+    }
+    [digits[0], digits[6]] = [digits[6], digits[0]];
+    [digits[1], digits[4]] = [digits[4], digits[1]];
+    return "BV1" + digits.join("");
+  }
+  var bvidPattern = /^BV1[0-9A-Za-z]{9}$/i;
+  var isBvid = (value2) => typeof value2 === "string" && bvidPattern.test(value2);
+  function viewedIdFromHref(href) {
+    if (!href) return "";
+    let url;
+    try {
+      url = new URL(href, location.href);
+    } catch {
+      return "";
+    }
+    const host = url.hostname;
+    if (host === "b23.tv") {
+      const code = url.pathname.split("/")[1];
+      return isBvid(code) ? viewedIdFromBvid(code) : "";
+    }
+    if (!/(^|\.)bilibili\.com$/.test(host)) return "";
+    const [, section, value2 = ""] = url.pathname.split("/");
+    if (section === "video") {
+      if (isBvid(value2)) return viewedIdFromBvid(value2);
+      const av = /^av(\d+)$/i.exec(value2);
+      return av ? viewedIdFromBvid(bvidFromAid(Number(av[1]))) : "";
+    }
+    if (section === "list") {
+      const bvid = url.searchParams.get("bvid");
+      return isBvid(bvid) ? viewedIdFromBvid(bvid) : "";
+    }
+    if (section === "bangumi") {
+      const episode = /^\/bangumi\/play\/((?:ep|ss)[1-9]\d*)\/?$/.exec(url.pathname);
+      return episode ? episode[1] : "";
+    }
+    return "";
+  }
+
+  // src/modules/sync/keys.ts
+  var viewedKey = (id) => `v:${id}`;
+  var uidKey = (uid) => `u:${String(uid).trim()}`;
+  var nameKey = (name) => `n:${String(name).trim().toLowerCase()}`;
+  function validKey(key3) {
+    const value2 = key3.slice(2);
+    if (key3.startsWith("v:")) return isViewedId(value2);
+    if (key3.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
+    return key3.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
+  }
+  var sameKeys = (a, b) => a.size === b.size && [...a].every((key3) => b.has(key3));
+
+  // src/modules/blocker/rules.ts
+  var ruleDefinitions = [
+    { key: "precise_uid", label: "\u7528\u6237 UID\uFF08\u7CBE\u786E\uFF09", integer: true },
+    { key: "precise_uid_white", label: "\u7528\u6237 UID \u767D\u540D\u5355\uFF08\u7CBE\u786E\uFF09", integer: true },
+    { key: "name", label: "\u7528\u6237\u540D\uFF08\u6A21\u7CCA\uFF09" },
+    { key: "precise_name", label: "\u7528\u6237\u540D\uFF08\u7CBE\u786E\uFF09" },
+    { key: "nameCanonical", label: "\u7528\u6237\u540D\uFF08\u6B63\u5219\uFF09" },
+    { key: "title", label: "\u89C6\u9891\u6807\u9898\uFF08\u6A21\u7CCA\uFF09" },
+    { key: "titleCanonical", label: "\u89C6\u9891\u6807\u9898\uFF08\u6B63\u5219\uFF09" },
+    { key: "commentOn", label: "\u8BC4\u8BBA\u5173\u952E\u8BCD\uFF08\u6A21\u7CCA\uFF09", textarea: true },
+    { key: "commentOnCanonical", label: "\u8BC4\u8BBA\u5173\u952E\u8BCD\uFF08\u6B63\u5219\uFF09", textarea: true },
+    { key: "dynamic", label: "\u52A8\u6001\u5173\u952E\u8BCD\uFF08\u6A21\u7CCA\uFF09", textarea: true },
+    { key: "dynamicCanonical", label: "\u52A8\u6001\u5173\u952E\u8BCD\uFF08\u6B63\u5219\uFF09", textarea: true },
+    { key: "liveTitle", label: "\u76F4\u64AD\u6807\u9898\uFF08\u6A21\u7CCA\uFF09" },
+    { key: "liveTitleCanonical", label: "\u76F4\u64AD\u6807\u9898\uFF08\u6B63\u5219\uFF09" },
+    { key: "precise_liveRoomId", label: "\u76F4\u64AD\u95F4 ID\uFF08\u7CBE\u786E\uFF09" },
+    { key: "precise_partition", label: "\u76F4\u64AD\u5206\u533A\uFF08\u7CBE\u786E\uFF09" }
+  ];
+  var integerRuleKeys = new Set(ruleDefinitions.filter((rule) => rule.integer).map((rule) => rule.key));
+  function emptySnapshot() {
+    return Object.fromEntries(ruleDefinitions.map((rule) => [rule.key, []]));
+  }
+  function normalizeStoredRules(value2, integer = false) {
+    if (!Array.isArray(value2)) {
+      return [];
+    }
+    const normalized = [];
+    for (const item of value2) {
+      const validation = validateRuleInput(item, integer);
+      if (!validation.status || normalized.includes(validation.res)) {
+        continue;
+      }
+      normalized.push(validation.res);
+    }
+    return normalized;
+  }
+  function readRuleList(key3) {
+    const integer = integerRuleKeys.has(key3);
+    return normalizeStoredRules(GM_getValue(key3, []), integer);
+  }
+  var syncedRules = { precise_uid: { prefix: "u:", key: uidKey }, precise_name: { prefix: "n:", key: nameKey } };
+  var isSyncedRule = (key3) => Object.prototype.hasOwnProperty.call(syncedRules, key3);
+  var journal;
+  var keysOf = (key3, values) => new Set(values.map(syncedRules[key3].key).filter(validKey));
+  function writeRuleList(key3, values) {
+    const integer = integerRuleKeys.has(key3);
+    const normalized = normalizeStoredRules(values, integer);
+    if (isSyncedRule(key3)) journal?.(keysOf(key3, readRuleList(key3)), keysOf(key3, normalized));
+    GM_setValue(key3, normalized);
+    return normalized;
+  }
+  var blockedUserSyncStore = {
+    keys: () => /* @__PURE__ */ new Set([...keysOf("precise_uid", readRuleList("precise_uid")), ...keysOf("precise_name", readRuleList("precise_name"))]),
+    applySync(desired) {
+      const mine = new Set([...desired].filter((key3) => key3.startsWith("u:") || key3.startsWith("n:")));
+      if (sameKeys(mine, blockedUserSyncStore.keys())) return false;
+      for (const key3 of Object.keys(syncedRules)) {
+        const { prefix: prefix4, key: toKey } = syncedRules[key3];
+        const local = readRuleList(key3).filter((value2) => !validKey(toKey(value2)));
+        const synced = [...mine].filter((entry) => entry.startsWith(prefix4)).map((entry) => entry.slice(prefix4.length));
+        GM_setValue(key3, normalizeStoredRules([...local, ...synced], integerRuleKeys.has(key3)));
+      }
+      return true;
+    },
+    setJournal(next) {
+      journal = next;
+    }
+  };
+  function readRuleSnapshot() {
+    const snapshot = emptySnapshot();
+    for (const rule of ruleDefinitions) {
+      snapshot[rule.key] = readRuleList(rule.key);
+    }
+    return snapshot;
+  }
+  function addRuleItem(key3, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key3));
+    if (!validation.status) {
+      return validation;
+    }
+    const current4 = readRuleList(key3);
+    if (current4.includes(validation.res)) {
+      return { status: false, res: "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" };
+    }
+    current4.push(validation.res);
+    writeRuleList(key3, current4);
+    return { status: true, res: "\u6DFB\u52A0\u6210\u529F", value: validation.res };
+  }
+  function removeRuleItem(key3, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key3));
+    if (!validation.status) {
+      return validation;
+    }
+    const current4 = readRuleList(key3);
+    const index = current4.findIndex((item) => item === validation.res);
+    if (index < 0) {
+      return { status: false, res: "\u89C4\u5219\u4E0D\u5B58\u5728" };
+    }
+    current4.splice(index, 1);
+    writeRuleList(key3, current4);
+    return { status: true, res: "\u5DF2\u89E3\u9664\u5C4F\u853D", value: validation.res };
+  }
+  function importRuleSnapshot(data, mode2) {
+    if (!data || typeof data !== "object") {
+      return { status: false, res: "\u89C4\u5219\u5185\u5BB9\u5FC5\u987B\u662F\u5BF9\u8C61" };
+    }
+    let changed = 0;
+    for (const rule of ruleDefinitions) {
+      const incoming = data[rule.key];
+      if (!Array.isArray(incoming)) {
+        continue;
+      }
+      if (mode2 === "overwrite") {
+        const written = writeRuleList(rule.key, incoming);
+        changed += written.length;
+        continue;
+      }
+      const current4 = readRuleList(rule.key);
+      const merged = writeRuleList(rule.key, current4.concat(incoming));
+      changed += Math.max(0, merged.length - current4.length);
+    }
+    return { status: true, res: `\u5BFC\u5165\u5B8C\u6210\uFF0C\u53D8\u66F4 ${changed} \u6761` };
+  }
+  function exportNonEmptyRuleSnapshot() {
+    const snapshot = readRuleSnapshot();
+    const result = {};
+    for (const rule of ruleDefinitions) {
+      if (snapshot[rule.key].length > 0) {
+        result[rule.key] = snapshot[rule.key];
+      }
+    }
+    return result;
+  }
+  function parseRuleText(value2, integer = false) {
+    const lines = value2.split(/\r?\n/g);
+    return normalizeStoredRules(lines, integer);
+  }
+  function formatRuleText(values) {
+    return values.join("\n");
+  }
+
+  // src/modules/blocker/decision.ts
+  var titleCheck = { field: "title", fuzzy: "title", regex: "titleCanonical", label: "\u6807\u9898" };
+  var checks = {
+    video: [titleCheck],
+    comment: [{ field: "content", fuzzy: "commentOn", regex: "commentOnCanonical", label: "\u8BC4\u8BBA" }],
+    /** A drawn dynamic card: its text, then an embedded video's title. */
+    dynamic: [{ field: "content", fuzzy: "dynamic", regex: "dynamicCanonical", label: "\u52A8\u6001" }, titleCheck],
+    live: [
+      { field: "roomId", exact: "precise_liveRoomId", label: "\u7CBE\u786E\u76F4\u64AD\u95F4 ID" },
+      { field: "partition", exact: "precise_partition", label: "\u7CBE\u786E\u76F4\u64AD\u5206\u533A" },
+      { field: "liveTitle", fuzzy: "liveTitle", regex: "liveTitleCanonical", label: "\u76F4\u64AD\u6807\u9898" }
+    ]
+  };
+  function readRuleSnapshotWithHistoryAliases() {
+    const rules = readRuleSnapshot();
+    const preciseNameAliases = new Set(rules.precise_name.map((item) => String(item)));
+    for (const entry of readBlockHistory()) {
+      if (entry.kind !== "comment" || entry.uid === void 0 || !entry.name || exactMatch(rules.precise_uid, entry.uid) === null) {
+        continue;
+      }
+      preciseNameAliases.add(entry.name);
+    }
+    return {
+      ...rules,
+      precise_name: Array.from(preciseNameAliases)
+    };
+  }
+  function blockUser(uid, name, rules) {
+    if (uid !== void 0) {
+      const uidMatch = exactMatch(rules.precise_uid, uid);
+      if (uidMatch) {
+        return { type: "\u7CBE\u786E UID", matching: uidMatch.matching, ruleKey: "precise_uid", ruleValue: uidMatch.matching };
+      }
+    }
+    const nameMatch = blockExactFuzzyRegex(name, {
+      exactRules: rules.precise_name,
+      fuzzyRules: rules.name,
+      regexRules: rules.nameCanonical,
+      options: { caseInsensitive: true },
+      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u7528\u6237\u540D\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
+    });
+    if (nameMatch) {
+      const ruleKey = nameMatch.kind === "exact" ? "precise_name" : nameMatch.kind === "regex" ? "nameCanonical" : "name";
+      return { type: `\u7528\u6237\u540D${nameMatch.kind}`, matching: nameMatch.matching, ruleKey, ruleValue: nameMatch.matching };
+    }
+    return null;
+  }
+  function runCheck(check2, item, rules) {
+    const value2 = item[check2.field];
+    if ("exact" in check2) {
+      const match2 = value2 ? exactMatch(rules[check2.exact], value2) : null;
+      return match2 && { type: check2.label, matching: match2.matching, ruleKey: check2.exact, ruleValue: match2.matching };
+    }
+    const match = blockExactFuzzyRegex(value2, {
+      fuzzyRules: rules[check2.fuzzy],
+      regexRules: rules[check2.regex],
+      options: { caseInsensitive: true },
+      onInvalidRegexRule: ({ rule, error }) => warnLog(`${check2.label}\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
+    });
+    if (!match) return null;
+    const ruleKey = match.kind === "regex" ? check2.regex : check2.fuzzy;
+    return { type: `${check2.label}${match.kind}`, matching: match.matching, ruleKey, ruleValue: match.matching };
+  }
+  function decideBlockableItem(item, rules) {
+    if (item.uid !== void 0 && exactMatch(rules.precise_uid_white, item.uid) !== null) {
+      return null;
+    }
+    const userDecision = blockUser(item.uid, item.name, rules);
+    if (userDecision) {
+      return userDecision;
+    }
+    for (const check2 of checks[item.kind]) {
+      const decision = runCheck(check2, item, rules);
+      if (decision) return decision;
+    }
+    return null;
+  }
+  function getManualChoices(item) {
+    const choices = [];
+    if (item.uid !== void 0) {
+      choices.push({ label: `\u5C4F\u853D UID ${item.uid}`, key: "precise_uid", value: item.uid });
+    }
+    if (item.name) {
+      choices.push({ label: `\u5C4F\u853D\u7528\u6237\u540D ${item.name}`, key: "precise_name", value: item.name });
+    }
+    if (item.title) {
+      choices.push({ label: `\u5C4F\u853D\u6807\u9898\u5173\u952E\u8BCD ${item.title.slice(0, 30)}`, key: "title", value: item.title });
+    }
+    if (item.content) {
+      choices.push({ label: `\u5C4F\u853D\u8BC4\u8BBA\u5173\u952E\u8BCD ${item.content.slice(0, 30)}`, key: "commentOn", value: item.content });
+    }
+    if (item.liveTitle) {
+      choices.push({ label: `\u5C4F\u853D\u76F4\u64AD\u6807\u9898 ${item.liveTitle.slice(0, 30)}`, key: "liveTitle", value: item.liveTitle });
+    }
+    if (item.roomId) {
+      choices.push({ label: `\u5C4F\u853D\u76F4\u64AD\u95F4 ${item.roomId}`, key: "precise_liveRoomId", value: item.roomId });
+    }
+    if (item.partition) {
+      choices.push({ label: `\u5C4F\u853D\u76F4\u64AD\u5206\u533A ${item.partition}`, key: "precise_partition", value: item.partition });
+    }
+    return choices;
+  }
+  function getUserBlockChoices(item) {
+    const choices = [];
+    if (item.uid !== void 0) {
+      choices.push({ key: "precise_uid", value: item.uid });
+    }
+    if (item.name) {
+      choices.push({ key: "precise_name", value: item.name });
+    }
+    return choices;
+  }
+  function getLiveOwnerBlockChoices(item) {
+    const choices = getUserBlockChoices(item);
+    return choices.length === 0 && item.roomId ? [{ key: "precise_liveRoomId", value: item.roomId }] : choices;
+  }
+
+  // src/modules/blocker/history-view.ts
+  var userRuleKeys = /* @__PURE__ */ new Set(["precise_uid", "precise_name", "name", "nameCanonical"]);
+  function formatHistoryTime(timestamp2) {
+    return new Date(timestamp2).toLocaleString();
+  }
+  function kindLabel(kind) {
+    if (kind === "comment") {
+      return "\u8BC4\u8BBA";
+    }
+    if (kind === "live") {
+      return "\u76F4\u64AD";
+    }
+    if (kind === "dynamic") {
+      return "\u52A8\u6001";
+    }
+    return "\u89C6\u9891";
+  }
+  function isUserRuleKey(ruleKey) {
+    return Boolean(ruleKey && userRuleKeys.has(ruleKey));
+  }
+  function isUserBlockDecision(decision) {
+    return isUserRuleKey(decision.ruleKey);
+  }
+  function compactText(value2) {
+    return String(value2 ?? "").replace(/\s+/g, " ").trim();
+  }
+  function shortText(value2, maxLength) {
+    const textValue = compactText(value2);
+    if (!textValue) {
+      return "\u672A\u77E5\u5185\u5BB9";
+    }
+    return textValue.length > maxLength ? `${textValue.slice(0, maxLength)}...` : textValue;
+  }
+  function isLeakedStyleText(value2) {
+    return /:host\s*\{|--bili-rich-text-|^\s*\.[\w-]+\s*\{/.test(value2);
+  }
+  function shortReadableText(value2, maxLength, fallback2 = "\u672A\u77E5\u5185\u5BB9") {
+    const textValue = compactText(value2);
+    const readable = !textValue || isLeakedStyleText(textValue) ? fallback2 : textValue;
+    return readable.length > maxLength ? `${readable.slice(0, maxLength)}...` : readable;
+  }
+  function historyUserId(entry) {
+    if (entry.uid !== void 0) {
+      return String(entry.uid);
+    }
+    if (entry.ruleKey === "precise_uid" && entry.ruleValue !== void 0) {
+      return String(entry.ruleValue);
+    }
+    if (entry.ruleKey === "precise_uid" && entry.matching !== void 0) {
+      return String(entry.matching);
+    }
+    return "\u672A\u77E5";
+  }
+  function historyTypeLabel(entry) {
+    if (entry.kind === "comment" && isUserRuleKey(entry.ruleKey)) {
+      return "\u8BC4\u8BBA\u533A\u7528\u6237";
+    }
+    if (entry.kind === "video" && isUserRuleKey(entry.ruleKey)) {
+      return "UP";
+    }
+    if (entry.kind === "live" && isUserRuleKey(entry.ruleKey)) {
+      return "\u76F4\u64ADUP";
+    }
+    if (entry.kind === "dynamic" && isUserRuleKey(entry.ruleKey)) {
+      return "\u52A8\u6001UP";
+    }
+    if (entry.ruleKey === "dynamic" || entry.ruleKey === "dynamicCanonical") {
+      return "\u52A8\u6001\u5173\u952E\u8BCD";
+    }
+    if (entry.ruleKey === "commentOn" || entry.ruleKey === "commentOnCanonical") {
+      return "\u8BC4\u8BBA\u5173\u952E\u8BCD";
+    }
+    if (entry.ruleKey === "title" || entry.ruleKey === "titleCanonical") {
+      return "\u89C6\u9891\u6807\u9898";
+    }
+    if (entry.ruleKey === "liveTitle" || entry.ruleKey === "liveTitleCanonical") {
+      return "\u76F4\u64AD\u6807\u9898";
+    }
+    if (entry.ruleKey === "precise_liveRoomId") {
+      return "\u76F4\u64AD\u95F4";
+    }
+    if (entry.ruleKey === "precise_partition") {
+      return "\u76F4\u64AD\u5206\u533A";
+    }
+    return kindLabel(entry.kind);
+  }
+  function historyEntrySummary(entry) {
+    const typeLabel = historyTypeLabel(entry);
+    if (typeLabel === "UP") {
+      const name = entry.name ? ` / ${entry.name}` : "";
+      return `UP ID\uFF1A${historyUserId(entry)}${name}`;
+    }
+    if (typeLabel === "\u8BC4\u8BBA\u533A\u7528\u6237") {
+      return `\u7528\u6237 ID\uFF1A${historyUserId(entry)} / \u8BC4\u8BBA\uFF1A${shortReadableText(entry.content || entry.summary, 28, "\u65E7\u8BB0\u5F55\u672A\u4FDD\u5B58\u8BC4\u8BBA\u6B63\u6587")}`;
+    }
+    if (typeLabel === "\u76F4\u64ADUP") {
+      const name = entry.name ? ` / ${entry.name}` : "";
+      return `\u76F4\u64AD UP ID\uFF1A${historyUserId(entry)}${name}`;
+    }
+    if (typeLabel === "\u8BC4\u8BBA\u5173\u952E\u8BCD") {
+      return shortReadableText(entry.content || entry.summary, 52, "\u65E7\u8BB0\u5F55\u672A\u4FDD\u5B58\u8BC4\u8BBA\u6B63\u6587");
+    }
+    if (typeLabel === "\u89C6\u9891\u6807\u9898") {
+      return shortText(entry.title || entry.summary, 52);
+    }
+    if (typeLabel === "\u76F4\u64AD\u6807\u9898") {
+      return shortText(entry.liveTitle || entry.summary, 52);
+    }
+    return shortText(entry.summary, 52);
+  }
+  function historyEntryDetail(entry) {
+    const typeLabel = historyTypeLabel(entry);
+    const parts2 = [];
+    if (typeLabel === "UP" || typeLabel === "\u8BC4\u8BBA\u533A\u7528\u6237" || typeLabel === "\u76F4\u64ADUP") {
+      if (entry.name) {
+        parts2.push(`\u7528\u6237\u540D\uFF1A${entry.name}`);
+      }
+    } else if (entry.detail) {
+      parts2.push(entry.detail);
+    }
+    if (entry.bv) {
+      parts2.push(`BV\uFF1A${entry.bv}`);
+    }
+    if (entry.roomId) {
+      parts2.push(`\u76F4\u64AD\u95F4\uFF1A${entry.roomId}`);
+    }
+    parts2.push(`\u547D\u4E2D\uFF1A${entry.matching}`);
+    return parts2.join(" / ");
+  }
+  function appendText(parent, tagName, className, text3) {
+    const el3 = document.createElement(tagName);
+    el3.className = className;
+    el3.textContent = text3;
+    parent.appendChild(el3);
+    return el3;
+  }
+  function renderHistoryPanel(panel, rescan) {
+    panel.textContent = "";
+    panel.setAttribute("data-bili-blocker-ui", "true");
+    const header = document.createElement("div");
+    header.className = "bili-blocker-history-header";
+    appendText(header, "div", "", "\u5C4F\u853D\u5386\u53F2");
+    const headerActions = document.createElement("div");
+    headerActions.className = "bili-blocker-history-actions";
+    const refreshButton = document.createElement("button");
+    refreshButton.type = "button";
+    refreshButton.textContent = "\u5237\u65B0";
+    refreshButton.addEventListener("click", () => {
+      renderHistoryPanel(panel, rescan);
+      sound("click");
+    });
+    headerActions.appendChild(refreshButton);
+    const clearButton = document.createElement("button");
+    clearButton.type = "button";
+    clearButton.textContent = "\u6E05\u7A7A";
+    clearButton.addEventListener("click", () => {
+      const changed = readBlockHistory().length > 0;
+      writeBlockHistory([]);
+      renderHistoryPanel(panel, rescan);
+      sound(changed ? "delete" : "click");
+    });
+    headerActions.appendChild(clearButton);
+    header.appendChild(headerActions);
+    panel.appendChild(header);
+    const body2 = document.createElement("div");
+    body2.className = "bili-blocker-history-body";
+    const history2 = readBlockHistory();
+    if (history2.length === 0) {
+      appendText(body2, "div", "bili-blocker-history-empty", "\u8FD8\u6CA1\u6709\u5C4F\u853D\u8BB0\u5F55");
+      panel.appendChild(body2);
+      return;
+    }
+    for (const entry of history2) {
+      const item = document.createElement("div");
+      item.className = "bili-blocker-history-item";
+      appendText(item, "div", "bili-blocker-history-type-badge", historyTypeLabel(entry));
+      const meta = document.createElement("div");
+      meta.className = "bili-blocker-history-meta";
+      appendText(meta, "span", "", `${kindLabel(entry.kind)} \xB7 ${entry.type}`);
+      appendText(meta, "span", "", formatHistoryTime(entry.timestamp));
+      item.appendChild(meta);
+      appendText(item, "div", "bili-blocker-history-summary", historyEntrySummary(entry));
+      appendText(item, "div", "bili-blocker-history-detail", historyEntryDetail(entry));
+      const footer = document.createElement("div");
+      footer.className = "bili-blocker-history-footer";
+      const unblockButton = document.createElement("button");
+      unblockButton.type = "button";
+      const removableRules = entryRuleReferences(entry);
+      if (removableRules.length > 0) {
+        unblockButton.textContent = "\u89E3\u9664";
+        unblockButton.addEventListener("click", () => {
+          const feedback = soundTask(void 0, () => panel.isConnected && !panel.hidden);
+          const results = removableRules.map((rule) => removeRuleItem(rule.key, rule.value));
+          const failures2 = results.filter((result) => !result.status && result.res !== "\u89C4\u5219\u4E0D\u5B58\u5728");
+          if (failures2.length === 0) {
+            removeHistoryByRules(removableRules);
+            showInfoLog(`\u5DF2\u89E3\u9664\u5C4F\u853D\uFF1A${historyEntrySummary(entry)}`, "success");
+            rescan();
+            renderHistoryPanel(panel, rescan);
+            feedback.finish(results.some((result) => result.status) ? "success" : "click");
+            return;
+          }
+          void atelierAlert(String(failures2[0].res));
+          feedback.finish("error");
+        });
+      } else {
+        unblockButton.textContent = "\u4E0D\u53EF\u89E3\u9664";
+        unblockButton.disabled = true;
+      }
+      footer.appendChild(unblockButton);
+      item.appendChild(footer);
+      body2.appendChild(item);
+    }
+    panel.appendChild(body2);
+  }
+
+  // src/modules/blocker/page-context.ts
+  function currentLocation() {
+    return typeof location !== "undefined" ? location : null;
+  }
+  function isHomePageLocation(value2 = currentLocation()) {
+    return value2?.hostname === "www.bilibili.com" && /^\/?$/.test(value2.pathname || "");
+  }
+  function isSpacePageLocation(value2 = currentLocation()) {
+    return value2?.hostname === "space.bilibili.com" && /^\/\d+/.test(value2.pathname || "");
+  }
+  function parseUid(value2) {
+    const match = value2?.match(/space\.bilibili\.com\/(\d+)|data-user-id=["']?(\d+)|data-usercard-mid=["']?(\d+)|^(\d+)$/i);
+    const raw = match?.[1] || match?.[2] || match?.[3] || match?.[4];
+    if (!raw) {
+      return void 0;
+    }
+    const uid = Number.parseInt(raw, 10);
+    return Number.isFinite(uid) ? uid : void 0;
+  }
+  function parseSpaceProfileUid(pathname = currentLocation()?.pathname) {
+    return parseUid(pathname?.match(/^\/(\d+)/)?.[1]);
+  }
+
+  // src/modules/blocker/actions.ts
+  var actionClass = "bili-blocker-action";
+  var inlineActionClass = "bili-blocker-inline-action";
+  var homeVideoActionClass = "bili-blocker-home-video-action";
+  var homeLiveActionClass = "bili-blocker-home-live-action";
+  var profileActionClass = "bili-blocker-profile-action";
+  var spaceProfileActionClass = "bili-blocker-space-profile-action";
+  var actionsCss = `.${actionClass}{position:absolute;top:4px;right:4px;z-index:20}
+.${inlineActionClass},.${homeVideoActionClass},.${homeLiveActionClass},.${profileActionClass},.${spaceProfileActionClass}{margin-left:8px;vertical-align:middle}
+.${homeVideoActionClass},.${homeLiveActionClass}{float:right;flex:0 0 auto;margin-left:auto}`;
+  function styleCompactButton(button5) {
+    button5.style.marginLeft = "8px";
+    styleAtelierAction(button5);
+  }
+  function actionButton(className, title = "") {
+    const button5 = document.createElement("button");
+    button5.type = "button";
+    button5.className = className;
+    button5.textContent = "\u5C4F\u853D";
+    if (title) button5.title = title;
+    return button5;
+  }
+  function twoClicks(button5, act, paint2 = (confirming) => {
+    button5.textContent = confirming ? "\u786E\u8BA4\uFF1F" : "\u5C4F\u853D";
+  }) {
+    let timer2;
+    button5.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (timer2 !== void 0) window.clearTimeout(timer2);
+      if (button5.dataset.confirmBlock !== "true") {
+        button5.dataset.confirmBlock = "true";
+        paint2(true);
+        sound("select");
+        timer2 = window.setTimeout(() => {
+          if (button5.dataset.confirmBlock === "true") {
+            button5.dataset.confirmBlock = "";
+            paint2(false);
+          }
+        }, 2500);
+        return;
+      }
+      button5.dataset.confirmBlock = "";
+      act();
+      if (!button5.disabled) paint2(false);
+    });
+  }
+  function applyManualBlockChoices(item, rescan, choices, type = "\u624B\u52A8\u5C4F\u853D", options = {}) {
+    const feedback = options.feedback ?? soundTask();
+    const hideCurrent = options.hideCurrent !== false;
+    const linkedRules = [];
+    let firstError = "";
+    let added = 0;
+    let primaryChoice;
+    for (const choice of choices) {
+      const result = addRuleItem(choice.key, choice.value);
+      if (result.status) added++;
+      if (result.status || result.res === "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9") {
+        const value2 = result.status && "value" in result ? result.value : choice.value;
+        const rule = { key: choice.key, value: value2 };
+        linkedRules.push(rule);
+        primaryChoice ||= rule;
+        continue;
+      }
+      firstError ||= String(result.res);
+    }
+    if (linkedRules.length > 0 && primaryChoice) {
+      const manualDecision = {
+        type,
+        matching: primaryChoice.value,
+        ruleKey: primaryChoice.key,
+        ruleValue: primaryChoice.value,
+        linkedRules
+      };
+      if (hideCurrent) {
+        hideElement(item, manualDecision);
+      } else {
+        recordBlockHistory(item, manualDecision);
+      }
+      showInfoLog(`${type}\uFF1A${shortReadableText(summarizeBlockedItem(item), 36)}`, "success");
+      rescan();
+      if (hideCurrent) {
+        hideElement(item, manualDecision);
+      }
+      feedback.finish(added > 0 ? "success" : "click");
+      return true;
+    }
+    void atelierAlert(firstError || "\u5F53\u524D\u5143\u7D20\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u5C4F\u853D\u5B57\u6BB5");
+    feedback.finish("error");
+    return false;
+  }
+  function alertManualFailure(message) {
+    const feedback = soundTask();
+    void atelierAlert(message);
+    feedback.finish("error");
+  }
+  function blockWith(item, rescan, choices, type, missing, options = {}) {
+    if (choices.length === 0) {
+      alertManualFailure(missing);
+      return false;
+    }
+    return applyManualBlockChoices(item, rescan, choices, type, options);
+  }
+  async function handleManualBlock(item, rescan) {
+    const choices = getManualChoices(item);
+    if (choices.length === 0) {
+      alertManualFailure("\u5F53\u524D\u5143\u7D20\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u5C4F\u853D\u5B57\u6BB5");
+      return;
+    }
+    const feedback = soundTask();
+    const selected = await atelierDialog({ title: "\u9009\u62E9\u5C4F\u853D\u65B9\u5F0F", message: "\u9009\u62E9\u8981\u5C4F\u853D\u7684\u5B57\u6BB5", choices: choices.map((choice2, index) => ({ value: String(index), label: choice2.label })) });
+    const choice = selected === null ? void 0 : choices[Number(selected)];
+    if (!choice) {
+      feedback.finish("cancel");
+      return;
+    }
+    applyManualBlockChoices(item, rescan, [choice], "\u624B\u52A8\u5C4F\u853D", { feedback });
+  }
+  function commentUserButton(item, rescan, className, options = {}) {
+    const button5 = actionButton(className);
+    twoClicks(button5, () => blockWith(item, rescan, getUserBlockChoices(item), "\u624B\u52A8\u5C4F\u853D\u8BC4\u8BBA\u533A\u7528\u6237", "\u5F53\u524D\u8BC4\u8BBA\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u7528\u6237\u5B57\u6BB5", options));
+    styleAtelierAction(button5);
+    return button5;
+  }
+  function createCommentUserBlockButton(item, rescan, className) {
+    return commentUserButton(item, rescan, className, { hideCurrent: false });
+  }
+  var insertAfterLinkOrAppend = (target, button5) => {
+    if (target.tagName === "A") target.insertAdjacentElement("afterend", button5);
+    else target.appendChild(button5);
+  };
+  var firstIn = (item, selector) => (item.el.shadowRoot || item.el).querySelector(selector);
+  var homeVideoCards = ".bili-feed-card,.feed-card,.bili-video-card,.recommend-card,.floor-single-card,.video-card,.video-list-item";
+  var homeLiveCards = ".bili-live-card,.live-card,.room-card,.bili-feed-card,.feed-card,.bili-video-card,.recommend-card,.floor-single-card,.video-list-item,.index_item_JSGkw";
+  var placements = [
+    {
+      // 首页 video cards: the UP, after two clicks, beside the owner line.
+      applies: (item) => item.kind === "video" && !item.collection && isHomePageLocation() && !!item.el.closest(homeVideoCards) && (item.uid !== void 0 || !!item.name),
+      create: (item, rescan) => {
+        const button5 = actionButton(homeVideoActionClass, item.uid !== void 0 ? `\u5C4F\u853D UP ${item.uid}` : `\u5C4F\u853D UP ${item.name || ""}`);
+        twoClicks(button5, () => blockWith(item, rescan, getUserBlockChoices(item), "\u624B\u52A8\u5C4F\u853DUP", "\u5F53\u524D\u89C6\u9891\u5361\u7247\u6CA1\u6709\u53EF\u63D0\u53D6\u7684 UP \u5B57\u6BB5"));
+        styleAtelierAction(button5);
+        return button5;
+      },
+      place: (item, button5) => insertAfterLinkOrAppend(firstIn(item, ".bili-video-card__info--bottom,.bili-video-card__info--owner,.video-card-info,.info,.meta") || item.insertionEl || item.el, button5)
+    },
+    {
+      // 首页 and space live cards: the streamer, or the room when no streamer is named.
+      applies: (item) => item.kind === "live" && (isHomePageLocation() || isSpacePageLocation()) && !!item.el.closest(homeLiveCards) && (item.uid !== void 0 || !!item.name || !!item.roomId),
+      create: (item, rescan) => {
+        const button5 = actionButton(homeLiveActionClass, item.uid !== void 0 ? `\u5C4F\u853D\u76F4\u64AD\u4E3B\u64AD ${item.uid}` : item.name ? `\u5C4F\u853D\u76F4\u64AD\u4E3B\u64AD ${item.name}` : `\u5C4F\u853D\u76F4\u64AD\u95F4 ${item.roomId || ""}`);
+        twoClicks(button5, () => blockWith(item, rescan, getLiveOwnerBlockChoices(item), "\u624B\u52A8\u5C4F\u853D\u76F4\u64ADUP", "\u5F53\u524D\u76F4\u64AD\u5361\u7247\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u4E3B\u64AD\u6216\u76F4\u64AD\u95F4\u5B57\u6BB5"));
+        styleAtelierAction(button5);
+        return button5;
+      },
+      place: (item, button5) => insertAfterLinkOrAppend(firstIn(item, ".bili-live-card__info--bottom,.bili-live-card__info,.bili-video-card__info--bottom,.bili-video-card__info--owner,.live-card__info,.room-card-info,.video-card-info,.info,.meta") || item.insertionEl || item.el, button5)
+    },
+    {
+      // Comments: the commenter, beside their name.
+      applies: (item) => item.kind === "comment",
+      create: (item, rescan) => commentUserButton(item, rescan, inlineActionClass),
+      place: (item, button5) => {
+        const target = (item.insertionEl !== item.el ? item.insertionEl : null) || firstIn(item, "#user-name,.user-name,.sub-user-name,.name,.user,.reply-info,.info") || item.el;
+        if (target.tagName === "A" || target.matches("#user-name,.user-name,.sub-user-name,.name")) target.insertAdjacentElement("afterend", button5);
+        else target.appendChild(button5);
+        styleCompactButton(button5);
+      }
+    },
+    {
+      // Anything else but videos and live cards: a corner button that asks which field.
+      applies: (item) => item.kind !== "video" && item.kind !== "live",
+      create: (item, rescan) => {
+        const button5 = actionButton(actionClass);
+        button5.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          void handleManualBlock(item, rescan);
+        });
+        styleAtelierAction(button5);
+        return button5;
+      },
+      place: (item, button5) => {
+        if (window.getComputedStyle(item.el).position === "static") item.el.style.position = "relative";
+        item.el.appendChild(button5);
+      }
+    }
+  ];
+  function hasManualActionButton(item) {
+    const selector = `.${actionClass},.${inlineActionClass},.${homeVideoActionClass},.${homeLiveActionClass}`;
+    const insertionParent = item.insertionEl !== item.el ? item.insertionEl.parentElement : null;
+    return Boolean(
+      item.el.querySelector(selector) || item.el.shadowRoot?.querySelector(selector) || insertionParent?.querySelector(selector)
+    );
+  }
+  function ensureActionButton(item, rescan) {
+    if (isHiddenElement(item.el) || hasManualActionButton(item)) return;
+    const placement = placements.find((candidate) => candidate.applies(item));
+    if (!placement) return;
+    placement.place(item, placement.create(item, rescan));
+  }
+  function findSpaceProfileNameTarget() {
+    for (const selector of [
+      "#h-name",
+      ".h-name",
+      ".n-name",
+      ".space-header .name",
+      ".h-basic .name",
+      ".user-info .name",
+      ".username",
+      ".nickname"
+    ]) {
+      const target = document.querySelector(selector);
+      if (target && !target.closest("[data-bili-blocker-ui]") && target.textContent?.trim()) {
+        return target;
+      }
+    }
+    return null;
+  }
+  function readSpaceProfileUser() {
+    if (!isSpacePageLocation()) {
+      return null;
+    }
+    const target = findSpaceProfileNameTarget();
+    if (!target) {
+      return null;
+    }
+    const uid = parseSpaceProfileUid();
+    const name = target.textContent?.replace(/\s+/g, " ").trim() || void 0;
+    if (uid === void 0 && !name) {
+      return null;
+    }
+    return { uid, name, target };
+  }
+  function handleOwnerBlock(user, target, rescan) {
+    const item = {
+      kind: "video",
+      el: target,
+      insertionEl: target,
+      uid: user.uid,
+      name: user.name,
+      title: "UP \u4E2A\u4EBA\u4E3B\u9875"
+    };
+    return blockWith(item, rescan, getUserBlockChoices(user), "\u624B\u52A8\u5C4F\u853DUP", "\u5F53\u524D\u4E2A\u4EBA\u4E3B\u9875\u6CA1\u6709\u53EF\u63D0\u53D6\u7684 UP \u5B57\u6BB5", { hideCurrent: false });
+  }
+  var userKey = (user) => `${user.uid ?? ""}|${user.name ?? ""}`;
+  function ownerBlockedRules(user) {
+    const rules = readRuleSnapshot();
+    const blockedRules = [];
+    if (user.uid !== void 0) {
+      const uidMatch = exactMatch(rules.precise_uid, user.uid);
+      if (uidMatch) {
+        blockedRules.push({ key: "precise_uid", value: uidMatch.matching });
+      }
+    }
+    if (user.name) {
+      const nameMatch = exactMatch(rules.precise_name, user.name);
+      if (nameMatch) {
+        blockedRules.push({ key: "precise_name", value: nameMatch.matching });
+      }
+    }
+    return blockedRules;
+  }
+  function paintOwnerToggle(button5, user) {
+    const blocked = ownerBlockedRules(user).length > 0;
+    const label = user.uid !== void 0 ? `UP ${user.uid}` : `UP ${user.name || ""}`;
+    button5.dataset.userKey = userKey(user);
+    button5.dataset.blocked = blocked ? "true" : "";
+    const confirming = button5.dataset.confirmBlock === "true";
+    const labelText = confirming ? "\u786E\u8BA4\uFF1F" : blocked ? "\u5DF2\u5C4F\u853D" : "\u5C4F\u853D";
+    if (button5.textContent !== labelText) button5.textContent = labelText;
+    button5.title = confirming ? `\u518D\u70B9\u4E00\u6B21${blocked ? "\u89E3\u9664\u5C4F\u853D" : "\u5C4F\u853D"} ${label}` : blocked ? `\u89E3\u9664\u5C4F\u853D ${label}` : `\u5C4F\u853D ${label}`;
+    button5.disabled = false;
+  }
+  function handleOwnerUnblock(user, rescan) {
+    const blockedRules = ownerBlockedRules(user);
+    if (blockedRules.length === 0) {
+      return false;
+    }
+    const failures2 = blockedRules.map((rule) => removeRuleItem(rule.key, rule.value)).filter((result) => !result.status);
+    if (failures2.length > 0) {
+      alertManualFailure(String(failures2[0].res));
+      return false;
+    }
+    removeHistoryByRules(blockedRules);
+    notifyBlockHistoryChanged();
+    showInfoLog(`\u5DF2\u89E3\u9664\u5C4F\u853D\uFF1A${user.name || user.uid || "\u5F53\u524DUP"}`, "success");
+    rescan();
+    sound("success");
+    return true;
+  }
+  function createOwnerBlockToggle(user, target, rescan, className) {
+    const button5 = document.createElement("button");
+    button5.type = "button";
+    button5.className = className;
+    const paint2 = () => paintOwnerToggle(button5, user);
+    paint2();
+    twoClicks(button5, () => {
+      if (button5.dataset.blocked === "true") handleOwnerUnblock(user, rescan);
+      else handleOwnerBlock(user, target(), rescan);
+    }, paint2);
+    const follow = () => {
+      if (!button5.isConnected) {
+        document.removeEventListener(historyChangedEvent, follow);
+        window.removeEventListener("atelier-sync-applied", follow);
+        return;
+      }
+      if (button5.dataset.confirmBlock !== "true") paint2();
+    };
+    document.addEventListener(historyChangedEvent, follow);
+    window.addEventListener("atelier-sync-applied", follow);
+    styleAtelierAction(button5);
+    return button5;
+  }
+  function ensureSpaceProfileBlockButton(rescan) {
+    const profileUser = readSpaceProfileUser();
+    if (!profileUser) {
+      return;
+    }
+    const { target } = profileUser;
+    const existingButton = target.parentElement?.querySelector(`.${spaceProfileActionClass}`) || target.querySelector(`.${spaceProfileActionClass}`);
+    if (existingButton?.dataset.userKey === userKey(profileUser)) {
+      paintOwnerToggle(existingButton, profileUser);
+      return;
+    }
+    existingButton?.remove();
+    const button5 = createOwnerBlockToggle(profileUser, () => target, rescan, spaceProfileActionClass);
+    styleCompactButton(button5);
+    target.insertAdjacentElement("afterend", button5);
+  }
+  function extractProfileUser(container) {
+    const profileData = container.__data?.card;
+    const profileUid = Number.parseInt(String(profileData?.mid ?? ""), 10);
+    const profileName = String(profileData?.name ?? "").trim();
+    if (Number.isFinite(profileUid) || profileName) {
+      return { uid: Number.isFinite(profileUid) ? profileUid : void 0, name: profileName || void 0 };
+    }
+    const vueUserData = container.querySelector(".user-card-m-exp.card-loaded")?.__vue__?.userData;
+    const vueUid = Number.parseInt(String(vueUserData?.mid ?? ""), 10);
+    const vueName = String(vueUserData?.name ?? "").trim();
+    if (Number.isFinite(vueUid) || vueName) {
+      return { uid: Number.isFinite(vueUid) ? vueUid : void 0, name: vueName || void 0 };
+    }
+    const searchRoot = container.shadowRoot || container;
+    const link3 = searchRoot.querySelector('a[href*="space.bilibili.com/"]');
+    const uid = parseUid(link3?.href) ?? parseUid(container.outerHTML.slice(0, 700));
+    const name = link3?.textContent?.trim() || searchRoot.querySelector(".name,.nickname,.username,.user-name")?.textContent?.trim();
+    return { uid, name: name || void 0 };
+  }
+  function ensureProfileBlockButtons(rescan) {
+    const containers = Array.from(
+      document.querySelectorAll(".usercard-wrap,.up-panel-container,bili-user-profile,.bili-user-profile")
+    );
+    for (const container of containers) {
+      const searchRoot = container.shadowRoot || container;
+      if (container.closest("[data-bili-blocker-ui]")) {
+        continue;
+      }
+      const existing = searchRoot.querySelector(`.${profileActionClass}`);
+      if (existing) {
+        placeVideoUpAction(searchRoot, existing, "block");
+        continue;
+      }
+      const user = extractProfileUser(container);
+      if (user.uid === void 0 && !user.name) {
+        continue;
+      }
+      const target = searchRoot.querySelector("#action") || searchRoot.querySelector(".user,.name,.nickname,.username,.user-name") || searchRoot.querySelector('a[href*="space.bilibili.com/"]') || container;
+      const button5 = actionButton(profileActionClass, user.uid !== void 0 ? `\u5C4F\u853D UID ${user.uid}` : `\u5C4F\u853D\u7528\u6237 ${user.name}`);
+      styleCompactButton(button5);
+      button5.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const feedback = soundTask();
+        const result = user.uid !== void 0 ? addRuleItem("precise_uid", user.uid) : addRuleItem("precise_name", user.name);
+        void atelierAlert(String(result.res));
+        feedback.finish(result.status ? "success" : result.res === "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" ? "click" : "error");
+        if (result.status) {
+          rescan();
+        }
+      });
+      if (placeVideoUpAction(searchRoot, button5, "block")) continue;
+      insertAfterLinkOrAppend(target, button5);
+    }
+  }
+  function createUpBlockButton(user, rescan) {
+    const button5 = createOwnerBlockToggle(user, () => button5, rescan, "vl-up-block");
+    return button5;
+  }
+
+  // src/modules/blocker/hidden-count.ts
+  function localHiddenNote(hidden) {
+    return hidden > 0 && readUiPreferences().hiddenCount && !isShowingBlocked() ? ` \xB7 \u672C\u5730\u9690\u85CF ${hidden}` : "";
+  }
+  function onLocalHiddenNoteChange(paint2, signal) {
+    window.addEventListener(appearanceChanged, paint2, { signal });
+    window.addEventListener(blockedVisibilityChangedEvent, paint2, { signal });
+  }
+  var commentTags = /* @__PURE__ */ new Set(["BILI-COMMENT-THREAD-RENDERER", "BILI-COMMENT-REPLY-RENDERER"]);
+  var composedParent = (node4) => node4.parentNode instanceof ShadowRoot ? node4.parentNode.host : node4.parentNode;
+  function hiddenComments(area) {
+    let hidden = 0;
+    for (const element2 of concealedElements()) {
+      if (!element2.isConnected || !commentTags.has(element2.tagName)) continue;
+      let inside = false, underHidden = false;
+      for (let node4 = composedParent(element2); node4; node4 = composedParent(node4)) {
+        if (node4 === area) {
+          inside = true;
+          break;
+        }
+        if (node4 instanceof HTMLElement && commentTags.has(node4.tagName) && isHiddenElement(node4)) underHidden = true;
+      }
+      if (inside && !underHidden) hidden++;
+    }
+    return hidden;
+  }
+  function paintNativeHiddenNotes() {
+    for (const area of document.querySelectorAll("bili-comments")) {
+      const header = area.shadowRoot?.querySelector("bili-comments-header-renderer");
+      const count2 = header?.shadowRoot?.querySelector("#title > #count");
+      if (!count2) continue;
+      const note2 = localHiddenNote(hiddenComments(area));
+      let label = count2.querySelector(":scope > .atelier-hidden-note");
+      if (!note2) {
+        label?.remove();
+        continue;
+      }
+      if (!label) {
+        label = document.createElement("span");
+        label.className = "atelier-hidden-note";
+        label.setAttribute("data-bili-blocker-ui", "");
+        label.style.cssText = "margin-left:4px;color:var(--text4,#c9ccd0);font-weight:normal;white-space:nowrap";
+        count2.append(label);
+      }
+      if (label.textContent !== note2) label.textContent = note2;
+    }
+  }
+
+  // src/modules/blocker/comment-watch.ts
+  var commentExpandFastScanInstalled = false;
+  var commentFastScanContainerSelectors = [
+    "bili-comments",
+    "#commentapp",
+    ".comment-container",
+    ".comment-list",
+    ".reply-list"
+  ];
+  var commentFastScanItemSelectors = [
+    "bili-comment-thread-renderer",
+    "bili-comment-reply-renderer",
+    ".reply-item",
+    ".sub-reply-item",
+    ".comment-item",
+    ".list-item"
+  ];
+  var commentFastScanRootSelectors = [...commentFastScanContainerSelectors, ...commentFastScanItemSelectors];
+  var commentExpandTextPattern = /展开|点击查看|更多回复|查看(?:全部)?回复|加载更多|共\s*\d+\s*条?回复|还有\s*\d+/;
+  function isEditableTarget(target) {
+    if (!(target instanceof HTMLElement)) {
+      return false;
+    }
+    const tagName = target.tagName;
+    return tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT" || target.isContentEditable || target.closest("[contenteditable=true]") !== null;
+  }
+  function eventPathElements(event) {
+    const path = typeof event.composedPath === "function" ? event.composedPath() : [];
+    const fallback2 = event.target ? [event.target] : [];
+    return (path.length > 0 ? path : fallback2).filter((node4) => node4 instanceof Element);
+  }
+  function hasCommentContext(elements) {
+    const selector = commentFastScanRootSelectors.join(",");
+    return elements.some((element2) => Boolean(element2.closest(selector)));
+  }
+  var compactText2 = (value2) => value2.replace(/\s+/g, " ").trim();
+  function isCommentExpandClick(event) {
+    if (isEditableTarget(event.target)) {
+      return false;
+    }
+    const elements = eventPathElements(event);
+    if (elements.some((element2) => Boolean(element2.closest("[data-bili-blocker-ui]")))) {
+      return false;
+    }
+    if (!hasCommentContext(elements)) {
+      return false;
+    }
+    return elements.some((element2) => {
+      const textValue = compactText2([
+        element2.textContent,
+        element2.getAttribute("aria-label"),
+        element2.getAttribute("title")
+      ].filter(Boolean).join(" "));
+      return commentExpandTextPattern.test(textValue);
+    });
+  }
+  function findCommentFastScanRoot(event) {
+    const elements = eventPathElements(event);
+    const containerSelector = commentFastScanContainerSelectors.join(",");
+    for (const element2 of elements) {
+      const root2 = element2.closest(containerSelector);
+      if (root2) {
+        return root2;
+      }
+    }
+    const itemSelector = commentFastScanItemSelectors.join(",");
+    for (const element2 of elements) {
+      const root2 = element2.closest(itemSelector);
+      if (root2) {
+        return root2;
+      }
+    }
+    return document;
+  }
+  function scheduleCommentFastScans(scanComments, root2) {
+    const run = () => scanComments(root2);
+    if (typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(run);
+    } else {
+      window.setTimeout(run, 0);
+    }
+    for (const delayMs of [80, 180, 420, 900, 1600]) {
+      window.setTimeout(run, delayMs);
+    }
+  }
+  function commentMutationRoots(records2) {
+    const roots2 = /* @__PURE__ */ new Set();
+    const itemSelector = commentFastScanItemSelectors.join(",");
+    const isOwnUi = (node4) => node4 instanceof Element && Boolean(node4.closest(".atelier-control,[data-bili-blocker-ui]"));
+    for (const record of records2) {
+      const target = record.target instanceof Element ? record.target : record.target.parentElement;
+      if (target && isOwnUi(target)) continue;
+      const changed = [...record.addedNodes, ...record.removedNodes];
+      if (changed.length && changed.every(isOwnUi)) continue;
+      let node4 = record.target;
+      let owner = null;
+      while (node4) {
+        if (node4 instanceof HTMLElement) owner = node4.closest(itemSelector);
+        if (owner) break;
+        node4 = node4 instanceof ShadowRoot ? node4.host : node4.parentNode;
+      }
+      if (owner?.isConnected) roots2.add(owner);
+      else for (const added of record.addedNodes) {
+        if (added instanceof HTMLElement && added.isConnected && !isOwnUi(added)) roots2.add(added);
+      }
+    }
+    return roots2;
+  }
+  function installCommentExpandFastScan(scanComments) {
+    if (commentExpandFastScanInstalled) {
+      return;
+    }
+    commentExpandFastScanInstalled = true;
+    document.addEventListener("click", (event) => {
+      if (!(event instanceof MouseEvent) || !isCommentExpandClick(event)) {
+        return;
+      }
+      scheduleCommentFastScans(scanComments, findCommentFastScanRoot(event));
+    }, true);
+  }
+
+  // src/modules/blocker/extract.ts
+  var videoCardSelectors = [
+    ".bili-video-card",
+    ".bili-feed-card",
+    ".feed-card",
+    ".video-card",
+    ".video-page-card-small",
+    ".video-page-operator-card-small",
+    ".small-item",
+    ".history-record",
+    ".rank-item",
+    ".rank-list>li",
+    ".video-list-item",
+    ".card-box",
+    "li",
+    "div"
+  ];
+  var commentSelectors = [
+    "bili-comment-thread-renderer",
+    "bili-comment-reply-renderer",
+    ".reply-item",
+    ".sub-reply-item",
+    ".list-item",
+    ".comment-item"
+  ];
+  var liveCardSelectors = [
+    ".bili-live-card",
+    ".live-card",
+    ".room-card",
+    ".bili-feed-card",
+    ".feed-card",
+    ".bili-video-card",
+    ".recommend-card",
+    ".floor-single-card",
+    ".video-list-item",
+    ".index_item_JSGkw",
+    "li",
+    "div"
+  ];
+  var ignoredTextTags = /* @__PURE__ */ new Set(["STYLE", "SCRIPT", "TEMPLATE", "NOSCRIPT"]);
+  function normalizeVisibleText(value2) {
+    return value2.replace(/\s+/g, " ").trim();
+  }
+  function readVisibleText(node4) {
+    if (!node4) {
+      return "";
+    }
+    if (node4.nodeType === 3) {
+      return node4.textContent || "";
+    }
+    const tagName = String(node4.tagName || node4.localName || "").toUpperCase();
+    if (ignoredTextTags.has(tagName) || node4.getAttribute?.("data-bili-blocker-ui") === "true") {
+      return "";
+    }
+    if (tagName === "BR") {
+      return "\n";
+    }
+    if (tagName === "IMG") {
+      return node4.getAttribute?.("alt") || node4.getAttribute?.("title") || "";
+    }
+    const childNodes = node4.childNodes && node4.childNodes.length > 0 ? node4.childNodes : node4.children;
+    const parts2 = Array.from(childNodes || []).map(readVisibleText);
+    if (parts2.length === 0 && typeof node4.localText === "string") {
+      parts2.push(node4.localText);
+    }
+    if (node4.shadowRoot) {
+      parts2.push(readVisibleText(node4.shadowRoot));
+    }
+    return parts2.filter(Boolean).join(" ");
+  }
+  function text(el3) {
+    return normalizeVisibleText(readVisibleText(el3));
+  }
+  function attr(el3, name) {
+    return el3?.getAttribute(name)?.trim() || "";
+  }
+  function first(root2, selectors) {
+    for (const selector of selectors) {
+      const found = root2.querySelector(selector);
+      if (found) {
+        return found;
+      }
+    }
+    return null;
+  }
+  function queryAllDeep(root2, selector) {
+    const results = [];
+    const visit = (node4) => {
+      if (typeof Element !== "undefined" && node4 instanceof Element && node4.matches(selector)) {
+        results.push(node4);
+      }
+      if (typeof Element !== "undefined" && node4 instanceof Element && node4.shadowRoot) {
+        visit(node4.shadowRoot);
+      }
+      results.push(...Array.from(node4.querySelectorAll(selector)));
+      for (const el3 of Array.from(node4.querySelectorAll("*"))) {
+        if (el3.shadowRoot) {
+          visit(el3.shadowRoot);
+        }
+      }
+    };
+    visit(root2);
+    return results;
+  }
+  function queryOneDeep(root2, selectors) {
+    for (const selector of selectors) {
+      const local = root2.querySelector(selector);
+      if (local) {
+        return local;
+      }
+    }
+    for (const el3 of Array.from(root2.querySelectorAll("*"))) {
+      const shadowRoot = el3.shadowRoot;
+      if (!shadowRoot) {
+        continue;
+      }
+      const nested = queryOneDeep(shadowRoot, selectors);
+      if (nested) {
+        return nested;
+      }
+    }
+    return null;
+  }
+  function parseBv(url) {
+    return url?.match(/\/video\/(BV[^/?#]+)/i)?.[1] || null;
+  }
+  function parseRoomId(url) {
+    return url?.match(/live\.bilibili\.com\/(?:blanc\/)?(\d+)/i)?.[1] || void 0;
+  }
+  function getSpaceOwner(root2) {
+    if (!isSpacePageLocation()) {
+      return { uid: void 0, name: void 0 };
+    }
+    const uid = parseSpaceProfileUid();
+    const name = text(first(root2, [
+      "#h-name",
+      ".h-name",
+      ".n-name",
+      ".space-header .name",
+      ".user-info .name",
+      ".user-name",
+      ".nickname"
+    ])) || void 0;
+    return { uid, name };
+  }
+  function fillOwnerFromSpacePage(owner, root2) {
+    if (owner.uid !== void 0 || owner.name) {
+      return owner;
+    }
+    return getSpaceOwner(root2);
+  }
+  function closestAny(el3, selectors) {
+    for (const selector of selectors) {
+      const found = el3.closest(selector);
+      if (found instanceof HTMLElement) {
+        return found;
+      }
+    }
+    return el3 instanceof HTMLElement ? el3 : null;
+  }
+  function getOwner(root2) {
+    const ownerLink = first(root2, [
+      'a[href*="//space.bilibili.com/"]',
+      'a[href*="space.bilibili.com/"]',
+      ".bili-video-card__info--owner",
+      ".bili-live-card__info--uname",
+      ".bili-live-card__info--owner",
+      ".live-card__info--uname",
+      ".upname a",
+      ".channel-name",
+      ".anchor-name",
+      ".room-anchor",
+      ".up-name"
+    ]);
+    const href = attr(ownerLink, "href");
+    const name = text(ownerLink?.querySelector?.(".bili-video-card__info--author")) || text(ownerLink?.querySelector?.(".bili-live-card__info--uname")) || text(ownerLink?.querySelector?.(".name")) || text(ownerLink);
+    const uid = parseUid(href) ?? parseUid(attr(ownerLink, "data-usercard-mid")) ?? parseUid(attr(ownerLink, "data-user-id"));
+    return { uid, name: name || void 0 };
+  }
+  function readCollectionVideoItem(row) {
+    const insertionEl = row.querySelector(".video-pod__item") || row;
+    const titleEl = row.querySelector(".video-episode-card__info-title,.title") || row;
+    const titleCopy = titleEl.cloneNode(true);
+    titleCopy.querySelectorAll(".btnView").forEach((node4) => node4.remove());
+    const title = attr(titleEl, "title") || text(titleCopy);
+    if (!title) return null;
+    const owner = getOwner(row);
+    return {
+      kind: "video",
+      el: row,
+      insertionEl,
+      collection: true,
+      title,
+      bv: parseBv(row.getAttribute("data-key") || row.querySelector('a[href*="/video/BV"]')?.href),
+      uid: owner.uid,
+      name: owner.name
+    };
+  }
+  function collectVideoItems(root2 = document) {
+    const anchors = Array.from(root2.querySelectorAll('a[href*="/video/BV"]'));
+    const seen = /* @__PURE__ */ new Set();
+    const items = [];
+    const collectionSelector = ".pod-item,.video-episode-card,.multip .video-pod__item,.multip.grid .page";
+    for (const row of Array.from(root2.querySelectorAll(collectionSelector))) {
+      if (row.closest("[data-bili-blocker-ui]")) continue;
+      if (row.parentElement?.closest(collectionSelector)) continue;
+      const item = readCollectionVideoItem(row);
+      if (!item) continue;
+      items.push(item);
+      seen.add(row);
+    }
+    for (const anchor of anchors) {
+      if (anchor.closest(collectionSelector)) continue;
+      const card3 = closestAny(anchor, videoCardSelectors);
+      if (!card3 || seen.has(card3)) {
+        continue;
+      }
+      seen.add(card3);
+      const owner = fillOwnerFromSpacePage(getOwner(card3), root2);
+      const title = attr(anchor, "title") || text(first(card3, [".bili-video-card__info--tit", ".title", "h3", ".video-name"])) || text(anchor);
+      const bv = parseBv(anchor.href);
+      const insertionEl = first(card3, [
+        ".bili-video-card__info--bottom",
+        ".bili-video-card__info--owner",
+        ".bili-video-card__info",
+        ".video-card-info",
+        ".info",
+        ".meta",
+        ".playinfo"
+      ]) || card3;
+      items.push({
+        kind: "video",
+        el: card3,
+        insertionEl,
+        title: title || void 0,
+        bv: bv || void 0,
+        uid: owner.uid,
+        name: owner.name
+      });
+    }
+    return items;
+  }
+  function collectCommentItems(root2 = document) {
+    const selector = commentSelectors.join(",");
+    const candidates = queryAllDeep(root2, selector);
+    const seen = /* @__PURE__ */ new Set();
+    const items = [];
+    for (const candidate of candidates) {
+      if (!(candidate instanceof HTMLElement) || seen.has(candidate)) {
+        continue;
+      }
+      seen.add(candidate);
+      const searchRoot = candidate.shadowRoot || candidate;
+      const userLink = queryOneDeep(searchRoot, [
+        '#user-name a[href*="space.bilibili.com/"]',
+        'a[href*="space.bilibili.com/"]',
+        ".user-name",
+        ".sub-user-name",
+        ".name"
+      ]);
+      const contentEl = queryOneDeep(searchRoot, [
+        "#contents",
+        ".reply-content",
+        ".text-con",
+        ".text",
+        "bili-rich-text"
+      ]);
+      const content = text(contentEl);
+      const href = attr(userLink, "href") || attr(userLink, "data-usercard-mid") || attr(userLink, "data-user-id") || candidate.outerHTML.slice(0, 500);
+      const uid = parseUid(href);
+      const name = text(userLink) || void 0;
+      if (!content && uid === void 0 && !name) {
+        continue;
+      }
+      items.push({
+        kind: "comment",
+        el: candidate,
+        insertionEl: userLink || candidate,
+        name,
+        uid,
+        content: content || void 0
+      });
+    }
+    return items;
+  }
+  function collectLiveItems(root2 = document) {
+    const anchors = Array.from(root2.querySelectorAll('a[href*="live.bilibili.com/"]'));
+    const seen = /* @__PURE__ */ new Set();
+    const items = [];
+    for (const anchor of anchors) {
+      const roomId = parseRoomId(anchor.href);
+      if (!roomId) {
+        continue;
+      }
+      const card3 = closestAny(anchor, liveCardSelectors);
+      if (!card3 || seen.has(card3)) {
+        continue;
+      }
+      seen.add(card3);
+      const owner = fillOwnerFromSpacePage(getOwner(card3), root2);
+      const liveTitle = attr(anchor, "title") || text(first(card3, [".room-title", ".bili-live-card__info--tit", "h3", ".title"])) || text(anchor);
+      const partition = text(first(card3, [".area-name", ".video-card-meta__chip", ".partition"]));
+      items.push({
+        kind: "live",
+        el: card3,
+        insertionEl: first(card3, [
+          ".bili-live-card__info--bottom",
+          ".bili-live-card__info",
+          ".bili-video-card__info--bottom",
+          ".bili-video-card__info--owner",
+          ".live-card__info",
+          ".room-card-info",
+          ".video-card-info",
+          ".info",
+          ".meta"
+        ]) || card3,
+        name: owner.name,
+        uid: owner.uid,
+        liveTitle: liveTitle || void 0,
+        roomId,
+        partition: partition || void 0
+      });
+    }
+    return items;
+  }
+
+  // src/ui/navigation.ts
+  var atelierAreas = [
+    { id: "following", label: "\u672C\u5730\u5173\u6CE8" },
+    { id: "viewed", label: "\u5DF2\u770B\u7BA1\u7406" },
+    { id: "video", label: "\u5C4F\u853D\u7BA1\u7406" },
+    { id: "data", label: "\u6570\u636E\u4E0E\u540C\u6B65" },
+    { id: "settings", label: "\u8BBE\u7F6E" }
+  ];
+  var atelierTabs = {
+    following: [],
+    viewed: [],
+    video: [["user", "\u7528\u6237"], ["video", "\u89C6\u9891"], ["comment", "\u8BC4\u8BBA"], ["dynamic", "\u52A8\u6001"], ["live", "\u76F4\u64AD"], ["history", "\u5C4F\u853D\u5386\u53F2"]],
+    data: [["data", "\u5BFC\u5165\u4E0E\u5BFC\u51FA"], ["sync", "PC / Android \u540C\u6B65"]],
+    settings: [["settings", "\u5916\u89C2"], ["sounds", "\u97F3\u6548"]]
+  };
+  function areaFor(section) {
+    for (const area of atelierAreas) if (atelierTabs[area.id].some(([id]) => id === section)) return area.id;
+    return section;
+  }
+  var driver;
+  function registerAtelierNavigation(next) {
+    driver = next;
+  }
+  function openAtelier(section = "following") {
+    driver?.open(section);
+  }
+  function toggleAtelier(section) {
+    driver?.toggle(section);
+  }
+
+  // src/modules/blocker/runtime.ts
+  var historyShortcutInstalled = false;
+  var homeFeedCardSelectors = [
+    ".bili-feed-card",
+    ".feed-card",
+    ".bili-video-card",
+    ".bili-video-card__wrap",
+    ".floor-single-card",
+    ".recommend-card",
+    '[class*="feed-card"]',
+    '[class*="bili-video-card"]'
+  ];
+  function ensureRuntimeStyle() {
+    if (document.getElementById("bili-atelier-blocker-style")) {
+      return;
+    }
+    const style = document.createElement("style");
+    style.id = "bili-atelier-blocker-style";
+    style.textContent = `
+${actionsCss}
+${concealCss}
+`;
+    document.head.appendChild(style);
+  }
+  function decide(item, rules) {
+    if (item.el.closest("[data-bili-blocker-ui]")) {
+      return null;
+    }
+    return decideBlockableItem(item, rules);
+  }
+  function isAdBlockPlaceholderText(value2) {
+    const compactText3 = String(value2 || "").replace(/\s+/g, "");
+    return /该内容被.*(?:AdGuard|AdBlock).*插件屏蔽/i.test(compactText3) || /插件屏蔽.*恢复正常内容展示/.test(compactText3);
+  }
+  function removeHomeAdBlockPlaceholders() {
+    if (!isHomePageLocation()) {
+      return;
+    }
+    const candidates = Array.from(document.querySelectorAll(homeFeedCardSelectors.join(",")));
+    const cards2 = /* @__PURE__ */ new Set();
+    for (const candidate of candidates) {
+      const card3 = candidate.closest(
+        ".bili-feed-card,.feed-card,.bili-video-card,.floor-single-card,.recommend-card"
+      ) || candidate;
+      if (!isAdBlockPlaceholderText(card3.textContent)) {
+        continue;
+      }
+      cards2.add(card3);
+    }
+    for (const card3 of cards2) {
+      hideRawElement(card3, { type: "\u9996\u9875\u5E7F\u544A\u5C4F\u853D\u5360\u4F4D", matching: "AdGuard/AdBlock" });
+    }
+  }
+  function installHistoryShortcut(rescan) {
+    if (historyShortcutInstalled) {
+      return;
+    }
+    historyShortcutInstalled = true;
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "`" && event.code !== "Backquote" || event.ctrlKey || event.altKey || event.metaKey) {
+        return;
+      }
+      if (isEditableTarget(event.target)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      toggleAtelier("history");
+    }, true);
+  }
+  function debounce(callback, waitMs) {
+    let timer2;
+    return () => {
+      if (timer2 !== void 0) {
+        window.clearTimeout(timer2);
+      }
+      timer2 = window.setTimeout(callback, waitMs);
+    };
+  }
+  function observeElementShadowRoot(el3, observer, observed) {
+    const shadowRoot = el3.shadowRoot;
+    if (!shadowRoot || observed.has(shadowRoot)) {
+      return;
+    }
+    observed.add(shadowRoot);
+    ensurePageControls(shadowRoot);
+    observer.observe(shadowRoot, { childList: true, subtree: true });
+    observeOpenShadowRoots(shadowRoot, observer, observed);
+  }
+  function observeOpenShadowRoots(root2, observer, observed) {
+    if (root2 instanceof HTMLElement) {
+      observeElementShadowRoot(root2, observer, observed);
+    }
+    for (const el3 of Array.from(root2.querySelectorAll("*"))) {
+      observeElementShadowRoot(el3, observer, observed);
+    }
+  }
+  function scheduleStartupScans(scan) {
+    for (const delayMs of [250, 750, 1500, 3e3]) {
+      window.setTimeout(scan, delayMs);
+    }
+  }
+  function startBlocker() {
+    let observer = null;
+    const observedShadowRoots = /* @__PURE__ */ new WeakSet();
+    const scanComments = (root2 = document, rules = readRuleSnapshotWithHistoryAliases()) => {
+      if (observer) {
+        observeOpenShadowRoots(root2, observer, observedShadowRoots);
+      }
+      for (const item of collectCommentItems(root2)) {
+        const decision = decideBlockableItem(item, rules);
+        if (decision) {
+          hideElement(item, decision);
+        } else {
+          restoreElement(item);
+          ensureActionButton(item, scan);
+        }
+      }
+      paintNativeHiddenNotes();
+    };
+    const scan = () => {
+      forgetDetached();
+      if (observer) {
+        observeOpenShadowRoots(document, observer, observedShadowRoots);
+      }
+      const rules = readRuleSnapshotWithHistoryAliases();
+      removeHomeAdBlockPlaceholders();
+      const items = [
+        ...collectVideoItems(document),
+        ...collectLiveItems(document)
+      ];
+      for (const item of items) {
+        const decision = decide(item, rules);
+        if (decision) {
+          hideElement(item, decision);
+        } else {
+          restoreElement(item);
+          ensureActionButton(item, scan);
+        }
+      }
+      scanComments(document, rules);
+      ensureProfileBlockButtons(scan);
+      ensureSpaceProfileBlockButton(scan);
+    };
+    const scheduleScan = debounce(scan, 300);
+    window.addEventListener(blockedVisibilityChangedEvent, scan);
+    onLocalHiddenNoteChange(paintNativeHiddenNotes);
+    window.addEventListener("atelier-sync-applied", scheduleScan);
+    const start = () => {
+      ensureRuntimeStyle();
+      if (typeof GM_registerMenuCommand === "function") {
+        GM_registerMenuCommand("Bili Atelier \u5C4F\u853D\u89C4\u5219", () => openAtelier("video"));
+      }
+      installHistoryShortcut(scan);
+      installCommentExpandFastScan(scanComments);
+      observer = new MutationObserver((records2) => {
+        for (const root2 of commentMutationRoots(records2)) scanComments(root2);
+        scheduleScan();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      scan();
+      scheduleStartupScans(scan);
+      debugLog("blocker started");
+    };
+    if (document.body) {
+      start();
+      return;
+    }
+    const bodyObserver = new MutationObserver(() => {
+      if (!document.body) {
+        return;
+      }
+      bodyObserver.disconnect();
+      start();
+    });
+    bodyObserver.observe(document.documentElement, { childList: true });
+    window.addEventListener("pagehide", () => observer?.disconnect(), { once: true });
+  }
+
+  // src/core/inject-page-script.ts
+  function injectPageScript(source) {
+    const script = document.createElement("script");
+    script.textContent = source;
+    script.setAttribute("data-bili-toolkit", "comment-location");
+    (document.documentElement || document.head || document.body).appendChild(script);
+    script.remove();
+  }
+
+  // src/modules/comment-location/page-world-source.generated.ts
+  var commentLocationPageWorldSource = '// Shows each comment\'s IP location, `reply_control.location` in Bilibili\'s\n// public reply API, after the comment\'s date. It runs in the page world, where\n// the comment components\' classes are reachable.\n(() => {\n  if (window.__BILI_TOOLKIT_COMMENT_LOCATION__) {\n    return;\n  }\n  window.__BILI_TOOLKIT_COMMENT_LOCATION__ = true;\n\n  const labelClass = "btk-comment-location";\n\n  function locationOf(reply) {\n    const text = reply && reply.reply_control && reply.reply_control.location;\n    return typeof text === "string" ? text.trim() : "";\n  }\n\n  function warn(error) {\n    console.warn("[BiliToolkit] \u8BC4\u8BBA\u533A\u5C5E\u5730\u663E\u793A\u5931\u8D25", error);\n  }\n\n  // Video, \u756A\u5267, \u52A8\u6001, \u4E13\u680F, \u8BFE\u7A0B and UP space pages use the lit <bili-comments>\n  // component. Every comment and reply has an action bar whose `data` is the\n  // reply. Its shadow root starts with the date, and its own stylesheet spaces\n  // each later child 20px apart in the date\'s colour.\n  const actionBarTag = "bili-comment-action-buttons-renderer";\n\n  function labelActionBar(bar) {\n    const root = bar.shadowRoot;\n    const date = root && root.getElementById("pubdate");\n    if (!date) {\n      return;\n    }\n    const text = locationOf(bar.data);\n    let label = root.querySelector(`.${labelClass}`);\n    if (!text) {\n      if (label) label.remove();\n      return;\n    }\n    if (!label) {\n      label = document.createElement("div");\n      label.className = labelClass;\n    }\n    if (label.textContent !== text) label.textContent = text;\n    if (date.nextElementSibling !== label) date.after(label);\n  }\n\n  function labelRenderedActionBars(root) {\n    for (const element of root.querySelectorAll("*")) {\n      if (element.localName === actionBarTag) labelActionBar(element);\n      if (element.shadowRoot) labelRenderedActionBars(element.shadowRoot);\n    }\n  }\n\n  customElements.whenDefined(actionBarTag).then(() => {\n    const proto = customElements.get(actionBarTag).prototype;\n    const updated = proto.updated;\n    // Lit calls updated() after every render, including when a recycled bar\n    // gets another reply.\n    proto.updated = function (...args) {\n      if (typeof updated === "function") updated.apply(this, args);\n      try {\n        labelActionBar(this);\n      } catch (error) {\n        warn(error);\n      }\n    };\n    // Bars rendered before this script ran are labelled now, not at their next update.\n    labelRenderedActionBars(document);\n  }).catch(warn);\n\n  // \u97F3\u9891 pages still use the old bbComment component. Its render methods take\n  // the reply first and return HTML, with the date in <span class="time">.\n  const legacyRenderers = ["_createListCon", "_createTopFoldedListCon", "_createSubFoldedListCon", "_createSubReplyItem"];\n  const legacyDate = new RegExp(`<span class="time">[^<]*</span>(?!<span class="${labelClass}")`);\n  const patchedLegacyComments = new WeakSet();\n\n  function escapeHtml(text) {\n    return text.replace(/[&<>"\']/g, char => `&#${char.charCodeAt(0)};`);\n  }\n\n  function patchLegacyComment(Comment) {\n    const proto = typeof Comment === "function" ? Comment.prototype : null;\n    if (!proto || patchedLegacyComments.has(proto)) {\n      return;\n    }\n    patchedLegacyComments.add(proto);\n    for (const name of legacyRenderers) {\n      const render = proto[name];\n      if (typeof render !== "function") continue;\n      proto[name] = function (reply, ...rest) {\n        const html = render.call(this, reply, ...rest);\n        const text = locationOf(reply);\n        if (!text || typeof html !== "string") {\n          return html;\n        }\n        return html.replace(legacyDate, date => `${date}<span class="${labelClass}">${escapeHtml(text)}</span>`);\n      };\n    }\n  }\n\n  // comment.min.js assigns window.bbComment once it loads.\n  let legacyComment = window.bbComment;\n  patchLegacyComment(legacyComment);\n  Object.defineProperty(window, "bbComment", {\n    configurable: true,\n    get: () => legacyComment,\n    set(value) {\n      legacyComment = value;\n      try {\n        patchLegacyComment(value);\n      } catch (error) {\n        warn(error);\n      }\n    },\n  });\n})();\n';
+
+  // src/modules/comment-location/start.ts
+  var videoHeaderReadySelector = "#biliMainHeader .bili-header, #biliMainHeader .mini-header, .bili-header";
+  var isBilibiliVideoPage = () => location.hostname === "www.bilibili.com" && /^\/video\//i.test(location.pathname);
+  var isVideoHeaderReady = () => Boolean(document.querySelector(videoHeaderReadySelector));
+  function waitForVideoHeader(callback) {
+    if (!config.commentLocation.videoPageHeaderGate || !isBilibiliVideoPage() || isVideoHeaderReady()) {
+      callback();
+      return;
+    }
+    let done = false;
+    let timeoutId = 0;
+    const finish = (reason) => {
+      if (done) return;
+      done = true;
+      observer.disconnect();
+      if (timeoutId) window.clearTimeout(timeoutId);
+      debugLog(`comment-location video header gate released: ${reason}`);
+      callback();
+    };
+    const check2 = () => {
+      if (isVideoHeaderReady()) finish("header-ready");
+    };
+    const observer = new MutationObserver(check2);
+    observer.observe(document.documentElement || document, { childList: true, subtree: true });
+    document.addEventListener("DOMContentLoaded", check2, { once: true });
+    timeoutId = window.setTimeout(() => finish("timeout"), config.commentLocation.videoPageHeaderGateTimeoutMs);
+  }
+  var injected = false;
+  function startCommentLocation() {
+    waitForVideoHeader(() => {
+      if (injected) return;
+      injected = true;
+      try {
+        injectPageScript(commentLocationPageWorldSource);
+        debugLog("comment-location injected");
+      } catch (error) {
+        warnLog("\u8BC4\u8BBA\u533A\u5C5E\u5730\u6A21\u5757\u6CE8\u5165\u5931\u8D25", error);
+      }
+    });
+  }
+
+  // src/core/bili-errors.ts
+  var BiliReadError = class extends Error {
     constructor(message, status2 = 0) {
       super(message);
       this.status = status2;
@@ -6818,12 +7904,480 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
       return this.status === 412 || this.status === 429;
     }
   };
-  var paths = /* @__PURE__ */ new Set(["/x/web-interface/card", "/x/web-interface/nav", "/x/polymer/web-dynamic/v1/portal", "/x/polymer/web-dynamic/v1/feed/space", "/x/polymer/web-dynamic/v1/feed/all", "/x/relation/followings", "/x/v2/reply/main", "/x/v2/reply/reply", "/x/v2/reply/report/metadata", "/x/emote/user/panel/web"]);
-  function localFollowApiUrl(value2) {
-    const url = new URL(value2);
-    if (url.protocol !== "https:" || url.hostname !== "api.bilibili.com" || url.port || url.username || url.password || !paths.has(url.pathname)) throw new Error("\u65E0\u6548\u7684\u672C\u5730\u5173\u6CE8\u53EA\u8BFB\u63A5\u53E3");
+  var BiliActionError = class extends Error {
+    constructor(message, code = 0) {
+      super(message);
+      this.code = code;
+    }
+    /** Risk control wants a captcha or a human check: only the page can do that. */
+    get needsVerification() {
+      return [-352, -412, 412, 12015, 12016, 12025].includes(this.code) || /验证|风控|异常/.test(this.message);
+    }
+  };
+
+  // src/core/bili-endpoints.ts
+  var api = "api.bilibili.com";
+  var nav = "/x/web-interface/nav";
+  var card = "/x/web-interface/card";
+  var replyReads = ["/x/v2/reply/main", "/x/v2/reply/reply", "/x/v2/reply/report/metadata", "/x/emote/user/panel/web"];
+  var followReads = [card, nav, "/x/polymer/web-dynamic/v1/portal", "/x/polymer/web-dynamic/v1/feed/space", "/x/polymer/web-dynamic/v1/feed/all", "/x/relation/followings", ...replyReads];
+  var replyWrites = {
+    reply: ["/x/v2/reply/add", "form", "body", 0],
+    "reply-like": ["/x/v2/reply/action", "form", "body", 0],
+    "reply-hate": ["/x/v2/reply/hate", "form", "body", 0],
+    "reply-delete": ["/x/v2/reply/del", "form", "body", 0],
+    "reply-report": ["/x/v2/reply/report", "form", "body", 0],
+    upload: ["/x/dynamic/feed/draw/upload_bfs", "file", "body", 0]
+  };
+  var endpoints = {
+    /** Requests with the browser's cookies from any page: local follow checks. */
+    gm: { reads: { [api]: followReads }, writes: {} },
+    /** The drawn 动态 feed on t.bilibili.com. */
+    feed: {
+      reads: { [api]: followReads },
+      writes: {
+        like: ["/x/dynamic/feed/dyn/thumb", "json", "query", 0],
+        "forward-check": ["/x/dynamic/feed/create/submit_check", "json", "query", 0],
+        forward: ["/x/dynamic/feed/create/dyn", "json", "query", 0],
+        ...replyWrites
+      }
+    },
+    /** The Luna player pages: video, /list/ and 番剧. */
+    video: {
+      reads: {
+        [api]: [
+          nav,
+          "/x/web-interface/archive/relation",
+          card,
+          "/x/v3/fav/folder/created/list-all",
+          "/x/relation",
+          "/x/relation/relations",
+          "/x/relation/tags",
+          "/x/relation/tag/user",
+          ...replyReads,
+          // 番剧: a whole season with its sections and the viewer's 追番 and progress;
+          // its episodes' counts; the 新番时间表 for the next episode.
+          "/pgc/view/web/season",
+          "/pgc/view/web/ep/list",
+          "/pgc/web/timeline"
+        ]
+      },
+      writes: {
+        like: ["/x/web-interface/archive/like", "form", "body", 1],
+        coin: ["/x/web-interface/coin/add", "form", "body", 1],
+        triple: ["/x/web-interface/archive/like/triple", "form", "body", 1],
+        fav: ["/x/v3/fav/resource/deal", "form", "body", 0],
+        "fav-folder": ["/x/v3/fav/folder/add", "form", "body", 0],
+        follow: ["/x/relation/modify", "form", "body", 0],
+        "follow-tags": ["/x/relation/tags/addUsers", "form", "body", 0],
+        watchlater: ["/x/v2/history/toview/add", "form", "body", 0],
+        "season-fav": ["/x/v3/fav/season/fav", "form", "body", 0],
+        "season-unfav": ["/x/v3/fav/season/unfav", "form", "body", 0],
+        ...replyWrites,
+        // The 番剧 page sends these with every field in the query string.
+        "pgc-follow-add": ["/pgc/web/follow/add", "form", "query", 0],
+        "pgc-follow-del": ["/pgc/web/follow/del", "form", "query", 0],
+        "pgc-follow-status": ["/pgc/web/follow/status/update", "form", "query", 0],
+        "pgc-triple": ["/pgc/season/episode/like/triple", "form", "query", 0]
+      }
+    },
+    /** The IE6 header: what Bilibili's own header reads. */
+    header: {
+      reads: {
+        [api]: [
+          nav,
+          "/x/web-interface/dynamic/entrance",
+          "/x/web-interface/suggest",
+          "/x/web-interface/history/cursor",
+          "/x/v2/history/toview/web",
+          "/x/v3/fav/folder/list4navigate",
+          "/x/v3/fav/resource/list4navigate"
+        ],
+        "api.vc.bilibili.com": ["/x/im/web/msgfeed/unread", "/session_svr/v1/session_svr/single_unread"]
+      },
+      writes: {}
+    }
+  };
+  function allowedRead(permissions, value2, message = "\u65E0\u6548\u7684\u53EA\u8BFB\u63A5\u53E3") {
+    let url;
+    try {
+      url = new URL(value2);
+    } catch {
+      throw new BiliReadError(message);
+    }
+    const paths = Object.prototype.hasOwnProperty.call(permissions.reads, url.hostname) ? permissions.reads[url.hostname] : [];
+    if (url.protocol !== "https:" || url.port || url.username || url.password || !paths.includes(url.pathname)) throw new BiliReadError(message);
     return url.href;
   }
+
+  // src/modules/local-following/protocol.ts
+  var uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+  var lexical = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+  var validUuid = (value2) => typeof value2 === "string" && value2.length === 36 && uuidPattern.test(value2);
+  var validUid = (value2) => /^[1-9][0-9]*$/.exec(value2)?.[0] === value2 && Number.isSafeInteger(Number(value2));
+  function fields(value2, names4) {
+    return value2 !== null && typeof value2 === "object" && !Array.isArray(value2) && Object.keys(value2).length === names4.length && names4.every((name) => Object.prototype.hasOwnProperty.call(value2, name));
+  }
+  function validFace(value2) {
+    if (typeof value2 !== "string") return false;
+    if (value2 === "") return true;
+    if (!/^https?:\/\//.test(value2) || /\s/.test(value2)) return false;
+    try {
+      const url = new URL(value2);
+      return Boolean(url.hostname) && !url.username && !url.password;
+    } catch {
+      return false;
+    }
+  }
+  function readKey(key3) {
+    if (typeof key3 !== "string") throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
+    const parts2 = key3.split(":");
+    if (parts2.length === 2 && parts2[0] === "follow" && validUid(parts2[1])) return { kind: "follow", uid: parts2[1] };
+    if (parts2.length === 2 && parts2[0] === "group" && validUuid(parts2[1])) return { kind: "group", group: parts2[1] };
+    if (parts2.length === 2 && parts2[0] === "group-icon" && validUuid(parts2[1])) return { kind: "icon", group: parts2[1] };
+    if (parts2.length === 4 && parts2[0] === "member" && validUid(parts2[1]) && validUuid(parts2[2]) && validUuid(parts2[3]))
+      return { kind: "member", uid: parts2[1], generation: parts2[2], group: parts2[3] };
+    if (key3 === "group-order") return { kind: "order" };
+    throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
+  }
+  function readValue(key3, value2) {
+    switch (key3.kind) {
+      case "follow":
+        if (value2 === null) return null;
+        if (fields(value2, ["name", "face", "addedAt"]) && typeof value2.name === "string" && validFace(value2.face) && typeof value2.addedAt === "number" && Number.isSafeInteger(value2.addedAt) && value2.addedAt >= 0)
+          return { name: value2.name, face: value2.face, addedAt: value2.addedAt };
+        break;
+      case "group":
+        if (value2 === null) return null;
+        if (typeof value2 === "string" && value2.length > 0 && value2 === value2.trim()) return value2;
+        break;
+      case "member":
+        if (typeof value2 === "boolean") return value2;
+        break;
+      case "icon":
+        if (Number.isInteger(value2) && value2 > 0 && value2 <= 65535) return value2;
+        break;
+      case "order":
+        if (Array.isArray(value2) && value2.every(validUuid) && new Set(value2).size === value2.length) return [...value2];
+    }
+    throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u503C\u635F\u574F");
+  }
+  function readOperation(input) {
+    if (!fields(input, ["id", "key", "value", "parents"]) || !validUuid(input.id) || !Array.isArray(input.parents) || !input.parents.every(validUuid) || new Set(input.parents).size !== input.parents.length || input.parents.includes(input.id))
+      throw new Error("\u672C\u5730\u5173\u6CE8\u64CD\u4F5C\u635F\u574F");
+    const key3 = readKey(input.key);
+    return { id: input.id, key: input.key, value: readValue(key3, input.value), parents: [...input.parents].sort(lexical) };
+  }
+  function parseLocalFollowBatch(input) {
+    if (!fields(input, ["schema", "version", "operations"]) || input.schema !== "bili-atelier-local-following" || input.version !== 1 && input.version !== 2 || !Array.isArray(input.operations) || input.operations.length > 1e4)
+      throw new Error("\u4E0D\u652F\u6301\u7684\u672C\u5730\u5173\u6CE8\u540C\u6B65\u683C\u5F0F\u6216\u7248\u672C");
+    const operations = input.operations.map(readOperation);
+    if (new Set(operations.map((o) => o.id)).size !== operations.length) throw new Error("\u672C\u5730\u5173\u6CE8\u6279\u6B21\u5305\u542B\u91CD\u590D\u64CD\u4F5C ID");
+    return { schema: "bili-atelier-local-following", version: input.version, operations };
+  }
+  function localFollowBatch(operations) {
+    const version = operations.some((o) => o.key.startsWith("group-icon:")) ? 2 : 1;
+    return parseLocalFollowBatch({ schema: "bili-atelier-local-following", version, operations });
+  }
+  function mergeLocalFollowOperations(...arrays) {
+    const map = /* @__PURE__ */ new Map();
+    for (const array of arrays) for (const input of array) {
+      const op = readOperation(input), previous = map.get(op.id);
+      if (previous && JSON.stringify(previous) !== JSON.stringify(op)) throw new Error("\u672C\u5730\u5173\u6CE8\u64CD\u4F5C ID \u51B2\u7A81");
+      map.set(op.id, op);
+    }
+    const groupKeys = new Set([...map.values()].filter((o) => o.key.startsWith("group:")).map((o) => o.key));
+    const degrees = /* @__PURE__ */ new Map(), children = /* @__PURE__ */ new Map();
+    for (const op of map.values()) {
+      degrees.set(op.id, op.parents.length);
+      for (const parentId of op.parents) {
+        const parent = map.get(parentId);
+        if (!parent) throw new Error("\u672C\u5730\u5173\u6CE8\u5386\u53F2\u4E0D\u5B8C\u6574\uFF0C\u8BF7\u6062\u590D\u7F3A\u5931\u6587\u4EF6");
+        if (parent.key !== op.key) throw new Error("\u672C\u5730\u5173\u6CE8\u64CD\u4F5C\u8DE8\u6761\u76EE\u5F15\u7528\u7236\u8BB0\u5F55");
+        if (!children.has(parentId)) children.set(parentId, []);
+        children.get(parentId).push(op.id);
+      }
+      const key3 = readKey(op.key);
+      if (key3.kind === "member") {
+        const generation = map.get(key3.generation);
+        if (!generation || generation.key !== `follow:${key3.uid}` || generation.value === null || !groupKeys.has(`group:${key3.group}`))
+          throw new Error("\u672C\u5730\u5173\u6CE8\u6210\u5458\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u8D26\u53F7\u4EE3\u6216\u5206\u7EC4");
+      }
+      if (key3.kind === "icon" && !groupKeys.has(`group:${key3.group}`)) throw new Error("\u672C\u5730\u5173\u6CE8\u56FE\u6807\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
+      if (key3.kind === "order" && op.value.some((id) => !groupKeys.has(`group:${id}`)))
+        throw new Error("\u672C\u5730\u5173\u6CE8\u6392\u5E8F\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
+    }
+    const queue = [...degrees].filter(([, n]) => n === 0).map(([id]) => id);
+    for (let i = 0; i < queue.length; i++) for (const id of children.get(queue[i]) || []) {
+      degrees.set(id, degrees.get(id) - 1);
+      if (degrees.get(id) === 0) queue.push(id);
+    }
+    if (queue.length !== map.size) throw new Error("\u672C\u5730\u5173\u6CE8\u5386\u53F2\u5B58\u5728\u5FAA\u73AF\u5F15\u7528");
+    return [...map.values()].sort((a, b) => lexical(a.id, b.id));
+  }
+  function headsOf(operations) {
+    const covered = new Set(operations.flatMap((o) => o.parents));
+    const heads = /* @__PURE__ */ new Map();
+    for (const op of operations) if (!covered.has(op.id)) {
+      if (!heads.has(op.key)) heads.set(op.key, []);
+      heads.get(op.key).push(op);
+    }
+    return heads;
+  }
+  function localFollowFrontier(operations) {
+    return headsOf(mergeLocalFollowOperations(operations));
+  }
+  function winner(heads) {
+    return heads.find((o) => o.value === null || o.value === false) || heads[heads.length - 1];
+  }
+  function materializeLocalFollow(operations) {
+    const heads = localFollowFrontier(operations), groupMap = /* @__PURE__ */ new Map();
+    for (const [key3, ops] of heads) if (key3.startsWith("group:")) {
+      const value2 = winner(ops).value;
+      if (value2 === null) continue;
+      const id = key3.slice(6), icon2 = heads.get(`group-icon:${id}`);
+      groupMap.set(id, icon2 ? { id, name: value2, icon: winner(icon2).value } : { id, name: value2 });
+    }
+    const orderHeads = heads.get("group-order");
+    const order = orderHeads ? winner(orderHeads).value.filter((id) => groupMap.has(id)) : [];
+    const ordered = new Set(order);
+    order.push(...[...groupMap.keys()].filter((id) => !ordered.has(id)).sort(lexical));
+    const groups = order.map((id) => groupMap.get(id));
+    const accounts = [];
+    for (const [key3, ops] of heads) if (key3.startsWith("follow:")) {
+      const chosen = winner(ops);
+      if (chosen.value === null) continue;
+      const uid = key3.slice(7), generations = ops.map((o) => o.id);
+      const groupIds = order.filter((group) => {
+        const memberships = generations.flatMap((generation) => heads.get(`member:${uid}:${generation}:${group}`) || []);
+        return memberships.some((o) => o.value === true) && !memberships.some((o) => o.value === false);
+      });
+      accounts.push({ uid, ...chosen.value, generations, groupIds });
+    }
+    accounts.sort((a, b) => a.uid.length - b.uid.length || lexical(a.uid, b.uid));
+    return { accounts, groups };
+  }
+
+  // src/modules/local-following/store.ts
+  var prefix = "AtelierLocalFollow_";
+  var localFollowChangedEvent = "atelier-local-following-changed";
+  var listeners = /* @__PURE__ */ new Set();
+  var uuid = () => crypto.randomUUID();
+  var recordKeys = () => GM_listValues().filter((key3) => key3.startsWith(prefix + "record_") || key3.startsWith(prefix + "pull_")).sort();
+  function localFollowRecords(keys = recordKeys()) {
+    const result = /* @__PURE__ */ new Map();
+    const add = (id, raw) => {
+      if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(id)) throw new Error("\u672C\u5730\u5173\u6CE8\u65E5\u5FD7\u6587\u4EF6\u540D\u635F\u574F");
+      const batch2 = parseLocalFollowBatch(raw);
+      const old = result.get(id);
+      if (old && canonicalBatch(old) !== canonicalBatch(batch2)) {
+        throw new Error("\u672C\u5730\u5173\u6CE8\u6279\u6B21 ID \u51B2\u7A81");
+      }
+      result.set(id, batch2);
+    };
+    for (const key3 of keys) {
+      if (key3.startsWith(prefix + "record_")) add(key3.slice((prefix + "record_").length), GM_getValue(key3));
+      else if (key3.startsWith(prefix + "pull_")) {
+        const value2 = GM_getValue(key3);
+        if (!value2 || typeof value2 !== "object" || Array.isArray(value2)) throw new Error("\u672C\u5730\u5173\u6CE8\u62C9\u53D6\u65E5\u5FD7\u635F\u574F");
+        for (const [id, raw] of Object.entries(value2)) add(id, raw);
+      }
+    }
+    return [...result].sort(([a], [b]) => a.localeCompare(b));
+  }
+  var memo;
+  var localFollowKnown = () => {
+    const keys = recordKeys(), names4 = keys.join("\n");
+    if (memo?.names !== names4) memo = { names: names4, known: mergeLocalFollowOperations(...localFollowRecords(keys).map(([, batch2]) => batch2.operations)) };
+    return memo.known;
+  };
+  var localFollowSnapshot = () => {
+    const known2 = localFollowKnown();
+    return memo.snapshot ??= materializeLocalFollow(known2);
+  };
+  var localFollowIsSent = (id) => GM_getValue(prefix + "sent_" + id, false) === true;
+  var markLocalFollowSent = (id) => {
+    GM_setValue(prefix + "sent_" + id, true);
+  };
+  var localFollowPending = () => localFollowRecords().filter(([id]) => !localFollowIsSent(id)).reduce((n, [, batch2]) => n + batch2.operations.length, 0);
+  var localFollowHasMerged = () => GM_getValue(prefix + "merged", false) === true;
+  var localFollowBackup = () => GM_getValue(prefix + "backup", null);
+  function onLocalFollowMutation(listener) {
+    listeners.add(listener);
+    return () => {
+      listeners.delete(listener);
+    };
+  }
+  function notify(local) {
+    window.dispatchEvent(new Event(localFollowChangedEvent));
+    if (local) for (const listener of listeners) listener();
+  }
+  function pulse() {
+    GM_setValue(prefix + "pulse", uuid());
+  }
+  var started3 = false;
+  function startLocalFollowingStore() {
+    if (started3) return;
+    started3 = true;
+    if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(prefix + "pulse", (_, __, ___, remote) => {
+      if (remote) notify(false);
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) notify(false);
+    });
+  }
+  function mergeRemoteLocalFollow(remote) {
+    const parsed = remote.map(([id, raw]) => {
+      if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(id)) throw new Error("\u8FDC\u7AEF\u672C\u5730\u5173\u6CE8\u6279\u6B21\u540D\u79F0\u65E0\u6548");
+      return [id, parseLocalFollowBatch(raw)];
+    });
+    const current4 = localFollowRecords();
+    const all = new Map(current4);
+    for (const [id, incoming] of parsed) {
+      const existing = all.get(id);
+      if (existing && canonicalBatch(existing) !== canonicalBatch(incoming)) throw new Error("\u672C\u5730\u5173\u6CE8\u6279\u6B21 ID \u51B2\u7A81");
+      all.set(id, incoming);
+    }
+    mergeLocalFollowOperations(...[...all.values()].map((batch2) => batch2.operations));
+    if (!localFollowHasMerged()) {
+      if (localFollowBackup() === null) GM_setValue(prefix + "backup", {
+        schema: "bili-atelier-local-following-backup",
+        version: 1,
+        createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+        snapshot: localFollowSnapshot(),
+        batches: Object.fromEntries(current4)
+      });
+    }
+    if (parsed.length) GM_setValue(prefix + "pull_" + uuid(), Object.fromEntries(parsed));
+    for (const [id] of parsed) markLocalFollowSent(id);
+    GM_setValue(prefix + "merged", true);
+    pulse();
+    notify(false);
+  }
+  function canonicalBatch(batch2) {
+    return JSON.stringify(batch2.operations.map((op) => ({ id: op.id, key: op.key, value: op.value, parents: [...op.parents].sort() })).sort((a, b) => a.id.localeCompare(b.id)));
+  }
+  function edit(intent) {
+    const known2 = localFollowKnown();
+    const changes2 = intent(materializeLocalFollow(known2));
+    if (!changes2.length) return;
+    const heads = localFollowFrontier(known2);
+    const operations = [];
+    for (const [key3, value2] of changes2) {
+      const operation = { id: uuid(), key: key3, value: value2, parents: (heads.get(key3) ?? []).map((head) => head.id).sort() };
+      operations.push(operation);
+      heads.set(key3, [operation]);
+    }
+    mergeLocalFollowOperations(known2, operations);
+    if (operations.length <= 1e4) GM_setValue(prefix + "record_" + uuid(), localFollowBatch(operations));
+    else {
+      const transaction = {};
+      for (let index = 0; index < operations.length; index += 1e4) transaction[uuid()] = localFollowBatch(operations.slice(index, index + 1e4));
+      GM_setValue(prefix + "pull_" + uuid(), transaction);
+    }
+    pulse();
+    notify(true);
+  }
+  function normalizeLocalUid(value2) {
+    const text3 = String(value2 ?? "").trim();
+    return /^[1-9]\d*$/.test(text3) && Number.isSafeInteger(Number(text3)) ? text3 : null;
+  }
+  function parseLocalFollowInput(value2) {
+    const direct = normalizeLocalUid(value2);
+    if (direct) return direct;
+    try {
+      const url = new URL(value2.trim().replace(/^\/\//, "https://"));
+      if (url.hostname !== "space.bilibili.com" || !/^https?:$/.test(url.protocol) || url.username || url.password || url.port) return null;
+      return normalizeLocalUid(url.pathname.match(/^\/(\d+)(?:\/|$)/)?.[1]);
+    } catch {
+      return null;
+    }
+  }
+  function safeLocalFace(value2) {
+    if (typeof value2 !== "string" || !value2) return "";
+    try {
+      const url = new URL(value2.startsWith("//") ? "https:" + value2 : value2);
+      return /^https?:$/.test(url.protocol) && !url.username && !url.password ? url.href : "";
+    } catch {
+      return "";
+    }
+  }
+  function addLocalFollow(profile, now = Date.now()) {
+    const uid = normalizeLocalUid(profile.uid);
+    if (!uid) throw new Error("\u65E0\u6548\u7684\u8D26\u53F7 UID");
+    edit((snapshot) => snapshot.accounts.some((account) => account.uid === uid) ? [] : [
+      [`follow:${uid}`, { name: String(profile.name).trim(), face: safeLocalFace(profile.face), addedAt: now }]
+    ]);
+  }
+  function removeLocalFollow(uid) {
+    removeLocalFollows([uid]);
+  }
+  function removeLocalFollows(uids) {
+    const selected = new Set(uids);
+    edit((snapshot) => snapshot.accounts.filter((account) => selected.has(account.uid)).map((account) => [`follow:${account.uid}`, null]));
+  }
+  function createLocalFollowGroup(name) {
+    const id = uuid();
+    edit((snapshot) => [[`group:${id}`, name.trim()], ["group-order", [...snapshot.groups.map((group) => group.id), id]]]);
+    return id;
+  }
+  function renameLocalFollowGroup(id, name) {
+    edit((snapshot) => {
+      if (!snapshot.groups.some((group) => group.id === id)) throw new Error("\u8BE5\u5206\u7EC4\u5DF2\u88AB\u5220\u9664");
+      return [[`group:${id}`, name.trim()]];
+    });
+  }
+  function deleteLocalFollowGroup(id) {
+    edit((snapshot) => snapshot.groups.some((group) => group.id === id) ? [[`group:${id}`, null]] : []);
+  }
+  function moveLocalFollowGroup(id, direction) {
+    edit((snapshot) => {
+      const order = snapshot.groups.map((group) => group.id), index = order.indexOf(id);
+      if (index < 0 || index + direction < 0 || index + direction >= order.length) return [];
+      [order[index], order[index + direction]] = [order[index + direction], order[index]];
+      return [["group-order", order]];
+    });
+  }
+  function setLocalFollowGroupIcon(id, icon2) {
+    edit((snapshot) => {
+      const group = snapshot.groups.find((group2) => group2.id === id);
+      if (!group) throw new Error("\u8BE5\u5206\u7EC4\u5DF2\u88AB\u5220\u9664");
+      return group.icon === icon2 ? [] : [[`group-icon:${id}`, icon2]];
+    });
+  }
+  function invertLocalFollowMembership(uids, groupId) {
+    const chosen = new Set(uids);
+    edit((snapshot) => {
+      if (!snapshot.groups.some((group) => group.id === groupId)) throw new Error("\u8BE5\u5206\u7EC4\u5DF2\u88AB\u5220\u9664");
+      return snapshot.accounts.filter((account) => chosen.has(account.uid)).flatMap((account) => account.generations.map((generation) => [`member:${account.uid}:${generation}:${groupId}`, !account.groupIds.includes(groupId)]));
+    });
+  }
+  function setLocalFollowMembership(uids, groupId, member) {
+    const chosen = new Set(uids);
+    edit((snapshot) => {
+      if (!snapshot.groups.some((group) => group.id === groupId)) throw new Error("\u8BE5\u5206\u7EC4\u5DF2\u88AB\u5220\u9664");
+      return snapshot.accounts.filter((account) => chosen.has(account.uid)).flatMap((account) => account.generations.map((generation) => [`member:${account.uid}:${generation}:${groupId}`, member]));
+    });
+  }
+  function readLocalFollowCache(uid) {
+    return GM_getValue(prefix + "cache_" + uid, {}) || {};
+  }
+  function writeLocalFollowCache(uid, patch) {
+    if (!normalizeLocalUid(uid)) return;
+    const current4 = readLocalFollowCache(uid), updates = { ...current4.updates };
+    for (const [kind, value2] of Object.entries(patch.updates ?? {})) if (Number.isSafeInteger(value2) && value2 > (updates[kind] ?? 0)) updates[kind] = value2;
+    GM_setValue(prefix + "cache_" + uid, { ...current4, ...patch, updates });
+    pulse();
+    notify(false);
+  }
+  function recordLocalFollowVisit(uid, now = Date.now()) {
+    if (localFollowSnapshot().accounts.some((account) => account.uid === uid)) writeLocalFollowCache(uid, { viewedAt: now });
+  }
+  var readLocalFollowPreferences = () => GM_getValue(prefix + "preferences", null);
+  var writeLocalFollowPreferences = (value2) => GM_setValue(prefix + "preferences", value2);
+
+  // src/modules/local-following/api.ts
+  var localFollowApiUrl = (value2) => allowedRead(endpoints.gm, value2, "\u65E0\u6548\u7684\u672C\u5730\u5173\u6CE8\u53EA\u8BFB\u63A5\u53E3");
   var localFollowGmRequest = (value2, signal) => new Promise((resolve, reject) => {
     const url = localFollowApiUrl(value2);
     let done = false, request2;
@@ -6854,15 +8408,15 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
         onload: (response) => {
           try {
             if (response.finalUrl) localFollowApiUrl(response.finalUrl);
-            if (response.status < 200 || response.status >= 300) throw new LocalFollowReadError(`\u8BFB\u53D6\u5931\u8D25\uFF1AHTTP ${response.status}`, response.status);
+            if (response.status < 200 || response.status >= 300) throw new BiliReadError(`\u8BFB\u53D6\u5931\u8D25\uFF1AHTTP ${response.status}`, response.status);
             const raw = JSON.parse(response.responseText);
             finish(void 0, raw);
           } catch (error) {
             finish(error);
           }
         },
-        onerror: () => finish(new LocalFollowReadError("\u7F51\u7EDC\u8BFB\u53D6\u5931\u8D25\uFF0C\u8BF7\u624B\u52A8\u91CD\u8BD5")),
-        ontimeout: () => finish(new LocalFollowReadError("\u8BFB\u53D6\u8D85\u65F6\uFF0C\u8BF7\u624B\u52A8\u91CD\u8BD5")),
+        onerror: () => finish(new BiliReadError("\u7F51\u7EDC\u8BFB\u53D6\u5931\u8D25\uFF0C\u8BF7\u624B\u52A8\u91CD\u8BD5")),
+        ontimeout: () => finish(new BiliReadError("\u8BFB\u53D6\u8D85\u65F6\uFF0C\u8BF7\u624B\u52A8\u91CD\u8BD5")),
         onabort: cancel
       });
     } catch (error) {
@@ -6909,7 +8463,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
   function successful(raw) {
     if (!raw || raw.code !== 0 || !raw.data || typeof raw.data !== "object") {
       const code = Number(raw?.code);
-      throw new LocalFollowReadError(typeof raw?.message === "string" ? raw.message : "\u63A5\u53E3\u8FD4\u56DE\u65E0\u6548\u8D44\u6599", [412, 429].includes(Math.abs(code)) ? Math.abs(code) : 0);
+      throw new BiliReadError(typeof raw?.message === "string" ? raw.message : "\u63A5\u53E3\u8FD4\u56DE\u65E0\u6548\u8D44\u6599", [412, 429].includes(Math.abs(code)) ? Math.abs(code) : 0);
     }
     return raw.data;
   }
@@ -6921,9 +8475,9 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     }
     async profile(uid, signal) {
       if (!normalizeLocalUid(uid)) throw new Error("\u8BF7\u8F93\u5165\u6709\u6548\u7684 UID \u6216\u4E2A\u4EBA\u4E3B\u9875\u94FE\u63A5");
-      const card2 = successful(await this.request(`https://api.bilibili.com/x/web-interface/card?mid=${uid}`, signal)).card;
-      if (normalizeLocalUid(card2?.mid) !== uid || typeof card2?.name !== "string" || !card2.name.trim()) throw new Error("\u672A\u53D6\u5F97\u8BE5\u8D26\u53F7\u7684\u6709\u6548\u8D44\u6599");
-      return { uid, name: card2.name.trim(), face: safeLocalFace(card2.face) };
+      const card3 = successful(await this.request(`https://api.bilibili.com/x/web-interface/card?mid=${uid}`, signal)).card;
+      if (normalizeLocalUid(card3?.mid) !== uid || typeof card3?.name !== "string" || !card3.name.trim()) throw new Error("\u672A\u53D6\u5F97\u8BE5\u8D26\u53F7\u7684\u6709\u6548\u8D44\u6599");
+      return { uid, name: card3.name.trim(), face: safeLocalFace(card3.face) };
     }
     /** One lookup serves every concurrent read. It owns its signal, so one
      * read's timeout or stop never fails the others; a failed lookup is
@@ -6950,7 +8504,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
           return "";
         }
       }).join("");
-      if (!/^[0-9a-f]{64}$/i.test(pieces)) throw new LocalFollowReadError("\u672A\u53D6\u5F97\u516C\u5F00\u7B7E\u540D\u4FE1\u606F", [412, 429].includes(Math.abs(Number(raw?.code))) ? Math.abs(Number(raw.code)) : 0);
+      if (!/^[0-9a-f]{64}$/i.test(pieces)) throw new BiliReadError("\u672A\u53D6\u5F97\u516C\u5F00\u7B7E\u540D\u4FE1\u606F", [412, 429].includes(Math.abs(Number(raw?.code))) ? Math.abs(Number(raw.code)) : 0);
       this.key = mixin.map((index) => pieces[index]).join("");
       this.keyDay = day;
       return this.key;
@@ -6961,7 +8515,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
       if (signal.aborted) throw new DOMException("\u68C0\u67E5\u5DF2\u53D6\u6D88", "AbortError");
       const query = localFollowWbiQuery({ host_mid: uid, offset, timezone_offset: String((/* @__PURE__ */ new Date()).getTimezoneOffset()), platform: "web", features: localFollowFeatures, web_location: "333.1387" }, key3);
       const data = successful(await this.request(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?${query}`, signal));
-      if (!Array.isArray(data.items)) throw new LocalFollowReadError("\u52A8\u6001\u9875\u683C\u5F0F\u65E0\u6548\uFF0C\u4FDD\u7559\u5DF2\u6709\u8BB0\u5F55");
+      if (!Array.isArray(data.items)) throw new BiliReadError("\u52A8\u6001\u9875\u683C\u5F0F\u65E0\u6548\uFF0C\u4FDD\u7559\u5DF2\u6709\u8BB0\u5F55");
       return data;
     }
     /** Reads an account-feed page with the page's own parameters. A changed
@@ -6976,25 +8530,9 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
         href = `${url.origin}${url.pathname}?${localFollowWbiQuery(params, await this.signingKey(signal))}`;
       }
       const data = successful(await this.request(localFollowApiUrl(href), signal));
-      if (!Array.isArray(data.items)) throw new LocalFollowReadError("\u52A8\u6001\u9875\u683C\u5F0F\u65E0\u6548");
+      if (!Array.isArray(data.items)) throw new BiliReadError("\u52A8\u6001\u9875\u683C\u5F0F\u65E0\u6548");
       return data;
     }
-  };
-
-  // src/core/config.ts
-  var config = {
-    viewedMarker: {
-      enabled: true
-    },
-    commentLocation: {
-      enabled: true,
-      videoPageHeaderGate: true,
-      videoPageHeaderGateTimeoutMs: 3e3
-    },
-    blocker: {
-      enabled: true
-    },
-    debug: false
   };
 
   // src/ui/assets/xp-icons/atelier-icon.png
@@ -7230,357 +8768,122 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     return icon2;
   }
 
-  // src/core/logger.ts
-  function debugLog(...args) {
-    if (config.debug) {
-      console.debug("[BiliToolkit]", ...args);
-    }
-  }
-  function warnLog(...args) {
-    console.warn("[BiliToolkit]", ...args);
-  }
-
-  // src/modules/blocker/history.ts
-  var historyChangedEvent = "bili-atelier-block-history-changed";
-  var historyStorageKey = "BiliAtelier_BlockHistory";
-  var historyLimit = 200;
-  function summarizeBlockedItem(item) {
-    return item.title || item.content || item.liveTitle || item.name || item.bv || item.roomId || item.partition || "\u672A\u77E5\u5185\u5BB9";
-  }
-  function detailBlockedItem(item) {
-    const parts2 = [];
-    if (item.name) {
-      parts2.push(`\u7528\u6237\uFF1A${item.name}`);
-    }
-    if (item.uid !== void 0) {
-      parts2.push(`UID\uFF1A${item.uid}`);
-    }
-    if (item.bv) {
-      parts2.push(`BV\uFF1A${item.bv}`);
-    }
-    if (item.roomId) {
-      parts2.push(`\u76F4\u64AD\u95F4\uFF1A${item.roomId}`);
-    }
-    return parts2.join(" / ");
-  }
-  function readBlockHistory() {
-    const value2 = GM_getValue(historyStorageKey, []);
-    if (!Array.isArray(value2)) {
-      return [];
-    }
-    return value2.filter((entry) => entry && typeof entry === "object" && typeof entry.id === "string").slice(0, historyLimit);
-  }
-  function writeBlockHistory(history2) {
-    GM_setValue(historyStorageKey, history2.slice(0, historyLimit));
-  }
-  function notifyBlockHistoryChanged() {
-    document.dispatchEvent(new CustomEvent(historyChangedEvent));
-  }
-  function decisionRuleReferences(decision) {
-    if (decision.linkedRules?.length) {
-      return decision.linkedRules;
-    }
-    if (decision.ruleKey && decision.ruleValue !== void 0) {
-      return [{ key: decision.ruleKey, value: decision.ruleValue }];
-    }
-    return [];
-  }
-  function ruleIdentity(rules) {
-    return rules.map((rule) => `${rule.key}=${String(rule.value)}`).sort().join("&");
-  }
-  function createHistoryId(item, decision) {
-    const identity = ruleIdentity(decisionRuleReferences(decision));
-    if (identity) {
-      return [item.kind, identity].join("|");
-    }
-    return [
-      item.kind,
-      decision.ruleKey || decision.type,
-      String(decision.ruleValue ?? decision.matching)
-    ].join("|");
-  }
-  function entryRuleReferences(entry) {
-    if (entry.linkedRules?.length) {
-      return entry.linkedRules;
-    }
-    if (entry.ruleKey && entry.ruleValue !== void 0) {
-      return [{ key: entry.ruleKey, value: entry.ruleValue }];
-    }
-    return [];
-  }
-  function entryMatchesRule(entry, ruleKey, normalizedValue) {
-    return entryRuleReferences(entry).some((rule) => {
-      return rule.key === ruleKey && String(rule.value) === normalizedValue;
-    });
-  }
-  function isDuplicateHistoryEntry(entry, kind, id, rules) {
-    if (entry.id === id) {
-      return true;
-    }
-    if (entry.kind !== kind || rules.length === 0) {
-      return false;
-    }
-    const existingRules = entryRuleReferences(entry);
-    return existingRules.some((existingRule) => {
-      return rules.some((rule) => existingRule.key === rule.key && String(existingRule.value) === String(rule.value));
-    });
-  }
-  function recordBlockHistory(item, decision) {
-    const id = createHistoryId(item, decision);
-    const history2 = readBlockHistory();
-    const rules = decisionRuleReferences(decision);
-    if (history2.some((entry2) => isDuplicateHistoryEntry(entry2, item.kind, id, rules))) {
-      return;
-    }
-    const entry = {
-      id,
-      timestamp: Date.now(),
-      kind: item.kind,
-      type: decision.type,
-      matching: decision.matching,
-      ruleKey: decision.ruleKey,
-      ruleValue: decision.ruleValue,
-      linkedRules: decision.linkedRules,
-      uid: item.uid,
-      name: item.name,
-      title: item.title?.slice(0, 160),
-      content: item.content?.slice(0, 220),
-      bv: item.bv,
-      liveTitle: item.liveTitle?.slice(0, 160),
-      roomId: item.roomId,
-      partition: item.partition,
-      summary: summarizeBlockedItem(item).slice(0, 140),
-      detail: detailBlockedItem(item),
-      url: location.href
-    };
-    writeBlockHistory([entry, ...history2]);
-    notifyBlockHistoryChanged();
-  }
-  function removeHistoryByRules(rules) {
-    writeBlockHistory(readBlockHistory().filter((entry) => {
-      return !rules.some((rule) => entryMatchesRule(entry, rule.key, String(rule.value)));
-    }));
-  }
-
-  // src/modules/blocker/decision.ts
-  function isWhiteUid(uid, rules) {
-    return uid !== void 0 && exactMatch(rules.precise_uid_white, uid) !== null;
-  }
-  function readRuleSnapshotWithHistoryAliases() {
-    const rules = readRuleSnapshot();
-    const preciseNameAliases = new Set(rules.precise_name.map((item) => String(item)));
-    for (const entry of readBlockHistory()) {
-      if (entry.kind !== "comment" || entry.uid === void 0 || !entry.name || exactMatch(rules.precise_uid, entry.uid) === null) {
-        continue;
+  // src/core/page-relay.ts
+  function pageRelayWorld(channel2, reads, writes) {
+    const original = window.fetch;
+    const post = (message) => window.postMessage({ channel: channel2, ...message }, location.origin);
+    const readable = (url) => !!url && url.protocol === "https:" && Object.prototype.hasOwnProperty.call(reads, url.hostname) && reads[url.hostname].includes(url.pathname);
+    const risk = () => {
+      const player = window.player;
+      try {
+        return { eab_x: player?.isPaused?.() ? 2 : 1, ramval: player?.getMediaInfo?.()?.absolutePlayTime ?? 0, source: "web_normal", ga: 1, statistics: '{"appId":100,"platform":5}', spmid: "333.788.0.0" };
+      } catch {
+        return {};
       }
-      preciseNameAliases.add(entry.name);
-    }
+    };
+    const reading = /* @__PURE__ */ new Map();
+    window.addEventListener("message", (event) => {
+      const data = event.data;
+      if (event.origin !== location.origin || data?.channel !== channel2) return;
+      if (data.kind === "abort") reading.get(data.id)?.abort();
+      else if (data.kind === "read") {
+        let url = null;
+        try {
+          url = new URL(String(data.url));
+        } catch {
+        }
+        if (!readable(url)) {
+          post({ kind: "read-result", id: data.id, status: 0, error: "\u65E0\u6548\u8BFB\u53D6" });
+          return;
+        }
+        const controller = new AbortController();
+        reading.set(data.id, controller);
+        original.call(window, url.href, { credentials: "include", signal: controller.signal }).then(async (response) => post({ kind: "read-result", id: data.id, status: response.status, body: response.ok ? await response.json() : null })).catch((error) => post({ kind: "read-result", id: data.id, status: 0, error: String(error?.message || error) })).finally(() => reading.delete(data.id));
+      } else if (data.kind === "write") {
+        const spec = Object.prototype.hasOwnProperty.call(writes, data.op) ? writes[data.op] : null;
+        const answer = (message) => post({ kind: "write-result", id: data.id, ...message });
+        const csrf = document.cookie.match(/(?:^|;\s*)bili_jct=([^;]+)/)?.[1] ?? "";
+        if (!spec) {
+          answer({ status: 0, error: "\u4E0D\u5141\u8BB8\u7684\u64CD\u4F5C" });
+          return;
+        }
+        if (!csrf) {
+          answer({ status: 0, error: "\u8BF7\u5148\u767B\u5F55" });
+          return;
+        }
+        const [path, encoding, where, withRisk] = spec, url = new URL("https://api.bilibili.com" + path);
+        for (const [name, value2] of Object.entries(data.query ?? {})) if (typeof value2 === "string") url.searchParams.set(name, value2);
+        if (where === "query") url.searchParams.set("csrf", csrf);
+        const fields2 = { ...withRisk ? risk() : {}, ...data.body ?? {} };
+        if (where === "body") fields2.csrf = csrf;
+        const scalar = (value2) => typeof value2 === "string" || typeof value2 === "number" || typeof value2 === "boolean";
+        let body2, headers;
+        if (encoding === "json") {
+          body2 = JSON.stringify(fields2);
+          headers = { "Content-Type": "application/json" };
+        } else if (encoding === "form") {
+          const form = new URLSearchParams();
+          for (const [name, value2] of Object.entries(fields2)) if (scalar(value2)) form.set(name, String(value2));
+          body2 = form;
+          headers = { "Content-Type": "application/x-www-form-urlencoded" };
+        } else {
+          if (!(data.file instanceof Blob)) {
+            answer({ status: 0, error: "\u6CA1\u6709\u6587\u4EF6" });
+            return;
+          }
+          const form = new FormData();
+          form.append("file_up", data.file);
+          for (const [name, value2] of Object.entries(fields2)) if (scalar(value2)) form.append(name, String(value2));
+          body2 = form;
+        }
+        original.call(window, url.href, { method: "POST", credentials: "include", headers, body: body2 }).then(async (response) => answer({ status: response.status, body: response.ok ? await response.json() : null })).catch((error) => answer({ status: 0, error: String(error?.message || error) }));
+      }
+    });
+  }
+  function startPageRelay(name, permissions) {
+    const channel2 = `atelier-${name}-${crypto.randomUUID()}`;
+    const reads = /* @__PURE__ */ new Map(), writes = /* @__PURE__ */ new Map();
+    window.addEventListener("message", (event) => {
+      const data = event.data;
+      if (event.origin !== location.origin || data?.channel !== channel2) return;
+      const waiters = data.kind === "read-result" ? reads : data.kind === "write-result" ? writes : null;
+      const waiter = waiters?.get(data.id);
+      if (!waiter) return;
+      waiters.delete(data.id);
+      if (waiters === reads) {
+        if (data.error) waiter.reject(new BiliReadError(`\u7F51\u7EDC\u8BFB\u53D6\u5931\u8D25\uFF1A${data.error}`));
+        else if (data.status < 200 || data.status >= 300) waiter.reject(new BiliReadError(`\u8BFB\u53D6\u5931\u8D25\uFF1AHTTP ${data.status}`, data.status));
+        else waiter.resolve(data.body);
+      } else {
+        if (data.error) waiter.reject(new BiliActionError(data.error));
+        else if (data.status < 200 || data.status >= 300) waiter.reject(new BiliActionError(`\u8BF7\u6C42\u5931\u8D25\uFF1AHTTP ${data.status}`, data.status));
+        else waiter.resolve(data.body);
+      }
+    });
+    injectPageScript(`(${pageRelayWorld.toString()})(${JSON.stringify(channel2)}, ${JSON.stringify(permissions.reads)}, ${JSON.stringify(permissions.writes)});`);
+    const send = (message) => window.postMessage({ channel: channel2, ...message }, location.origin);
     return {
-      ...rules,
-      precise_name: Array.from(preciseNameAliases)
+      channel: channel2,
+      read: (value2, signal) => new Promise((resolve, reject) => {
+        const url = allowedRead(permissions, value2), id = crypto.randomUUID();
+        if (signal.aborted) {
+          reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError"));
+          return;
+        }
+        reads.set(id, { resolve, reject });
+        signal.addEventListener("abort", () => {
+          if (!reads.delete(id)) return;
+          send({ kind: "abort", id });
+          reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError"));
+        }, { once: true });
+        send({ kind: "read", id, url });
+      }),
+      write: (op, payload) => new Promise((resolve, reject) => {
+        const id = crypto.randomUUID();
+        writes.set(id, { resolve, reject });
+        send({ kind: "write", id, op, ...payload });
+      })
     };
-  }
-  function blockUser(uid, name, rules) {
-    if (uid !== void 0) {
-      const uidMatch = exactMatch(rules.precise_uid, uid);
-      if (uidMatch) {
-        return { type: "\u7CBE\u786E UID", matching: uidMatch.matching, ruleKey: "precise_uid", ruleValue: uidMatch.matching };
-      }
-    }
-    const nameMatch = blockExactFuzzyRegex(name, {
-      exactRules: rules.precise_name,
-      fuzzyRules: rules.name,
-      regexRules: rules.nameCanonical,
-      options: { caseInsensitive: true },
-      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u7528\u6237\u540D\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
-    });
-    if (nameMatch) {
-      const ruleKey = nameMatch.kind === "exact" ? "precise_name" : nameMatch.kind === "regex" ? "nameCanonical" : "name";
-      return { type: `\u7528\u6237\u540D${nameMatch.kind}`, matching: nameMatch.matching, ruleKey, ruleValue: nameMatch.matching };
-    }
-    return null;
-  }
-  function decideVideo(item, rules) {
-    if (isWhiteUid(item.uid, rules)) {
-      return null;
-    }
-    const userDecision = blockUser(item.uid, item.name, rules);
-    if (userDecision) {
-      return userDecision;
-    }
-    const titleMatch = blockExactFuzzyRegex(item.title, {
-      fuzzyRules: rules.title,
-      regexRules: rules.titleCanonical,
-      options: { caseInsensitive: true },
-      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u6807\u9898\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
-    });
-    if (titleMatch) {
-      const ruleKey = titleMatch.kind === "regex" ? "titleCanonical" : "title";
-      return { type: `\u6807\u9898${titleMatch.kind}`, matching: titleMatch.matching, ruleKey, ruleValue: titleMatch.matching };
-    }
-    return null;
-  }
-  function decideComment(item, rules) {
-    if (isWhiteUid(item.uid, rules)) {
-      return null;
-    }
-    const userDecision = blockUser(item.uid, item.name, rules);
-    if (userDecision) {
-      return userDecision;
-    }
-    const commentMatch = blockExactFuzzyRegex(item.content, {
-      fuzzyRules: rules.commentOn,
-      regexRules: rules.commentOnCanonical,
-      options: { caseInsensitive: true },
-      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u8BC4\u8BBA\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
-    });
-    if (commentMatch) {
-      const ruleKey = commentMatch.kind === "regex" ? "commentOnCanonical" : "commentOn";
-      return { type: `\u8BC4\u8BBA${commentMatch.kind}`, matching: commentMatch.matching, ruleKey, ruleValue: commentMatch.matching };
-    }
-    return null;
-  }
-  function decideLive(item, rules) {
-    if (isWhiteUid(item.uid, rules)) {
-      return null;
-    }
-    const userDecision = blockUser(item.uid, item.name, rules);
-    if (userDecision) {
-      return userDecision;
-    }
-    if (item.roomId) {
-      const roomMatch = exactMatch(rules.precise_liveRoomId, item.roomId);
-      if (roomMatch) {
-        return {
-          type: "\u7CBE\u786E\u76F4\u64AD\u95F4 ID",
-          matching: roomMatch.matching,
-          ruleKey: "precise_liveRoomId",
-          ruleValue: roomMatch.matching
-        };
-      }
-    }
-    if (item.partition) {
-      const partitionMatch = exactMatch(rules.precise_partition, item.partition);
-      if (partitionMatch) {
-        return {
-          type: "\u7CBE\u786E\u76F4\u64AD\u5206\u533A",
-          matching: partitionMatch.matching,
-          ruleKey: "precise_partition",
-          ruleValue: partitionMatch.matching
-        };
-      }
-    }
-    const titleMatch = blockExactFuzzyRegex(item.liveTitle, {
-      fuzzyRules: rules.liveTitle,
-      regexRules: rules.liveTitleCanonical,
-      options: { caseInsensitive: true },
-      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u76F4\u64AD\u6807\u9898\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
-    });
-    if (titleMatch) {
-      const ruleKey = titleMatch.kind === "regex" ? "liveTitleCanonical" : "liveTitle";
-      return { type: `\u76F4\u64AD\u6807\u9898${titleMatch.kind}`, matching: titleMatch.matching, ruleKey, ruleValue: titleMatch.matching };
-    }
-    return null;
-  }
-  function decideDynamic(item, rules) {
-    if (isWhiteUid(item.uid, rules)) {
-      return null;
-    }
-    const userDecision = blockUser(item.uid, item.name, rules);
-    if (userDecision) {
-      return userDecision;
-    }
-    const textMatch = blockExactFuzzyRegex(item.content, {
-      fuzzyRules: rules.dynamic,
-      regexRules: rules.dynamicCanonical,
-      options: { caseInsensitive: true },
-      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u52A8\u6001\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
-    });
-    if (textMatch) {
-      const ruleKey = textMatch.kind === "regex" ? "dynamicCanonical" : "dynamic";
-      return { type: `\u52A8\u6001${textMatch.kind}`, matching: textMatch.matching, ruleKey, ruleValue: textMatch.matching };
-    }
-    const titleMatch = blockExactFuzzyRegex(item.title, {
-      fuzzyRules: rules.title,
-      regexRules: rules.titleCanonical,
-      options: { caseInsensitive: true },
-      onInvalidRegexRule: ({ rule, error }) => warnLog(`\u6807\u9898\u6B63\u5219\u65E0\u6548\uFF1A${rule}`, error)
-    });
-    if (titleMatch) {
-      const ruleKey = titleMatch.kind === "regex" ? "titleCanonical" : "title";
-      return { type: `\u6807\u9898${titleMatch.kind}`, matching: titleMatch.matching, ruleKey, ruleValue: titleMatch.matching };
-    }
-    return null;
-  }
-  function decideBlockableItem(item, rules) {
-    if (item.kind === "video") {
-      return decideVideo(item, rules);
-    }
-    if (item.kind === "dynamic") {
-      return decideDynamic(item, rules);
-    }
-    if (item.kind === "comment") {
-      return decideComment(item, rules);
-    }
-    return decideLive(item, rules);
-  }
-  function getManualChoices(item) {
-    const choices = [];
-    if (item.uid !== void 0) {
-      choices.push({ label: `\u5C4F\u853D UID ${item.uid}`, key: "precise_uid", value: item.uid });
-    }
-    if (item.name) {
-      choices.push({ label: `\u5C4F\u853D\u7528\u6237\u540D ${item.name}`, key: "precise_name", value: item.name });
-    }
-    if (item.title) {
-      choices.push({ label: `\u5C4F\u853D\u6807\u9898\u5173\u952E\u8BCD ${item.title.slice(0, 30)}`, key: "title", value: item.title });
-    }
-    if (item.content) {
-      choices.push({ label: `\u5C4F\u853D\u8BC4\u8BBA\u5173\u952E\u8BCD ${item.content.slice(0, 30)}`, key: "commentOn", value: item.content });
-    }
-    if (item.liveTitle) {
-      choices.push({ label: `\u5C4F\u853D\u76F4\u64AD\u6807\u9898 ${item.liveTitle.slice(0, 30)}`, key: "liveTitle", value: item.liveTitle });
-    }
-    if (item.roomId) {
-      choices.push({ label: `\u5C4F\u853D\u76F4\u64AD\u95F4 ${item.roomId}`, key: "precise_liveRoomId", value: item.roomId });
-    }
-    if (item.partition) {
-      choices.push({ label: `\u5C4F\u853D\u76F4\u64AD\u5206\u533A ${item.partition}`, key: "precise_partition", value: item.partition });
-    }
-    return choices;
-  }
-  function getCommentUserBlockChoices(item) {
-    const choices = [];
-    if (item.uid !== void 0) {
-      choices.push({ key: "precise_uid", value: item.uid });
-    }
-    if (item.name) {
-      choices.push({ key: "precise_name", value: item.name });
-    }
-    return choices;
-  }
-  function getVideoOwnerBlockChoices(item) {
-    const choices = [];
-    if (item.uid !== void 0) {
-      choices.push({ key: "precise_uid", value: item.uid });
-    }
-    if (item.name) {
-      choices.push({ key: "precise_name", value: item.name });
-    }
-    return choices;
-  }
-  function getLiveOwnerBlockChoices(item) {
-    const choices = [];
-    if (item.uid !== void 0) {
-      choices.push({ key: "precise_uid", value: item.uid });
-    }
-    if (item.name) {
-      choices.push({ key: "precise_name", value: item.name });
-    }
-    if (choices.length === 0 && item.roomId) {
-      choices.push({ key: "precise_liveRoomId", value: item.roomId });
-    }
-    return choices;
   }
 
   // src/modules/local-following/concurrent.ts
@@ -7593,20 +8896,20 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     }
   };
   async function runConcurrentReads(options) {
-    const queue = [...options.keys], active = /* @__PURE__ */ new Set();
+    const queue = [...options.keys], active2 = /* @__PURE__ */ new Set();
     const timeout = options.timeout ?? localReadTimeout;
     let stopped = false;
     const stopAll = () => {
       stopped = true;
       queue.length = 0;
-      for (const controller of active) controller.abort();
+      for (const controller of active2) controller.abort();
     };
     if (options.batch.aborted) stopAll();
     else options.batch.addEventListener("abort", stopAll, { once: true });
     const worker = async () => {
       while (!stopped && queue.length) {
         const key3 = queue.shift(), controller = new AbortController();
-        active.add(controller);
+        active2.add(controller);
         let timedOut = false;
         const timer2 = setTimeout(() => {
           timedOut = true;
@@ -7622,7 +8925,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
           } else if (!stopped && !controller.signal.aborted && options.onError(key3, error)) stopAll();
         } finally {
           clearTimeout(timer2);
-          active.delete(controller);
+          active2.delete(controller);
         }
       }
     };
@@ -7681,9 +8984,9 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     });
   }
   var LocalFollowChecker = class {
-    constructor(api3 = new LocalFollowApi(), changed = () => {
+    constructor(api4 = new LocalFollowApi(), changed = () => {
     }, limits = {}) {
-      this.api = api3;
+      this.api = api4;
       this.changed = changed;
       this.limits = limits;
       this.state = { running: false, total: 0, completed: 0, failed: 0, message: "\u4EC5\u663E\u793A\u672C\u673A\u5DF2\u83B7\u53D6\u7684\u53D1\u5E03\u8BB0\u5F55" };
@@ -7716,7 +9019,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
             const message = error instanceof Error ? error.message : "\u8BFB\u53D6\u5931\u8D25";
             writeLocalFollowCache(uid, { checkError: message });
             this.changed(this.state);
-            if (error instanceof LocalFollowReadError && error.stopsBatch) {
+            if (error instanceof BiliReadError && error.stopsBatch) {
               this.state.message = `${message}\uFF1B\u5DF2\u505C\u6B62\u6574\u6279\uFF0C\u8BF7\u7A0D\u540E\u624B\u52A8\u68C0\u67E5`;
               return true;
             }
@@ -7844,7 +9147,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
           failed++;
           failedKeys.push(source.key);
           first2 ||= error instanceof Error ? error.message : "\u8BFB\u53D6\u5931\u8D25";
-          if (error instanceof LocalFollowReadError && error.stopsBatch) {
+          if (error instanceof BiliReadError && error.stopsBatch) {
             stopped = true;
             return true;
           }
@@ -7986,7 +9289,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
         slice = take();
       }
       const stream = this.authors.get(uid);
-      const stopped = error instanceof LocalFollowReadError && error.stopsBatch;
+      const stopped = error instanceof BiliReadError && error.stopsBatch;
       const message = error instanceof Error ? error.message : error ? "\u8BFB\u53D6\u5931\u8D25" : "";
       this.status = stopped ? `\u670D\u52A1\u9650\u5236\uFF0C\u5DF2\u505C\u6B62\uFF1A${message}` : message ? `\u8BFB\u53D6\u5931\u8D25\uFF1A${message}` : read2 ? "\u5DF2\u8BFB\u53D6 1 \u4E2A\u6765\u6E90" : "\u4F7F\u7528\u672C\u9875\u7F13\u5B58";
       const more = !stopped && !!slice.length && !!stream && (stream.next < stream.items.length || stream.hasMore);
@@ -8225,10 +9528,10 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     return box;
   }
   function renderDynamicCard(raw, nested = false) {
-    const author2 = raw?.modules?.module_author ?? {}, card2 = node("article", nested ? "adc-card adc-nested" : "adc-card xp-window");
-    if (!nested) card2.dataset.inactive = "";
-    card2.dataset.dynamicId = String(raw?.id_str ?? "");
-    const caption2 = card2.appendChild(node("header", nested ? "adc-caption" : "adc-caption xp-caption"));
+    const author2 = raw?.modules?.module_author ?? {}, card3 = node("article", nested ? "adc-card adc-nested" : "adc-card xp-window");
+    if (!nested) card3.dataset.inactive = "";
+    card3.dataset.dynamicId = String(raw?.id_str ?? "");
+    const caption2 = card3.appendChild(node("header", nested ? "adc-caption" : "adc-caption xp-caption"));
     const uid = /^\d+$/.test(String(author2.mid ?? "")) ? String(author2.mid) : "";
     const space = uid ? `https://space.bilibili.com/${uid}/dynamic` : "";
     if (!nested) caption2.appendChild(link(space, "adc-face-link")).append(image2(bilibiliThumb(author2.face, "32w_32h_1c"), "adc-face", ""));
@@ -8236,7 +9539,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     if (author2.pub_action) caption2.append(node("span", "adc-action", author2.pub_action));
     if (raw?.modules?.module_tag?.text) caption2.append(node("span", "adc-pin", raw.modules.module_tag.text));
     caption2.append(node("span", "adc-tag", typeLabels[raw?.type] ?? "\u52A8\u6001"));
-    const content = card2.appendChild(body(raw));
+    const content = card3.appendChild(body(raw));
     if (!nested) {
       const stat = raw?.modules?.module_stat ?? {}, actions = node("div", "adc-actions");
       for (const [label, key3] of [["\u8F6C\u53D1", "forward"], ["\u8BC4\u8BBA", "comment"], ["\u70B9\u8D5E", "like"]]) {
@@ -8259,8 +9562,8 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
       content.append(last);
     }
     const when2 = typeof author2.pub_time === "string" && author2.pub_time ? author2.pub_time : Number(author2.pub_ts) > 0 ? new Date(Number(author2.pub_ts) * 1e3).toLocaleString() : "";
-    if (when2 && !nested) card2.appendChild(node("footer", "adc-footer xp-status")).append(node("span", "xp-status-pane", `\u53D1\u5E03\u4E8E ${when2}`));
-    return card2;
+    if (when2 && !nested) card3.appendChild(node("footer", "adc-footer xp-status")).append(node("span", "xp-status-pane", `\u53D1\u5E03\u4E8E ${when2}`));
+    return card3;
   }
   function dynamicBlockText(raw) {
     const parts2 = [];
@@ -8334,859 +9637,1256 @@ ${root} .adc-footer{margin:0 -1px}
 ${root} .btnView{z-index:3}
 `;
 
-  // src/ui/dialogs.ts
-  var pending = Promise.resolve();
-  function atelierDialog(options) {
-    const run = () => new Promise((resolve) => {
-      ensureLunaTheme();
-      const before = document.activeElement;
-      const dialog = document.createElement("dialog");
-      dialog.className = "atelier-dialog xp-window";
-      dialog.setAttribute("data-bili-blocker-ui", "");
-      const caption2 = document.createElement("header");
-      caption2.className = "xp-caption";
-      const heading = document.createElement("h2");
-      heading.id = "atelier-dialog-title";
-      heading.textContent = options.title;
-      const dismiss = document.createElement("button");
-      dismiss.type = "button";
-      dismiss.className = "xp-caption-button";
-      dismiss.dataset.kind = "close";
-      dismiss.setAttribute("aria-label", "\u5173\u95ED");
-      dismiss.title = "\u5173\u95ED";
-      caption2.append(heading, dismiss);
-      dialog.setAttribute("aria-labelledby", heading.id);
-      const message = document.createElement("p");
-      message.textContent = options.message;
-      const body2 = document.createElement("div");
-      body2.className = "atelier-dialog-body";
-      body2.append(message);
-      let input;
-      if (options.input !== void 0) {
-        input = document.createElement(options.multiline ? "textarea" : "input");
-        input.value = options.input;
-        input.readOnly = !!options.readOnly;
-        input.setAttribute("aria-label", options.title);
-        body2.append(input);
+  // src/modules/local-following/feed-interact.ts
+  function ok(raw) {
+    if (!raw || raw.code !== 0) throw new BiliActionError(typeof raw?.message === "string" && raw.message ? raw.message : "\u64CD\u4F5C\u5931\u8D25", Number(raw?.code) || 0);
+    return raw.data ?? {};
+  }
+  var FeedInteractions = class {
+    constructor(read2, write, signingKey, mid) {
+      this.read = read2;
+      this.write = write;
+      this.signingKey = signingKey;
+      this.mid = mid;
+    }
+    get(url, signal = new AbortController().signal) {
+      return this.read(url, signal).then(ok, (error) => {
+        throw error instanceof BiliReadError ? new BiliActionError(error.message, error.status) : error;
+      });
+    }
+    async send(op, payload) {
+      return ok(await this.write(op, payload));
+    }
+    like(dynId, on5) {
+      return this.send("like", { body: { dyn_id_str: dynId, up: on5 ? 1 : 2, spmid: "333.1365.0.0" } });
+    }
+    /** The page's own forward flow: submit check, then the scene-4 create. */
+    async forward(dynId, text3) {
+      const content = { contents: text3 ? [{ raw_text: text3, type: 1, biz_id: "" }] : [] };
+      const upload = `${this.mid || 0}_${Math.floor(Date.now() / 1e3)}_${Math.floor(Math.random() * 9e3 + 1e3)}`;
+      const request2 = { content, scene: 4, attach_card: null, upload_id: upload, meta: { app_meta: { from: "create.dynamic.web", mobi_app: "web" } }, option: { aigc: 2 } };
+      await this.send("forward-check", { body: { content, scene: 4, attach_card: null, create_option: request2.option } });
+      return this.send("forward", { query: { platform: "web" }, body: { dyn_req: request2, web_repost_src: { dyn_id_str: dynId } } });
+    }
+    comments(oid, type, mode2, next = 0, signal) {
+      return this.get(`https://api.bilibili.com/x/v2/reply/main?oid=${oid}&type=${type}&mode=${mode2}&next=${next}&ps=20&plat=1`, signal);
+    }
+    replies(oid, type, root2, page, signal) {
+      return this.get(`https://api.bilibili.com/x/v2/reply/reply?oid=${oid}&type=${type}&root=${root2}&pn=${page}&ps=10`, signal);
+    }
+    /** Signed the way the comment component signs its posts. */
+    async post(options) {
+      const body2 = { oid: options.oid, type: options.type, message: options.message, plat: 1, gaia_source: "main_web" };
+      if (options.root) {
+        body2.root = options.root;
+        body2.parent = options.parent || options.root;
       }
-      const actions = document.createElement("div");
-      actions.className = "atelier-dialog-actions";
-      let settled = false;
-      const cleanupPixels = observeCrispText(dialog);
-      dismiss.addEventListener("click", () => {
-        sound("click");
-        finish(null);
+      if (options.pictures?.length) body2.pictures = JSON.stringify(options.pictures);
+      const signed = new URLSearchParams(localFollowWbiQuery({ web_location: "333.1365" }, await this.signingKey(new AbortController().signal)));
+      return this.send("reply", { query: Object.fromEntries(signed), body: body2 });
+    }
+    likeReply(oid, type, rpid, on5) {
+      return this.send("reply-like", { body: { oid, type, rpid, action: on5 ? 1 : 0 } });
+    }
+    hateReply(oid, type, rpid, on5) {
+      return this.send("reply-hate", { body: { oid, type, rpid, action: on5 ? 1 : 0 } });
+    }
+    deleteReply(oid, type, rpid) {
+      return this.send("reply-delete", { body: { oid, type, rpid } });
+    }
+    async reportReasons(oid, type, rpid) {
+      const data = await this.get(`https://api.bilibili.com/x/v2/reply/report/metadata?oid=${oid}&type=${type}&rpid=${rpid}`);
+      return (Array.isArray(data.reason_list) ? data.reason_list : []).filter((reason) => Number.isFinite(Number(reason?.tag_id)) && typeof reason?.tag_name === "string").map((reason) => ({ id: Number(reason.tag_id), name: reason.tag_name }));
+    }
+    report(oid, type, rpid, reason, content) {
+      return this.send("reply-report", { body: { oid, type, rpid, reason, content, gaia_source: "main_web" } });
+    }
+    async upload(file) {
+      const data = await this.send("upload", { body: { biz: "new_dyn", category: "daily" }, file });
+      if (typeof data.image_url !== "string") throw new BiliActionError("\u56FE\u7247\u4E0A\u4F20\u5931\u8D25");
+      return { img_src: data.image_url, img_width: Number(data.image_width) || 0, img_height: Number(data.image_height) || 0, img_size: Number(data.img_size) || 0 };
+    }
+    /** Read once per page; the panel keeps the answer. */
+    emotes() {
+      return this.emotePackages ??= this.get("https://api.bilibili.com/x/emote/user/panel/web?business=reply").then(
+        (data) => (Array.isArray(data.packages) ? data.packages : []).map((item) => ({
+          id: Number(item?.id) || 0,
+          name: String(item?.text ?? ""),
+          icon: String(item?.url ?? ""),
+          emotes: (Array.isArray(item?.emote) ? item.emote : []).filter((emote) => typeof emote?.text === "string").map((emote) => ({ text: emote.text, url: typeof emote.url === "string" ? emote.url : "", large: Number(emote?.meta?.size) === 2 }))
+        })).filter((item) => item.emotes.length)
+      ).catch((error) => {
+        this.emotePackages = void 0;
+        throw error;
       });
-      const finish = (result2) => {
-        if (settled) return;
-        settled = true;
-        cleanupPixels();
-        dialog.remove();
-        if (before?.isConnected) before.focus();
-        resolve(result2);
-      };
-      const add = (label, value2, parent = actions) => {
-        const button5 = document.createElement("button");
-        button5.type = "button";
-        button5.className = "atelier-control";
-        button5.textContent = label;
-        button5.addEventListener("click", () => {
-          sound("click");
-          finish(value2());
-        });
-        parent.append(button5);
-        return button5;
-      };
-      if (options.choices) {
-        const choices = document.createElement("div");
-        choices.className = "atelier-dialog-choices";
-        for (const choice of options.choices) add(choice.label, () => choice.value, choices);
-        body2.append(choices);
-      } else add(options.confirmLabel || (options.readOnly || options.alert ? "\u5173\u95ED" : "\u786E\u5B9A"), () => input?.value ?? "ok");
-      if (!options.alert && !options.readOnly) add(options.cancelLabel || "\u53D6\u6D88", () => null);
-      dialog.append(caption2, body2, actions);
-      dialog.addEventListener("cancel", (event) => {
-        event.preventDefault();
-        finish(null);
-      });
-      dialog.addEventListener("keydown", (event) => {
-        event.stopPropagation();
-        if (event.key === "Escape") {
-          event.preventDefault();
-          finish(null);
-        }
-        if (event.key === "Enter" && event.target === input && !options.multiline) {
-          event.preventDefault();
-          finish(input.value);
-        }
-      });
-      document.body.append(dialog);
-      if (typeof dialog.showModal === "function") dialog.showModal();
-      else dialog.setAttribute("open", "");
-      (input || dialog.querySelector("button"))?.focus();
-      if (options.readOnly) input?.select();
-    });
-    const result = pending.then(run, run);
-    pending = result;
-    return result;
-  }
-  async function atelierConfirm(message, title = "\u786E\u8BA4\u64CD\u4F5C") {
-    return await atelierDialog({ title, message }) !== null;
-  }
-  function atelierAlert(message, title = "\u64CD\u4F5C\u63D0\u793A") {
-    return atelierDialog({ title, message, alert: true });
-  }
-  function atelierPrompt(message, value2 = "", readOnly = false) {
-    return atelierDialog({ title: readOnly ? "\u5BFC\u51FA\u6570\u636E" : "\u5BFC\u5165\u6570\u636E", message, input: value2, multiline: true, readOnly });
-  }
+    }
+  };
 
-  // src/core/info-log.ts
-  var rootId = "bili-atelier-info-log";
-  var styleId = "bili-atelier-info-log-style";
-  var maxItems = 6;
-  function ensureInfoLogStyle() {
-    ensureAppearance();
-    if (document.getElementById(styleId)) {
-      return;
-    }
-    const style = document.createElement("style");
-    style.id = styleId;
-    style.textContent = `
-#${rootId} {
-  position: fixed;
-  top: 84px;
-  right: 24px;
-  z-index: 2147483640;
-  width: min(360px, calc(100vw - 32px));
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-  pointer-events: none;
-  font: var(--xp-font-size)/var(--xp-line) var(--xp-font);
-}
-#${rootId} .bili-atelier-info-log-item {
-  box-sizing: border-box;
-  max-width: 100%;
-  min-width: 180px;
-  padding: 5px 8px 6px 10px;
-  border: 1px solid var(--xp-ink);
-  border-left: 4px solid var(--xp-highlight);
-  background: var(--xp-info);
-  color: var(--xp-info-ink);
-  box-shadow: 2px 2px 2px #0005;
-  opacity: 0;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-}
-#${rootId} .bili-atelier-info-log-item.is-visible { opacity: 1; }
-#${rootId} .bili-atelier-info-log-item.is-leaving { display: none; }
-#${rootId} .bili-atelier-info-log-success { border-left-color: #3fb34f; }
-#${rootId} .bili-atelier-info-log-warning { border-left-color: #f7b500; }
-#${rootId} .bili-atelier-info-log-error { border-left-color: var(--xp-danger); }
-`;
-    (document.head || document.documentElement).appendChild(style);
+  // src/modules/local-following/feed-comments.ts
+  function node2(tag, className = "", text3) {
+    const element2 = document.createElement(tag);
+    if (className) element2.className = className;
+    if (text3 !== void 0) element2.textContent = text3;
+    return element2;
   }
-  function ensureInfoLogRoot() {
-    if (!document.body) {
-      return null;
-    }
-    ensureInfoLogStyle();
-    let root2 = document.getElementById(rootId);
-    if (!root2) {
-      root2 = document.createElement("div");
-      root2.id = rootId;
-      root2.setAttribute("data-bili-blocker-ui", "true");
-      root2.setAttribute("data-bili-atelier-ui", "info-log");
-      root2.setAttribute("role", "status");
-      root2.setAttribute("aria-live", "polite");
-      document.body.appendChild(root2);
-    }
-    return root2;
+  function button(label, className, action) {
+    const element2 = node2("button", `atelier-control ${className}`, label);
+    element2.type = "button";
+    element2.addEventListener("click", () => action(element2));
+    return element2;
   }
-  function showInfoLog(message, tone = "info", durationMs = 3600) {
-    const text3 = String(message || "").replace(/\s+/g, " ").trim();
-    if (!text3) {
-      return;
+  var failure = (error) => error instanceof BiliActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u539F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
+  var timestamp = /(?<![\d:])((?:\d{1,2}:)?[0-5]?\d:[0-5]\d)(?![\d:])/;
+  var seconds = (value2) => value2.split(":").reduce((total, part) => total * 60 + Number(part), 0);
+  function commentMessage(content, seek) {
+    const box = node2("div", "acm-text"), message = typeof content?.message === "string" ? content.message : "";
+    const emotes = content?.emote && typeof content.emote === "object" ? content.emote : {};
+    const links = /* @__PURE__ */ new Map();
+    for (const member of Array.isArray(content?.members) ? content.members : []) {
+      if (/^\d+$/.test(String(member?.mid)) && typeof member?.uname === "string") links.set(`@${member.uname}`, `https://space.bilibili.com/${member.mid}`);
     }
-    const root2 = ensureInfoLogRoot();
-    if (!root2) {
-      document.addEventListener("DOMContentLoaded", () => showInfoLog(text3, tone, durationMs), { once: true });
-      return;
+    for (const [keyword, jump] of Object.entries(content?.jump_url && typeof content.jump_url === "object" ? content.jump_url : {})) {
+      const url = safeUrl(jump?.pc_url) || `https://search.bilibili.com/all?keyword=${encodeURIComponent(keyword)}`;
+      links.set(keyword, url);
     }
-    const item = document.createElement("div");
-    item.className = `bili-atelier-info-log-item bili-atelier-info-log-${tone}`;
-    const label = item.appendChild(document.createElement("span"));
-    label.className = "xp-text";
-    label.textContent = text3;
-    root2.prepend(item);
-    item.style.maxHeight = `${Math.max(48, item.scrollHeight + 20)}px`;
-    window.requestAnimationFrame(() => item.classList.add("is-visible"));
-    while (root2.children.length > maxItems) {
-      root2.lastElementChild?.remove();
-    }
-    window.setTimeout(() => {
-      item.classList.add("is-leaving");
-      window.setTimeout(() => item.remove(), 320);
-    }, durationMs);
-  }
-
-  // src/modules/blocker/page-context.ts
-  function currentLocation() {
-    return typeof location !== "undefined" ? location : null;
-  }
-  function isHomePageLocation(value2 = currentLocation()) {
-    return value2?.hostname === "www.bilibili.com" && /^\/?$/.test(value2.pathname || "");
-  }
-  function isSpacePageLocation(value2 = currentLocation()) {
-    return value2?.hostname === "space.bilibili.com" && /^\/\d+/.test(value2.pathname || "");
-  }
-  function parseUid(value2) {
-    const match = value2?.match(/space\.bilibili\.com\/(\d+)|data-user-id=["']?(\d+)|data-usercard-mid=["']?(\d+)|^(\d+)$/i);
-    const raw = match?.[1] || match?.[2] || match?.[3] || match?.[4];
-    if (!raw) {
-      return void 0;
-    }
-    const uid = Number.parseInt(raw, 10);
-    return Number.isFinite(uid) ? uid : void 0;
-  }
-  function parseSpaceProfileUid(pathname = currentLocation()?.pathname) {
-    return parseUid(pathname?.match(/^\/(\d+)/)?.[1]);
-  }
-
-  // src/modules/blocker/extract.ts
-  var videoCardSelectors = [
-    ".bili-video-card",
-    ".bili-feed-card",
-    ".feed-card",
-    ".video-card",
-    ".video-page-card-small",
-    ".video-page-operator-card-small",
-    ".small-item",
-    ".history-record",
-    ".rank-item",
-    ".rank-list>li",
-    ".video-list-item",
-    ".card-box",
-    "li",
-    "div"
-  ];
-  var commentSelectors = [
-    "bili-comment-thread-renderer",
-    "bili-comment-reply-renderer",
-    ".reply-item",
-    ".sub-reply-item",
-    ".list-item",
-    ".comment-item"
-  ];
-  var liveCardSelectors = [
-    ".bili-live-card",
-    ".live-card",
-    ".room-card",
-    ".bili-feed-card",
-    ".feed-card",
-    ".bili-video-card",
-    ".recommend-card",
-    ".floor-single-card",
-    ".video-list-item",
-    ".index_item_JSGkw",
-    "li",
-    "div"
-  ];
-  var ignoredTextTags = /* @__PURE__ */ new Set(["STYLE", "SCRIPT", "TEMPLATE", "NOSCRIPT"]);
-  function normalizeVisibleText(value2) {
-    return value2.replace(/\s+/g, " ").trim();
-  }
-  function readVisibleText(node4) {
-    if (!node4) {
-      return "";
-    }
-    if (node4.nodeType === 3) {
-      return node4.textContent || "";
-    }
-    const tagName = String(node4.tagName || node4.localName || "").toUpperCase();
-    if (ignoredTextTags.has(tagName) || node4.getAttribute?.("data-bili-blocker-ui") === "true") {
-      return "";
-    }
-    if (tagName === "BR") {
-      return "\n";
-    }
-    if (tagName === "IMG") {
-      return node4.getAttribute?.("alt") || node4.getAttribute?.("title") || "";
-    }
-    const childNodes = node4.childNodes && node4.childNodes.length > 0 ? node4.childNodes : node4.children;
-    const parts2 = Array.from(childNodes || []).map(readVisibleText);
-    if (parts2.length === 0 && typeof node4.localText === "string") {
-      parts2.push(node4.localText);
-    }
-    if (node4.shadowRoot) {
-      parts2.push(readVisibleText(node4.shadowRoot));
-    }
-    return parts2.filter(Boolean).join(" ");
-  }
-  function text(el3) {
-    return normalizeVisibleText(readVisibleText(el3));
-  }
-  function attr(el3, name) {
-    return el3?.getAttribute(name)?.trim() || "";
-  }
-  function first(root2, selectors) {
-    for (const selector of selectors) {
-      const found = root2.querySelector(selector);
-      if (found) {
-        return found;
-      }
-    }
-    return null;
-  }
-  function queryAllDeep(root2, selector) {
-    const results = [];
-    const visit = (node4) => {
-      if (typeof Element !== "undefined" && node4 instanceof Element && node4.matches(selector)) {
-        results.push(node4);
-      }
-      if (typeof Element !== "undefined" && node4 instanceof Element && node4.shadowRoot) {
-        visit(node4.shadowRoot);
-      }
-      results.push(...Array.from(node4.querySelectorAll(selector)));
-      for (const el3 of Array.from(node4.querySelectorAll("*"))) {
-        if (el3.shadowRoot) {
-          visit(el3.shadowRoot);
-        }
-      }
-    };
-    visit(root2);
-    return results;
-  }
-  function queryOneDeep(root2, selectors) {
-    for (const selector of selectors) {
-      const local = root2.querySelector(selector);
-      if (local) {
-        return local;
-      }
-    }
-    for (const el3 of Array.from(root2.querySelectorAll("*"))) {
-      const shadowRoot = el3.shadowRoot;
-      if (!shadowRoot) {
-        continue;
-      }
-      const nested = queryOneDeep(shadowRoot, selectors);
-      if (nested) {
-        return nested;
-      }
-    }
-    return null;
-  }
-  function parseBv(url) {
-    return url?.match(/\/video\/(BV[^/?#]+)/i)?.[1] || null;
-  }
-  function parseRoomId(url) {
-    return url?.match(/live\.bilibili\.com\/(?:blanc\/)?(\d+)/i)?.[1] || void 0;
-  }
-  function getSpaceOwner(root2) {
-    if (!isSpacePageLocation()) {
-      return { uid: void 0, name: void 0 };
-    }
-    const uid = parseSpaceProfileUid();
-    const name = text(first(root2, [
-      "#h-name",
-      ".h-name",
-      ".n-name",
-      ".space-header .name",
-      ".user-info .name",
-      ".user-name",
-      ".nickname"
-    ])) || void 0;
-    return { uid, name };
-  }
-  function fillOwnerFromSpacePage(owner, root2) {
-    if (owner.uid !== void 0 || owner.name) {
-      return owner;
-    }
-    return getSpaceOwner(root2);
-  }
-  function closestAny(el3, selectors) {
-    for (const selector of selectors) {
-      const found = el3.closest(selector);
-      if (found instanceof HTMLElement) {
-        return found;
-      }
-    }
-    return el3 instanceof HTMLElement ? el3 : null;
-  }
-  function getOwner(root2) {
-    const ownerLink = first(root2, [
-      'a[href*="//space.bilibili.com/"]',
-      'a[href*="space.bilibili.com/"]',
-      ".bili-video-card__info--owner",
-      ".bili-live-card__info--uname",
-      ".bili-live-card__info--owner",
-      ".live-card__info--uname",
-      ".upname a",
-      ".channel-name",
-      ".anchor-name",
-      ".room-anchor",
-      ".up-name"
-    ]);
-    const href = attr(ownerLink, "href");
-    const name = text(ownerLink?.querySelector?.(".bili-video-card__info--author")) || text(ownerLink?.querySelector?.(".bili-live-card__info--uname")) || text(ownerLink?.querySelector?.(".name")) || text(ownerLink);
-    const uid = parseUid(href) ?? parseUid(attr(ownerLink, "data-usercard-mid")) ?? parseUid(attr(ownerLink, "data-user-id"));
-    return { uid, name: name || void 0 };
-  }
-  function readCollectionVideoItem(row) {
-    const insertionEl = row.querySelector(".video-pod__item") || row;
-    const titleEl = row.querySelector(".video-episode-card__info-title,.title") || row;
-    const titleCopy = titleEl.cloneNode(true);
-    titleCopy.querySelectorAll(".btnView").forEach((node4) => node4.remove());
-    const title = attr(titleEl, "title") || text(titleCopy);
-    if (!title) return null;
-    const owner = getOwner(row);
-    return {
-      kind: "video",
-      el: row,
-      insertionEl,
-      collection: true,
-      title,
-      bv: parseBv(row.getAttribute("data-key") || row.querySelector('a[href*="/video/BV"]')?.href),
-      uid: owner.uid,
-      name: owner.name
-    };
-  }
-  function collectVideoItems(root2 = document) {
-    const anchors = Array.from(root2.querySelectorAll('a[href*="/video/BV"]'));
-    const seen = /* @__PURE__ */ new Set();
-    const items = [];
-    const collectionSelector = ".pod-item,.video-episode-card,.multip .video-pod__item,.multip.grid .page";
-    for (const row of Array.from(root2.querySelectorAll(collectionSelector))) {
-      if (row.closest("[data-bili-blocker-ui]")) continue;
-      if (row.parentElement?.closest(collectionSelector)) continue;
-      const item = readCollectionVideoItem(row);
-      if (!item) continue;
-      items.push(item);
-      seen.add(row);
-    }
-    for (const anchor of anchors) {
-      if (anchor.closest(collectionSelector)) continue;
-      const card2 = closestAny(anchor, videoCardSelectors);
-      if (!card2 || seen.has(card2)) {
-        continue;
-      }
-      seen.add(card2);
-      const owner = fillOwnerFromSpacePage(getOwner(card2), root2);
-      const title = attr(anchor, "title") || text(first(card2, [".bili-video-card__info--tit", ".title", "h3", ".video-name"])) || text(anchor);
-      const bv = parseBv(anchor.href);
-      const insertionEl = first(card2, [
-        ".bili-video-card__info--bottom",
-        ".bili-video-card__info--owner",
-        ".bili-video-card__info",
-        ".video-card-info",
-        ".info",
-        ".meta",
-        ".playinfo"
-      ]) || card2;
-      items.push({
-        kind: "video",
-        el: card2,
-        insertionEl,
-        title: title || void 0,
-        bv: bv || void 0,
-        uid: owner.uid,
-        name: owner.name
-      });
-    }
-    return items;
-  }
-  function collectCommentItems(root2 = document) {
-    const selector = commentSelectors.join(",");
-    const candidates = queryAllDeep(root2, selector);
-    const seen = /* @__PURE__ */ new Set();
-    const items = [];
-    for (const candidate of candidates) {
-      if (!(candidate instanceof HTMLElement) || seen.has(candidate)) {
-        continue;
-      }
-      seen.add(candidate);
-      const searchRoot = candidate.shadowRoot || candidate;
-      const userLink = queryOneDeep(searchRoot, [
-        '#user-name a[href*="space.bilibili.com/"]',
-        'a[href*="space.bilibili.com/"]',
-        ".user-name",
-        ".sub-user-name",
-        ".name"
-      ]);
-      const contentEl = queryOneDeep(searchRoot, [
-        "#contents",
-        ".reply-content",
-        ".text-con",
-        ".text",
-        "bili-rich-text"
-      ]);
-      const content = text(contentEl);
-      const href = attr(userLink, "href") || attr(userLink, "data-usercard-mid") || attr(userLink, "data-user-id") || candidate.outerHTML.slice(0, 500);
-      const uid = parseUid(href);
-      const name = text(userLink) || void 0;
-      if (!content && uid === void 0 && !name) {
-        continue;
-      }
-      items.push({
-        kind: "comment",
-        el: candidate,
-        insertionEl: userLink || candidate,
-        name,
-        uid,
-        content: content || void 0
-      });
-    }
-    return items;
-  }
-  function collectLiveItems(root2 = document) {
-    const anchors = Array.from(root2.querySelectorAll('a[href*="live.bilibili.com/"]'));
-    const seen = /* @__PURE__ */ new Set();
-    const items = [];
-    for (const anchor of anchors) {
-      const roomId = parseRoomId(anchor.href);
-      if (!roomId) {
-        continue;
-      }
-      const card2 = closestAny(anchor, liveCardSelectors);
-      if (!card2 || seen.has(card2)) {
-        continue;
-      }
-      seen.add(card2);
-      const owner = fillOwnerFromSpacePage(getOwner(card2), root2);
-      const liveTitle = attr(anchor, "title") || text(first(card2, [".room-title", ".bili-live-card__info--tit", "h3", ".title"])) || text(anchor);
-      const partition = text(first(card2, [".area-name", ".video-card-meta__chip", ".partition"]));
-      items.push({
-        kind: "live",
-        el: card2,
-        insertionEl: first(card2, [
-          ".bili-live-card__info--bottom",
-          ".bili-live-card__info",
-          ".bili-video-card__info--bottom",
-          ".bili-video-card__info--owner",
-          ".live-card__info",
-          ".room-card-info",
-          ".video-card-info",
-          ".info",
-          ".meta"
-        ]) || card2,
-        name: owner.name,
-        uid: owner.uid,
-        liveTitle: liveTitle || void 0,
-        roomId,
-        partition: partition || void 0
-      });
-    }
-    return items;
-  }
-
-  // src/modules/sync/panel.ts
-  var import_qrcode = __toESM(require_browser(), 1);
-  function mountSyncPanel() {
-    const host = document.createElement("div");
-    host.className = "luna-sync";
-    const root2 = host.attachShadow({ mode: "closed" });
-    root2.innerHTML = `<style>
-    ${sharedControlCss}
-    ${xpFieldCss("input")}
-    :host { display:block; color:var(--xp-ink); ${xpFont}; }
-    * { box-sizing:border-box; }
-    h2 { font:inherit; font-weight:bold; margin:0 0 12px; }
-    h3 { font:inherit; font-weight:normal; color:var(--xp-group-text); margin:0 0 10px; }
-    p { margin:0 0 16px; }
-    .hint { color:var(--xp-muted); }
-    section { border-top:1px solid var(--xp-line); padding:12px 0; }
-    .fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 18px; }
-    label { display:block; min-width:0; }
-    input { display:block; width:100%; margin:4px 0 0; }
-    [role=status] { white-space:pre-wrap; overflow-wrap:anywhere; background:var(--xp-window); border:1px solid var(--xp-edge); padding:6px 8px; margin:12px 0; }
-    .actions { display:flex; gap:6px; flex-wrap:wrap; }
-    .actions .atelier-control { min-width:75px; }
-    .qr:not(:empty) { border:1px solid var(--xp-edge); padding:14px; margin-top:16px; background:var(--xp-window); }
-    canvas { display:block; max-width:100%; height:auto!important; margin-bottom:12px; }
-    @media(max-width:850px) { .fields { grid-template-columns:minmax(0,1fr); } h2 { font-size:1.4em; } }
-  </style>
-  <h2>PC / Android \u540C\u6B65</h2>
-  <p class="hint">\u901A\u8FC7 Backblaze B2 \u540C\u6B65\u5DF2\u770B\u6807\u8BB0\u3001UID\uFF0F\u7CBE\u786E\u7528\u6237\u540D\u9ED1\u540D\u5355\uFF0C\u4EE5\u53CA\u672C\u5730\u5173\u6CE8\u548C\u5206\u7EC4\uFF0C\u5305\u62EC\u65B0\u589E\u4E0E\u79FB\u9664\u3002</p>
-  <section><h3>\u8FDE\u63A5\u8BBE\u7F6E</h3><div class="fields"></div>
-  <p class="hint" style="margin-top:12px">\u4E24\u7AEF\u4F7F\u7528\u540C\u4E00 Bucket \u548C\u540C\u6B65\u76EE\u5F55\u3002\u9996\u6B21\u5408\u5E76\u540E\u4E0D\u80FD\u66F4\u6362\u8FD9\u4E24\u9879\uFF1B\u540C\u4E00\u7A7A\u95F4\u5185\u53EF\u66F4\u65B0\u5BC6\u94A5\u3002\u5176\u4ED6\u5C4F\u853D\u89C4\u5219\u548C\u5386\u53F2\u8BB0\u5F55\u4E0D\u53C2\u4E0E\u4E91\u540C\u6B65\u3002</p>
-  <div class="actions settings"></div></section>
-  <section><h3>\u540C\u6B65\u72B6\u6001</h3><p role="status" aria-live="polite"></p><div class="actions controls"></div>
-  <p class="hint" style="margin-top:12px">\u542F\u7528\u540E\u81EA\u52A8\u540C\u6B65\uFF1B\u6682\u505C\u671F\u95F4\u4ECD\u4FDD\u7559\u672C\u5730\u6539\u52A8\uFF0C\u91CD\u65B0\u542F\u7528\u540E\u7EE7\u7EED\u4E0A\u4F20\u3002\u9996\u6B21\u4E91\u7AEF\u5408\u5E76\u524D\u4F1A\u4FDD\u7559\u672C\u5730\u5907\u4EFD\u3002</p></section>
-  <section><h3>\u624B\u673A\u914D\u7F6E\u4E0E\u5907\u4EFD</h3><div class="actions transfer"></div><div class="qr"></div></section>`;
-    const fields2 = /* @__PURE__ */ new Map();
-    const cleanupPixels = observeCrispText(root2);
-    const c = getConfig();
-    for (const [key3, label, value2] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
-      const row = document.createElement("label");
-      row.textContent = label;
-      const input = document.createElement("input");
-      input.name = key3;
-      input.type = key3 === "applicationKey" ? "password" : "text";
-      input.autocomplete = "off";
-      input.spellcheck = false;
-      input.value = value2;
-      input.addEventListener("input", () => hideSecrets());
-      fields2.set(key3, input);
-      row.append(input);
-      root2.querySelector(".fields").append(row);
-    }
-    const fieldValues = () => Object.fromEntries([...fields2].map(([k, v]) => [k, v.value.trim()]));
-    let saved = JSON.stringify(fieldValues());
-    let message = "";
-    let disposed = false;
-    let qrGeneration = 0;
-    function hideSecrets() {
-      qrGeneration++;
-      root2.querySelector(".qr").replaceChildren();
-    }
-    const render2 = () => {
-      if (disposed) return;
-      const s = status();
-      root2.querySelector('[role="status"]').textContent = `${paused() ? "\u5DF2\u6682\u505C" : "\u5DF2\u542F\u7528"} \xB7 ${s.busy ? "\u540C\u6B65\u4E2D" : `\u5F85\u4E0A\u4F20 ${s.pending} \u6761\u64CD\u4F5C`}
-\u6700\u8FD1\u6210\u529F\uFF1A${s.lastSuccess ? new Date(s.lastSuccess).toLocaleString() : "\u5C1A\u672A\u540C\u6B65"}${s.error ? `
-${s.error}` : ""}${message ? `
-${message}` : ""}`;
-    };
-    const config2 = () => parseConfig({ schema: "bili-atelier-b2-config", version: 1, ...fieldValues() });
-    const action = (group, label, run, primary = false, done = "success", long = false) => {
-      const button5 = document.createElement("button");
-      button5.type = "button";
-      button5.textContent = label;
-      button5.className = "atelier-control";
-      if (primary) button5.classList.add("xp-default");
-      button5.onclick = async () => {
-        const feedback = soundTask(long ? "start" : void 0, () => !disposed && host.isConnected && !host.closest('[data-minimized="true"]'));
-        button5.disabled = true;
-        message = "";
-        try {
-          const result = await run();
-          if (result === "skipped") {
-            message = "\u672C\u6B21\u6CA1\u6709\u5F00\u59CB\u65B0\u7684\u540C\u6B65\uFF0C\u8BF7\u68C0\u67E5\u8FDE\u63A5\u8BBE\u7F6E\u548C\u5F53\u524D\u72B6\u6001\u3002";
-            feedback.finish("warning");
-          } else feedback.finish(result === "error" ? "error" : result === "cancelled" ? "cancel" : done);
-        } catch (e) {
-          message = e instanceof Error ? e.message : "\u64CD\u4F5C\u5931\u8D25";
-          feedback.finish("error");
-        } finally {
-          button5.disabled = false;
-          render2();
-        }
-      };
-      root2.querySelector("." + group).append(button5);
-    };
-    action("settings", "\u6D4B\u8BD5\u8FDE\u63A5", async () => {
-      await testConnection(config2());
-      message = "\u8BA4\u8BC1\u3001\u76EE\u5F55\u8BFB\u53D6\u53CA\u6743\u9650\u68C0\u67E5\u901A\u8FC7\uFF1B\u9996\u6B21\u540C\u6B65\u5C06\u9A8C\u8BC1\u4E0A\u4F20\u3002";
-    }, false, "success", true);
-    action("settings", "\u4FDD\u5B58\u5E76\u542F\u7528", () => {
-      saveConfig(config2());
-      saved = JSON.stringify(fieldValues());
-      setPaused(false);
-    }, true);
-    action("controls", "\u6682\u505C\u540C\u6B65", () => setPaused(true), false, "select");
-    action("controls", "\u7ACB\u5373\u540C\u6B65", () => {
-      if (paused()) throw new Error("\u8BF7\u5148\u4FDD\u5B58\u5E76\u542F\u7528\u540C\u6B65");
-      return synchronize(true);
-    }, false, "complete", true);
-    action("transfer", "\u4E0B\u8F7D\u9996\u6B21\u5907\u4EFD", downloadBackup);
-    action("transfer", "\u4E0B\u8F7D\u672C\u5730\u5173\u6CE8\u9996\u6B21\u5907\u4EFD", downloadLocalFollowBackup);
-    action("transfer", "\u663E\u793A\u914D\u7F6E\u4E8C\u7EF4\u7801", async () => {
-      const qr = root2.querySelector(".qr");
-      if (qr.childNodes.length) {
-        hideSecrets();
+    const tokens = [...Object.keys(emotes), ...links.keys()].filter(Boolean).sort((a, b) => b.length - a.length);
+    const pattern = tokens.length ? new RegExp(`(${tokens.map((token) => token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`) : null;
+    const plain = (value2) => {
+      if (!seek) {
+        box.append(document.createTextNode(value2));
         return;
       }
-      const generation = ++qrGeneration;
-      const text3 = JSON.stringify(config2());
-      const hint = document.createElement("p");
-      hint.className = "hint";
-      hint.textContent = "\u4E8C\u7EF4\u7801\u5305\u542B\u8BBF\u95EE\u5BC6\u94A5\uFF0C\u8BF7\u52FF\u5206\u4EAB\u3002\u518D\u6B21\u70B9\u51FB\u53EF\u9690\u85CF\u3002\u624B\u673A\u53EF\u626B\u7801\u590D\u5236\u6587\u672C\uFF0C\u5728\u4E91\u540C\u6B65\u8BBE\u7F6E\u4E2D\u7C98\u8D34\u5BFC\u5165\u3002";
-      const canvas = document.createElement("canvas");
-      await import_qrcode.default.toCanvas(canvas, text3, { width: 320, errorCorrectionLevel: "M" });
-      if (disposed || generation !== qrGeneration) return;
-      const copy = document.createElement("button");
-      copy.type = "button";
-      copy.className = "atelier-control";
-      copy.textContent = "\u590D\u5236\u914D\u7F6E\u6587\u672C";
-      copy.onclick = async () => {
-        const feedback = soundTask(void 0, () => !disposed && copy.isConnected && host.isConnected);
-        try {
-          await navigator.clipboard.writeText(text3);
-          message = "\u914D\u7F6E\u6587\u672C\u5DF2\u590D\u5236";
-          feedback.finish("success");
-        } catch {
-          message = "\u65E0\u6CD5\u8BBF\u95EE\u526A\u8D34\u677F\uFF0C\u8BF7\u4F7F\u7528\u4E8C\u7EF4\u7801";
-          feedback.finish("warning");
+      value2.split(new RegExp(timestamp.source, "g")).forEach((part, index) => {
+        if (!part) return;
+        if (index % 2 === 0) {
+          box.append(document.createTextNode(part));
+          return;
         }
-        render2();
+        const jump = node2("a", "acm-link acm-seek", part);
+        jump.href = "#";
+        jump.title = `\u8DF3\u5230 ${part}`;
+        jump.addEventListener("click", (event) => {
+          event.preventDefault();
+          seek(seconds(part));
+        });
+        box.append(jump);
+      });
+    };
+    const text3 = (value2) => value2.split("\n").forEach((part, index) => {
+      if (index) box.append(node2("br"));
+      if (part) plain(part);
+    });
+    for (const piece of pattern ? message.split(pattern) : [message]) {
+      if (!piece) continue;
+      const emote = emotes[piece], url = safeUrl(emote?.url);
+      if (url) {
+        const image5 = node2("img", Number(emote?.meta?.size) === 2 ? "acm-emote acm-emote-large" : "acm-emote");
+        image5.src = url;
+        image5.alt = piece;
+        image5.title = piece;
+        image5.referrerPolicy = "no-referrer";
+        image5.loading = "lazy";
+        box.append(image5);
+      } else if (links.has(piece)) {
+        const link3 = node2("a", "acm-link", piece);
+        link3.href = links.get(piece);
+        link3.target = "_blank";
+        link3.rel = "noopener noreferrer";
+        box.append(link3);
+      } else text3(piece);
+    }
+    const pictures2 = (Array.isArray(content?.pictures) ? content.pictures : []).map((picture) => safeUrl(picture?.img_src)).filter(Boolean).slice(0, 9);
+    if (pictures2.length) {
+      const grid = node2("div", "acm-pics");
+      for (const src of pictures2) {
+        const link3 = grid.appendChild(node2("a", "acm-pic"));
+        link3.href = src;
+        link3.target = "_blank";
+        link3.rel = "noopener noreferrer";
+        const image5 = link3.appendChild(node2("img"));
+        image5.src = bilibiliThumb(src, "160w_160h_1c");
+        image5.alt = "";
+        image5.referrerPolicy = "no-referrer";
+        image5.loading = "lazy";
+      }
+      box.append(grid);
+    }
+    return box;
+  }
+  var emotePanel;
+  async function openEmotes(api4, anchor, insert) {
+    emotePanel?.close();
+    const panel = node2("section", "acm-emotes xp-window");
+    panel.setAttribute("data-bili-blocker-ui", "");
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-label", "\u8868\u60C5");
+    const caption2 = panel.appendChild(node2("header", "xp-caption"));
+    caption2.append(node2("span", "xp-caption-title", "\u8868\u60C5"));
+    const close = caption2.appendChild(button("", "xp-caption-button", () => done()));
+    close.className = "xp-caption-button";
+    close.dataset.kind = "close";
+    close.title = "\u5173\u95ED";
+    const tabs2 = panel.appendChild(node2("div", "xp-tabs"));
+    const grid = panel.appendChild(node2("div", "acm-emote-grid xp-tabpanel"));
+    grid.textContent = "\u6B63\u5728\u8BFB\u53D6\u8868\u60C5\u2026";
+    const rect = anchor.getBoundingClientRect();
+    panel.style.left = `${Math.max(4, Math.min(rect.left, innerWidth - 336))}px`;
+    panel.style.top = `${rect.bottom + 4 + 260 > innerHeight ? Math.max(4, rect.top - 264) : rect.bottom + 4}px`;
+    document.body.append(panel);
+    const outside = (event) => {
+      if (!event.composedPath().includes(panel) && !event.composedPath().includes(anchor)) done();
+    };
+    const escape = (event) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        done();
+      }
+    };
+    function done() {
+      panel.remove();
+      document.removeEventListener("pointerdown", outside, true);
+      document.removeEventListener("keydown", escape, true);
+      if (emotePanel === entry) emotePanel = void 0;
+    }
+    const entry = { close: done };
+    emotePanel = entry;
+    document.addEventListener("pointerdown", outside, true);
+    document.addEventListener("keydown", escape, true);
+    let packages;
+    try {
+      packages = await api4.emotes();
+    } catch (error) {
+      grid.textContent = `\u8868\u60C5\u8BFB\u53D6\u5931\u8D25\uFF1A${failure(error)}`;
+      return;
+    }
+    const show = (item) => {
+      for (const tab of tabs2.children) tab.setAttribute("aria-selected", String(tab.dataset.id === String(item.id)));
+      grid.replaceChildren(...item.emotes.map((emote) => {
+        const cell = node2("button", emote.url ? "acm-emote-cell" : "acm-emote-cell acm-emote-text");
+        cell.type = "button";
+        cell.title = emote.text;
+        if (emote.url) {
+          const image5 = cell.appendChild(node2("img"));
+          image5.src = emote.url;
+          image5.alt = emote.text;
+          image5.referrerPolicy = "no-referrer";
+          image5.loading = "lazy";
+        } else cell.textContent = emote.text;
+        cell.addEventListener("click", () => insert(emote.text));
+        return cell;
+      }));
+    };
+    tabs2.replaceChildren(...packages.map((item) => {
+      const tab = node2("button", "xp-tab", item.name);
+      tab.type = "button";
+      tab.dataset.id = String(item.id);
+      tab.addEventListener("click", () => show(item));
+      return tab;
+    }));
+    if (packages[0]) show(packages[0]);
+    else grid.textContent = "\u6CA1\u6709\u53EF\u7528\u7684\u8868\u60C5";
+  }
+  function composer(context, options) {
+    const box = node2("div", "acm-compose");
+    const field = box.appendChild(node2("textarea", "xp-field acm-input"));
+    field.placeholder = options.placeholder;
+    field.rows = 2;
+    if (options.prefix) field.value = options.prefix;
+    const thumbs = box.appendChild(node2("div", "acm-thumbs"));
+    const row = box.appendChild(node2("div", "acm-compose-row"));
+    const note2 = node2("span", "acm-note");
+    const pictures2 = [];
+    const insert = (text3) => {
+      const start = field.selectionStart ?? field.value.length, end = field.selectionEnd ?? start;
+      field.setRangeText(text3, start, end, "end");
+      field.focus();
+      refresh();
+    };
+    const emotes = button("\u8868\u60C5", "acm-tool", (target) => void openEmotes(context.api, target, insert));
+    const input = node2("input");
+    input.type = "file";
+    input.accept = "image/png,image/jpeg,image/gif,image/webp";
+    input.multiple = true;
+    input.hidden = true;
+    const images2 = button("\u56FE\u7247", "acm-tool", () => input.click());
+    const send = button("\u53D1\u8868", "acm-send xp-default", () => void submit());
+    row.append(emotes, images2, input, note2, send);
+    if (options.cancel) row.append(button("\u53D6\u6D88", "acm-cancel", () => options.cancel()));
+    const refresh = () => {
+      images2.disabled = pictures2.length >= 9;
+      send.disabled = pictures2.some((item) => !item.picture && !item.failed) || pictures2.some((item) => item.failed) || !field.value.trim() && !pictures2.length;
+    };
+    input.addEventListener("change", () => {
+      for (const file of [...input.files ?? []].slice(0, 9 - pictures2.length)) {
+        const element2 = thumbs.appendChild(node2("span", "acm-thumb"));
+        const image5 = element2.appendChild(node2("img"));
+        image5.src = URL.createObjectURL(file);
+        image5.alt = "";
+        const item = { file, element: element2 };
+        element2.appendChild(button("\u2715", "acm-thumb-remove", () => {
+          URL.revokeObjectURL(image5.src);
+          element2.remove();
+          pictures2.splice(pictures2.indexOf(item), 1);
+          refresh();
+        })).title = "\u53BB\u6389\u8FD9\u5F20\u56FE\u7247";
+        pictures2.push(item);
+        context.api.upload(file).then((picture) => {
+          item.picture = picture;
+        }, () => {
+          item.failed = true;
+          element2.dataset.failed = "";
+          element2.title = "\u4E0A\u4F20\u5931\u8D25\uFF0C\u8BF7\u53BB\u6389\u540E\u91CD\u8BD5";
+        }).finally(refresh);
+      }
+      input.value = "";
+      refresh();
+    });
+    field.addEventListener("input", refresh);
+    field.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        if (!send.disabled) void submit();
+      }
+      if (event.key === "Escape" && options.cancel) {
+        event.preventDefault();
+        options.cancel();
+      }
+    });
+    async function submit() {
+      send.disabled = true;
+      note2.textContent = "\u6B63\u5728\u53D1\u8868\u2026";
+      try {
+        await options.submit(field.value.trim(), pictures2.flatMap((item) => item.picture ? [item.picture] : []));
+        field.value = options.prefix ?? "";
+        thumbs.replaceChildren();
+        pictures2.length = 0;
+        note2.textContent = "";
+      } catch (error) {
+        note2.textContent = failure(error);
+      }
+      refresh();
+    }
+    refresh();
+    return { box, focus: () => {
+      field.focus();
+      field.setSelectionRange(field.value.length, field.value.length);
+    } };
+  }
+  function createCommentArea(context) {
+    const area = node2("section", "adc-comments");
+    area.setAttribute("aria-label", "\u8BC4\u8BBA");
+    const head = area.appendChild(node2("div", "acm-head"));
+    const title = head.appendChild(node2("strong", "acm-title", "\u8BC4\u8BBA"));
+    const sorts = head.appendChild(node2("span", "acm-sorts"));
+    const status2 = head.appendChild(node2("span", "acm-status"));
+    const original = head.appendChild(node2("a", "acm-original", "\u5728\u539F\u9875\u9762\u67E5\u770B"));
+    original.href = context.page;
+    original.target = "_blank";
+    original.rel = "noopener noreferrer";
+    const name = `acm-sort-${crypto.randomUUID()}`;
+    let mode2 = 3, next = 0, total = 0, loading = false, generation = 0;
+    for (const [value2, label] of [[3, "\u70ED\u95E8"], [2, "\u6700\u65B0"]]) {
+      const choice = sorts.appendChild(node2("label", "acm-sort"));
+      const radio = choice.appendChild(node2("input"));
+      radio.type = "radio";
+      radio.name = name;
+      radio.checked = value2 === mode2;
+      radio.addEventListener("change", () => {
+        if (radio.checked) {
+          mode2 = value2;
+          void load(true);
+        }
+      });
+      choice.append(document.createTextNode(label));
+    }
+    const say = (message, link3 = false) => {
+      status2.textContent = message;
+      original.hidden = false;
+      original.dataset.emphasis = String(link3);
+    };
+    const count2 = (value2) => {
+      total = Math.max(0, value2);
+      paintNotes();
+      context.onCount(total);
+    };
+    const notes = new AbortController();
+    function paintNotes() {
+      title.textContent = `\u8BC4\u8BBA ${formatCount(total) || 0}`;
+      const roots2 = [...list.querySelectorAll(".acm-item.acm-blocked")].filter((element2) => !element2.parentElement?.closest(".acm-blocked"));
+      const note2 = localHiddenNote(roots2.length);
+      if (note2) title.append(node2("span", "acm-hidden", note2));
+      for (const open of area.querySelectorAll(".acm-open")) {
+        open.querySelector(".acm-hidden")?.remove();
+        const thread = localHiddenNote(open.parentElement?.querySelectorAll(":scope > .acm-sub-item.acm-blocked").length ?? 0);
+        if (thread) open.append(node2("span", "acm-hidden", thread));
+      }
+    }
+    onLocalHiddenNoteChange(paintNotes, notes.signal);
+    if (context.me) {
+      const compose = composer(context, { placeholder: "\u53D1\u4E00\u6761\u53CB\u5584\u7684\u8BC4\u8BBA", submit: async (message, pictures2) => {
+        const data = await context.api.post({ oid: context.oid, type: context.type, message, pictures: pictures2 });
+        if (data.reply) list.prepend(item(data.reply, false));
+        count2(total + 1);
+      } });
+      area.append(compose.box);
+    }
+    const list = area.appendChild(node2("div", "acm-list"));
+    const more = area.appendChild(button("\u52A0\u8F7D\u66F4\u591A\u8BC4\u8BBA", "acm-more", () => void load(false)));
+    more.hidden = true;
+    let rules = context.blocking ? readRuleSnapshotWithHistoryAliases() : null;
+    const blocked = /* @__PURE__ */ new Set(), targets = /* @__PURE__ */ new WeakMap();
+    const reveal = () => {
+      for (const element2 of blocked) element2.hidden = !isShowingBlocked();
+    };
+    window.addEventListener(blockedVisibilityChangedEvent, reveal);
+    function guarded(element2) {
+      const target = targets.get(element2);
+      if (!rules || !target || blocked.has(element2)) return element2;
+      const decision = decideBlockableItem(target, rules);
+      if (!decision) return element2;
+      recordBlockHistory(target, decision);
+      element2.classList.add("acm-blocked");
+      element2.title = `Bili Atelier \u5DF2\u5C4F\u853D\uFF1A${decision.type} ${decision.matching}`;
+      element2.hidden = !isShowingBlocked();
+      blocked.add(element2);
+      const control = element2.querySelector(":scope > .acm-main > .acm-top > .acm-block");
+      if (control && isUserBlockDecision(decision)) {
+        delete control.dataset.confirmBlock;
+        control.textContent = "\u5DF2\u5C4F\u853D";
+        control.disabled = true;
+      }
+      return element2;
+    }
+    function rescan() {
+      rules = context.blocking ? readRuleSnapshotWithHistoryAliases() : null;
+      for (const element2 of area.querySelectorAll(".acm-item")) guarded(element2);
+      paintNotes();
+      context.onBlocked();
+    }
+    function item(reply, sub, pinned = false) {
+      const element2 = node2("article", sub ? "acm-item acm-sub-item" : "acm-item");
+      const rpid = String(reply?.rpid_str ?? reply?.rpid ?? ""), mid = String(reply?.mid_str ?? reply?.mid ?? reply?.member?.mid ?? "");
+      element2.dataset.rpid = rpid;
+      const space = /^\d+$/.test(mid) ? `https://space.bilibili.com/${mid}` : "";
+      const face = element2.appendChild(node2("a", "acm-face"));
+      if (space) {
+        face.href = space;
+        face.target = "_blank";
+        face.rel = "noopener noreferrer";
+      }
+      const avatar = face.appendChild(node2("img"));
+      avatar.alt = "";
+      avatar.referrerPolicy = "no-referrer";
+      avatar.loading = "lazy";
+      avatar.src = bilibiliThumb(reply?.member?.avatar, sub ? "32w_32h_1c" : "64w_64h_1c");
+      const main = element2.appendChild(node2("div", "acm-main"));
+      const top = main.appendChild(node2("div", "acm-top"));
+      const who = top.appendChild(node2("a", "acm-name", reply?.member?.uname || mid || "\u672A\u77E5\u7528\u6237"));
+      if (space) {
+        who.href = space;
+        who.target = "_blank";
+        who.rel = "noopener noreferrer";
+      }
+      const target = { kind: "comment", el: element2, insertionEl: element2, uid: Number(mid) || void 0, name: reply?.member?.uname, content: reply?.content?.message };
+      targets.set(element2, target);
+      if (context.blocking && !(context.me && mid === context.me)) top.append(createCommentUserBlockButton(target, rescan, "acm-block"));
+      if (mid && mid === context.owner) top.append(node2("span", "acm-badge", "UP"));
+      const level = Number(reply?.member?.level_info?.current_level);
+      if (Number.isFinite(level) && level > 0) top.append(node2("span", "acm-level", `Lv${level}`));
+      if (pinned) top.append(node2("span", "acm-badge", "\u7F6E\u9876"));
+      main.append(commentMessage(reply?.content, context.seek));
+      const meta = main.appendChild(node2("div", "acm-meta"));
+      const when2 = String(reply?.reply_control?.time_desc ?? "").replace(/发布$/, "") || (Number(reply?.ctime) > 0 ? new Date(Number(reply.ctime) * 1e3).toLocaleString() : "");
+      meta.append(node2("span", "acm-when", [when2, reply?.reply_control?.location].filter(Boolean).join(" \xB7 ")));
+      const actions = meta.appendChild(node2("span", "acm-actions"));
+      let likes = Math.max(0, Number(reply?.like) || 0), action = Number(reply?.action) || 0;
+      const like = button("", "acm-like", () => void toggle(1)), hate = button("\u8E29", "acm-hate", () => void toggle(2));
+      const paint2 = () => {
+        like.textContent = likes ? `\u70B9\u8D5E ${formatCount(likes)}` : "\u70B9\u8D5E";
+        like.setAttribute("aria-pressed", String(action === 1));
+        hate.setAttribute("aria-pressed", String(action === 2));
       };
-      qr.append(hint, canvas, copy);
-    }, false, "menu");
-    render2();
-    window.addEventListener("atelier-sync-status", render2);
+      async function toggle(which) {
+        if (!context.me) return;
+        const before = { likes, action }, on5 = action !== which;
+        if (which === 1) likes += on5 ? 1 : -1;
+        else if (on5 && action === 1) likes -= 1;
+        action = on5 ? which : 0;
+        paint2();
+        try {
+          await (which === 1 ? context.api.likeReply : context.api.hateReply).call(context.api, context.oid, context.type, rpid, on5);
+        } catch (error) {
+          ({ likes, action } = before);
+          paint2();
+          say(failure(error), true);
+        }
+      }
+      paint2();
+      actions.append(like, hate, button("\u56DE\u590D", "acm-reply", () => openReply()));
+      if (context.me && (mid === context.me || context.owner === context.me)) actions.append(button("\u5220\u9664", "acm-delete", () => void remove()));
+      actions.append(button("\u4E3E\u62A5", "acm-report", () => void report()));
+      if (!context.me) for (const control of actions.querySelectorAll("button")) {
+        control.disabled = true;
+        control.title = "\u767B\u5F55\u540E\u53EF\u7528";
+      }
+      const replies = sub ? null : main.appendChild(node2("div", "acm-sub"));
+      let replyBox = null;
+      function openReply() {
+        if (!context.me) return;
+        if (replyBox) {
+          replyBox.remove();
+          replyBox = null;
+          return;
+        }
+        const root2 = sub ? String(reply?.root_str ?? reply?.root ?? "") : rpid;
+        const compose = composer(context, {
+          placeholder: `\u56DE\u590D @${reply?.member?.uname ?? ""}`,
+          prefix: sub ? `\u56DE\u590D @${reply?.member?.uname ?? ""} :` : "",
+          submit: async (message, pictures2) => {
+            const data = await context.api.post({ oid: context.oid, type: context.type, message, root: root2, parent: rpid, pictures: pictures2 });
+            const host = sub ? element2.parentElement : replies;
+            if (data.reply && host) host.append(item(data.reply, true));
+            count2(total + 1);
+            replyBox?.remove();
+            replyBox = null;
+          },
+          cancel: () => {
+            replyBox?.remove();
+            replyBox = null;
+          }
+        });
+        replyBox = compose.box;
+        replyBox.classList.add("acm-reply-box");
+        main.append(replyBox);
+        compose.focus();
+      }
+      async function remove() {
+        if (!await atelierConfirm("\u786E\u5B9A\u5220\u9664\u8FD9\u6761\u8BC4\u8BBA\u5417\uFF1F", "\u5220\u9664\u8BC4\u8BBA")) return;
+        try {
+          await context.api.deleteReply(context.oid, context.type, rpid);
+          element2.remove();
+          count2(total - 1);
+        } catch (error) {
+          say(failure(error), true);
+        }
+      }
+      async function report() {
+        let reasons;
+        try {
+          reasons = await context.api.reportReasons(context.oid, context.type, rpid);
+        } catch (error) {
+          say(failure(error), true);
+          return;
+        }
+        if (!reasons.length) {
+          say("\u6CA1\u6709\u53EF\u9009\u7684\u4E3E\u62A5\u7406\u7531", true);
+          return;
+        }
+        const reason = await atelierDialog({ title: "\u4E3E\u62A5\u8BC4\u8BBA", message: "\u8BF7\u9009\u62E9\u4E3E\u62A5\u7406\u7531", choices: reasons.map((entry) => ({ value: String(entry.id), label: entry.name })) });
+        if (reason === null) return;
+        const detail = await atelierDialog({ title: "\u4E3E\u62A5\u8BC4\u8BBA", message: "\u8865\u5145\u8BF4\u660E\uFF08\u53EF\u4E0D\u586B\uFF09", input: "", confirmLabel: "\u4E3E\u62A5" });
+        if (detail === null) return;
+        try {
+          await context.api.report(context.oid, context.type, rpid, Number(reason), detail.trim());
+          say("\u4E3E\u62A5\u5DF2\u63D0\u4EA4");
+        } catch (error) {
+          say(failure(error), true);
+        }
+      }
+      if (replies) {
+        const preview = Array.isArray(reply?.replies) ? reply.replies : [], replyCount = Math.max(Number(reply?.rcount) || 0, preview.length);
+        for (const child of preview.slice(0, 3)) replies.append(item(child, true));
+        if (replyCount > Math.min(3, preview.length)) {
+          const open = replies.appendChild(button(String(reply?.reply_control?.sub_reply_entry_text || `\u5171 ${replyCount} \u6761\u56DE\u590D`) + "\uFF0C\u70B9\u51FB\u67E5\u770B", "acm-open", () => void page(1)));
+          open.classList.add("xp-tool");
+        }
+        async function page(number) {
+          replies.dataset.loading = "";
+          try {
+            const data = await context.api.replies(context.oid, context.type, rpid, number);
+            const pages = Math.max(1, Math.ceil((Number(data.page?.count) || 0) / (Number(data.page?.size) || 10)));
+            replies.replaceChildren(...(Array.isArray(data.replies) ? data.replies : []).map((child) => item(child, true)));
+            if (pages > 1) {
+              const pager = replies.appendChild(node2("div", "acm-pager"));
+              pager.append(button("\u4E0A\u4E00\u9875", "acm-prev", () => void page(number - 1)), node2("span", "", `\u7B2C ${number} / ${pages} \u9875`), button("\u4E0B\u4E00\u9875", "acm-next", () => void page(number + 1)));
+              pager.querySelector(".acm-prev").disabled = number <= 1;
+              pager.querySelector(".acm-next").disabled = number >= pages;
+            }
+          } catch (error) {
+            say(failure(error));
+          }
+          delete replies.dataset.loading;
+        }
+      }
+      return guarded(element2);
+    }
+    async function load(first2) {
+      if (loading && !first2) return;
+      const ticket = ++generation;
+      loading = true;
+      more.hidden = true;
+      say("\u6B63\u5728\u8BFB\u53D6\u8BC4\u8BBA\u2026");
+      if (first2) {
+        next = 0;
+        list.replaceChildren();
+      }
+      try {
+        const data = await context.api.comments(context.oid, context.type, mode2, next);
+        if (ticket !== generation) return;
+        const seen = new Set([...list.querySelectorAll(".acm-item")].map((element2) => element2.dataset.rpid));
+        const tops = first2 ? [...Array.isArray(data.top_replies) ? data.top_replies : [], ...data.upper?.top ? [data.upper.top] : []] : [];
+        for (const reply of tops) {
+          const id = String(reply?.rpid_str ?? reply?.rpid);
+          if (!seen.has(id)) {
+            seen.add(id);
+            list.append(item(reply, false, true));
+          }
+        }
+        for (const reply of Array.isArray(data.replies) ? data.replies : []) {
+          const id = String(reply?.rpid_str ?? reply?.rpid);
+          if (!seen.has(id)) {
+            seen.add(id);
+            list.append(item(reply, false));
+          }
+        }
+        if (Number.isFinite(Number(data.cursor?.all_count))) count2(Number(data.cursor.all_count));
+        else paintNotes();
+        next = Number(data.cursor?.next) || next + 1;
+        more.hidden = !!data.cursor?.is_end;
+        say(list.childElementCount ? "" : "\u8FD8\u6CA1\u6709\u8BC4\u8BBA");
+      } catch (error) {
+        if (ticket === generation) say(failure(error), true);
+      } finally {
+        if (ticket === generation) loading = false;
+      }
+    }
+    void load(true);
+    return { element: area, dispose: () => {
+      generation++;
+      notes.abort();
+      window.removeEventListener(blockedVisibilityChangedEvent, reveal);
+      emotePanel?.close();
+      area.remove();
+    } };
+  }
+  var commentAreaStyles = (root2) => `
+${root2} .adc-comments{display:flex;flex-direction:column;gap:6px;margin:4px 0 0;padding:6px 8px;background:var(--xp-face);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d);box-shadow:inset 1px 1px var(--xp-dark3d)}
+${root2} .acm-head{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px}
+${root2} .acm-sorts{display:flex;gap:10px}${root2} .acm-sort{display:inline-flex;align-items:center}
+${root2} .acm-status{flex:1;min-width:0;color:var(--xp-muted)}
+${root2} .acm-original{color:var(--xp-task-link)}${root2} .acm-original[data-emphasis=true]{font-weight:bold}
+${root2} .acm-compose{display:flex;flex-direction:column;gap:4px}
+${root2} .acm-input{width:100%;min-height:40px;resize:vertical}
+${root2} .acm-compose-row{display:flex;align-items:center;gap:4px}${root2} .acm-note{flex:1;min-width:0;color:var(--xp-danger)}
+${root2} .acm-compose-row .atelier-control{min-width:0}
+${root2} .acm-thumbs{display:flex;flex-wrap:wrap;gap:4px}${root2} .acm-thumbs:empty{display:none}
+${root2} .acm-thumb{position:relative;width:56px;height:56px;border:1px solid var(--xp-edge);background:var(--xp-window)}
+${root2} .acm-thumb img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
+${root2} .acm-thumb[data-failed]::after{content:"\u5931\u8D25";position:absolute;left:0;right:0;bottom:0;text-align:center;color:#fff;background:#a33024c0}
+${root2} .acm-thumb-remove{position:absolute;top:-6px;right:-6px;min-height:16px!important;padding:0 3px!important;line-height:14px!important}
+${root2} .acm-list{display:flex;flex-direction:column}
+${root2} .acm-item{display:flex;gap:8px;padding:6px 0;border-top:1px solid var(--xp-line)}
+${root2} .acm-list>.acm-item:first-child{border-top:0}
+${root2} .acm-face{flex:none}${root2} .acm-face img{display:block;width:32px;height:32px;object-fit:cover;image-rendering:auto}
+${root2} .acm-sub-item .acm-face img{width:16px;height:16px}
+${root2} .acm-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+${root2} .acm-top{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+${root2} .acm-name{font-weight:bold;color:var(--xp-ink)!important;text-decoration:none}
+${root2} .acm-top .acm-block{min-width:0}
+${root2} .acm-badge{padding:0 3px;color:var(--xp-caption-ink);background:var(--xp-caption)}
+${root2} .acm-level{color:var(--xp-group-text)}
+${root2} .acm-text{overflow-wrap:anywhere}${root2} .acm-link{color:var(--xp-task-link)}
+${root2} .acm-emote{width:20px;height:20px;vertical-align:text-bottom;image-rendering:auto}${root2} .acm-emote-large{width:40px;height:40px}
+${root2} .acm-pics{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}${root2} .acm-pic{display:block;width:80px;height:80px;border:1px solid var(--xp-edge)}
+${root2} .acm-pic img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
+${root2} .acm-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}${root2} .acm-when{flex:1;min-width:0;color:var(--xp-muted)}
+${root2} .acm-actions{display:flex;gap:3px}${root2} .acm-actions .atelier-control{min-width:0}
+${root2} .acm-sub{display:flex;flex-direction:column;margin-top:2px}
+${root2} .acm-sub:not(:empty){padding:0 6px;background:var(--xp-face);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d)}
+${root2} .acm-sub[data-loading]{opacity:.6}
+${root2} .acm-open{align-self:flex-start;margin:3px 0;color:var(--xp-task-link)}
+${root2} .acm-hidden{color:var(--xp-muted);font-weight:normal}
+${root2} .acm-pager{display:flex;align-items:center;gap:6px;padding:4px 0}
+${root2} .acm-reply-box{margin-top:3px}
+${root2} .acm-more{align-self:center}
+${root2} .acm-blocked{outline:1px dashed #a33024;outline-offset:-1px}
+.acm-emotes{position:fixed;z-index:2147483646;width:330px;${xpFont}}
+.acm-emotes .xp-tabs{overflow-x:auto;flex-wrap:nowrap}
+.acm-emote-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:2px;height:190px;overflow:auto;padding:4px;margin:0 4px 4px}
+.acm-emote-cell{display:grid;place-items:center;min-height:34px;padding:1px;border:1px solid transparent;background:transparent;cursor:default}
+.acm-emote-cell:hover{border-color:var(--xp-highlight);background:color-mix(in srgb,var(--xp-highlight) 15%,transparent)}
+.acm-emote-cell img{width:28px;height:28px;object-fit:contain;image-rendering:auto}
+.acm-emote-text{grid-column:span 3;${xpFont};color:var(--xp-ink)}
+`;
+  var commentAreaCss = commentAreaStyles("#atelier-feed");
+
+  // src/ui/header-offset.ts
+  var headerHeightVar = "--atelier-header-h";
+  function headerHeight() {
+    const value2 = parseFloat(document.documentElement.style.getPropertyValue(headerHeightVar));
+    return Number.isFinite(value2) && value2 > 0 ? value2 : 64;
+  }
+  var headerBottomCss = `var(${headerHeightVar}, 64px)`;
+
+  // src/modules/local-following/feed-roster.ts
+  var pageSize = 50;
+  var followingsUrl = (mid, page) => `https://api.bilibili.com/x/relation/followings?vmid=${mid}&pn=${page}&ps=${pageSize}&order=desc&order_type=`;
+  function people(raw) {
+    if (raw?.code !== 0 || !Array.isArray(raw?.data?.list)) {
+      const code = Math.abs(Number(raw?.code));
+      throw new BiliReadError(typeof raw?.message === "string" ? raw.message : "\u5173\u6CE8\u5217\u8868\u683C\u5F0F\u65E0\u6548", [412, 429].includes(code) ? code : 0);
+    }
+    return raw.data.list.flatMap((item) => /^\d+$/.test(String(item?.mid)) && typeof item?.uname === "string" ? [{ uid: String(item.mid), name: item.uname, face: safeLocalFace(item.face) }] : []);
+  }
+  async function readFollowings(request2, mid, signal, limits = {}) {
+    const found = /* @__PURE__ */ new Map();
+    let total = 0, error = "", stopped = false;
+    const onError = (_, failure3) => {
+      error ||= failure3 instanceof Error ? failure3.message : "\u8BFB\u53D6\u5931\u8D25";
+      stopped = failure3 instanceof BiliReadError && failure3.stopsBatch;
+      return stopped;
+    };
+    await runConcurrentReads({
+      ...limits,
+      keys: [1],
+      batch: signal,
+      read: (page, readSignal) => request2(followingsUrl(mid, page), readSignal),
+      onValue: (_, raw) => {
+        total = Number(raw?.data?.total) || 0;
+        for (const person of people(raw)) found.set(person.uid, person);
+      },
+      onError
+    });
+    const pages = Math.ceil(total / pageSize);
+    if (!stopped && !signal.aborted && pages > 1) {
+      await runConcurrentReads({
+        ...limits,
+        keys: Array.from({ length: pages - 1 }, (_, index) => index + 2),
+        batch: signal,
+        read: (page, readSignal) => request2(followingsUrl(mid, page), readSignal),
+        onValue: (_, raw) => {
+          for (const person of people(raw)) found.set(person.uid, person);
+        },
+        onError
+      });
+    }
+    const complete = !error && !signal.aborted && found.size >= total;
+    return { at: Date.now(), complete, list: [...found.values()], ...error ? { error } : {} };
+  }
+  var portalUrl = "https://api.bilibili.com/x/polymer/web-dynamic/v1/portal?up_list_more=1&web_location=333.1365";
+  var livePeople = (items) => (Array.isArray(items) ? items : []).flatMap((item) => /^\d+$/.test(String(item?.mid)) && /^\d+$/.test(String(item?.room_id)) && typeof (item?.uname ?? item?.name) === "string" ? [{ uid: String(item.mid), name: item.uname ?? item.name, face: safeLocalFace(item.face), room: String(item.room_id), title: typeof item.title === "string" ? item.title : "" }] : []);
+  async function readLiveUsers(request2, signal) {
+    const raw = await request2(portalUrl, signal);
+    if (raw?.code !== 0) {
+      const code = Math.abs(Number(raw?.code));
+      throw new BiliReadError(typeof raw?.message === "string" && raw.message ? raw.message : "\u76F4\u64AD\u540D\u5355\u683C\u5F0F\u65E0\u6548", [412, 429].includes(code) ? code : 0);
+    }
+    const live = raw.data?.live_users, list = livePeople(live?.items);
+    return { at: Date.now(), count: Math.max(list.length, Number(live?.count) || 0), list };
+  }
+  function parseLiveCopy(value2) {
+    const raw = value2;
+    if (!raw || !Array.isArray(raw.list)) return null;
+    const list = livePeople(raw.list.map((person) => ({ mid: person?.uid, uname: person?.name, face: person?.face, room_id: person?.room, title: person?.title })));
+    return { at: Number(raw.at) || 0, count: Math.max(list.length, Number(raw.count) || 0), list };
+  }
+  function parseFollowingsCopy(value2) {
+    const raw = value2;
+    if (!raw || !Array.isArray(raw.list)) return null;
     return {
-      host,
-      isDirty: () => saved !== JSON.stringify(fieldValues()),
-      hideSecrets,
-      dispose() {
-        disposed = true;
-        cleanupPixels();
-        hideSecrets();
-        window.removeEventListener("atelier-sync-status", render2);
-        host.remove();
+      at: Number(raw.at) || 0,
+      complete: raw.complete === true,
+      list: raw.list.filter((person) => /^\d+$/.test(String(person?.uid)) && typeof person?.name === "string").map((person) => ({ uid: String(person.uid), name: person.name, face: safeLocalFace(person.face) }))
+    };
+  }
+  var names2 = new Intl.Collator("zh-CN-u-co-pinyin", { sensitivity: "base", numeric: true });
+  function rosterTiles(options) {
+    const tiles = /* @__PURE__ */ new Map();
+    for (const person of options.online) tiles.set(person.uid, { ...person, online: true, local: false, fresh: false });
+    for (const person of options.local) {
+      const known2 = tiles.get(person.uid);
+      if (known2) {
+        known2.local = true;
+        known2.name ||= person.name;
+        known2.face ||= person.face;
+      } else tiles.set(person.uid, { ...person, online: false, local: true, fresh: false });
+    }
+    const list = [...tiles.values()];
+    for (const tile of list) {
+      tile.latest = options.latest(tile.uid);
+      tile.fresh = tile.latest !== void 0 && tile.latest * 1e3 > options.seen(tile.uid);
+    }
+    return list.sort((a, b) => a.latest === void 0 ? b.latest === void 0 ? names2.compare(a.name || a.uid, b.name || b.uid) : 1 : b.latest === void 0 ? -1 : b.latest - a.latest || names2.compare(a.name, b.name));
+  }
+  function tileLines(name, width2 = 60) {
+    const advance = (char) => /[⺀-￿]/.test(char) ? 12 : 7;
+    const chars = [...name.trim()], lines = [];
+    let line = [], used = 0, index = 0;
+    for (; index < chars.length; index++) {
+      const char = chars[index];
+      if (used + advance(char) > width2) {
+        const space = line.lastIndexOf(" ");
+        const carry = advance(char) === 7 && space > 0 ? line.splice(space).slice(1) : [];
+        lines.push(line.join("").trimEnd());
+        if (lines.length === 2) {
+          index -= carry.length;
+          break;
+        }
+        line = carry;
+        used = carry.reduce((sum, value2) => sum + advance(value2), 0);
+      }
+      line.push(char);
+      used += advance(char);
+    }
+    if (lines.length < 2 && line.length) lines.push(line.join(""));
+    if (index < chars.length) lines[1] = [...lines[1]].slice(0, -1).join("") + "\u2026";
+    return lines;
+  }
+
+  // src/modules/local-following/feed-panel.ts
+  var panelClass = "atelier-follow-panel";
+  var stickyTop = () => headerHeight() + 8;
+  var columns = 3;
+  function createFollowPanel(identity, source) {
+    const seenKey = `BiliAtelier_FeedSeen_${identity}`, foldKey2 = `BiliAtelier_FeedPanelFolded_${identity}`;
+    const liveKey = `BiliAtelier_FeedLiveOpen_${identity}`, dynamicKey = `BiliAtelier_FeedDynamicOpen_${identity}`;
+    let seen = (() => {
+      const raw = GM_getValue(seenKey, {});
+      return raw && typeof raw === "object" ? raw : {};
+    })();
+    let liveOpen = GM_getValue(liveKey, false) === true, dynamicOpen = GM_getValue(dynamicKey, true) !== false;
+    const panel = document.createElement("section");
+    panel.className = `${panelClass} xp-window`;
+    panel.setAttribute("data-atelier-local-ui", "");
+    panel.setAttribute("data-bili-blocker-ui", "true");
+    const caption2 = panel.appendChild(document.createElement("header"));
+    caption2.className = "afp-caption xp-caption";
+    const icon2 = caption2.appendChild(document.createElement("span"));
+    icon2.className = "afp-caption-icon";
+    const title = caption2.appendChild(document.createElement("h2"));
+    const note2 = caption2.appendChild(document.createElement("span"));
+    note2.className = "afp-note";
+    const toggle = caption2.appendChild(document.createElement("button"));
+    toggle.type = "button";
+    toggle.className = "afp-toggle xp-caption-button";
+    const body2 = panel.appendChild(document.createElement("div"));
+    body2.className = "afp-body";
+    const view = body2.appendChild(document.createElement("div"));
+    view.className = "afp-view";
+    view.setAttribute("role", "listbox");
+    view.setAttribute("aria-label", "\u5173\u6CE8\u7684 UP \u4E3B");
+    let folded = GM_getValue(foldKey2, false) === true;
+    const fold = () => {
+      body2.hidden = folded;
+      toggle.dataset.kind = folded ? "restore" : "minimize";
+      toggle.title = folded ? "\u8FD8\u539F" : "\u6700\u5C0F\u5316";
+      toggle.setAttribute("aria-label", folded ? "\u5C55\u5F00\u5173\u6CE8\u680F" : "\u6298\u53E0\u5173\u6CE8\u680F");
+      toggle.setAttribute("aria-expanded", String(!folded));
+    };
+    toggle.addEventListener("click", () => {
+      folded = !folded;
+      sound(folded ? "minimize" : "restore");
+      GM_setValue(foldKey2, folded);
+      fold();
+    });
+    fold();
+    let focused = "";
+    const tiles = () => [...view.querySelectorAll(".afp-tile")];
+    const choose = (uid, all) => {
+      if (!all) {
+        seen[uid] = Date.now();
+        GM_setValue(seenKey, seen);
+      }
+      source.select(all || source.selected() === uid ? "" : uid);
+    };
+    const space = (uid) => window.open(`https://space.bilibili.com/${uid}/dynamic`, "_blank", "noopener");
+    const opens = (kind) => kind === "folder" || kind === "up";
+    function activate(tile2) {
+      const kind = tile2.dataset.kind, id = tile2.dataset.uid;
+      sound("folder");
+      if (kind === "live") window.open(tile2.href, "_blank", "noopener");
+      else if (kind === "folder") source.openFolder(id);
+      else if (kind === "up") source.openFolder("");
+      else choose(id, kind === "all" || kind === "folder-all");
+    }
+    function tile(kind, person, picture2) {
+      const anchor = document.createElement("a");
+      anchor.className = `afp-tile afp-tile-${kind}`;
+      anchor.dataset.uid = person.uid;
+      anchor.dataset.kind = kind;
+      const selected = kind === "person" ? source.selected() === person.uid : (kind === "all" || kind === "folder-all") && !source.selected();
+      anchor.setAttribute("role", "option");
+      anchor.setAttribute("aria-pressed", String(selected));
+      anchor.setAttribute("aria-selected", String(selected));
+      anchor.tabIndex = -1;
+      if (kind === "person") {
+        anchor.href = `https://space.bilibili.com/${person.uid}/dynamic`;
+        anchor.target = "_blank";
+        anchor.rel = "noopener";
+      } else if (kind === "live") {
+        anchor.href = `https://live.bilibili.com/${person.room}`;
+        anchor.target = "_blank";
+        anchor.rel = "noopener";
+      } else anchor.href = "#";
+      const when2 = person.latest ? new Date(person.latest * 1e3).toLocaleString() : "\u672A\u77E5";
+      anchor.title = kind === "person" ? `${person.name || person.uid}
+UID\uFF1A${person.uid}
+\u6700\u8FD1\u53D1\u5E03\uFF1A${when2}${person.online && person.local ? "\n\u8D26\u53F7\u5173\u6CE8 \xB7 \u672C\u5730\u5173\u6CE8" : person.local ? "\n\u672C\u5730\u5173\u6CE8" : ""}` : kind === "live" ? `${person.name}
+${person.title || "\u6B63\u5728\u76F4\u64AD"}` : person.name;
+      const face2 = anchor.appendChild(document.createElement("span"));
+      face2.className = "afp-face";
+      face2.append(picture2);
+      if (person.fresh) face2.append(Object.assign(document.createElement("i"), { className: "afp-dot", title: "\u6709\u65B0\u52A8\u6001" }));
+      if (kind === "live") face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-live", textContent: "\u76F4\u64AD" }));
+      if (kind === "person" && person.local && !person.online) face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-local", textContent: "\u672C" }));
+      const name = anchor.appendChild(document.createElement("span"));
+      name.className = "afp-name";
+      for (const line of tileLines(person.name || person.uid)) name.append(Object.assign(document.createElement("span"), { className: "afp-line", textContent: line }));
+      anchor.addEventListener("focus", () => {
+        focused = `${kind}:${person.uid}`;
+        for (const other of tiles()) other.tabIndex = other === anchor ? 0 : -1;
+      });
+      anchor.addEventListener("click", (event) => {
+        if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return;
+        if (kind === "live") {
+          sound("folder");
+          return;
+        }
+        event.preventDefault();
+        if (opens(kind)) anchor.focus();
+        else activate(anchor);
+      });
+      if (opens(kind)) anchor.addEventListener("dblclick", (event) => {
+        event.preventDefault();
+        activate(anchor);
+      });
+      anchor.addEventListener("contextmenu", (event) => {
+        if (kind === "all" || kind === "up") return;
+        event.preventDefault();
+        if (kind === "folder" || kind === "folder-all") source.manage(person.uid === "ungrouped" ? void 0 : person.uid);
+        else {
+          sound("folder");
+          space(person.uid);
+        }
+      });
+      return anchor;
+    }
+    const face = (url) => {
+      const img = document.createElement("img");
+      img.alt = "";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.referrerPolicy = "no-referrer";
+      img.src = bilibiliThumb(url, "64w_64h_1c") || atelierIcons.app;
+      return img;
+    };
+    const picture = (src) => Object.assign(document.createElement("img"), { alt: "", src, className: "afp-pixel" });
+    function group(text3, open, onClick, tip = "") {
+      const header = document.createElement("button");
+      header.type = "button";
+      header.className = "afp-group";
+      header.setAttribute("aria-expanded", String(open));
+      if (tip) header.title = tip;
+      header.append(Object.assign(document.createElement("span"), { className: "afp-group-title", textContent: text3 }), Object.assign(document.createElement("i"), { className: "afp-chevron" }));
+      header.addEventListener("click", onClick);
+      return header;
+    }
+    const grid = (...children) => {
+      const node4 = document.createElement("div");
+      node4.className = "afp-grid";
+      node4.append(...children);
+      return node4;
+    };
+    view.addEventListener("keydown", (event) => {
+      if (event.key === "Backspace" && source.folder()) {
+        event.preventDefault();
+        sound("folder");
+        source.openFolder("");
+        return;
+      }
+      const list = tiles(), at = list.findIndex((node4) => node4 === document.activeElement);
+      if (at < 0) return;
+      const target = { ArrowLeft: at - 1, ArrowRight: at + 1, ArrowUp: vertical(list, at, -1), ArrowDown: vertical(list, at, 1), Home: 0, End: list.length - 1 }[event.key];
+      if (target !== void 0) {
+        event.preventDefault();
+        list[Math.max(0, Math.min(list.length - 1, target))].focus();
+        return;
+      }
+      if (event.key === "Enter" || event.key === " " && !opens(list[at].dataset.kind)) {
+        event.preventDefault();
+        activate(list[at]);
+        return;
+      }
+      if (event.key === " ") {
+        event.preventDefault();
+        return;
+      }
+      if (event.key === "ContextMenu" || event.key === "F10" && event.shiftKey) {
+        event.preventDefault();
+        list[at].dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true }));
+      }
+    });
+    function vertical(list, at, direction) {
+      const rects = list.map((node4) => node4.getBoundingClientRect());
+      if (rects.every((rect) => !rect.width)) return at + direction * columns;
+      const here = rects[at], rows = [...new Set(rects.map((rect) => Math.round(rect.top)))].sort((a, b) => a - b);
+      const row = rows[rows.indexOf(Math.round(here.top)) + direction];
+      if (row === void 0) return at;
+      let best = at, distance = Infinity;
+      rects.forEach((rect, index) => {
+        const gap2 = Math.abs(rect.left - here.left);
+        if (Math.round(rect.top) === row && gap2 < distance) {
+          best = index;
+          distance = gap2;
+        }
+      });
+      return best;
+    }
+    function render2() {
+      const folder = source.folder();
+      const people2 = rosterTiles({
+        online: source.online(),
+        local: source.local(),
+        latest: source.latest,
+        seen: (uid) => Math.max(seen[uid] ?? 0, source.visitedAt(uid))
+      });
+      let added = false;
+      for (const person of people2) if (seen[person.uid] === void 0) {
+        seen[person.uid] = Date.now();
+        person.fresh = false;
+        added = true;
+      }
+      if (added) GM_setValue(seenKey, seen);
+      title.textContent = `${folder?.name ?? "\u5173\u6CE8"} \xB7 ${people2.length} \u4F4D`;
+      icon2.replaceChildren(folder ? shellIcon(folder.icon, 16) : picture(atelierIcons.following || atelierIcons.folder));
+      note2.textContent = source.incomplete() ? "\u540D\u5355\u4E0D\u5B8C\u6574" : "";
+      const hadFocus = view.contains(document.activeElement);
+      const sections = [];
+      const live = source.live();
+      if (live) {
+        const never = !!live.error && !live.stale && !live.list.length;
+        sections.push(group(
+          never ? "\u6B63\u5728\u76F4\u64AD\uFF08\u8BFB\u53D6\u5931\u8D25\uFF09" : `\u6B63\u5728\u76F4\u64AD (${live.count})${live.stale ? "\uFF08\u672A\u66F4\u65B0\uFF09" : ""}`,
+          liveOpen && !never,
+          () => {
+            if (never) {
+              sound("click");
+              source.retryLive();
+              return;
+            }
+            liveOpen = !liveOpen;
+            sound(liveOpen ? "restore" : "minimize");
+            GM_setValue(liveKey, liveOpen);
+            render2();
+          },
+          live.error
+        ));
+        if (liveOpen && !never && live.list.length) sections.push(grid(...live.list.map((person) => tile("live", person, face(person.face)))));
+      }
+      sections.push(group(`${folder?.name ?? "\u52A8\u6001"} (${people2.length})`, dynamicOpen, () => {
+        dynamicOpen = !dynamicOpen;
+        sound(dynamicOpen ? "restore" : "minimize");
+        GM_setValue(dynamicKey, dynamicOpen);
+        render2();
+      }));
+      if (dynamicOpen) {
+        sections.push(grid(...folder ? [tile("up", { uid: "", name: "\u5411\u4E0A", face: "" }, picture(atelierIcons.up)), tile("folder-all", { uid: folder.id, name: "\u5168\u90E8", face: "" }, shellIcon(folder.icon, 32))] : [tile("all", { uid: "", name: "\u5168\u90E8\u52A8\u6001", face: "" }, picture(atelierIcons.folder)), ...source.folders().map((each) => tile("folder", { uid: each.id, name: each.name, face: "" }, shellIcon(each.icon, 32)))]));
+        if (people2.length) sections.push(grid(...people2.map((person) => tile("person", person, face(person.face)))));
+        else if (folder) sections.push(Object.assign(document.createElement("p"), { className: "afp-empty", textContent: "\u8FD9\u4E2A\u5206\u7EC4\u8FD8\u6CA1\u6709 UP \u4E3B\uFF0C\u53F3\u952E\u6587\u4EF6\u5939\u53EF\u4EE5\u7BA1\u7406\u5206\u7EC4" }));
+      }
+      view.replaceChildren(...sections);
+      const list = tiles(), current4 = list.find((node4) => `${node4.dataset.kind}:${node4.dataset.uid}` === focused) ?? list.find((node4) => node4.getAttribute("aria-selected") === "true") ?? list[0];
+      if (current4) {
+        current4.tabIndex = 0;
+        if (hadFocus) current4.focus();
+      }
+    }
+    observeCrispText(panel);
+    const place = () => {
+      panel.style.top = `calc(${headerBottomCss} + 8px)`;
+      body2.style.maxHeight = `calc(100vh - ${headerBottomCss} - 60px)`;
+    };
+    function mount() {
+      if (panel.isConnected) return;
+      const left = document.querySelector("aside.left");
+      if (!left) return;
+      const live = left.querySelector(".bili-dyn-live-users");
+      if (live) live.insertAdjacentElement("afterend", panel);
+      else left.append(panel);
+      place();
+    }
+    window.addEventListener("resize", place);
+    return { panel, render: render2, mount, unmount: () => panel.remove() };
+  }
+  var p = `.${panelClass}`;
+  var followPanelCss = `
+html[data-atelier-list=drawn] .bili-dyn-live-users{display:none!important}
+${p}{position:sticky;z-index:1;margin-top:8px;${xpFont};text-align:left}
+${p} *{box-sizing:border-box}${p} [hidden]{display:none!important}
+${p} .afp-caption-icon{display:flex;flex:none}${p} .afp-caption-icon img{width:16px;height:16px;image-rendering:pixelated}
+${p} .afp-note{flex:none;color:#ffe7a8;white-space:nowrap}
+${p} .afp-body{overflow-y:auto;padding:0 1px 6px;background:var(--xp-window);border:1px solid var(--xp-edge)}
+${p} .afp-group{display:flex;align-items:center;gap:3px;width:100%;margin:0;padding:5px 4px 3px;border:0;background:linear-gradient(90deg,var(--xp-group-text),transparent) bottom/100% 1px no-repeat;color:var(--xp-group-text);${xpFont};text-align:left;cursor:default}
+${p} .afp-group-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+${p} .afp-chevron{flex:none;width:5px;height:5px;margin:0 2px;border:solid currentColor;border-width:1px 1px 0 0;transform:translateY(1px) rotate(-45deg)}
+${p} .afp-group[aria-expanded=false] .afp-chevron{transform:translateY(-1px) rotate(135deg)}
+${p} .afp-grid{display:grid;grid-template-columns:repeat(${columns},minmax(0,1fr));gap:8px 0;padding-top:5px}
+${p} .afp-tile{display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 1px;color:var(--xp-ink)!important;text-decoration:none!important;outline:none!important;cursor:default}
+${p} .afp-face{position:relative;flex:none;width:32px;height:32px}
+${p} .afp-face>img{display:block;width:32px;height:32px;object-fit:cover;image-rendering:auto}
+${p} .afp-face>img.afp-pixel{object-fit:none;image-rendering:pixelated}
+${p} .afp-tile-up .afp-face>img{width:24px;height:24px;margin:4px}
+${p} .afp-tile[aria-selected=true] .afp-face::after{content:"";position:absolute;inset:0;background:var(--xp-highlight);opacity:.5;pointer-events:none}
+${p} .afp-dot{position:absolute;top:-2px;right:-3px;width:7px;height:7px;background:#3fb34f;border:1px solid var(--xp-window)}
+${p} .afp-badge{position:absolute;${xpFont};font-weight:bold;font-style:normal;color:var(--xp-caption-ink);background:var(--xp-caption);border:1px solid var(--xp-window);padding:0 1px;white-space:nowrap}
+${p} .afp-local{left:-3px;bottom:-2px}${p} .afp-live{right:-6px;bottom:-3px}
+${p} .afp-name{display:flex;flex-direction:column;align-items:center;max-width:100%;padding:0 1px;text-align:center;outline:1px dotted transparent;outline-offset:0}
+${p} .afp-line{white-space:nowrap}
+${p} .afp-empty{margin:4px 6px 0;color:var(--xp-muted)}
+${p} .afp-tile:focus .afp-name{outline-color:var(--xp-ink)}
+${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);color:var(--xp-highlight-ink);outline-color:var(--xp-highlight-xor)}
+`;
+
+  // src/ui/bili-theme.ts
+  function biliTheme() {
+    return /(?:^|;\s*)theme_style=dark(?:;|$)/.test(document.cookie) ? "dark" : "light";
+  }
+  var biliLoggedIn = () => /(?:^|;\s*)DedeUserID=\d+/.test(document.cookie);
+  function setBiliTheme(theme2) {
+    document.cookie = `theme_style=${theme2}; domain=.bilibili.com; path=/; max-age=${365 * 86400}`;
+    let map = document.getElementById("__css-map__");
+    if (map) map.href = map.href.replace(/\/(?:light|dark)(_all)?\.css/, (_, all = "") => `/${theme2}${all}.css`);
+    else {
+      map = Object.assign(document.createElement("link"), { id: "__css-map__", rel: "stylesheet", href: `//s1.hdslb.com/bfs/seed/jinkela/short/bili-theme/${theme2}_all.css` });
+      const head = document.head || document.documentElement;
+      head.insertBefore(map, head.firstChild);
+    }
+    const filter = document.getElementById("__css-map-filter__");
+    if (filter) {
+      const text3 = (filter.textContent ?? "").trim(), bare = text3.replace(/^[/*]+|[*/]+$/g, "");
+      if (theme2 === "dark") filter.textContent = bare;
+      else if (!text3.startsWith("/*")) filter.textContent = `/*${bare}*/`;
+    }
+    try {
+      injectPageScript(`(${pageThemeSwitch.toString()})(${JSON.stringify(theme2)});`);
+    } catch {
+    }
+    document.documentElement.classList.toggle("bili_dark", theme2 === "dark");
+    document.dispatchEvent(new CustomEvent("biliThemeChange", { detail: { theme: theme2 }, bubbles: true, cancelable: true }));
+  }
+  function toggleBiliNight() {
+    setBiliTheme(biliTheme() === "dark" ? "light" : "dark");
+    if (readUiPreferences().theme !== "page") saveUiPreferences({ theme: "page" });
+  }
+  function pageThemeSwitch(theme2) {
+    const app = document.getElementById("app")?.__vue__;
+    if (typeof app?.themeSwitchHandler === "function") app.themeSwitchHandler(theme2);
+  }
+
+  // src/modules/local-following/feed-quick.ts
+  var width = 200;
+  var gap = 12;
+  var margin = 16;
+  function createQuickWindow(options) {
+    const foldKey2 = `BiliAtelier_QuickFolded_${options.identity}`;
+    const win = document.createElement("section");
+    win.className = "alf-quick xp-window";
+    win.setAttribute("aria-label", "\u5FEB\u6377\u64CD\u4F5C");
+    const caption2 = win.appendChild(document.createElement("header"));
+    caption2.className = "xp-caption";
+    const icon2 = caption2.appendChild(document.createElement("img"));
+    icon2.src = atelierIcons.up16;
+    icon2.alt = "";
+    caption2.appendChild(document.createElement("h2")).textContent = "\u5FEB\u6377\u64CD\u4F5C";
+    const toggle = caption2.appendChild(document.createElement("button"));
+    toggle.type = "button";
+    toggle.className = "xp-caption-button";
+    const body2 = win.appendChild(document.createElement("div"));
+    body2.className = "alf-quick-body";
+    const button5 = (className, label) => {
+      const element2 = body2.appendChild(document.createElement("button"));
+      element2.type = "button";
+      element2.className = `atelier-control ${className}`;
+      element2.appendChild(document.createElement("span")).textContent = label;
+      return element2;
+    };
+    const toTop = button5("alf-quick-top", "\u56DE\u5230\u5361\u7247\u9876\u7AEF");
+    toTop.prepend(Object.assign(document.createElement("img"), { src: atelierIcons.up, alt: "" }));
+    const night = button5("alf-quick-night", "\u591C\u95F4\u6A21\u5F0F");
+    let folded = GM_getValue(foldKey2, false) === true;
+    const fold = () => {
+      body2.hidden = folded;
+      toggle.dataset.kind = folded ? "restore" : "minimize";
+      toggle.title = folded ? "\u8FD8\u539F" : "\u6700\u5C0F\u5316";
+      toggle.setAttribute("aria-label", folded ? "\u5C55\u5F00\u5FEB\u6377\u64CD\u4F5C" : "\u6298\u53E0\u5FEB\u6377\u64CD\u4F5C");
+      toggle.setAttribute("aria-expanded", String(!folded));
+    };
+    toggle.addEventListener("click", () => {
+      folded = !folded;
+      sound(folded ? "minimize" : "restore");
+      GM_setValue(foldKey2, folded);
+      fold();
+    });
+    fold();
+    const current4 = () => {
+      for (const card3 of options.list.children) {
+        if (!(card3 instanceof HTMLElement) || !card3.classList.contains("adc-card")) continue;
+        const rect = card3.getBoundingClientRect();
+        if (rect.top < stickyTop() - 0.5 && rect.bottom > stickyTop()) return card3;
+      }
+      return null;
+    };
+    toTop.addEventListener("click", () => {
+      const card3 = current4();
+      if (card3) window.scrollTo({ top: card3.getBoundingClientRect().top + window.scrollY - stickyTop(), behavior: "instant" });
+    });
+    const paintNight = () => night.setAttribute("aria-pressed", String(options.loggedIn && biliTheme() === "dark"));
+    if (options.loggedIn) night.addEventListener("click", () => {
+      toggleBiliNight();
+      paintNight();
+    });
+    else {
+      night.disabled = true;
+      night.title = "\u767B\u5F55\u540E\u53EF\u7528";
+    }
+    paintNight();
+    let frame2 = 0;
+    const update = () => {
+      frame2 = 0;
+      toTop.disabled = !current4();
+      const right = options.feedWindow.getBoundingClientRect().right;
+      win.style.left = `${Math.max(0, Math.min(right + gap, window.innerWidth - width - margin))}px`;
+    };
+    const schedule2 = () => {
+      frame2 ||= requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", schedule2, { passive: true });
+    window.addEventListener("resize", schedule2);
+    document.addEventListener("biliThemeChange", paintNight);
+    const resize = typeof ResizeObserver === "function" ? new ResizeObserver(schedule2) : null;
+    resize?.observe(options.feedWindow);
+    const cards2 = new MutationObserver(schedule2);
+    cards2.observe(options.list, { childList: true });
+    schedule2();
+    return {
+      element: win,
+      dispose: () => {
+        cancelAnimationFrame(frame2);
+        cards2.disconnect();
+        resize?.disconnect();
+        window.removeEventListener("scroll", schedule2);
+        window.removeEventListener("resize", schedule2);
+        document.removeEventListener("biliThemeChange", paintNight);
+        win.remove();
       }
     };
   }
-  function registerSyncPanel(open) {
-    if (typeof GM_registerMenuCommand === "function") GM_registerMenuCommand("Bili Atelier \u4E91\u540C\u6B65", open);
-  }
-
-  // src/modules/sounds/panel.ts
-  function mountSoundPanel() {
-    const host = document.createElement("section");
-    host.className = "luna-sounds";
-    host.innerHTML = `<style>
-    .luna-sounds{display:flex;flex-direction:column;gap:10px;min-width:0}
-    .luna-sounds h2{font-size:14px!important}.luna-sounds p{line-height:1.5!important}
-    .luna-sound-group{padding:14px;border:2px solid;border-color:var(--atelier-edge) var(--atelier-highlight) var(--atelier-highlight) var(--atelier-edge);background:var(--atelier-surface);min-width:0}
-    .luna-sound-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0}
-    .luna-sound-row label{display:flex;align-items:center;gap:8px;min-width:0}
-    .luna-sound-row input[type=range]{width:clamp(100px,25vw,240px);max-width:100%;accent-color:var(--atelier-accent)}
-    .luna-sound-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--atelier-accent)}
-    .luna-sound-row output{min-width:4ch;font-variant-numeric:tabular-nums}
-    .luna-sounds select{max-width:100%;min-width:0;padding:5px;background:var(--atelier-field);border:2px inset var(--atelier-edge)}
-    .luna-sounds summary{cursor:pointer;padding:7px 0}.luna-sounds [role=status]{border:1px solid var(--atelier-edge);padding:10px;background:var(--atelier-panel)}
-  </style><h2>\u8BBE\u7F6E \u203A \u97F3\u6548</h2><p>\u8F7B\u67D4\u7684 Windows XP \u4EA4\u4E92\u58F0\u97F3\u3002\u901A\u77E5\u548C\u64CD\u4F5C\u7ED3\u679C\u59CB\u7EC8\u9759\u97F3\uFF1B\u97F3\u91CF\u53EA\u5F71\u54CD\u6309\u94AE\u3001\u5BFC\u822A\u548C\u7A97\u53E3\uFF0C\u504F\u597D\u4FDD\u5B58\u5728\u672C\u673A\u3002</p>`;
-    let prefs = readSoundPreferences();
-    const events = new AbortController();
-    const controls = [];
-    const status2 = document.createElement("p");
-    status2.setAttribute("role", "status");
-    status2.setAttribute("aria-live", "polite");
-    const refresh = () => {
-      prefs = readSoundPreferences();
-      controls.forEach((update) => update());
-      status2.textContent = soundPlaybackStatus();
-    };
-    const save = () => writeSoundPreferences(prefs);
-    const button5 = (label, run) => {
-      const node4 = document.createElement("button");
-      node4.type = "button";
-      node4.className = "luna-button";
-      node4.textContent = label;
-      node4.addEventListener("click", () => {
-        run();
-        status2.textContent = soundPlaybackStatus();
-      });
-      return node4;
-    };
-    function row(name, category) {
-      const section = document.createElement("section");
-      section.className = "luna-sound-group";
-      const values = () => category ? prefs.categories[category] : prefs;
-      const line2 = document.createElement("div");
-      line2.className = "luna-sound-row";
-      const label = document.createElement("label"), enabled = document.createElement("input");
-      enabled.type = "checkbox";
-      enabled.setAttribute("aria-label", name + "\u5F00\u5173");
-      label.append(enabled, document.createTextNode(name));
-      line2.append(label);
-      enabled.addEventListener("change", () => {
-        values().enabled = enabled.checked;
-        save();
-        sound("select");
-      });
-      const volumeLabel = document.createElement("label");
-      volumeLabel.textContent = "\u97F3\u91CF";
-      const volume2 = document.createElement("input");
-      volume2.type = "range";
-      volume2.min = "0";
-      volume2.max = "100";
-      volume2.step = "1";
-      volume2.setAttribute("aria-label", name + "\u97F3\u91CF");
-      const output = document.createElement("output");
-      volume2.addEventListener("input", () => {
-        values().volume = Number(volume2.value) / 100;
-        output.value = volume2.value + "%";
-        save();
-      });
-      volume2.addEventListener("change", () => sound("select"));
-      volumeLabel.append(volume2, output);
-      line2.append(volumeLabel);
-      if (category) line2.append(button5("\u8BD5\u542C" + name, () => previewSound(catalog_default.categories.find((item) => item.id === category).sample, category)));
-      controls.push(() => {
-        enabled.checked = values().enabled;
-        volume2.value = String(Math.round(values().volume * 100));
-        output.value = volume2.value + "%";
-      });
-      section.append(line2);
-      host.append(section);
-    }
-    row("\u603B\u97F3\u6548");
-    for (const category of catalog_default.categories) row(category.name, category.id);
-    const details = document.createElement("details"), summary = document.createElement("summary");
-    summary.textContent = "\u5168\u90E8 26 \u79CD\u539F\u7248\u58F0\u97F3\u8BD5\u542C";
-    details.append(summary);
-    summary.addEventListener("click", () => sound("menu"));
-    const line = document.createElement("div");
-    line.className = "luna-sound-row";
-    const select = document.createElement("select");
-    select.setAttribute("aria-label", "\u8BD5\u542C\u58F0\u97F3");
-    for (const clip of catalog_default.sounds) {
-      const option = document.createElement("option");
-      option.value = clip.id;
-      option.textContent = clip.name + (clip.previewOnly ? "\uFF08\u4EC5\u8BD5\u542C\uFF09" : "") + ` \xB7 ${(clip.durationMs / 1e3).toFixed(2)} \u79D2`;
-      select.append(option);
-    }
-    select.addEventListener("change", () => {
-      stopSoundPreview();
-      sound("select");
-    });
-    line.append(select, button5("\u8BD5\u542C\u6240\u9009\u58F0\u97F3", () => {
-      const cue = Object.values(catalog_default.cues).find((cue2) => cue2.sound === select.value);
-      previewSound(select.value, cue?.category || "navigation");
-    }), button5("\u505C\u6B62\u8BD5\u542C", () => {
-      stopSoundPreview();
-      sound("cancel");
-    }));
-    const hint = document.createElement("p");
-    hint.textContent = "\u901A\u77E5\u3001\u64CD\u4F5C\u7ED3\u679C\u4EE5\u53CA\u957F\u5F00\u673A\u3001\u5173\u673A\u3001\u767B\u5F55\u548C\u786C\u4EF6\u63D0\u793A\u6837\u672C\u4EC5\u4F9B\u624B\u52A8\u8BD5\u542C\uFF0C\u4E0D\u4F1A\u81EA\u52A8\u54CD\u8D77\u3002\u672A\u5206\u914D\u7ED9\u65E5\u5E38\u52A8\u4F5C\u7684\u6837\u672C\u4F7F\u7528\u201C\u5BFC\u822A\u4E0E\u7A97\u53E3\u201D\u97F3\u91CF\u3002";
-    details.append(line, hint);
-    host.append(details);
-    const quiet = document.createElement("p");
-    quiet.textContent = "\u5F53\u524D\u9875\u6216\u811A\u672C\u8986\u76D6\u7684 B \u7AD9\u6807\u7B7E\u64AD\u653E\u5A92\u4F53\u65F6\uFF08\u5305\u62EC\u9759\u97F3\u89C6\u9891\uFF09\uFF0C\u754C\u9762\u97F3\u6548\u6682\u65F6\u5B89\u9759\uFF1B\u5207\u5230\u540E\u53F0\u3001\u5173\u95ED\u7A97\u53E3\u6216\u53D7\u6D4F\u89C8\u5668\u9650\u5236\u7684\u58F0\u97F3\u4E0D\u4F1A\u8865\u64AD\u3002\u8BD5\u542C\u4E5F\u9075\u5B88\u5F00\u5173\u4E0E\u97F3\u91CF\u3002";
-    host.append(quiet, status2);
-    window.addEventListener(soundPreferencesChanged, refresh, { signal: events.signal });
-    refresh();
-    return { host, dispose() {
-      events.abort();
-      stopSoundPreview();
-      host.remove();
-    } };
-  }
-
-  // src/ui/navigation.ts
-  var atelierAreas = [
-    { id: "following", label: "\u672C\u5730\u5173\u6CE8" },
-    { id: "viewed", label: "\u5DF2\u770B\u7BA1\u7406" },
-    { id: "video", label: "\u5C4F\u853D\u7BA1\u7406" },
-    { id: "data", label: "\u6570\u636E\u4E0E\u540C\u6B65" },
-    { id: "settings", label: "\u8BBE\u7F6E" }
-  ];
-  function areaFor(section) {
-    if (["user", "video", "comment", "dynamic", "live", "history"].includes(section)) return "video";
-    if (section === "sync") return "data";
-    if (section === "sounds") return "settings";
-    return section;
-  }
-  var openPanel;
-  function registerAtelierNavigation(open) {
-    openPanel = open;
-  }
-  function openAtelier(section = "following") {
-    openPanel?.(section);
-  }
+  var quickWindowCss = `
+#atelier-feed-root .alf-quick{position:fixed;bottom:${margin}px;z-index:100;width:${width}px;margin:0}
+#atelier-feed-root .alf-quick-body{display:flex;flex-direction:column;gap:4px;padding:6px}
+#atelier-feed-root .alf-quick-body .atelier-control{width:100%;min-width:0;justify-content:flex-start}
+#atelier-feed-root .alf-quick-top img{width:24px;height:24px;image-rendering:pixelated}
+`;
 
   // src/ui/window-drag.ts
   function enableWindowDrag(panel, caption2, signal) {
@@ -9241,7 +10941,7 @@ ${message}` : ""}`;
 
   // src/modules/local-following/groups-window.ts
   var windowClass = "atelier-groups-window";
-  var names2 = new Intl.Collator("zh-CN-u-co-pinyin", { sensitivity: "base", numeric: true });
+  var names3 = new Intl.Collator("zh-CN-u-co-pinyin", { sensitivity: "base", numeric: true });
   var current = null;
   function openLocalFollowGroups(options = {}) {
     sound("open");
@@ -9288,7 +10988,7 @@ ${message}` : ""}`;
     const label = (group, groups) => groups.filter((other) => other.name === group.name).length > 1 ? `${group.name} (${group.id.slice(0, 6)})` : group.name;
     function rows() {
       const query = search.value.trim().toLowerCase();
-      return localFollowSnapshot().accounts.filter((account) => !query || name(account).toLowerCase().includes(query) || account.uid === query).sort((a, b) => names2.compare(name(a), name(b)) || a.uid.length - b.uid.length || (a.uid < b.uid ? -1 : 1));
+      return localFollowSnapshot().accounts.filter((account) => !query || name(account).toLowerCase().includes(query) || account.uid === query).sort((a, b) => names3.compare(name(a), name(b)) || a.uid.length - b.uid.length || (a.uid < b.uid ? -1 : 1));
     }
     function attempt(action, cue) {
       try {
@@ -9668,341 +11368,6 @@ ${w} .xp-status{flex:none}
     (document.head || document.documentElement).append(style);
   }
 
-  // src/modules/local-following/panel.ts
-  var panelId = "atelier-local-following-panel";
-  function localFollowElement(tag, className = "", text3 = "") {
-    const node4 = document.createElement(tag);
-    node4.className = className;
-    node4.textContent = text3;
-    return node4;
-  }
-  function button(label, action, className = "lf-button") {
-    const node4 = localFollowElement("button", className, label);
-    node4.type = "button";
-    node4.addEventListener("click", () => {
-      try {
-        sound("click");
-        action();
-      } catch (error) {
-        reportLocalFollowError(error);
-      }
-    });
-    return node4;
-  }
-  function reportLocalFollowError(error) {
-    const status2 = document.querySelector(`#${panelId} .lf-footer`);
-    if (status2) status2.textContent = error instanceof Error ? error.message : "\u672C\u5730\u5173\u6CE8\u64CD\u4F5C\u5931\u8D25";
-    sound("error");
-  }
-  function checkbox(label, checked, action) {
-    const wrapper = localFollowElement("label", "lf-check");
-    const input = localFollowElement("input");
-    input.type = "checkbox";
-    input.checked = checked;
-    input.addEventListener("change", () => {
-      try {
-        action(input.checked);
-        sound("select");
-      } catch (error) {
-        input.checked = !input.checked;
-        reportLocalFollowError(error);
-      }
-    });
-    wrapper.append(input, document.createTextNode(label));
-    return { wrapper, input };
-  }
-  function ensureLocalFollowTheme() {
-    ensureLunaTheme();
-    if (document.getElementById("atelier-local-following-style")) return;
-    const style = document.createElement("style");
-    style.id = "atelier-local-following-style";
-    const id = "#" + panelId;
-    style.textContent = `
-#bili-atelier-blocker-panel .luna-following-content{display:flex;padding:8px;overflow:hidden}
-${id}{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;min-width:0;color:var(--xp-ink);${xpFont}}
-${id} *{box-sizing:border-box}${id} [hidden]{display:none!important}
-${id} .lf-layout{display:flex;flex-direction:column;gap:6px;flex:1;min-height:0}
-${id} .lf-sidebar{flex-shrink:0;max-height:160px;overflow:auto}
-${id} .lf-nav{display:flex;gap:3px;overflow:auto;padding-bottom:3px}
-${id} .lf-group-button{flex-shrink:0;white-space:nowrap}
-${id} .lf-group-button[aria-current=page]{font-weight:bold}
-${id} .lf-groups-open{margin-top:3px}
-${id} .lf-main{display:flex;flex-direction:column;min-width:0;min-height:0;flex:1;overflow:auto}
-${id} .lf-main>:not(.lf-directory){flex-shrink:0}
-${id} .lf-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
-${id} :is(input:not([type=checkbox]),select){min-height:21px;min-width:0}
-${id} .lf-row input[type=search],${id} .lf-add input{flex:1;min-width:120px}
-${id} .lf-directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:2px;background:var(--xp-window);border:1px solid var(--xp-edge);padding:4px;overflow:auto;min-height:100px;flex:1 0 100px}
-${id} .lf-tile{position:relative;border:1px solid transparent;padding:5px;min-width:0}
-${id} .lf-tile[data-selected=true]{background:var(--xp-highlight);color:var(--xp-highlight-ink)}${id} .lf-tile[data-selected=true] :is(.lf-account,.lf-meta){color:inherit}
-${id} .lf-account{display:flex;gap:7px;color:var(--atelier-ink);text-decoration:none;min-width:0;align-items:center;min-height:40px}
-${id} .lf-face{height:32px;width:32px;object-fit:cover;flex:none;border:1px solid var(--atelier-edge);image-rendering:auto}
-${id} .lf-name{min-width:0;overflow-wrap:anywhere;padding-right:18px;font-weight:bold}
-${id} .lf-select{position:absolute;right:4px;top:4px}
-${id} .lf-meta{display:block;color:var(--xp-muted);overflow-wrap:anywhere;margin-top:2px}
-${id} .lf-check{display:inline-flex;gap:5px;align-items:center;min-height:26px}
-${id} .lf-options{display:flex;gap:5px 12px;flex-wrap:wrap;padding:4px 0}
-${id} .lf-footer{padding:6px;border-top:1px solid var(--atelier-edge);color:var(--atelier-muted);flex-shrink:0;overflow-wrap:anywhere}
-${id} .lf-empty{grid-column:1/-1;padding:16px 8px;color:var(--atelier-muted)}
-${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
-@media(max-width:420px){${id} .lf-directory{grid-template-columns:minmax(0,1fr)}}
-`;
-    (document.head || document.documentElement).appendChild(style);
-  }
-  function openLocalFollowingPanel() {
-    openAtelier("following");
-  }
-  function mountLocalFollowingPanel() {
-    ensureLocalFollowTheme();
-    const events = new AbortController(), reads = new AbortController();
-    const panel = localFollowElement("section");
-    panel.id = panelId;
-    panel.setAttribute("data-bili-blocker-ui", "");
-    panel.setAttribute("aria-label", "\u672C\u5730\u5173\u6CE8");
-    const prefs = readLocalFollowPreferences();
-    let groupId = "all", sort = ["name", "added", "viewed", "updated"].includes(prefs?.sort) ? prefs.sort : "name";
-    let ascending = typeof prefs?.ascending === "boolean" ? prefs.ascending : sort === "name";
-    const storedTypes = Array.isArray(prefs?.types) ? prefs.types.filter((kind) => Object.prototype.hasOwnProperty.call(localFollowUpdateTypes, kind)) : [];
-    let types = storedTypes.length ? [...new Set(storedTypes)] : ["video"];
-    const selected = /* @__PURE__ */ new Set();
-    const footer = localFollowElement("div", "lf-footer", "\u672C\u5730\u76EE\u5F55\u4E0E\u5E73\u53F0\u5173\u6CE8\u5206\u522B\u7BA1\u7406");
-    footer.setAttribute("role", "status");
-    const close = () => {
-      checker.cancel();
-      reads.abort();
-      events.abort();
-      panel.remove();
-    };
-    const layout2 = localFollowElement("div", "lf-layout"), sidebar = localFollowElement("aside", "lf-sidebar"), nav = localFollowElement("nav", "lf-nav");
-    nav.setAttribute("aria-label", "\u672C\u5730\u5206\u7EC4");
-    sidebar.append(nav, button("\u5206\u7EC4\u7BA1\u7406", () => openLocalFollowGroups({ group: groupId === "all" || groupId === "ungrouped" ? void 0 : groupId }), "lf-button lf-groups-open"));
-    const main = localFollowElement("div", "lf-main"), addRow = localFollowElement("form", "lf-row lf-add");
-    const input = localFollowElement("input");
-    input.placeholder = "\u7C98\u8D34 UID \u6216\u4E2A\u4EBA\u4E3B\u9875\u94FE\u63A5";
-    input.setAttribute("aria-label", "\u6DFB\u52A0\u8D26\u53F7 UID \u6216\u94FE\u63A5");
-    const add = button("\u6DFB\u52A0\u672C\u5730\u5173\u6CE8", () => {
-      void addProfile();
-    });
-    async function addProfile() {
-      const feedback = soundTask(void 0, panel);
-      const uid = parseLocalFollowInput(input.value);
-      if (!uid) {
-        footer.textContent = "\u8BF7\u8F93\u5165\u6709\u6548\u7684 UID \u6216 space.bilibili.com \u4E3B\u9875\u94FE\u63A5";
-        feedback.finish("warning");
-        return;
-      }
-      add.disabled = true;
-      footer.textContent = "\u6B63\u5728\u9A8C\u8BC1\u8D26\u53F7\u8D44\u6599\u2026";
-      try {
-        const profile = await new LocalFollowApi().profile(uid, reads.signal);
-        if (reads.signal.aborted) return;
-        const was = JSON.stringify(localFollowSnapshot());
-        addLocalFollow(profile);
-        writeLocalFollowCache(uid, profile);
-        input.value = "";
-        footer.textContent = `\u5DF2\u4FDD\u5B58 ${profile.name}`;
-        if (was !== JSON.stringify(localFollowSnapshot())) feedback.finish("success");
-      } catch (error) {
-        if (!reads.signal.aborted) {
-          footer.textContent = error instanceof Error ? error.message : "\u6DFB\u52A0\u5931\u8D25";
-          feedback.finish("error");
-        }
-      } finally {
-        add.disabled = false;
-      }
-    }
-    addRow.addEventListener("submit", (event) => {
-      event.preventDefault();
-      if (!add.disabled) void addProfile();
-    });
-    addRow.append(input, add);
-    const toolbar = localFollowElement("div", "lf-row"), search = localFollowElement("input");
-    search.type = "search";
-    search.placeholder = "\u641C\u7D22\u6635\u79F0\u6216 UID";
-    search.setAttribute("aria-label", "\u641C\u7D22\u672C\u5730\u5173\u6CE8");
-    const sortSelect = localFollowElement("select");
-    sortSelect.setAttribute("aria-label", "\u6392\u5E8F\u65B9\u5F0F");
-    for (const [value2, text3] of [["name", "\u6309\u540D\u5B57\uFF0F\u62FC\u97F3"], ["added", "\u6309\u6DFB\u52A0\u65F6\u95F4"], ["viewed", "\u6309\u6700\u8FD1\u67E5\u770B"], ["updated", "\u6309\u5DF2\u83B7\u53D6\u66F4\u65B0\u65F6\u95F4"]]) {
-      const option = localFollowElement("option", "", text3);
-      option.value = value2;
-      sortSelect.append(option);
-    }
-    sortSelect.value = sort;
-    const direction = button(ascending ? "\u5347\u5E8F" : "\u964D\u5E8F", () => {
-      ascending = !ascending;
-      direction.textContent = ascending ? "\u5347\u5E8F" : "\u964D\u5E8F";
-      savePrefs();
-      render2();
-    });
-    sortSelect.addEventListener("change", () => {
-      sort = sortSelect.value;
-      ascending = sort === "name";
-      direction.textContent = ascending ? "\u5347\u5E8F" : "\u964D\u5E8F";
-      savePrefs();
-      render2();
-      sound("select");
-    });
-    search.addEventListener("input", render2);
-    toolbar.append(search, sortSelect, direction);
-    const typeDetails = localFollowElement("details"), typeList = localFollowElement("div", "lf-options");
-    typeDetails.append(localFollowElement("summary", "", "\u54EA\u4E9B\u5185\u5BB9\u7B97\u66F4\u65B0"), typeList);
-    for (const [kind, label] of Object.entries(localFollowUpdateTypes)) {
-      const control = checkbox(label, types.includes(kind), (checked) => {
-        if (!checked && types.length === 1) {
-          control.input.checked = true;
-          footer.textContent = "\u81F3\u5C11\u4FDD\u7559\u4E00\u79CD\u66F4\u65B0\u7C7B\u578B";
-          sound("warning");
-          return;
-        }
-        types = checked ? [...types, kind] : types.filter((value2) => value2 !== kind);
-        savePrefs();
-        renderDirectory();
-      });
-      typeList.append(control.wrapper);
-    }
-    async function check2(uids) {
-      const feedback = soundTask("start", panel);
-      try {
-        const result = await checker.check(uids);
-        if (result === "success") feedback.finish("complete");
-        else if (result === "partial") feedback.finish("warning");
-        else if (result === "error") feedback.finish("error");
-        else feedback.cancel();
-      } catch (error) {
-        footer.textContent = error instanceof Error ? error.message : "\u68C0\u67E5\u5931\u8D25";
-        feedback.finish("error");
-      }
-    }
-    const actions = localFollowElement("div", "lf-row"), checkChosen = button("\u68C0\u67E5\u9009\u4E2D", () => void check2([...selected]));
-    const checkGroup = button("\u68C0\u67E5\u6574\u7EC4", () => void check2(inGroup().map((account) => account.uid)));
-    const cancel = button("\u53D6\u6D88\u68C0\u67E5", () => {
-      checker.cancel();
-      sound("cancel");
-    });
-    const all = button("\u9009\u62E9\u5F53\u524D\u7ED3\u679C", () => {
-      for (const account of visible()) selected.add(account.uid);
-      renderDirectory();
-    });
-    const none = button("\u53D6\u6D88\u9009\u62E9", () => {
-      selected.clear();
-      renderDirectory();
-    });
-    const remove = button("\u79FB\u9664\u9009\u4E2D\u672C\u5730\u5173\u6CE8", () => {
-      mutate(() => removeLocalFollows([...selected]), "delete");
-      selected.clear();
-      render2();
-    });
-    actions.append(all, none, checkChosen, checkGroup, cancel, remove);
-    const directory = localFollowElement("div", "lf-directory");
-    directory.setAttribute("aria-label", "\u672C\u5730\u5173\u6CE8\u76EE\u5F55");
-    const checker = new LocalFollowChecker(void 0, (state2) => {
-      checkChosen.disabled = state2.running || !selected.size;
-      checkGroup.disabled = state2.running || !inGroup().length;
-      cancel.disabled = !state2.running;
-      footer.textContent = state2.running ? `\u6B63\u5728\u68C0\u67E5 ${state2.completed + state2.failed + 1}/${state2.total}\uFF1B\u6210\u529F ${state2.completed}\uFF0C\u5931\u8D25 ${state2.failed}` : state2.message;
-    });
-    function savePrefs() {
-      writeLocalFollowPreferences({ sort, ascending, types });
-    }
-    function mutate(action, cue) {
-      const before = JSON.stringify(localFollowSnapshot());
-      action();
-      if (before !== JSON.stringify(localFollowSnapshot())) sound(cue);
-    }
-    function inGroup() {
-      return localFollowSnapshot().accounts.filter((account) => groupId === "all" || (groupId === "ungrouped" ? account.groupIds.length === 0 : account.groupIds.includes(groupId)));
-    }
-    function visible() {
-      return sortLocalFollows(inGroup(), sort, ascending, types, search.value);
-    }
-    function date(value2) {
-      return value2 ? new Date(value2).toLocaleString() : "\u65F6\u95F4\u672A\u77E5";
-    }
-    function groupLabel(group) {
-      const peers = localFollowSnapshot().groups.filter((other) => other.name === group.name && other.id !== group.id);
-      if (!peers.length) return group.name;
-      let length = 8;
-      while (peers.some((other) => other.id.slice(0, length) === group.id.slice(0, length))) length++;
-      return `${group.name} \xB7 ${group.id.slice(0, length)}`;
-    }
-    function renderDirectory() {
-      const focusId = panel.contains(document.activeElement) ? document.activeElement?.id : "";
-      const snapshot = localFollowSnapshot();
-      for (const uid of selected) if (!snapshot.accounts.some((account) => account.uid === uid)) selected.delete(uid);
-      directory.replaceChildren();
-      const accounts = visible();
-      for (const account of accounts) {
-        const cache = readLocalFollowCache(account.uid), name = cache.name || account.name || "\u672A\u547D\u540D\u8D26\u53F7";
-        const tile = localFollowElement("div", "lf-tile");
-        tile.dataset.selected = String(selected.has(account.uid));
-        const link3 = localFollowElement("a", "lf-account");
-        link3.href = `https://space.bilibili.com/${account.uid}`;
-        link3.target = "_blank";
-        link3.rel = "noopener noreferrer";
-        link3.id = "lf-account-" + account.uid;
-        link3.addEventListener("click", () => {
-          recordLocalFollowVisit(account.uid);
-          sound("folder");
-        });
-        const face = localFollowElement("img", "lf-face");
-        face.alt = "";
-        face.loading = "lazy";
-        face.referrerPolicy = "no-referrer";
-        face.src = cache.face || account.face || atelierIcons.app;
-        face.addEventListener("error", () => {
-          face.src = atelierIcons.app;
-        }, { once: true });
-        link3.append(face, localFollowElement("span", "lf-name", name));
-        const select = checkbox(`\u9009\u62E9 ${name}`, selected.has(account.uid), (checked) => {
-          if (checked) selected.add(account.uid);
-          else selected.delete(account.uid);
-          renderDirectory();
-        });
-        select.input.className = "lf-select";
-        select.input.setAttribute("aria-label", `\u9009\u62E9 ${name}`);
-        select.input.id = "lf-select-" + account.uid;
-        tile.append(link3, select.input);
-        const time2 = sort === "viewed" ? `\u6700\u8FD1\u67E5\u770B\uFF1A${date(cache.viewedAt)}` : sort === "added" ? `\u6DFB\u52A0\u4E8E\uFF1A${date(account.addedAt)}` : `\u5DF2\u83B7\u53D6\u66F4\u65B0\uFF1A${date(latestLocalFollowUpdate(cache, types))}`;
-        tile.append(localFollowElement("span", "lf-meta", time2));
-        if (account.groupIds.length) tile.append(localFollowElement("span", "lf-meta", account.groupIds.map((id) => snapshot.groups.find((group) => group.id === id)).filter(Boolean).map(groupLabel).join("\u3001")));
-        if (cache.checkError) tile.append(localFollowElement("span", "lf-meta", `\u4E0A\u6B21\u68C0\u67E5\u5931\u8D25\uFF1A${cache.checkError}`));
-        directory.append(tile);
-      }
-      if (!accounts.length) directory.append(localFollowElement("p", "lf-empty", "\u6CA1\u6709\u5339\u914D\u7684\u672C\u5730\u5173\u6CE8\u3002\u53EF\u4ECE\u4E3B\u9875\u6DFB\u52A0\uFF0C\u6216\u5728\u4E0A\u65B9\u7C98\u8D34\u8D26\u53F7\u94FE\u63A5\u3002"));
-      remove.disabled = none.disabled = !selected.size;
-      checkChosen.disabled = checker.state.running || !selected.size;
-      checkGroup.disabled = checker.state.running || !inGroup().length;
-      cancel.disabled = !checker.state.running;
-      if (focusId) document.getElementById(focusId)?.focus();
-    }
-    function render2() {
-      const focusId = panel.contains(document.activeElement) ? document.activeElement?.id : "";
-      const snapshot = localFollowSnapshot();
-      if (groupId !== "all" && groupId !== "ungrouped" && !snapshot.groups.some((group) => group.id === groupId)) groupId = "ungrouped";
-      nav.replaceChildren();
-      for (const [id, label] of [["all", "\u5168\u90E8\u672C\u5730\u5173\u6CE8"], ["ungrouped", "\u672A\u5206\u7EC4"], ...snapshot.groups.map((group) => [group.id, groupLabel(group)])]) {
-        const node4 = button(label, () => {
-          if (groupId !== id) sound("folder");
-          groupId = id;
-          render2();
-        }, "lf-button lf-group-button");
-        node4.setAttribute("aria-current", id === groupId ? "page" : "false");
-        nav.append(node4);
-        node4.id = "lf-group-" + id;
-      }
-      renderDirectory();
-      if (focusId) document.getElementById(focusId)?.focus();
-    }
-    main.append(addRow, toolbar, typeDetails, actions, directory);
-    layout2.append(sidebar, main);
-    panel.append(layout2, footer);
-    window.addEventListener(localFollowChangedEvent, render2, { signal: events.signal });
-    for (const summary of panel.querySelectorAll("summary")) summary.addEventListener("click", () => sound("menu"));
-    window.addEventListener("pagehide", () => close(), { signal: events.signal, once: true });
-    render2();
-    return { host: panel, dispose: close };
-  }
-
   // src/ui/page-mode.ts
   var pageModeChanged = "atelier-page-mode-changed";
   var mode = null;
@@ -10013,67 +11378,21 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   var currentPageMode = () => mode;
   var notifyPageModeChanged = () => window.dispatchEvent(new Event(pageModeChanged));
 
-  // src/ui/header-offset.ts
-  var headerHeightVar = "--atelier-header-h";
-  function headerHeight() {
-    const value2 = parseFloat(document.documentElement.style.getPropertyValue(headerHeightVar));
-    return Number.isFinite(value2) && value2 > 0 ? value2 : 64;
-  }
-  var headerBottomCss = `var(${headerHeightVar}, 64px)`;
-
   // src/modules/luna-header/bridge.ts
-  var headerReads = {
-    "api.bilibili.com": [
-      "/x/web-interface/nav",
-      "/x/web-interface/dynamic/entrance",
-      "/x/web-interface/suggest",
-      "/x/web-interface/history/cursor",
-      "/x/v2/history/toview/web",
-      "/x/v3/fav/folder/list4navigate",
-      "/x/v3/fav/resource/list4navigate"
-    ],
-    "api.vc.bilibili.com": ["/x/im/web/msgfeed/unread", "/session_svr/v1/session_svr/single_unread"]
-  };
-  function headerPageWorld(channel2, reads) {
-    const original = window.fetch;
-    const post = (message) => window.postMessage({ channel: channel2, ...message }, location.origin);
-    window.addEventListener("message", (event) => {
-      const data = event.data;
-      if (event.origin !== location.origin || data?.channel !== channel2 || data.kind !== "read") return;
-      let url = null;
-      try {
-        url = new URL(String(data.url));
-      } catch {
-      }
-      if (!url || url.protocol !== "https:" || !Object.prototype.hasOwnProperty.call(reads, url.hostname) || !reads[url.hostname].includes(url.pathname)) {
-        post({ kind: "read-result", id: data.id, status: 0, error: "\u65E0\u6548\u8BFB\u53D6" });
-        return;
-      }
-      original.call(window, url.href, { credentials: "include" }).then(async (response) => post({ kind: "read-result", id: data.id, status: response.status, body: response.ok ? await response.json() : null })).catch((error) => post({ kind: "read-result", id: data.id, status: 0, error: String(error?.message || error) }));
-    });
-  }
   function startHeaderBridge() {
-    const channel2 = "atelier-header-" + crypto.randomUUID();
-    const waiting = /* @__PURE__ */ new Map();
-    window.addEventListener("message", (event) => {
-      const data = event.data;
-      if (event.origin !== location.origin || data?.channel !== channel2 || data.kind !== "read-result") return;
-      const waiter = waiting.get(data.id);
-      if (!waiter) return;
-      waiting.delete(data.id);
-      if (data.error || data.status < 200 || data.status >= 300) waiter.reject(new Error(data.error || `HTTP ${data.status}`));
-      else if (data.body?.code !== 0) waiter.reject(new Error(typeof data.body?.message === "string" && data.body.message ? data.body.message : "\u8BFB\u53D6\u5931\u8D25"));
-      else waiter.resolve(data.body.data);
-    });
-    injectPageScript(`(${headerPageWorld.toString()})(${JSON.stringify(channel2)}, ${JSON.stringify(headerReads)});`);
-    return (url) => new Promise((resolve, reject) => {
-      const id = crypto.randomUUID();
-      waiting.set(id, { resolve, reject });
-      window.postMessage({ channel: channel2, kind: "read", id, url }, location.origin);
-      window.setTimeout(() => {
-        if (waiting.delete(id)) reject(new Error("\u8BFB\u53D6\u8D85\u65F6"));
-      }, 1e4);
-    });
+    const relay = startPageRelay("header", endpoints.header);
+    return async (url) => {
+      const stop = new AbortController(), timer2 = window.setTimeout(() => stop.abort(), 1e4);
+      try {
+        const body2 = await relay.read(url, stop.signal);
+        if (body2?.code !== 0) throw new Error(typeof body2?.message === "string" && body2.message ? body2.message : "\u8BFB\u53D6\u5931\u8D25");
+        return body2.data;
+      } catch (error) {
+        throw stop.signal.aborted ? new Error("\u8BFB\u53D6\u8D85\u65F6") : error;
+      } finally {
+        window.clearTimeout(timer2);
+      }
+    };
   }
 
   // src/ui/assets/xp-icons/ie-back.png
@@ -10109,42 +11428,6 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   // src/ui/assets/xp-icons/views.png
   var views_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABuElEQVR42u2VsUscQRjFf7fZFTQW9smBjY2FCLGKWBxcIWEDpgtoYTXWKWzSSBqLNOmvskwVSdjY2QTS5Zr8B3JF4NCgeMux485NitmdmT2S3F64dD5Y+PaxfO+b973dhXtMQAPxbR04BZZn2PcaeEVn4yQAjmbcHGAJeAcQEkU7LMxDFM1W4vJqyQgA+u3KP/XIcshHkClQ2tyXaB5eARD87yWH40Sn07W1EE9s/fCoZ+vBmyZgpl88aVi+91JPFqgDWViRqSqvRsxGIC8aqbGBpaoh4NviIy1s+TmsTt7fMyr9FGSdEyRJYus4jm398VNCOfBmO7ZWfT1P0Bo0sLoZTxbwm/pxbG/HNo7lDoZ3sLYVI5WxrZZFvPYEjt3Ui087lr44F2YXGtIPLkX5sylTpAsb8tHvUzQ+sZw2RdJ7Uysp0tU0TRfTY7PkVALeZ6D/xdjy49ZNLhVQ2HKTAarWm+y8frEn7Ek+v3f8xnNh6+9njn/UEn8X0MDuviBTJiGl17fSNZXKnUBpeNwSSAXaS5ePYHyhJeZC1yRswEIEYQBzDxw/kO75kTZceVVO0Djo3v/b/4hfZb7EzJo6c74AAAAASUVORK5CYII=";
 
-  // src/ui/bili-theme.ts
-  function biliTheme() {
-    return /(?:^|;\s*)theme_style=dark(?:;|$)/.test(document.cookie) ? "dark" : "light";
-  }
-  var biliLoggedIn = () => /(?:^|;\s*)DedeUserID=\d+/.test(document.cookie);
-  function setBiliTheme(theme2) {
-    document.cookie = `theme_style=${theme2}; domain=.bilibili.com; path=/; max-age=${365 * 86400}`;
-    let map = document.getElementById("__css-map__");
-    if (map) map.href = map.href.replace(/\/(?:light|dark)(_all)?\.css/, (_, all = "") => `/${theme2}${all}.css`);
-    else {
-      map = Object.assign(document.createElement("link"), { id: "__css-map__", rel: "stylesheet", href: `//s1.hdslb.com/bfs/seed/jinkela/short/bili-theme/${theme2}_all.css` });
-      const head = document.head || document.documentElement;
-      head.insertBefore(map, head.firstChild);
-    }
-    const filter = document.getElementById("__css-map-filter__");
-    if (filter) {
-      const text3 = (filter.textContent ?? "").trim(), bare = text3.replace(/^[/*]+|[*/]+$/g, "");
-      if (theme2 === "dark") filter.textContent = bare;
-      else if (!text3.startsWith("/*")) filter.textContent = `/*${bare}*/`;
-    }
-    try {
-      injectPageScript(`(${pageThemeSwitch.toString()})(${JSON.stringify(theme2)});`);
-    } catch {
-    }
-    document.documentElement.classList.toggle("bili_dark", theme2 === "dark");
-    document.dispatchEvent(new CustomEvent("biliThemeChange", { detail: { theme: theme2 }, bubbles: true, cancelable: true }));
-  }
-  function toggleBiliNight() {
-    setBiliTheme(biliTheme() === "dark" ? "light" : "dark");
-    if (readUiPreferences().theme !== "page") saveUiPreferences({ theme: "page" });
-  }
-  function pageThemeSwitch(theme2) {
-    const app = document.getElementById("app")?.__vue__;
-    if (typeof app?.themeSwitchHandler === "function") app.themeSwitchHandler(theme2);
-  }
-
   // src/ui/page-layout.ts
   var pageLayoutChanged = "atelier-page-layout-changed";
   var layout = null;
@@ -10155,19 +11438,8 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   var currentPageLayout = () => layout;
   var notifyPageLayoutChanged = () => window.dispatchEvent(new Event(pageLayoutChanged));
 
-  // src/modules/blocker/visibility.ts
-  var showingBlocked = false;
-  var blockedVisibilityChangedEvent = "atelier-blocked-visibility-changed";
-  function isShowingBlocked() {
-    return showingBlocked;
-  }
-  function toggleBlockedVisibility() {
-    showingBlocked = !showingBlocked;
-    window.dispatchEvent(new Event(blockedVisibilityChangedEvent));
-  }
-
   // src/modules/luna-header/menu.ts
-  function node2(tag, className = "", text3) {
+  function node3(tag, className = "", text3) {
     const element2 = document.createElement(tag);
     if (className) element2.className = className;
     if (text3 !== void 0) element2.textContent = text3;
@@ -10213,7 +11485,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       panel.style.top = `${Math.max(2, Math.min(y, innerHeight - panel.offsetHeight - 2))}px`;
     }
     panel(source, depth, focus) {
-      const panel = node2("div", "xp-menu lh-pop");
+      const panel = node3("div", "xp-menu lh-pop");
       panel.setAttribute("role", "menu");
       panel.setAttribute("data-bili-blocker-ui", "true");
       for (const old of this.panels.splice(depth)) old.remove();
@@ -10221,7 +11493,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       this.host.append(panel);
       observeCrispText(panel);
       const fill = (items) => {
-        panel.replaceChildren(...items.map((item) => item === "-" ? node2("div", "xp-menu-separator") : this.row(item, panel, depth)));
+        panel.replaceChildren(...items.map((item) => item === "-" ? node3("div", "xp-menu-separator") : this.row(item, panel, depth)));
         if (!items.length) panel.append(this.row({ label: "\uFF08\u7A7A\uFF09", disabled: true }, panel, depth));
         if (focus) this.rows(panel)[0]?.focus({ preventScroll: true });
       };
@@ -10243,7 +11515,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       return panel;
     }
     row(item, panel, depth) {
-      const row = item.href && !item.disabled ? node2("a", "xp-menu-item lh-item") : node2("button", "xp-menu-item lh-item");
+      const row = item.href && !item.disabled ? node3("a", "xp-menu-item lh-item") : node3("button", "xp-menu-item lh-item");
       if (row instanceof HTMLAnchorElement) {
         row.href = item.href;
         row.target = "_blank";
@@ -10251,18 +11523,18 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       } else row.type = "button";
       row.setAttribute("role", item.checked === void 0 ? "menuitem" : "menuitemcheckbox");
       if (item.checked !== void 0) row.setAttribute("aria-checked", String(item.checked));
-      row.append(node2("span", "lh-check", item.checked ? "\u2713" : ""));
-      const glyph = row.appendChild(node2("span", "lh-item-icon"));
+      row.append(node3("span", "lh-check", item.checked ? "\u2713" : ""));
+      const glyph = row.appendChild(node3("span", "lh-item-icon"));
       if (typeof item.icon === "string") {
-        const image5 = glyph.appendChild(node2("img"));
+        const image5 = glyph.appendChild(node3("img"));
         image5.src = item.icon;
         image5.alt = "";
       } else if (item.icon) glyph.append(item.icon);
-      row.append(node2("span", item.bold || item.count ? "lh-item-label lh-bold" : "lh-item-label", item.label));
-      if (item.count) row.append(node2("span", "lh-count", `(${item.count > 99 ? "99+" : item.count})`));
-      if (item.note) row.append(node2("span", "lh-item-note", item.note));
+      row.append(node3("span", item.bold || item.count ? "lh-item-label lh-bold" : "lh-item-label", item.label));
+      if (item.count) row.append(node3("span", "lh-count", `(${item.count > 99 ? "99+" : item.count})`));
+      if (item.note) row.append(node3("span", "lh-item-note", item.note));
       if (item.items) {
-        row.append(node2("span", "lh-sub"));
+        row.append(node3("span", "lh-sub"));
         row.setAttribute("aria-haspopup", "menu");
       }
       if (item.title) row.title = item.title;
@@ -10338,7 +11610,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   };
 
   // src/modules/luna-header/header.ts
-  var api = "https://api.bilibili.com";
+  var api2 = "https://api.bilibili.com";
   var vc = "https://api.vc.bilibili.com";
   function el(tag, className = "", text3) {
     const element2 = document.createElement(tag);
@@ -10384,18 +11656,18 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     const bar = header.appendChild(el("div", "lh-band lh-menubar"));
     bar.setAttribute("role", "menubar");
     const menus = bar.appendChild(el("nav", "lh-menus"));
-    let active = null;
+    let active2 = null;
     const openFrom = (anchor, items, align = "left", focus = false) => {
-      active?.removeAttribute("data-open");
-      active = anchor;
+      active2?.removeAttribute("data-open");
+      active2 = anchor;
       anchor.setAttribute("data-open", "");
       chain.open(items(), anchor, { align, focus, onClose: () => {
         anchor.removeAttribute("data-open");
-        if (active === anchor) active = null;
+        if (active2 === anchor) active2 = null;
       } });
     };
     const toggleFrom = (anchor, items, align = "left") => {
-      if (active === anchor && chain.isOpen) chain.close();
+      if (active2 === anchor && chain.isOpen) chain.close();
       else openFrom(anchor, items, align);
     };
     const openers = {};
@@ -10407,7 +11679,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       button6.setAttribute("aria-haspopup", "menu");
       button6.addEventListener("click", () => toggleFrom(button6, items));
       button6.addEventListener("pointerenter", () => {
-        if (chain.isOpen && active && active !== button6 && active.classList.contains("lh-menu-title")) openFrom(button6, items);
+        if (chain.isOpen && active2 && active2 !== button6 && active2.classList.contains("lh-menu-title")) openFrom(button6, items);
       });
       openers[key3.toLowerCase()] = () => openFrom(button6, items, "left", true);
       return button6;
@@ -10465,7 +11737,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       { label: "\u4E34\u65F6\u663E\u793A\u88AB\u5C4F\u853D\u9879", checked: isShowingBlocked(), action: toggleBlockedVisibility }
     ]);
     async function favorites2() {
-      const groups = await read2(`${api}/x/v3/fav/folder/list4navigate`);
+      const groups = await read2(`${api2}/x/v3/fav/folder/list4navigate`);
       const folders = (Array.isArray(groups) ? groups : []).flatMap((group) => Array.isArray(group?.mediaListResponse?.list) ? group.mediaListResponse.list : []);
       return [
         { label: "\u6253\u5F00\u6211\u7684\u6536\u85CF\u5939", icon: ie_favorites_16_default, href: `https://space.bilibili.com/${me.mid}/favlist` },
@@ -10479,7 +11751,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       ];
     }
     async function folderItems(id, total) {
-      const data = await read2(`${api}/x/v3/fav/resource/list4navigate?platform=web&media_id=${id}`);
+      const data = await read2(`${api2}/x/v3/fav/resource/list4navigate?platform=web&media_id=${id}`);
       const medias = Array.isArray(data?.medias) ? data.medias : Array.isArray(data) ? data : [];
       return [
         ...medias.slice(0, 10).map((media2) => ({ label: String(media2?.title ?? ""), icon: video(), href: media2?.bvid ? `https://www.bilibili.com/video/${media2.bvid}/` : String(media2?.link ?? `https://www.bilibili.com/`) })),
@@ -10530,15 +11802,15 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     separator();
     link3(ie_home_default, "\u9996\u9875", "https://www.bilibili.com/");
     const dynamic = link3(ie_media_default, "\u52A8\u6001", "https://t.bilibili.com/");
-    const messages = button5(ie_mail_default, "\u6D88\u606F", () => {
+    const messages2 = button5(ie_mail_default, "\u6D88\u606F", () => {
       if (!loggedIn) {
         openBiliLogin();
         return;
       }
-      toggleFrom(messages, messageItems);
+      toggleFrom(messages2, messageItems);
     });
-    messages.setAttribute("data-menu-anchor", "");
-    messages.setAttribute("aria-haspopup", "menu");
+    messages2.setAttribute("data-menu-anchor", "");
+    messages2.setAttribute("aria-haspopup", "menu");
     split(link3(ie_history_default, "\u5386\u53F2", "https://www.bilibili.com/history"), "\u5386\u53F2", historyItems);
     split(link3(ie_notes_default, "\u7A0D\u540E\u518D\u770B", "https://www.bilibili.com/watchlater/#/list"), "\u7A0D\u540E\u518D\u770B", laterItems);
     separator();
@@ -10572,7 +11844,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       ];
     }
     async function historyItems() {
-      const data = await read2(`${api}/x/web-interface/history/cursor?ps=10&type=archive`);
+      const data = await read2(`${api2}/x/web-interface/history/cursor?ps=10&type=archive`);
       const list2 = Array.isArray(data?.list) ? data.list : [];
       return [
         ...list2.slice(0, 10).map((item) => {
@@ -10585,7 +11857,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       ];
     }
     async function laterItems() {
-      const data = await read2(`${api}/x/v2/history/toview/web`);
+      const data = await read2(`${api2}/x/v2/history/toview/web`);
       const list2 = Array.isArray(data?.list) ? data.list : [], total = Number(data?.count) || list2.length;
       return [
         ...list2.slice(0, 10).map((item) => ({ label: String(item?.title ?? ""), icon: video(), href: `https://www.bilibili.com/list/watchlater?bvid=${encodeURIComponent(String(item?.bvid ?? ""))}&oid=${Number(item?.aid) || ""}` })),
@@ -10658,7 +11930,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
         hideList();
         return;
       }
-      read2(`${api}/x/web-interface/suggest?term=${encodeURIComponent(term)}&main_ver=v1`).then((data) => {
+      read2(`${api2}/x/web-interface/suggest?term=${encodeURIComponent(term)}&main_ver=v1`).then((data) => {
         if (mine !== ticket) return;
         suggestions = (Array.isArray(data?.result?.tag) ? data.result.tag : []).map((tag) => String(tag?.value ?? "")).filter(Boolean).slice(0, 10);
         pick = -1;
@@ -10745,18 +12017,18 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       const [feed, single, entrance] = await Promise.allSettled([
         read2(`${vc}/x/im/web/msgfeed/unread?build=0&mobi_app=web`),
         read2(`${vc}/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0`),
-        read2(`${api}/x/web-interface/dynamic/entrance`)
+        read2(`${api2}/x/web-interface/dynamic/entrance`)
       ]);
       const number = (value2) => Math.max(0, Number(value2) || 0);
       if (feed.status === "fulfilled") unread = { ...unread, reply: number(feed.value?.reply), at: number(feed.value?.at), like: number(feed.value?.like), system: number(feed.value?.sys_msg) };
       if (single.status === "fulfilled") unread.whisper = number(single.value?.follow_unread) + number(single.value?.unfollow_unread);
-      paintCount(messages, "\u6D88\u606F", unread.reply + unread.at + unread.like + unread.system + unread.whisper);
+      paintCount(messages2, "\u6D88\u606F", unread.reply + unread.at + unread.like + unread.system + unread.whisper);
       if (entrance.status === "fulfilled") paintCount(dynamic, "\u52A8\u6001", number(entrance.value?.update_info?.item?.count));
     }
     async function loadAccount() {
       if (!loggedIn) return;
       try {
-        const data = await read2(`${api}/x/web-interface/nav`);
+        const data = await read2(`${api2}/x/web-interface/nav`);
         if (data?.isLogin) {
           me = { mid: String(data.mid ?? me.mid), name: String(data.uname ?? ""), face: String(data.face ?? ""), level: Number(data.level_info?.current_level) || 0 };
           paintBrand();
@@ -10907,2968 +12179,12 @@ a.lh-item{color:var(--xp-ink)}
     for (const delay of [500, 2e3, 6e3]) window.setTimeout(fix, delay);
   }
 
-  // src/modules/video-luna/prefs.ts
-  var key2 = "BiliAtelier_VideoLuna";
-  function videoLunaEnabled() {
-    const stored = typeof GM_getValue === "function" ? GM_getValue(key2, null) : null;
-    return stored?.enabled !== false;
-  }
-  function setVideoLunaEnabled(enabled) {
-    if (typeof GM_setValue === "function") GM_setValue(key2, { enabled });
-  }
-  var coverKey = "BiliAtelier_VideoCover";
-  var videoCoverChanged = "atelier-video-cover-changed";
-  function videoCoverEnabled() {
-    const stored = typeof GM_getValue === "function" ? GM_getValue(coverKey, null) : null;
-    return stored?.enabled !== false;
-  }
-  function setVideoCoverEnabled(enabled) {
-    if (typeof GM_setValue === "function") GM_setValue(coverKey, { enabled });
-    window.dispatchEvent(new Event(videoCoverChanged));
-  }
-  var isLunaVideoLocation = (where = location) => where.hostname === "www.bilibili.com" && (/^\/video\/(?:BV|av)/i.test(where.pathname) || isLunaListPath(where.pathname) || isLunaBangumiPath(where.pathname));
-  var isLunaListPath = (pathname) => /^\/list\/(?:ml\d+|watchlater|\d+)\/?$/i.test(pathname);
-  var isLunaBangumiPath = (pathname) => /^\/bangumi\/play\/(?:ep|ss)\d+\/?$/i.test(pathname);
-  var videoAttribute = "data-atelier-video";
-  var nativeAttribute = "data-atelier-native";
-  function showNativeArea(area) {
-    const html = document.documentElement, areas = new Set((html.getAttribute(nativeAttribute) ?? "").split(/\s+/).filter(Boolean));
-    if (areas.has(area)) return;
-    areas.add(area);
-    html.setAttribute(nativeAttribute, [...areas].join(" "));
-  }
-  var on2 = `html[${videoAttribute}=luna]`;
-  var unless = (area) => `${on2}:not([${nativeAttribute}~=${area}])`;
-  var videoHideCss = `
-${unless("head")} :is(#viewbox_report,.playlist-container--left>.video-info-container){display:none!important}
-${unless("info")} :is(#v_desc,#bgm-entry,.video-tag-container,#commentapp,.playlist-container--left>.video-desc-container,.plp-l #comment-module){display:none!important}
-${unless("info")} :is(#arc_toolbar_report,#playlistToolbar,.plp-l .toolbar){height:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;visibility:hidden!important}
-${unless("up")} :is(:is(.right-container-inner,.playlist-container--right)>.up-panel-container,.plp-l [class*=mediainfo_mediaInfoWrap]){display:none!important}
-${unless("pod")} :is(.rcmd-tab .video-pod,.plp-r [class*=PaginatedEpList_root]){display:none!important}
-${unless("list")} .playlist-container--right>.action-list-container{display:none!important}
-${unless("rec")} :is(.rcmd-tab>:not(.video-pod),.playlist-container--right>.recommend-list-container,.plp-r [class*=recommend_wrap]){display:none!important}
-${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danmukuBox),.right-bottom-banner,.video-card-ad-small,#slide_ad,.ad-floor-exp){display:none!important}
-`;
-  function prepareVideoLuna() {
-    if (typeof GM_getValue !== "function" || !isLunaVideoLocation() || !videoLunaEnabled()) return false;
-    document.documentElement.setAttribute(videoAttribute, "luna");
-    prepareLunaHeader();
-    if (!document.getElementById("atelier-video-hide")) {
-      const style = document.createElement("style");
-      style.id = "atelier-video-hide";
-      style.textContent = videoHideCss;
-      (document.head || document.documentElement).append(style);
-    }
-    return true;
-  }
-  function showNativePage() {
-    document.documentElement.setAttribute(videoAttribute, "native");
-  }
-
-  // src/modules/blocker/panel.ts
-  var categories = [
-    { id: "user", label: "\u7528\u6237", description: "\u6309\u7528\u6237\u8EAB\u4EFD\u8FC7\u6EE4\u5185\u5BB9\uFF0C\u767D\u540D\u5355\u4F18\u5148\u4FDD\u7559\u3002", keys: ["precise_uid", "precise_uid_white", "name", "precise_name", "nameCanonical"] },
-    { id: "video", label: "\u89C6\u9891", description: "\u6309\u6807\u9898\u8FC7\u6EE4\u4E0D\u60F3\u770B\u5230\u7684\u89C6\u9891", keys: ["title", "titleCanonical"] },
-    { id: "comment", label: "\u8BC4\u8BBA", description: "\u6309\u8BC4\u8BBA\u6B63\u6587\u4E2D\u7684\u5173\u952E\u8BCD\u8FC7\u6EE4\u5185\u5BB9\u3002", keys: ["commentOn", "commentOnCanonical"] },
-    { id: "dynamic", label: "\u52A8\u6001", description: "\u6309\u52A8\u6001\u6B63\u6587\u4E2D\u7684\u5173\u952E\u8BCD\u8FC7\u6EE4\u5185\u5BB9\u3002", keys: ["dynamic", "dynamicCanonical"] },
-    { id: "live", label: "\u76F4\u64AD", description: "\u6309\u76F4\u64AD\u6807\u9898\u3001\u76F4\u64AD\u95F4\u6216\u5206\u533A\u8FC7\u6EE4\u5185\u5BB9\u3002", keys: ["liveTitle", "liveTitleCanonical", "precise_liveRoomId", "precise_partition"] }
-  ];
-  var modeLabels = {
-    precise_uid: "\u7528\u6237 UID",
-    precise_uid_white: "UID \u767D\u540D\u5355",
-    name: "\u6A21\u7CCA\u7528\u6237\u540D",
-    precise_name: "\u7CBE\u786E\u7528\u6237\u540D",
-    nameCanonical: "\u6B63\u5219\u7528\u6237\u540D",
-    title: "\u6A21\u7CCA\u5339\u914D",
-    titleCanonical: "\u6B63\u5219\u5339\u914D",
-    commentOn: "\u6A21\u7CCA\u5339\u914D",
-    commentOnCanonical: "\u6B63\u5219\u5339\u914D",
-    dynamic: "\u6A21\u7CCA\u5339\u914D",
-    dynamicCanonical: "\u6B63\u5219\u5339\u914D",
-    liveTitle: "\u6A21\u7CCA\u6807\u9898",
-    liveTitleCanonical: "\u6B63\u5219\u6807\u9898",
-    precise_liveRoomId: "\u76F4\u64AD\u95F4 ID",
-    precise_partition: "\u76F4\u64AD\u5206\u533A"
-  };
-  var activePanel;
-  function toggleBlockerHistory(onRulesChanged, renderHistory) {
-    if (!activePanel?.toggleHistory()) openBlockerPanel(onRulesChanged, renderHistory, "history");
-  }
-  function element(tag, className = "", text3 = "") {
-    const node4 = document.createElement(tag);
-    node4.className = className;
-    node4.textContent = text3;
-    return node4;
-  }
-  function icon(src, size = 28) {
-    const image5 = element("img");
-    image5.src = src;
-    image5.alt = "";
-    image5.width = image5.height = size;
-    return image5;
-  }
-  function button2(text3, action, className = "luna-button") {
-    const node4 = element("button", className, text3);
-    node4.type = "button";
-    node4.addEventListener("click", () => {
-      sound("click");
-      action();
-    });
-    return node4;
-  }
-  function appearancePage() {
-    const page = element("div", "atelier-appearance");
-    const preview = element("div", "atelier-appearance-preview");
-    preview.setAttribute("aria-hidden", "true");
-    const sample = (className, title, inactive, kinds2, body2) => {
-      const frame2 = element("div", "xp-window " + className);
-      if (inactive) frame2.dataset.inactive = "";
-      const caption2 = element("div", "xp-caption");
-      caption2.append(element("span", "xp-caption-title", title));
-      for (const kind of kinds2) {
-        const control = element("span", "xp-caption-button");
-        control.dataset.kind = kind;
-        caption2.append(control);
-      }
-      const content = element("div", "preview-body");
-      content.append(...body2);
-      frame2.append(caption2, content);
-      return frame2;
-    };
-    preview.append(
-      sample("preview-inactive", "\u975E\u6D3B\u52A8\u7A97\u53E3", true, ["minimize", "maximize", "close"], []),
-      sample("preview-active", "\u6D3B\u52A8\u7A97\u53E3", false, ["minimize", "maximize", "close"], [element("span", "", "\u7A97\u53E3\u6587\u5B57")]),
-      sample("preview-message", "\u6D88\u606F\u6846", false, ["close"], [element("span", "", "\u6D88\u606F\u6587\u5B57"), element("span", "xp-button", "\u786E\u5B9A")])
-    );
-    const row = (label, control) => {
-      const line = element("label", "atelier-appearance-row");
-      line.append(element("span", "", label), control);
-      return line;
-    };
-    const choice = (options, value2, change) => {
-      const node4 = element("select");
-      for (const [key3, text3] of options) {
-        const option = element("option", "", text3);
-        option.value = key3;
-        node4.append(option);
-      }
-      node4.value = value2;
-      node4.addEventListener("change", () => {
-        change(node4.value);
-        sound("select");
-      });
-      return node4;
-    };
-    const prefs = readUiPreferences();
-    page.append(
-      element("h2", "", "\u5916\u89C2"),
-      preview,
-      row("\u8272\u5F69\u65B9\u6848(C):", choice(Object.entries(lunaSchemeNames), prefs.scheme, (value2) => saveUiPreferences({ scheme: value2 }))),
-      row("\u660E\u6697(D):", choice([["page", "\u8DDF\u968F\u7F51\u9875"], ["light", "\u6D45\u8272"], ["dark", "\u6DF1\u8272"]], prefs.theme, (value2) => saveUiPreferences({ theme: value2 }))),
-      element("p", "luna-hint", "\u6587\u5B57\u4F7F\u7528 Windows XP \u5B8B\u4F53\u7684\u539F\u751F\u70B9\u9635\uFF0C\u6309\u5C4F\u5E55\u7F29\u653E\u9009\u62E9\u6700\u63A5\u8FD1\u7684\u5C3A\u5BF8\u3002"),
-      videoLunaRow(),
-      videoCoverRow(),
-      button2("\u91CD\u7F6E\u7535\u89C6\u5165\u53E3\u4F4D\u7F6E", () => {
-        saveUiPreferences({ edge: "right", y: 0.72 });
-        window.dispatchEvent(new Event("atelier-reset-launcher"));
-      })
-    );
-    return page;
-  }
-  function videoLunaRow() {
-    const line = element("label", "atelier-appearance-row atelier-check-row");
-    const box = element("input");
-    box.type = "checkbox";
-    box.checked = videoLunaEnabled();
-    box.addEventListener("change", () => {
-      sound("select");
-      const mode2 = isLunaVideoLocation() ? currentPageMode() : null;
-      if (mode2) mode2.setNative(!box.checked);
-      else setVideoLunaEnabled(box.checked);
-    });
-    line.append(box, element("span", "", "\u89C6\u9891\u64AD\u653E\u9875\u4F7F\u7528 Luna \u754C\u9762\uFF08\u5173\u95ED\u540E\u663E\u793A B \u7AD9\u539F\u6765\u7684\u9875\u9762\uFF09"));
-    return line;
-  }
-  function videoCoverRow() {
-    const line = element("label", "atelier-appearance-row atelier-check-row");
-    const box = element("input");
-    box.type = "checkbox";
-    box.checked = videoCoverEnabled();
-    box.addEventListener("change", () => {
-      sound("select");
-      setVideoCoverEnabled(box.checked);
-    });
-    line.append(box, element("span", "", "\u8FDB\u5165\u89C6\u9891\u65F6\u663E\u793A\u5C01\u9762\uFF08\u6307\u5411\u753B\u9762\u65F6\u663E\u793A\u9996\u5E27\uFF0C\u5F00\u59CB\u64AD\u653E\u540E\u4E0D\u518D\u663E\u793A\uFF09"));
-    return line;
-  }
-  function download(data, stem2) {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link3 = element("a");
-    link3.href = url;
-    link3.download = stem2 + "-" + (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) + ".json";
-    document.body.appendChild(link3);
-    link3.click();
-    link3.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1e3);
-  }
-  function openBlockerPanel(onRulesChanged, renderHistory, initialSection = "video") {
-    if (activePanel && document.getElementById(atelierPanelId)) {
-      activePanel.show(initialSection);
-      return;
-    }
-    ensureLunaTheme();
-    const previousFocus = document.activeElement;
-    const events = new AbortController();
-    const panel = element("section");
-    panel.id = atelierPanelId;
-    panel.className = "xp-window";
-    panel.setAttribute("data-bili-blocker-ui", "");
-    panel.setAttribute("role", "dialog");
-    panel.setAttribute("aria-labelledby", "bili-atelier-title");
-    const snapshot = readRuleSnapshot();
-    const fields2 = /* @__PURE__ */ new Map();
-    const saved = /* @__PURE__ */ new Map();
-    let section = initialSection;
-    let selectedKey = "title";
-    let syncPanel;
-    let soundPanel;
-    let followingPanel;
-    const cleanupPixels = observeCrispText(panel);
-    const navButtons = /* @__PURE__ */ new Map();
-    const isDirty = () => [...fields2].some(([key3, field]) => field.value !== saved.get(key3));
-    const status2 = element("span", "luna-status xp-status-pane");
-    status2.setAttribute("role", "status");
-    status2.setAttribute("aria-live", "polite");
-    function updateStatus(message) {
-      const count2 = [...fields2].reduce((sum, [key3, field]) => sum + parseRuleText(field.value, ruleDefinitions.find((rule) => rule.key === key3)?.integer).length, 0);
-      const relevant = isDirty() || categories.some((category) => category.id === section);
-      status2.textContent = message || (relevant ? count2 + " \u6761\u89C4\u5219 \xB7 " + (isDirty() ? "\u6709\u672A\u4FDD\u5B58\u7684\u4FEE\u6539" : "\u5DF2\u4FDD\u5B58") : "");
-      status2.dataset.dirty = String(isDirty());
-    }
-    for (const rule of ruleDefinitions) {
-      const field = element("textarea", "luna-editor");
-      field.id = "bili-rule-" + rule.key;
-      field.value = formatRuleText(snapshot[rule.key]);
-      field.spellcheck = false;
-      field.setAttribute("aria-label", rule.label);
-      field.addEventListener("input", () => updateStatus());
-      fields2.set(rule.key, field);
-      saved.set(rule.key, field.value);
-    }
-    let closing = false;
-    async function close() {
-      if (closing) return;
-      closing = true;
-      const feedback = soundTask();
-      if ((isDirty() || syncPanel?.isDirty()) && !await atelierConfirm("\u89C4\u5219\u6216\u540C\u6B65\u8BBE\u7F6E\u5C1A\u672A\u4FDD\u5B58\uFF0C\u786E\u5B9A\u653E\u5F03\u4FEE\u6539\u5E76\u5173\u95ED\u5417\uFF1F")) {
-        closing = false;
-        feedback.finish("cancel");
-        return;
-      }
-      events.abort();
-      syncPanel?.dispose();
-      soundPanel?.dispose();
-      followingPanel?.dispose();
-      cleanupPixels();
-      panel.remove();
-      activePanel = void 0;
-      if (previousFocus?.isConnected) previousFocus.focus();
-      feedback.finish("close");
-    }
-    function syncSavedRules(discardDrafts = false) {
-      const current4 = readRuleSnapshot();
-      for (const rule of ruleDefinitions) {
-        const field = fields2.get(rule.key);
-        if (discardDrafts || field.value === saved.get(rule.key)) {
-          field.value = formatRuleText(current4[rule.key]);
-          saved.set(rule.key, field.value);
-        }
-      }
-      updateStatus();
-    }
-    function save() {
-      const changed = isDirty();
-      const latest = readRuleSnapshot();
-      for (const rule of ruleDefinitions) {
-        const field = fields2.get(rule.key);
-        if (field.value === saved.get(rule.key)) continue;
-        let next = parseRuleText(field.value, rule.integer);
-        if (rule.key === "precise_uid" || rule.key === "precise_name") {
-          const identity = (value2) => String(value2).trim().toLowerCase();
-          const baseline = new Set(parseRuleText(saved.get(rule.key), rule.integer).map(identity));
-          const draft = new Set(next.map(identity));
-          const current4 = latest[rule.key].filter((value2) => !baseline.has(identity(value2)) || draft.has(identity(value2)));
-          const present = new Set(current4.map(identity));
-          next = current4.concat(next.filter((value2) => !baseline.has(identity(value2)) && !present.has(identity(value2))));
-        }
-        writeRuleList(rule.key, next);
-      }
-      syncSavedRules(true);
-      onRulesChanged();
-      showInfoLog("\u5DF2\u4FDD\u5B58\u5C4F\u853D\u89C4\u5219", "success");
-      if (changed) sound("save");
-    }
-    const caption2 = element("header", "luna-caption xp-caption");
-    const title = element("h1", "", "Bili Atelier");
-    title.id = "bili-atelier-title";
-    const captionActions = element("div", "luna-caption-actions");
-    function setCaptionImages(node4, name) {
-      node4.dataset.kind = name;
-    }
-    function captionButton2(name, label, action) {
-      const node4 = button2("", action, "luna-caption-button xp-caption-button");
-      node4.title = label;
-      node4.setAttribute("aria-label", label);
-      setCaptionImages(node4, name);
-      captionActions.appendChild(node4);
-      return node4;
-    }
-    const minimize = captionButton2("minimize", "\u6700\u5C0F\u5316", () => {
-      const minimized = panel.dataset.minimized !== "true";
-      if (minimized) syncPanel?.hideSecrets();
-      panel.dataset.minimized = String(minimized);
-      updateWindowPosition();
-      minimize.title = minimized ? "\u5C55\u5F00\u7A97\u53E3" : "\u6700\u5C0F\u5316";
-      minimize.setAttribute("aria-label", minimize.title);
-      sound(minimized ? "minimize" : "restore");
-    });
-    const maximize = captionButton2("maximize", "\u6700\u5927\u5316", () => {
-      panel.dataset.minimized = "false";
-      minimize.title = "\u6700\u5C0F\u5316";
-      minimize.setAttribute("aria-label", minimize.title);
-      const maximized = panel.dataset.maximized !== "true";
-      panel.dataset.maximized = String(maximized);
-      updateWindowPosition();
-      maximize.title = maximized ? "\u8FD8\u539F\u7A97\u53E3" : "\u6700\u5927\u5316";
-      maximize.setAttribute("aria-label", maximize.title);
-      setCaptionImages(maximize, maximized ? "restore" : "maximize");
-      sound(maximized ? "maximize" : "restore");
-    });
-    captionButton2("close", "\u5173\u95ED\u7A97\u53E3", close);
-    caption2.append(icon(atelierIcons.tv, 16), title, captionActions);
-    const updateWindowPosition = enableWindowDrag(panel, caption2, events.signal);
-    const layout2 = element("div", "luna-layout");
-    const sidebar = element("div", "luna-sidebar xp-taskpane");
-    const group = element("section", "xp-task-group");
-    group.dataset.special = "";
-    const groupHead = button2("\u5DE5\u4F5C\u53F0", () => {
-      group.toggleAttribute("data-collapsed");
-      groupHead.setAttribute("aria-expanded", String(!group.hasAttribute("data-collapsed")));
-    }, "xp-task-head");
-    groupHead.setAttribute("aria-expanded", "true");
-    const nav = element("nav", "luna-nav xp-task-body");
-    nav.setAttribute("aria-label", "Atelier \u529F\u80FD\u76EE\u5F55");
-    function addNav(parent, id, label) {
-      const node4 = button2("", () => show(id, true), "luna-nav-button xp-task-link");
-      node4.append(icon(atelierIcons[areaFor(id)], 16), document.createTextNode(label));
-      navButtons.set(id, node4);
-      parent.appendChild(node4);
-    }
-    atelierAreas.forEach((area) => addNav(nav, area.id, area.label));
-    group.append(groupHead, nav);
-    sidebar.append(group);
-    const main = element("div", "luna-main");
-    const breadcrumb = element("div", "luna-breadcrumb");
-    const address = element("div", "luna-address");
-    breadcrumb.append(document.createTextNode("\u5730\u5740"), address);
-    const sectionTabs = element("nav", "luna-section-tabs xp-tabs");
-    sectionTabs.setAttribute("aria-label", "\u5F53\u524D\u680F\u76EE\u5B50\u9875\u9762");
-    const content = element("div", "luna-content");
-    const footer = element("footer", "luna-footer");
-    const saveRules = button2("\u4FDD\u5B58\u89C4\u5219", save, "luna-button luna-button-primary xp-default");
-    footer.append(saveRules, button2("\u5173\u95ED", close));
-    main.append(breadcrumb, sectionTabs, content, footer);
-    layout2.append(sidebar, main);
-    const statusBar = element("div", "xp-status");
-    statusBar.append(status2);
-    panel.append(caption2, layout2, statusBar);
-    function showRules() {
-      const category = categories.find((item) => item.id === section);
-      if (!category.keys.includes(selectedKey)) selectedKey = category.keys[0];
-      content.append(element("h2", "", category.label + "\u5C4F\u853D\u89C4\u5219"), element("p", "luna-description", category.description));
-      const tabs2 = element("div", "luna-rule-tabs");
-      tabs2.setAttribute("role", "tablist");
-      tabs2.setAttribute("aria-label", category.label + "\u5339\u914D\u65B9\u5F0F");
-      const editorHost = element("div", "luna-editor-host");
-      editorHost.setAttribute("role", "tabpanel");
-      editorHost.id = "bili-atelier-rule-editor";
-      const modeButtons = /* @__PURE__ */ new Map();
-      function selectMode(key3, user = false) {
-        if (user && selectedKey !== key3) sound("select");
-        selectedKey = key3;
-        for (const [mode2, node4] of modeButtons) {
-          node4.setAttribute("aria-selected", String(mode2 === key3));
-          node4.tabIndex = mode2 === key3 ? 0 : -1;
-        }
-        editorHost.setAttribute("aria-labelledby", "bili-atelier-mode-" + key3);
-        editorHost.replaceChildren(fields2.get(key3));
-      }
-      for (const key3 of category.keys) {
-        const tab = button2(modeLabels[key3], () => selectMode(key3, true), "luna-rule-tab");
-        const mark2 = element("span", "luna-radio");
-        mark2.setAttribute("aria-hidden", "true");
-        tab.prepend(mark2);
-        tab.id = "bili-atelier-mode-" + key3;
-        tab.setAttribute("role", "tab");
-        tab.setAttribute("aria-controls", editorHost.id);
-        tab.addEventListener("keydown", (event) => {
-          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
-          event.preventDefault();
-          const index = category.keys.indexOf(key3);
-          const next = event.key === "Home" ? 0 : event.key === "End" ? category.keys.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + category.keys.length) % category.keys.length;
-          selectMode(category.keys[next], true);
-          modeButtons.get(category.keys[next]).focus();
-        });
-        modeButtons.set(key3, tab);
-        tabs2.appendChild(tab);
-      }
-      selectMode(selectedKey);
-      content.append(tabs2, editorHost, element("p", "luna-hint", "\u6BCF\u884C\u4E00\u6761\u89C4\u5219"));
-    }
-    function dataGroup(title2, hint, actions) {
-      const group2 = element("section", "luna-data-group xp-groupbox");
-      const row = element("div", "luna-button-row");
-      row.append(...actions);
-      group2.append(element("h3", "", title2), element("p", "luna-hint", hint), row);
-      return group2;
-    }
-    function downloadViewed() {
-      const data = exportViewedDataPackage();
-      download(data, "bili-atelier-viewed");
-      showInfoLog("\u5DF2\u751F\u6210 " + data.viewed.items.length + " \u6761\u5DF2\u770B\u8BB0\u5F55\u7684\u4E0B\u8F7D\u6587\u4EF6", "success");
-      sound("success");
-    }
-    async function importText(text3, mode2) {
-      if (isDirty() && !await atelierConfirm("\u5BFC\u5165\u4F1A\u91CD\u65B0\u8F7D\u5165\u89C4\u5219\u5E76\u653E\u5F03\u5C1A\u672A\u4FDD\u5B58\u7684\u4FEE\u6539\u3002\u7EE7\u7EED\u5417\uFF1F")) return false;
-      if (mode2 === "overwrite" && !await atelierConfirm("\u8986\u76D6\u5BFC\u5165\u4F1A\u66FF\u6362\u5DF2\u770B\u8BB0\u5F55\u548C\u5BF9\u5E94\u5C4F\u853D\u89C4\u5219\u3002\u786E\u5B9A\u7EE7\u7EED\u5417\uFF1F")) return false;
-      if (!panel.isConnected) return false;
-      const result = importAtelierDataInput(JSON.parse(text3), mode2);
-      syncSavedRules(true);
-      onRulesChanged();
-      updateStatus(result.res);
-      showInfoLog(result.res + "\uFF1B\u5DF2\u770B\u72B6\u6001\u53EF\u80FD\u9700\u8981\u5237\u65B0\u9875\u9762\u540E\u5B8C\u5168\u751F\u6548\u3002", "success", 5200);
-      return true;
-    }
-    async function pasteImport(mode2) {
-      const feedback = soundTask(void 0, panel);
-      const text3 = await atelierPrompt("\u7C98\u8D34\u7EDF\u4E00\u6570\u636E JSON\uFF0C\u4E5F\u517C\u5BB9\u65E7\u5C4F\u853D/\u5DF2\u770B JSON");
-      if (!text3) {
-        feedback.finish("cancel");
-        return;
-      }
-      try {
-        feedback.finish(await importText(text3, mode2) ? "success" : "cancel");
-      } catch (error) {
-        void atelierAlert("\u5BFC\u5165\u5931\u8D25\uFF1A" + String(error));
-        feedback.finish("error");
-      }
-    }
-    function fileImport(label, mode2) {
-      const input = element("input");
-      input.type = "file";
-      input.accept = ".txt,.json,application/json,text/plain";
-      input.hidden = true;
-      input.addEventListener("change", async () => {
-        const feedback = soundTask("start", panel);
-        const file = input.files?.[0];
-        input.value = "";
-        if (!file) return;
-        try {
-          const text3 = await file.text();
-          if (panel.isConnected) feedback.finish(await importText(text3, mode2) ? "success" : "cancel");
-        } catch (error) {
-          void atelierAlert("\u5BFC\u5165\u5931\u8D25\uFF1A" + String(error));
-          feedback.finish("error");
-        }
-      });
-      const wrapper = element("span");
-      wrapper.append(button2(label, () => input.click()), input);
-      return wrapper;
-    }
-    function showData() {
-      content.append(element("h2", "", "\u6570\u636E\u7BA1\u7406"), element("p", "luna-description", "\u5907\u4EFD\u4F60\u7684\u5DF2\u770B\u8BB0\u5F55\u548C\u5C4F\u853D\u89C4\u5219\uFF0C\u4E5F\u53EF\u5BFC\u5165\u5230\u624B\u673A\u3002"));
-      content.append(dataGroup("\u5BFC\u51FA\u4E0E\u624B\u673A\u5BFC\u5165", "\u5BFC\u51FA\u5F53\u524D\u5DF2\u4FDD\u5B58\u7684\u6570\u636E\uFF1B\u4FEE\u6539\u89C4\u5219\u540E\u8BF7\u5148\u4FDD\u5B58\u3002", [
-        button2("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
-        button2("\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", () => {
-          download(exportAtelierDataPackage(), "bili-atelier-data");
-          showInfoLog("\u5DF2\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u542B\u5DF2\u770B\u548C\u5C4F\u853D\u89C4\u5219\uFF09", "success");
-          sound("success");
-        }),
-        button2("\u5BFC\u51FA\u7EDF\u4E00 JSON", async () => {
-          const feedback = soundTask(void 0, panel);
-          const json = JSON.stringify(exportAtelierDataPackage(), null, 2);
-          let copied = false;
-          try {
-            if (navigator.clipboard?.writeText) {
-              await navigator.clipboard.writeText(json);
-              copied = true;
-            }
-          } catch {
-          }
-          await atelierPrompt(copied ? "\u7EDF\u4E00\u6570\u636E JSON\uFF08\u5DF2\u590D\u5236\u5230\u526A\u8D34\u677F\uFF09" : "\u7EDF\u4E00\u6570\u636E JSON\uFF08\u8BF7\u624B\u52A8\u590D\u5236\uFF09", json, true);
-          showInfoLog("\u5DF2\u5BFC\u51FA\u7EDF\u4E00 JSON", "success");
-          feedback.finish("success");
-        })
-      ]));
-      content.append(dataGroup("\u8FFD\u52A0\u5BFC\u5165", "\u5408\u5E76\u5E76\u53BB\u91CD\uFF0C\u4FDD\u7559\u5DF2\u6709\u8BB0\u5F55\u3002\u517C\u5BB9\u65E7\u5C4F\u853D / \u5DF2\u770B JSON\u3002", [
-        button2("\u8FFD\u52A0\u5BFC\u5165\u7EDF\u4E00 JSON", () => pasteImport("append")),
-        fileImport("\u4ECE\u6587\u4EF6\u8FFD\u52A0\u5BFC\u5165", "append")
-      ]));
-      content.append(dataGroup("\u8986\u76D6\u5BFC\u5165", "\u66FF\u6362\u5DF2\u770B\u8BB0\u5F55\u53CA\u5BFC\u5165\u6587\u4EF6\u4E2D\u7684\u89C4\u5219\u3002\u64CD\u4F5C\u524D\u4F1A\u518D\u6B21\u786E\u8BA4\u3002", [
-        button2("\u8986\u76D6\u5BFC\u5165\u7EDF\u4E00 JSON", () => pasteImport("overwrite")),
-        fileImport("\u4ECE\u6587\u4EF6\u8986\u76D6\u5BFC\u5165", "overwrite")
-      ]));
-    }
-    function showViewed() {
-      const snapshot2 = readViewedStorage();
-      content.append(
-        element("h2", "", "\u5DF2\u770B\u6807\u8BB0"),
-        element("p", "luna-description", "\u7EE7\u7EED\u4F7F\u7528\u89C6\u9891\u5361\u7247\u4E0A\u7684\u5DF2\u770B\u6309\u94AE\u7BA1\u7406\u89C2\u770B\u72B6\u6001\u3002"),
-        element("p", "", "\u5DF2\u4FDD\u5B58 " + snapshot2.items.length + " \u6761\u5DF2\u770B\u8BB0\u5F55")
-      );
-      const list = element("pre", "luna-viewed-list", snapshot2.items.length ? snapshot2.items.slice(0, 100).join("\n") : "\u8FD8\u6CA1\u6709\u5DF2\u770B\u8BB0\u5F55\u3002\u6807\u8BB0\u89C6\u9891\u540E\uFF0C\u8BB0\u5F55\u4F1A\u663E\u793A\u5728\u8FD9\u91CC\u3002");
-      list.setAttribute("aria-label", "\u5DF2\u770B\u89C6\u9891 ID");
-      content.append(list);
-      if (snapshot2.items.length > 100) content.append(element("p", "luna-hint", "\u6B64\u5904\u9884\u89C8\u524D 100 \u6761\uFF1B\u5BFC\u51FA\u6587\u4EF6\u5305\u542B\u5168\u90E8\u8BB0\u5F55\u3002"));
-      content.append(dataGroup("\u6570\u636E\u5907\u4EFD", "\u53EF\u5C06\u5DF2\u770B\u8BB0\u5F55\u4E0B\u8F7D\u5230\u624B\u673A\uFF0C\u6216\u8FDB\u5165\u6570\u636E\u7BA1\u7406\u5BFC\u5165\u5DF2\u6709\u8BB0\u5F55\u3002", [
-        button2("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
-        button2("\u5BFC\u5165\u5DF2\u770B\u8BB0\u5F55\u2026", () => show("data", true)),
-        button2("\u5237\u65B0\u8BB0\u5F55", () => show("viewed", true))
-      ]));
-    }
-    function refreshHistory() {
-      const container = content.querySelector(".luna-history");
-      if (container) renderHistory(container, () => {
-        syncSavedRules();
-        onRulesChanged();
-      });
-    }
-    function show(next, user = false) {
-      if (user && next !== section) sound("folder");
-      else if (user && panel.dataset.minimized === "true") sound("restore");
-      if (section === "sounds" && next !== "sounds") stopSoundPreview();
-      syncPanel?.hideSecrets();
-      section = next;
-      saveRules.hidden = !categories.some((category2) => category2.id === section);
-      panel.dataset.minimized = "false";
-      updateWindowPosition();
-      minimize.title = "\u6700\u5C0F\u5316";
-      minimize.setAttribute("aria-label", minimize.title);
-      syncSavedRules();
-      for (const [id, node4] of navButtons) {
-        if (id === areaFor(section)) node4.setAttribute("aria-current", "page");
-        else node4.removeAttribute("aria-current");
-      }
-      const category = categories.find((item) => item.id === section);
-      const area = areaFor(section);
-      const label = atelierAreas.find((item) => item.id === area).label;
-      address.replaceChildren(icon(atelierIcons[area], 16), document.createTextNode("Bili Atelier \u203A " + label));
-      sectionTabs.replaceChildren();
-      const tabs2 = area === "video" ? [...categories.map((item) => [item.id, item.label]), ["history", "\u5C4F\u853D\u5386\u53F2"]] : area === "data" ? [["data", "\u5BFC\u5165\u4E0E\u5BFC\u51FA"], ["sync", "PC / Android \u540C\u6B65"]] : area === "settings" ? [["settings", "\u5916\u89C2"], ["sounds", "\u97F3\u6548"]] : [];
-      sectionTabs.hidden = !tabs2.length;
-      for (const [id, label2] of tabs2) {
-        const tab = button2(label2, () => show(id, true), "luna-section-tab xp-tab");
-        if (id === section) tab.setAttribute("aria-current", "page");
-        sectionTabs.append(tab);
-      }
-      content.replaceChildren();
-      content.classList.toggle("xp-tabpanel", !!tabs2.length);
-      content.classList.toggle("luna-following-content", section === "following");
-      content.classList.toggle("luna-rules-content", !!category);
-      if (section === "following") {
-        followingPanel ??= mountLocalFollowingPanel();
-        content.append(followingPanel.host);
-      } else if (category) showRules();
-      else if (section === "viewed") showViewed();
-      else if (section === "data") showData();
-      else if (section === "settings") {
-        content.append(appearancePage());
-      } else if (section === "sounds") {
-        soundPanel ??= mountSoundPanel();
-        content.append(soundPanel.host);
-      } else if (section === "sync") {
-        syncPanel ??= mountSyncPanel();
-        content.append(syncPanel.host);
-      } else {
-        content.append(element("h2", "", "\u5C4F\u853D\u5386\u53F2"), element("p", "luna-description", "\u67E5\u770B\u5DF2\u9690\u85CF\u7684\u5185\u5BB9\uFF0C\u4E5F\u53EF\u4EE5\u89E3\u9664\u5BF9\u5E94\u7684\u5C4F\u853D\u89C4\u5219\u3002"), element("div", "luna-history"));
-        refreshHistory();
-      }
-      content.scrollTop = 0;
-    }
-    panel.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        event.stopPropagation();
-        close();
-      }
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
-        event.preventDefault();
-        event.stopPropagation();
-        if (!saveRules.hidden) save();
-      }
-    });
-    window.addEventListener("atelier-sync-applied", () => {
-      syncSavedRules();
-      if (section === "viewed") show("viewed");
-    }, { signal: events.signal });
-    document.addEventListener(historyChangedEvent, () => {
-      if (section === "history") refreshHistory();
-    }, { signal: events.signal });
-    window.addEventListener("beforeunload", (event) => {
-      if (isDirty() || syncPanel?.isDirty()) {
-        event.preventDefault();
-        event.returnValue = "";
-      }
-    }, { signal: events.signal });
-    activePanel = { show: (next) => show(next, true), toggleHistory: () => {
-      if (section !== "history" || !panel.isConnected) return false;
-      minimize.click();
-      return true;
-    } };
-    document.body.appendChild(panel);
-    show(initialSection);
-    navButtons.get(areaFor(initialSection))?.focus();
-    sound("open");
-  }
-
-  // src/modules/blocker/runtime.ts
-  var actionClass = "bili-blocker-action";
-  var inlineActionClass = "bili-blocker-inline-action";
-  var homeVideoActionClass = "bili-blocker-home-video-action";
-  var homeLiveActionClass = "bili-blocker-home-live-action";
-  var profileActionClass = "bili-blocker-profile-action";
-  var spaceProfileActionClass = "bili-blocker-space-profile-action";
-  var hiddenAttribute = "data-bili-blocker-hidden";
-  var previousDisplayAttribute = "data-bili-blocker-previous-display";
-  var previousDisplayPriorityAttribute = "data-bili-blocker-previous-display-priority";
-  var hiddenElements = /* @__PURE__ */ new Set();
-  var historyShortcutInstalled = false;
-  var commentExpandFastScanInstalled = false;
-  var userRuleKeys = /* @__PURE__ */ new Set(["precise_uid", "precise_name", "name", "nameCanonical"]);
-  var homeFeedCardSelectors = [
-    ".bili-feed-card",
-    ".feed-card",
-    ".bili-video-card",
-    ".bili-video-card__wrap",
-    ".floor-single-card",
-    ".recommend-card",
-    '[class*="feed-card"]',
-    '[class*="bili-video-card"]'
-  ];
-  var commentFastScanContainerSelectors = [
-    "bili-comments",
-    "#commentapp",
-    ".comment-container",
-    ".comment-list",
-    ".reply-list"
-  ];
-  var commentFastScanItemSelectors = [
-    "bili-comment-thread-renderer",
-    "bili-comment-reply-renderer",
-    ".reply-item",
-    ".sub-reply-item",
-    ".comment-item",
-    ".list-item"
-  ];
-  var commentFastScanRootSelectors = [...commentFastScanContainerSelectors, ...commentFastScanItemSelectors];
-  var commentExpandTextPattern = /展开|点击查看|更多回复|查看(?:全部)?回复|加载更多|共\s*\d+\s*条?回复|还有\s*\d+/;
-  function ensureRuntimeStyle() {
-    if (document.getElementById("bili-atelier-blocker-style")) {
-      return;
-    }
-    const style = document.createElement("style");
-    style.id = "bili-atelier-blocker-style";
-    style.textContent = `
-.${actionClass}{position:absolute;top:4px;right:4px;z-index:20}
-.${inlineActionClass},.${homeVideoActionClass},.${homeLiveActionClass},.${profileActionClass},.${spaceProfileActionClass}{margin-left:8px;vertical-align:middle}
-.${homeVideoActionClass},.${homeLiveActionClass}{float:right;flex:0 0 auto;margin-left:auto}
-[${hiddenAttribute}="true"]:not([data-bili-blocker-revealed]){display:none!important}
-[data-bili-blocker-revealed]{outline:1px dashed #a33024;outline-offset:-1px}
-`;
-    document.head.appendChild(style);
-  }
-  function styleCompactButton(button5) {
-    button5.style.marginLeft = "8px";
-    styleAtelierAction(button5);
-  }
-  function decide(item, rules) {
-    if (item.el.closest("[data-bili-blocker-ui]")) {
-      return null;
-    }
-    return decideBlockableItem(item, rules);
-  }
-  function hideRawElement(el3, decision) {
-    const newlyHidden = el3.getAttribute(hiddenAttribute) !== "true";
-    if (newlyHidden) {
-      el3.setAttribute(previousDisplayAttribute, el3.style.getPropertyValue("display") || "");
-      el3.setAttribute(previousDisplayPriorityAttribute, el3.style.getPropertyPriority("display") || "");
-    }
-    el3.setAttribute(hiddenAttribute, "true");
-    hiddenElements.add(el3);
-    applyBlockedVisibility(el3);
-    el3.title = `Bili Atelier \u5DF2\u5C4F\u853D\uFF1A${decision.type} ${decision.matching}`;
-    return newlyHidden;
-  }
-  function applyBlockedVisibility(el3) {
-    el3.toggleAttribute("data-bili-blocker-revealed", isShowingBlocked());
-    if (isShowingBlocked()) {
-      el3.style.removeProperty("display");
-      const previous = el3.getAttribute(previousDisplayAttribute);
-      if (previous) el3.style.setProperty("display", previous, el3.getAttribute(previousDisplayPriorityAttribute) || "");
-    } else el3.style.setProperty("display", "none", "important");
-  }
-  function hideElement(item, decision) {
-    const newlyHidden = hideRawElement(item.el, decision);
-    if (newlyHidden && decision.ruleKey) {
-      recordBlockHistory(item, decision);
-    }
-    debugLog("blocked", item.kind, decision, item);
-  }
-  function restoreElement(item) {
-    const el3 = item.el;
-    if (el3.getAttribute(hiddenAttribute) !== "true") {
-      return;
-    }
-    const previousDisplay = el3.getAttribute(previousDisplayAttribute) || "";
-    const previousDisplayPriority = el3.getAttribute(previousDisplayPriorityAttribute) || "";
-    el3.removeAttribute(hiddenAttribute);
-    hiddenElements.delete(el3);
-    el3.removeAttribute("data-bili-blocker-revealed");
-    el3.removeAttribute(previousDisplayAttribute);
-    el3.removeAttribute(previousDisplayPriorityAttribute);
-    el3.style.removeProperty("display");
-    if (previousDisplay) {
-      el3.style.setProperty("display", previousDisplay, previousDisplayPriority);
-    }
-  }
-  function isAdBlockPlaceholderText(value2) {
-    const compactText2 = String(value2 || "").replace(/\s+/g, "");
-    return /该内容被.*(?:AdGuard|AdBlock).*插件屏蔽/i.test(compactText2) || /插件屏蔽.*恢复正常内容展示/.test(compactText2);
-  }
-  function removeHomeAdBlockPlaceholders() {
-    if (!isHomePageLocation()) {
-      return;
-    }
-    const candidates = Array.from(document.querySelectorAll(homeFeedCardSelectors.join(",")));
-    const cards2 = /* @__PURE__ */ new Set();
-    for (const candidate of candidates) {
-      const card2 = candidate.closest(
-        ".bili-feed-card,.feed-card,.bili-video-card,.floor-single-card,.recommend-card"
-      ) || candidate;
-      if (!isAdBlockPlaceholderText(card2.textContent)) {
-        continue;
-      }
-      cards2.add(card2);
-    }
-    for (const card2 of cards2) {
-      hideRawElement(card2, { type: "\u9996\u9875\u5E7F\u544A\u5C4F\u853D\u5360\u4F4D", matching: "AdGuard/AdBlock" });
-    }
-  }
-  function formatHistoryTime(timestamp2) {
-    return new Date(timestamp2).toLocaleString();
-  }
-  function kindLabel(kind) {
-    if (kind === "comment") {
-      return "\u8BC4\u8BBA";
-    }
-    if (kind === "live") {
-      return "\u76F4\u64AD";
-    }
-    if (kind === "dynamic") {
-      return "\u52A8\u6001";
-    }
-    return "\u89C6\u9891";
-  }
-  function isUserRuleKey(ruleKey) {
-    return Boolean(ruleKey && userRuleKeys.has(ruleKey));
-  }
-  function isUserBlockDecision(decision) {
-    return isUserRuleKey(decision.ruleKey);
-  }
-  function compactText(value2) {
-    return String(value2 ?? "").replace(/\s+/g, " ").trim();
-  }
-  function shortText(value2, maxLength) {
-    const textValue = compactText(value2);
-    if (!textValue) {
-      return "\u672A\u77E5\u5185\u5BB9";
-    }
-    return textValue.length > maxLength ? `${textValue.slice(0, maxLength)}...` : textValue;
-  }
-  function isLeakedStyleText(value2) {
-    return /:host\s*\{|--bili-rich-text-|^\s*\.[\w-]+\s*\{/.test(value2);
-  }
-  function shortReadableText(value2, maxLength, fallback2 = "\u672A\u77E5\u5185\u5BB9") {
-    const textValue = compactText(value2);
-    const readable = !textValue || isLeakedStyleText(textValue) ? fallback2 : textValue;
-    return readable.length > maxLength ? `${readable.slice(0, maxLength)}...` : readable;
-  }
-  function historyUserId(entry) {
-    if (entry.uid !== void 0) {
-      return String(entry.uid);
-    }
-    if (entry.ruleKey === "precise_uid" && entry.ruleValue !== void 0) {
-      return String(entry.ruleValue);
-    }
-    if (entry.ruleKey === "precise_uid" && entry.matching !== void 0) {
-      return String(entry.matching);
-    }
-    return "\u672A\u77E5";
-  }
-  function historyTypeLabel(entry) {
-    if (entry.kind === "comment" && isUserRuleKey(entry.ruleKey)) {
-      return "\u8BC4\u8BBA\u533A\u7528\u6237";
-    }
-    if (entry.kind === "video" && isUserRuleKey(entry.ruleKey)) {
-      return "UP";
-    }
-    if (entry.kind === "live" && isUserRuleKey(entry.ruleKey)) {
-      return "\u76F4\u64ADUP";
-    }
-    if (entry.kind === "dynamic" && isUserRuleKey(entry.ruleKey)) {
-      return "\u52A8\u6001UP";
-    }
-    if (entry.ruleKey === "dynamic" || entry.ruleKey === "dynamicCanonical") {
-      return "\u52A8\u6001\u5173\u952E\u8BCD";
-    }
-    if (entry.ruleKey === "commentOn" || entry.ruleKey === "commentOnCanonical") {
-      return "\u8BC4\u8BBA\u5173\u952E\u8BCD";
-    }
-    if (entry.ruleKey === "title" || entry.ruleKey === "titleCanonical") {
-      return "\u89C6\u9891\u6807\u9898";
-    }
-    if (entry.ruleKey === "liveTitle" || entry.ruleKey === "liveTitleCanonical") {
-      return "\u76F4\u64AD\u6807\u9898";
-    }
-    if (entry.ruleKey === "precise_liveRoomId") {
-      return "\u76F4\u64AD\u95F4";
-    }
-    if (entry.ruleKey === "precise_partition") {
-      return "\u76F4\u64AD\u5206\u533A";
-    }
-    return kindLabel(entry.kind);
-  }
-  function historyEntrySummary(entry) {
-    const typeLabel = historyTypeLabel(entry);
-    if (typeLabel === "UP") {
-      const name = entry.name ? ` / ${entry.name}` : "";
-      return `UP ID\uFF1A${historyUserId(entry)}${name}`;
-    }
-    if (typeLabel === "\u8BC4\u8BBA\u533A\u7528\u6237") {
-      return `\u7528\u6237 ID\uFF1A${historyUserId(entry)} / \u8BC4\u8BBA\uFF1A${shortReadableText(entry.content || entry.summary, 28, "\u65E7\u8BB0\u5F55\u672A\u4FDD\u5B58\u8BC4\u8BBA\u6B63\u6587")}`;
-    }
-    if (typeLabel === "\u76F4\u64ADUP") {
-      const name = entry.name ? ` / ${entry.name}` : "";
-      return `\u76F4\u64AD UP ID\uFF1A${historyUserId(entry)}${name}`;
-    }
-    if (typeLabel === "\u8BC4\u8BBA\u5173\u952E\u8BCD") {
-      return shortReadableText(entry.content || entry.summary, 52, "\u65E7\u8BB0\u5F55\u672A\u4FDD\u5B58\u8BC4\u8BBA\u6B63\u6587");
-    }
-    if (typeLabel === "\u89C6\u9891\u6807\u9898") {
-      return shortText(entry.title || entry.summary, 52);
-    }
-    if (typeLabel === "\u76F4\u64AD\u6807\u9898") {
-      return shortText(entry.liveTitle || entry.summary, 52);
-    }
-    return shortText(entry.summary, 52);
-  }
-  function historyEntryDetail(entry) {
-    const typeLabel = historyTypeLabel(entry);
-    const parts2 = [];
-    if (typeLabel === "UP" || typeLabel === "\u8BC4\u8BBA\u533A\u7528\u6237" || typeLabel === "\u76F4\u64ADUP") {
-      if (entry.name) {
-        parts2.push(`\u7528\u6237\u540D\uFF1A${entry.name}`);
-      }
-    } else if (entry.detail) {
-      parts2.push(entry.detail);
-    }
-    if (entry.bv) {
-      parts2.push(`BV\uFF1A${entry.bv}`);
-    }
-    if (entry.roomId) {
-      parts2.push(`\u76F4\u64AD\u95F4\uFF1A${entry.roomId}`);
-    }
-    parts2.push(`\u547D\u4E2D\uFF1A${entry.matching}`);
-    return parts2.join(" / ");
-  }
-  function isEditableTarget(target) {
-    if (!(target instanceof HTMLElement)) {
-      return false;
-    }
-    const tagName = target.tagName;
-    return tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT" || target.isContentEditable || target.closest("[contenteditable=true]") !== null;
-  }
-  function appendText(parent, tagName, className, text3) {
-    const el3 = document.createElement(tagName);
-    el3.className = className;
-    el3.textContent = text3;
-    parent.appendChild(el3);
-    return el3;
-  }
-  function renderHistoryPanel(panel, rescan, embedded = false) {
-    panel.textContent = "";
-    panel.setAttribute("data-bili-blocker-ui", "true");
-    const header = document.createElement("div");
-    header.className = "bili-blocker-history-header";
-    appendText(header, "div", "", "\u5C4F\u853D\u5386\u53F2");
-    const headerActions = document.createElement("div");
-    headerActions.className = "bili-blocker-history-actions";
-    const refreshButton = document.createElement("button");
-    refreshButton.type = "button";
-    refreshButton.textContent = "\u5237\u65B0";
-    refreshButton.addEventListener("click", () => {
-      renderHistoryPanel(panel, rescan, embedded);
-      sound("click");
-    });
-    headerActions.appendChild(refreshButton);
-    const clearButton = document.createElement("button");
-    clearButton.type = "button";
-    clearButton.textContent = "\u6E05\u7A7A";
-    clearButton.addEventListener("click", () => {
-      const changed = readBlockHistory().length > 0;
-      writeBlockHistory([]);
-      renderHistoryPanel(panel, rescan, embedded);
-      sound(changed ? "delete" : "click");
-    });
-    headerActions.appendChild(clearButton);
-    const closeButton = document.createElement("button");
-    closeButton.type = "button";
-    closeButton.textContent = "\u5173\u95ED";
-    closeButton.addEventListener("click", () => {
-      panel.hidden = true;
-      sound("close");
-    });
-    if (!embedded) headerActions.appendChild(closeButton);
-    header.appendChild(headerActions);
-    panel.appendChild(header);
-    const body2 = document.createElement("div");
-    body2.className = "bili-blocker-history-body";
-    const history2 = readBlockHistory();
-    if (history2.length === 0) {
-      appendText(body2, "div", "bili-blocker-history-empty", "\u8FD8\u6CA1\u6709\u5C4F\u853D\u8BB0\u5F55");
-      panel.appendChild(body2);
-      return;
-    }
-    for (const entry of history2) {
-      const item = document.createElement("div");
-      item.className = "bili-blocker-history-item";
-      appendText(item, "div", "bili-blocker-history-type-badge", historyTypeLabel(entry));
-      const meta = document.createElement("div");
-      meta.className = "bili-blocker-history-meta";
-      appendText(meta, "span", "", `${kindLabel(entry.kind)} \xB7 ${entry.type}`);
-      appendText(meta, "span", "", formatHistoryTime(entry.timestamp));
-      item.appendChild(meta);
-      appendText(item, "div", "bili-blocker-history-summary", historyEntrySummary(entry));
-      appendText(item, "div", "bili-blocker-history-detail", historyEntryDetail(entry));
-      const footer = document.createElement("div");
-      footer.className = "bili-blocker-history-footer";
-      const unblockButton = document.createElement("button");
-      unblockButton.type = "button";
-      const removableRules = entryRuleReferences(entry);
-      if (removableRules.length > 0) {
-        unblockButton.textContent = "\u89E3\u9664";
-        unblockButton.addEventListener("click", () => {
-          const feedback = soundTask(void 0, () => panel.isConnected && !panel.hidden);
-          const results = removableRules.map((rule) => removeRuleItem(rule.key, rule.value));
-          const failures2 = results.filter((result) => !result.status && result.res !== "\u89C4\u5219\u4E0D\u5B58\u5728");
-          if (failures2.length === 0) {
-            removeHistoryByRules(removableRules);
-            showInfoLog(`\u5DF2\u89E3\u9664\u5C4F\u853D\uFF1A${historyEntrySummary(entry)}`, "success");
-            rescan();
-            renderHistoryPanel(panel, rescan, embedded);
-            feedback.finish(results.some((result) => result.status) ? "success" : "click");
-            return;
-          }
-          void atelierAlert(String(failures2[0].res));
-          feedback.finish("error");
-        });
-      } else {
-        unblockButton.textContent = "\u4E0D\u53EF\u89E3\u9664";
-        unblockButton.disabled = true;
-      }
-      footer.appendChild(unblockButton);
-      item.appendChild(footer);
-      body2.appendChild(item);
-    }
-    panel.appendChild(body2);
-  }
-  function toggleHistoryPanel(rescan) {
-    toggleBlockerHistory(rescan, (container, scan) => renderHistoryPanel(container, scan, true));
-  }
-  function installHistoryShortcut(rescan) {
-    if (historyShortcutInstalled) {
-      return;
-    }
-    historyShortcutInstalled = true;
-    document.addEventListener("keydown", (event) => {
-      if (event.key !== "`" && event.code !== "Backquote" || event.ctrlKey || event.altKey || event.metaKey) {
-        return;
-      }
-      if (isEditableTarget(event.target)) {
-        return;
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      toggleHistoryPanel(rescan);
-    }, true);
-  }
-  function eventPathElements(event) {
-    const path = typeof event.composedPath === "function" ? event.composedPath() : [];
-    const fallback2 = event.target ? [event.target] : [];
-    return (path.length > 0 ? path : fallback2).filter((node4) => node4 instanceof Element);
-  }
-  function hasCommentContext(elements) {
-    const selector = commentFastScanRootSelectors.join(",");
-    return elements.some((element2) => Boolean(element2.closest(selector)));
-  }
-  function isCommentExpandClick(event) {
-    if (isEditableTarget(event.target)) {
-      return false;
-    }
-    const elements = eventPathElements(event);
-    if (elements.some((element2) => Boolean(element2.closest("[data-bili-blocker-ui]")))) {
-      return false;
-    }
-    if (!hasCommentContext(elements)) {
-      return false;
-    }
-    return elements.some((element2) => {
-      const textValue = compactText([
-        element2.textContent,
-        element2.getAttribute("aria-label"),
-        element2.getAttribute("title")
-      ].filter(Boolean).join(" "));
-      return commentExpandTextPattern.test(textValue);
-    });
-  }
-  function findCommentFastScanRoot(event) {
-    const elements = eventPathElements(event);
-    const containerSelector = commentFastScanContainerSelectors.join(",");
-    for (const element2 of elements) {
-      const root2 = element2.closest(containerSelector);
-      if (root2) {
-        return root2;
-      }
-    }
-    const itemSelector = commentFastScanItemSelectors.join(",");
-    for (const element2 of elements) {
-      const root2 = element2.closest(itemSelector);
-      if (root2) {
-        return root2;
-      }
-    }
-    return document;
-  }
-  function scheduleCommentFastScans(scanComments, root2) {
-    const run = () => scanComments(root2);
-    if (typeof window.requestAnimationFrame === "function") {
-      window.requestAnimationFrame(run);
-    } else {
-      window.setTimeout(run, 0);
-    }
-    for (const delayMs of [80, 180, 420, 900, 1600]) {
-      window.setTimeout(run, delayMs);
-    }
-  }
-  function commentMutationRoots(records2) {
-    const roots2 = /* @__PURE__ */ new Set();
-    const itemSelector = commentFastScanItemSelectors.join(",");
-    const isOwnUi = (node4) => node4 instanceof Element && Boolean(node4.closest(".atelier-control,[data-bili-blocker-ui]"));
-    for (const record of records2) {
-      const target = record.target instanceof Element ? record.target : record.target.parentElement;
-      if (target && isOwnUi(target)) continue;
-      const changed = [...record.addedNodes, ...record.removedNodes];
-      if (changed.length && changed.every(isOwnUi)) continue;
-      let node4 = record.target;
-      let owner = null;
-      while (node4) {
-        if (node4 instanceof HTMLElement) owner = node4.closest(itemSelector);
-        if (owner) break;
-        node4 = node4 instanceof ShadowRoot ? node4.host : node4.parentNode;
-      }
-      if (owner?.isConnected) roots2.add(owner);
-      else for (const added of record.addedNodes) {
-        if (added instanceof HTMLElement && added.isConnected && !isOwnUi(added)) roots2.add(added);
-      }
-    }
-    return roots2;
-  }
-  function installCommentExpandFastScan(scanComments) {
-    if (commentExpandFastScanInstalled) {
-      return;
-    }
-    commentExpandFastScanInstalled = true;
-    document.addEventListener("click", (event) => {
-      if (!(event instanceof MouseEvent) || !isCommentExpandClick(event)) {
-        return;
-      }
-      scheduleCommentFastScans(scanComments, findCommentFastScanRoot(event));
-    }, true);
-  }
-  function applyManualBlockChoice(item, rescan, choice, type = "\u624B\u52A8\u5C4F\u853D", feedback) {
-    applyManualBlockChoices(item, rescan, [choice], type, { feedback });
-  }
-  function applyManualBlockChoices(item, rescan, choices, type = "\u624B\u52A8\u5C4F\u853D", options = {}) {
-    const feedback = options.feedback ?? soundTask();
-    const hideCurrent = options.hideCurrent !== false;
-    const linkedRules = [];
-    let firstError = "";
-    let added = 0;
-    let primaryChoice;
-    for (const choice of choices) {
-      const result = addRuleItem(choice.key, choice.value);
-      if (result.status) added++;
-      if (result.status || result.res === "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9") {
-        const value2 = result.status && "value" in result ? result.value : choice.value;
-        const rule = { key: choice.key, value: value2 };
-        linkedRules.push(rule);
-        primaryChoice ||= rule;
-        continue;
-      }
-      firstError ||= String(result.res);
-    }
-    if (linkedRules.length > 0 && primaryChoice) {
-      const manualDecision = {
-        type,
-        matching: primaryChoice.value,
-        ruleKey: primaryChoice.key,
-        ruleValue: primaryChoice.value,
-        linkedRules
-      };
-      if (hideCurrent) {
-        hideElement(item, manualDecision);
-      } else {
-        recordBlockHistory(item, manualDecision);
-      }
-      showInfoLog(`${type}\uFF1A${shortReadableText(summarizeBlockedItem(item), 36)}`, "success");
-      rescan();
-      if (hideCurrent) {
-        hideElement(item, manualDecision);
-      }
-      feedback.finish(added > 0 ? "success" : "click");
-      return true;
-    }
-    void atelierAlert(firstError || "\u5F53\u524D\u5143\u7D20\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u5C4F\u853D\u5B57\u6BB5");
-    feedback.finish("error");
-    return false;
-  }
-  function alertManualFailure(message) {
-    const feedback = soundTask();
-    void atelierAlert(message);
-    feedback.finish("error");
-  }
-  async function handleManualBlock(item, rescan) {
-    const choices = getManualChoices(item);
-    if (choices.length === 0) {
-      alertManualFailure("\u5F53\u524D\u5143\u7D20\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u5C4F\u853D\u5B57\u6BB5");
-      return;
-    }
-    const feedback = soundTask();
-    const selected = await atelierDialog({ title: "\u9009\u62E9\u5C4F\u853D\u65B9\u5F0F", message: "\u9009\u62E9\u8981\u5C4F\u853D\u7684\u5B57\u6BB5", choices: choices.map((choice2, index) => ({ value: String(index), label: choice2.label })) });
-    const choice = selected === null ? void 0 : choices[Number(selected)];
-    if (!choice) {
-      feedback.finish("cancel");
-      return;
-    }
-    applyManualBlockChoice(item, rescan, choice, "\u624B\u52A8\u5C4F\u853D", feedback);
-  }
-  function handleCommentUserBlock(item, rescan, options = {}) {
-    const choices = getCommentUserBlockChoices(item);
-    if (choices.length === 0) {
-      alertManualFailure("\u5F53\u524D\u8BC4\u8BBA\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u7528\u6237\u5B57\u6BB5");
-      return;
-    }
-    applyManualBlockChoices(item, rescan, choices, "\u624B\u52A8\u5C4F\u853D\u8BC4\u8BBA\u533A\u7528\u6237", options);
-  }
-  function handleHomeVideoOwnerBlock(item, rescan) {
-    const choices = getVideoOwnerBlockChoices(item);
-    if (choices.length === 0) {
-      alertManualFailure("\u5F53\u524D\u89C6\u9891\u5361\u7247\u6CA1\u6709\u53EF\u63D0\u53D6\u7684 UP \u5B57\u6BB5");
-      return;
-    }
-    applyManualBlockChoices(item, rescan, choices, "\u624B\u52A8\u5C4F\u853DUP");
-  }
-  function handleHomeLiveOwnerBlock(item, rescan) {
-    const choices = getLiveOwnerBlockChoices(item);
-    if (choices.length === 0) {
-      alertManualFailure("\u5F53\u524D\u76F4\u64AD\u5361\u7247\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u4E3B\u64AD\u6216\u76F4\u64AD\u95F4\u5B57\u6BB5");
-      return;
-    }
-    applyManualBlockChoices(item, rescan, choices, "\u624B\u52A8\u5C4F\u853D\u76F4\u64ADUP");
-  }
-  function hasManualActionButton(item) {
-    const selector = `.${actionClass},.${inlineActionClass},.${homeVideoActionClass},.${homeLiveActionClass}`;
-    const insertionParent = item.insertionEl !== item.el ? item.insertionEl.parentElement : null;
-    return Boolean(
-      item.el.querySelector(selector) || item.el.shadowRoot?.querySelector(selector) || insertionParent?.querySelector(selector)
-    );
-  }
-  function createManualActionButton(item, rescan, className = actionClass, options = {}) {
-    const button5 = document.createElement("button");
-    button5.type = "button";
-    button5.className = className;
-    button5.textContent = "\u5C4F\u853D";
-    let confirmTimer;
-    button5.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (item.kind === "comment") {
-        if (button5.dataset.confirmBlock !== "true") {
-          button5.dataset.confirmBlock = "true";
-          button5.textContent = "\u786E\u8BA4\uFF1F";
-          sound("select");
-          if (confirmTimer !== void 0) {
-            window.clearTimeout(confirmTimer);
-          }
-          confirmTimer = window.setTimeout(() => {
-            if (button5.dataset.confirmBlock === "true") {
-              button5.dataset.confirmBlock = "";
-              button5.textContent = "\u5C4F\u853D";
-            }
-          }, 2500);
-          return;
-        }
-        if (confirmTimer !== void 0) {
-          window.clearTimeout(confirmTimer);
-        }
-        handleCommentUserBlock(item, rescan, options);
-        return;
-      }
-      handleManualBlock(item, rescan);
-    });
-    styleAtelierAction(button5);
-    return button5;
-  }
-  function createCommentUserBlockButton(item, rescan, className) {
-    return createManualActionButton(item, rescan, className, { hideCurrent: false });
-  }
-  function createHomeVideoActionButton(item, rescan) {
-    const button5 = document.createElement("button");
-    button5.type = "button";
-    button5.className = homeVideoActionClass;
-    button5.textContent = "\u5C4F\u853D";
-    button5.title = item.uid !== void 0 ? `\u5C4F\u853D UP ${item.uid}` : `\u5C4F\u853D UP ${item.name || ""}`;
-    let confirmTimer;
-    button5.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (button5.dataset.confirmBlock !== "true") {
-        button5.dataset.confirmBlock = "true";
-        button5.textContent = "\u786E\u8BA4\uFF1F";
-        sound("select");
-        if (confirmTimer !== void 0) {
-          window.clearTimeout(confirmTimer);
-        }
-        confirmTimer = window.setTimeout(() => {
-          if (button5.dataset.confirmBlock === "true") {
-            button5.dataset.confirmBlock = "";
-            button5.textContent = "\u5C4F\u853D";
-          }
-        }, 2500);
-        return;
-      }
-      if (confirmTimer !== void 0) {
-        window.clearTimeout(confirmTimer);
-      }
-      handleHomeVideoOwnerBlock(item, rescan);
-    });
-    styleAtelierAction(button5);
-    return button5;
-  }
-  function createHomeLiveActionButton(item, rescan) {
-    const button5 = document.createElement("button");
-    button5.type = "button";
-    button5.className = homeLiveActionClass;
-    button5.textContent = "\u5C4F\u853D";
-    button5.title = item.uid !== void 0 ? `\u5C4F\u853D\u76F4\u64AD\u4E3B\u64AD ${item.uid}` : item.name ? `\u5C4F\u853D\u76F4\u64AD\u4E3B\u64AD ${item.name}` : `\u5C4F\u853D\u76F4\u64AD\u95F4 ${item.roomId || ""}`;
-    let confirmTimer;
-    button5.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (button5.dataset.confirmBlock !== "true") {
-        button5.dataset.confirmBlock = "true";
-        button5.textContent = "\u786E\u8BA4\uFF1F";
-        sound("select");
-        if (confirmTimer !== void 0) {
-          window.clearTimeout(confirmTimer);
-        }
-        confirmTimer = window.setTimeout(() => {
-          if (button5.dataset.confirmBlock === "true") {
-            button5.dataset.confirmBlock = "";
-            button5.textContent = "\u5C4F\u853D";
-          }
-        }, 2500);
-        return;
-      }
-      if (confirmTimer !== void 0) {
-        window.clearTimeout(confirmTimer);
-      }
-      handleHomeLiveOwnerBlock(item, rescan);
-    });
-    styleAtelierAction(button5);
-    return button5;
-  }
-  function findCommentActionTarget(item) {
-    const root2 = item.el.shadowRoot || item.el;
-    return (item.insertionEl !== item.el ? item.insertionEl : null) || root2.querySelector("#user-name,.user-name,.sub-user-name,.name,.user,.reply-info,.info") || item.el;
-  }
-  function insertInlineActionButton(target, button5) {
-    if (target.tagName === "A" || target.matches("#user-name,.user-name,.sub-user-name,.name")) {
-      target.insertAdjacentElement("afterend", button5);
-    } else target.appendChild(button5);
-    styleCompactButton(button5);
-  }
-  function isHomeVideoItem(item) {
-    return item.kind === "video" && isHomePageLocation() && Boolean(item.el.closest(
-      ".bili-feed-card,.feed-card,.bili-video-card,.recommend-card,.floor-single-card,.video-card,.video-list-item"
-    ));
-  }
-  function isHomeLiveItem(item) {
-    return item.kind === "live" && (isHomePageLocation() || isSpacePageLocation()) && Boolean(item.el.closest(
-      ".bili-live-card,.live-card,.room-card,.bili-feed-card,.feed-card,.bili-video-card,.recommend-card,.floor-single-card,.video-list-item,.index_item_JSGkw"
-    ));
-  }
-  function findHomeVideoActionTarget(item) {
-    const root2 = item.el.shadowRoot || item.el;
-    return root2.querySelector(
-      ".bili-video-card__info--bottom,.bili-video-card__info--owner,.video-card-info,.info,.meta"
-    ) || item.insertionEl || item.el;
-  }
-  function findHomeLiveActionTarget(item) {
-    const root2 = item.el.shadowRoot || item.el;
-    return root2.querySelector(
-      ".bili-live-card__info--bottom,.bili-live-card__info,.bili-video-card__info--bottom,.bili-video-card__info--owner,.live-card__info,.room-card-info,.video-card-info,.info,.meta"
-    ) || item.insertionEl || item.el;
-  }
-  function insertHomeVideoActionButton(target, button5) {
-    if (target.tagName === "A") {
-      target.insertAdjacentElement("afterend", button5);
-      return;
-    }
-    target.appendChild(button5);
-  }
-  function insertHomeLiveActionButton(target, button5) {
-    if (target.tagName === "A") {
-      target.insertAdjacentElement("afterend", button5);
-      return;
-    }
-    target.appendChild(button5);
-  }
-  function ensureHomeVideoActionButton(item, rescan) {
-    if (!isHomeVideoItem(item) || item.uid === void 0 && !item.name) {
-      return;
-    }
-    const button5 = createHomeVideoActionButton(item, rescan);
-    insertHomeVideoActionButton(findHomeVideoActionTarget(item), button5);
-  }
-  function ensureHomeLiveActionButton(item, rescan) {
-    if (!isHomeLiveItem(item) || item.uid === void 0 && !item.name && !item.roomId) {
-      return;
-    }
-    const button5 = createHomeLiveActionButton(item, rescan);
-    insertHomeLiveActionButton(findHomeLiveActionTarget(item), button5);
-  }
-  function ensureActionButton(item, rescan) {
-    if (item.el.getAttribute(hiddenAttribute) === "true" || hasManualActionButton(item)) {
-      return;
-    }
-    if (item.kind === "video") {
-      if (item.collection) return;
-      ensureHomeVideoActionButton(item, rescan);
-      return;
-    }
-    if (item.kind === "live") {
-      ensureHomeLiveActionButton(item, rescan);
-      return;
-    }
-    if (item.kind === "comment") {
-      const button6 = createManualActionButton(item, rescan, inlineActionClass);
-      insertInlineActionButton(findCommentActionTarget(item), button6);
-      return;
-    }
-    const computedPosition = window.getComputedStyle(item.el).position;
-    if (computedPosition === "static") {
-      item.el.style.position = "relative";
-    }
-    const button5 = createManualActionButton(item, rescan);
-    item.el.appendChild(button5);
-  }
-  function findSpaceProfileNameTarget() {
-    for (const selector of [
-      "#h-name",
-      ".h-name",
-      ".n-name",
-      ".space-header .name",
-      ".h-basic .name",
-      ".user-info .name",
-      ".username",
-      ".nickname"
-    ]) {
-      const target = document.querySelector(selector);
-      if (target && !target.closest("[data-bili-blocker-ui]") && target.textContent?.trim()) {
-        return target;
-      }
-    }
-    return null;
-  }
-  function readSpaceProfileUser() {
-    if (!isSpacePageLocation()) {
-      return null;
-    }
-    const target = findSpaceProfileNameTarget();
-    if (!target) {
-      return null;
-    }
-    const uid = parseSpaceProfileUid();
-    const name = target.textContent?.replace(/\s+/g, " ").trim() || void 0;
-    if (uid === void 0 && !name) {
-      return null;
-    }
-    return { uid, name, target };
-  }
-  function handleSpaceProfileOwnerBlock(user, target, rescan) {
-    const choices = getVideoOwnerBlockChoices(user);
-    if (choices.length === 0) {
-      alertManualFailure("\u5F53\u524D\u4E2A\u4EBA\u4E3B\u9875\u6CA1\u6709\u53EF\u63D0\u53D6\u7684 UP \u5B57\u6BB5");
-      return false;
-    }
-    const item = {
-      kind: "video",
-      el: target,
-      insertionEl: target,
-      uid: user.uid,
-      name: user.name,
-      title: "UP \u4E2A\u4EBA\u4E3B\u9875"
-    };
-    return applyManualBlockChoices(item, rescan, choices, "\u624B\u52A8\u5C4F\u853DUP", { hideCurrent: false });
-  }
-  function spaceProfileUserKey(user) {
-    return `${user.uid ?? ""}|${user.name ?? ""}`;
-  }
-  function getSpaceProfileBlockedRules(user) {
-    const rules = readRuleSnapshot();
-    const blockedRules = [];
-    if (user.uid !== void 0) {
-      const uidMatch = exactMatch(rules.precise_uid, user.uid);
-      if (uidMatch) {
-        blockedRules.push({ key: "precise_uid", value: uidMatch.matching });
-      }
-    }
-    if (user.name) {
-      const nameMatch = exactMatch(rules.precise_name, user.name);
-      if (nameMatch) {
-        blockedRules.push({ key: "precise_name", value: nameMatch.matching });
-      }
-    }
-    return blockedRules;
-  }
-  function setSpaceProfileActionButtonState(button5, user) {
-    const blocked = getSpaceProfileBlockedRules(user).length > 0;
-    const label = user.uid !== void 0 ? `UP ${user.uid}` : `UP ${user.name || ""}`;
-    button5.dataset.userKey = spaceProfileUserKey(user);
-    button5.dataset.blocked = blocked ? "true" : "";
-    const confirming = button5.dataset.confirmBlock === "true";
-    const labelText = confirming ? "\u786E\u8BA4\uFF1F" : blocked ? "\u5DF2\u5C4F\u853D" : "\u5C4F\u853D";
-    if (button5.textContent !== labelText) button5.textContent = labelText;
-    button5.title = confirming ? `\u518D\u70B9\u4E00\u6B21${blocked ? "\u89E3\u9664\u5C4F\u853D" : "\u5C4F\u853D"} ${label}` : blocked ? `\u89E3\u9664\u5C4F\u853D ${label}` : `\u5C4F\u853D ${label}`;
-    button5.disabled = false;
-  }
-  function handleSpaceProfileOwnerUnblock(user, rescan) {
-    const blockedRules = getSpaceProfileBlockedRules(user);
-    if (blockedRules.length === 0) {
-      return false;
-    }
-    const failures2 = blockedRules.map((rule) => removeRuleItem(rule.key, rule.value)).filter((result) => !result.status);
-    if (failures2.length > 0) {
-      alertManualFailure(String(failures2[0].res));
-      return false;
-    }
-    removeHistoryByRules(blockedRules);
-    notifyBlockHistoryChanged();
-    showInfoLog(`\u5DF2\u89E3\u9664\u5C4F\u853D\uFF1A${user.name || user.uid || "\u5F53\u524DUP"}`, "success");
-    rescan();
-    sound("success");
-    return true;
-  }
-  function createOwnerBlockToggle(user, target, rescan, className) {
-    const button5 = document.createElement("button");
-    button5.type = "button";
-    button5.className = className;
-    let confirmTimer;
-    const paint2 = () => setSpaceProfileActionButtonState(button5, user);
-    paint2();
-    button5.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (confirmTimer !== void 0) {
-        window.clearTimeout(confirmTimer);
-      }
-      if (button5.dataset.confirmBlock !== "true") {
-        button5.dataset.confirmBlock = "true";
-        paint2();
-        sound("select");
-        confirmTimer = window.setTimeout(() => {
-          if (button5.dataset.confirmBlock === "true") {
-            button5.dataset.confirmBlock = "";
-            paint2();
-          }
-        }, 2500);
-        return;
-      }
-      button5.dataset.confirmBlock = "";
-      if (button5.dataset.blocked === "true") handleSpaceProfileOwnerUnblock(user, rescan);
-      else handleSpaceProfileOwnerBlock(user, target(), rescan);
-      paint2();
-    });
-    const follow = () => {
-      if (!button5.isConnected) {
-        document.removeEventListener(historyChangedEvent, follow);
-        window.removeEventListener("atelier-sync-applied", follow);
-        return;
-      }
-      if (button5.dataset.confirmBlock !== "true") paint2();
-    };
-    document.addEventListener(historyChangedEvent, follow);
-    window.addEventListener("atelier-sync-applied", follow);
-    styleAtelierAction(button5);
-    return button5;
-  }
-  function createSpaceProfileActionButton(user, target, rescan) {
-    return createOwnerBlockToggle(user, () => target, rescan, spaceProfileActionClass);
-  }
-  function ensureSpaceProfileBlockButton(rescan) {
-    const profileUser = readSpaceProfileUser();
-    if (!profileUser) {
-      return;
-    }
-    const { target } = profileUser;
-    const existingButton = target.parentElement?.querySelector(`.${spaceProfileActionClass}`) || target.querySelector(`.${spaceProfileActionClass}`);
-    if (existingButton?.dataset.userKey === spaceProfileUserKey(profileUser)) {
-      setSpaceProfileActionButtonState(existingButton, profileUser);
-      return;
-    }
-    existingButton?.remove();
-    const button5 = createSpaceProfileActionButton(profileUser, target, rescan);
-    styleCompactButton(button5);
-    target.insertAdjacentElement("afterend", button5);
-  }
-  function extractProfileUser(container) {
-    const profileData = container.__data?.card;
-    const profileUid = Number.parseInt(String(profileData?.mid ?? ""), 10);
-    const profileName = String(profileData?.name ?? "").trim();
-    if (Number.isFinite(profileUid) || profileName) {
-      return { uid: Number.isFinite(profileUid) ? profileUid : void 0, name: profileName || void 0 };
-    }
-    const vueUserData = container.querySelector(".user-card-m-exp.card-loaded")?.__vue__?.userData;
-    const vueUid = Number.parseInt(String(vueUserData?.mid ?? ""), 10);
-    const vueName = String(vueUserData?.name ?? "").trim();
-    if (Number.isFinite(vueUid) || vueName) {
-      return { uid: Number.isFinite(vueUid) ? vueUid : void 0, name: vueName || void 0 };
-    }
-    const searchRoot = container.shadowRoot || container;
-    const link3 = searchRoot.querySelector('a[href*="space.bilibili.com/"]');
-    const uid = parseUid(link3?.href) ?? parseUid(container.outerHTML.slice(0, 700));
-    const name = link3?.textContent?.trim() || searchRoot.querySelector(".name,.nickname,.username,.user-name")?.textContent?.trim();
-    return { uid, name: name || void 0 };
-  }
-  function ensureProfileBlockButtons(rescan) {
-    const containers = Array.from(
-      document.querySelectorAll(".usercard-wrap,.up-panel-container,bili-user-profile,.bili-user-profile")
-    );
-    for (const container of containers) {
-      const searchRoot = container.shadowRoot || container;
-      if (container.closest("[data-bili-blocker-ui]")) {
-        continue;
-      }
-      const existing = searchRoot.querySelector(`.${profileActionClass}`);
-      if (existing) {
-        placeVideoUpAction(searchRoot, existing, "block");
-        continue;
-      }
-      const user = extractProfileUser(container);
-      if (user.uid === void 0 && !user.name) {
-        continue;
-      }
-      const target = searchRoot.querySelector("#action") || searchRoot.querySelector(".user,.name,.nickname,.username,.user-name") || searchRoot.querySelector('a[href*="space.bilibili.com/"]') || container;
-      const button5 = document.createElement("button");
-      button5.type = "button";
-      button5.className = profileActionClass;
-      button5.textContent = "\u5C4F\u853D";
-      button5.title = user.uid !== void 0 ? `\u5C4F\u853D UID ${user.uid}` : `\u5C4F\u853D\u7528\u6237 ${user.name}`;
-      styleCompactButton(button5);
-      button5.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        const feedback = soundTask();
-        const result = user.uid !== void 0 ? addRuleItem("precise_uid", user.uid) : addRuleItem("precise_name", user.name);
-        void atelierAlert(String(result.res));
-        feedback.finish(result.status ? "success" : result.res === "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" ? "click" : "error");
-        if (result.status) {
-          rescan();
-        }
-      });
-      if (placeVideoUpAction(searchRoot, button5, "block")) continue;
-      if (target.tagName === "A") {
-        target.insertAdjacentElement("afterend", button5);
-      } else {
-        target.appendChild(button5);
-      }
-    }
-  }
-  function createUpBlockButton(user, rescan) {
-    const button5 = createOwnerBlockToggle(user, () => button5, rescan, "vl-up-block");
-    return button5;
-  }
-  function debounce(callback, waitMs) {
-    let timer2;
-    return () => {
-      if (timer2 !== void 0) {
-        window.clearTimeout(timer2);
-      }
-      timer2 = window.setTimeout(callback, waitMs);
-    };
-  }
-  function observeElementShadowRoot(el3, observer, observed) {
-    const shadowRoot = el3.shadowRoot;
-    if (!shadowRoot || observed.has(shadowRoot)) {
-      return;
-    }
-    observed.add(shadowRoot);
-    ensurePageControls(shadowRoot);
-    observer.observe(shadowRoot, { childList: true, subtree: true });
-    observeOpenShadowRoots(shadowRoot, observer, observed);
-  }
-  function observeOpenShadowRoots(root2, observer, observed) {
-    if (root2 instanceof HTMLElement) {
-      observeElementShadowRoot(root2, observer, observed);
-    }
-    for (const el3 of Array.from(root2.querySelectorAll("*"))) {
-      observeElementShadowRoot(el3, observer, observed);
-    }
-  }
-  function scheduleStartupScans(scan) {
-    for (const delayMs of [250, 750, 1500, 3e3]) {
-      window.setTimeout(scan, delayMs);
-    }
-  }
-  function startBlocker() {
-    let observer = null;
-    const observedShadowRoots = /* @__PURE__ */ new WeakSet();
-    const scanComments = (root2 = document, rules = readRuleSnapshotWithHistoryAliases()) => {
-      if (observer) {
-        observeOpenShadowRoots(root2, observer, observedShadowRoots);
-      }
-      for (const item of collectCommentItems(root2)) {
-        const decision = decideComment(item, rules);
-        if (decision) {
-          hideElement(item, decision);
-        } else {
-          restoreElement(item);
-          ensureActionButton(item, scan);
-        }
-      }
-    };
-    const scan = () => {
-      for (const el3 of hiddenElements) if (!el3.isConnected) hiddenElements.delete(el3);
-      if (observer) {
-        observeOpenShadowRoots(document, observer, observedShadowRoots);
-      }
-      const rules = readRuleSnapshotWithHistoryAliases();
-      removeHomeAdBlockPlaceholders();
-      const items = [
-        ...collectVideoItems(document),
-        ...collectLiveItems(document)
-      ];
-      for (const item of items) {
-        const decision = decide(item, rules);
-        if (decision) {
-          hideElement(item, decision);
-        } else {
-          restoreElement(item);
-          ensureActionButton(item, scan);
-        }
-      }
-      scanComments(document, rules);
-      ensureProfileBlockButtons(scan);
-      ensureSpaceProfileBlockButton(scan);
-    };
-    const scheduleScan = debounce(scan, 300);
-    window.addEventListener(blockedVisibilityChangedEvent, () => {
-      for (const el3 of hiddenElements) {
-        if (el3.isConnected) applyBlockedVisibility(el3);
-        else hiddenElements.delete(el3);
-      }
-      scan();
-    });
-    window.addEventListener("atelier-sync-applied", scheduleScan);
-    const start = () => {
-      ensureRuntimeStyle();
-      if (typeof GM_registerMenuCommand === "function") {
-        GM_registerMenuCommand("Bili Atelier \u5C4F\u853D\u89C4\u5219", () => openBlockerPanel(scan, (container, rescan) => renderHistoryPanel(container, rescan, true)));
-      }
-      installHistoryShortcut(scan);
-      installCommentExpandFastScan(scanComments);
-      observer = new MutationObserver((records2) => {
-        for (const root2 of commentMutationRoots(records2)) scanComments(root2);
-        scheduleScan();
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-      scan();
-      scheduleStartupScans(scan);
-      debugLog("blocker started");
-    };
-    if (document.body) {
-      start();
-      return;
-    }
-    const bodyObserver = new MutationObserver(() => {
-      if (!document.body) {
-        return;
-      }
-      bodyObserver.disconnect();
-      start();
-    });
-    bodyObserver.observe(document.documentElement, { childList: true });
-    window.addEventListener("pagehide", () => observer?.disconnect(), { once: true });
-  }
-
-  // src/modules/local-following/feed-interact.ts
-  var feedWrites = {
-    like: ["/x/dynamic/feed/dyn/thumb", "json", "query"],
-    "forward-check": ["/x/dynamic/feed/create/submit_check", "json", "query"],
-    forward: ["/x/dynamic/feed/create/dyn", "json", "query"],
-    reply: ["/x/v2/reply/add", "form", "body"],
-    "reply-like": ["/x/v2/reply/action", "form", "body"],
-    "reply-hate": ["/x/v2/reply/hate", "form", "body"],
-    "reply-delete": ["/x/v2/reply/del", "form", "body"],
-    "reply-report": ["/x/v2/reply/report", "form", "body"],
-    upload: ["/x/dynamic/feed/draw/upload_bfs", "file", "body"]
-  };
-  function pageWrite(channel2) {
-    const pending2 = /* @__PURE__ */ new Map();
-    window.addEventListener("message", (event) => {
-      const data = event.data;
-      if (event.origin !== location.origin || data?.channel !== channel2 || data.kind !== "write-result") return;
-      const waiter = pending2.get(data.id);
-      if (!waiter) return;
-      pending2.delete(data.id);
-      if (data.error) waiter.reject(new FeedActionError(data.error));
-      else if (data.status < 200 || data.status >= 300) waiter.reject(new FeedActionError(`\u8BF7\u6C42\u5931\u8D25\uFF1AHTTP ${data.status}`, data.status));
-      else waiter.resolve(data.body);
-    });
-    return (op, payload) => new Promise((resolve, reject) => {
-      const id = crypto.randomUUID();
-      pending2.set(id, { resolve, reject });
-      window.postMessage({ channel: channel2, kind: "write", id, op, ...payload }, location.origin);
-    });
-  }
-  var FeedActionError = class extends Error {
-    constructor(message, code = 0) {
-      super(message);
-      this.code = code;
-    }
-    /** Risk control wants a captcha or a human check: only the page can do that. */
-    get needsVerification() {
-      return [-352, -412, 412, 12015, 12016, 12025].includes(this.code) || /验证|风控|异常/.test(this.message);
-    }
-  };
-  function ok(raw) {
-    if (!raw || raw.code !== 0) throw new FeedActionError(typeof raw?.message === "string" && raw.message ? raw.message : "\u64CD\u4F5C\u5931\u8D25", Number(raw?.code) || 0);
-    return raw.data ?? {};
-  }
-  var FeedInteractions = class {
-    constructor(read2, write, signingKey, mid) {
-      this.read = read2;
-      this.write = write;
-      this.signingKey = signingKey;
-      this.mid = mid;
-    }
-    get(url, signal = new AbortController().signal) {
-      return this.read(url, signal).then(ok, (error) => {
-        throw error instanceof LocalFollowReadError ? new FeedActionError(error.message, error.status) : error;
-      });
-    }
-    async send(op, payload) {
-      return ok(await this.write(op, payload));
-    }
-    like(dynId, on5) {
-      return this.send("like", { body: { dyn_id_str: dynId, up: on5 ? 1 : 2, spmid: "333.1365.0.0" } });
-    }
-    /** The page's own forward flow: submit check, then the scene-4 create. */
-    async forward(dynId, text3) {
-      const content = { contents: text3 ? [{ raw_text: text3, type: 1, biz_id: "" }] : [] };
-      const upload = `${this.mid || 0}_${Math.floor(Date.now() / 1e3)}_${Math.floor(Math.random() * 9e3 + 1e3)}`;
-      const request2 = { content, scene: 4, attach_card: null, upload_id: upload, meta: { app_meta: { from: "create.dynamic.web", mobi_app: "web" } }, option: { aigc: 2 } };
-      await this.send("forward-check", { body: { content, scene: 4, attach_card: null, create_option: request2.option } });
-      return this.send("forward", { query: { platform: "web" }, body: { dyn_req: request2, web_repost_src: { dyn_id_str: dynId } } });
-    }
-    comments(oid, type, mode2, next = 0, signal) {
-      return this.get(`https://api.bilibili.com/x/v2/reply/main?oid=${oid}&type=${type}&mode=${mode2}&next=${next}&ps=20&plat=1`, signal);
-    }
-    replies(oid, type, root2, page, signal) {
-      return this.get(`https://api.bilibili.com/x/v2/reply/reply?oid=${oid}&type=${type}&root=${root2}&pn=${page}&ps=10`, signal);
-    }
-    /** Signed the way the comment component signs its posts. */
-    async post(options) {
-      const body2 = { oid: options.oid, type: options.type, message: options.message, plat: 1, gaia_source: "main_web" };
-      if (options.root) {
-        body2.root = options.root;
-        body2.parent = options.parent || options.root;
-      }
-      if (options.pictures?.length) body2.pictures = JSON.stringify(options.pictures);
-      const signed = new URLSearchParams(localFollowWbiQuery({ web_location: "333.1365" }, await this.signingKey(new AbortController().signal)));
-      return this.send("reply", { query: Object.fromEntries(signed), body: body2 });
-    }
-    likeReply(oid, type, rpid, on5) {
-      return this.send("reply-like", { body: { oid, type, rpid, action: on5 ? 1 : 0 } });
-    }
-    hateReply(oid, type, rpid, on5) {
-      return this.send("reply-hate", { body: { oid, type, rpid, action: on5 ? 1 : 0 } });
-    }
-    deleteReply(oid, type, rpid) {
-      return this.send("reply-delete", { body: { oid, type, rpid } });
-    }
-    async reportReasons(oid, type, rpid) {
-      const data = await this.get(`https://api.bilibili.com/x/v2/reply/report/metadata?oid=${oid}&type=${type}&rpid=${rpid}`);
-      return (Array.isArray(data.reason_list) ? data.reason_list : []).filter((reason) => Number.isFinite(Number(reason?.tag_id)) && typeof reason?.tag_name === "string").map((reason) => ({ id: Number(reason.tag_id), name: reason.tag_name }));
-    }
-    report(oid, type, rpid, reason, content) {
-      return this.send("reply-report", { body: { oid, type, rpid, reason, content, gaia_source: "main_web" } });
-    }
-    async upload(file) {
-      const data = await this.send("upload", { body: { biz: "new_dyn", category: "daily" }, file });
-      if (typeof data.image_url !== "string") throw new FeedActionError("\u56FE\u7247\u4E0A\u4F20\u5931\u8D25");
-      return { img_src: data.image_url, img_width: Number(data.image_width) || 0, img_height: Number(data.image_height) || 0, img_size: Number(data.img_size) || 0 };
-    }
-    /** Read once per page; the panel keeps the answer. */
-    emotes() {
-      return this.emotePackages ??= this.get("https://api.bilibili.com/x/emote/user/panel/web?business=reply").then(
-        (data) => (Array.isArray(data.packages) ? data.packages : []).map((item) => ({
-          id: Number(item?.id) || 0,
-          name: String(item?.text ?? ""),
-          icon: String(item?.url ?? ""),
-          emotes: (Array.isArray(item?.emote) ? item.emote : []).filter((emote) => typeof emote?.text === "string").map((emote) => ({ text: emote.text, url: typeof emote.url === "string" ? emote.url : "", large: Number(emote?.meta?.size) === 2 }))
-        })).filter((item) => item.emotes.length)
-      ).catch((error) => {
-        this.emotePackages = void 0;
-        throw error;
-      });
-    }
-  };
-
-  // src/modules/local-following/feed-comments.ts
-  function node3(tag, className = "", text3) {
-    const element2 = document.createElement(tag);
-    if (className) element2.className = className;
-    if (text3 !== void 0) element2.textContent = text3;
-    return element2;
-  }
-  function button3(label, className, action) {
-    const element2 = node3("button", `atelier-control ${className}`, label);
-    element2.type = "button";
-    element2.addEventListener("click", () => action(element2));
-    return element2;
-  }
-  var failure = (error) => error instanceof FeedActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u539F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
-  var timestamp = /(?<![\d:])((?:\d{1,2}:)?[0-5]?\d:[0-5]\d)(?![\d:])/;
-  var seconds = (value2) => value2.split(":").reduce((total, part) => total * 60 + Number(part), 0);
-  function commentMessage(content, seek) {
-    const box = node3("div", "acm-text"), message = typeof content?.message === "string" ? content.message : "";
-    const emotes = content?.emote && typeof content.emote === "object" ? content.emote : {};
-    const links = /* @__PURE__ */ new Map();
-    for (const member of Array.isArray(content?.members) ? content.members : []) {
-      if (/^\d+$/.test(String(member?.mid)) && typeof member?.uname === "string") links.set(`@${member.uname}`, `https://space.bilibili.com/${member.mid}`);
-    }
-    for (const [keyword, jump] of Object.entries(content?.jump_url && typeof content.jump_url === "object" ? content.jump_url : {})) {
-      const url = safeUrl(jump?.pc_url) || `https://search.bilibili.com/all?keyword=${encodeURIComponent(keyword)}`;
-      links.set(keyword, url);
-    }
-    const tokens = [...Object.keys(emotes), ...links.keys()].filter(Boolean).sort((a, b) => b.length - a.length);
-    const pattern = tokens.length ? new RegExp(`(${tokens.map((token) => token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`) : null;
-    const plain = (value2) => {
-      if (!seek) {
-        box.append(document.createTextNode(value2));
-        return;
-      }
-      value2.split(new RegExp(timestamp.source, "g")).forEach((part, index) => {
-        if (!part) return;
-        if (index % 2 === 0) {
-          box.append(document.createTextNode(part));
-          return;
-        }
-        const jump = node3("a", "acm-link acm-seek", part);
-        jump.href = "#";
-        jump.title = `\u8DF3\u5230 ${part}`;
-        jump.addEventListener("click", (event) => {
-          event.preventDefault();
-          seek(seconds(part));
-        });
-        box.append(jump);
-      });
-    };
-    const text3 = (value2) => value2.split("\n").forEach((part, index) => {
-      if (index) box.append(node3("br"));
-      if (part) plain(part);
-    });
-    for (const piece of pattern ? message.split(pattern) : [message]) {
-      if (!piece) continue;
-      const emote = emotes[piece], url = safeUrl(emote?.url);
-      if (url) {
-        const image5 = node3("img", Number(emote?.meta?.size) === 2 ? "acm-emote acm-emote-large" : "acm-emote");
-        image5.src = url;
-        image5.alt = piece;
-        image5.title = piece;
-        image5.referrerPolicy = "no-referrer";
-        image5.loading = "lazy";
-        box.append(image5);
-      } else if (links.has(piece)) {
-        const link3 = node3("a", "acm-link", piece);
-        link3.href = links.get(piece);
-        link3.target = "_blank";
-        link3.rel = "noopener noreferrer";
-        box.append(link3);
-      } else text3(piece);
-    }
-    const pictures2 = (Array.isArray(content?.pictures) ? content.pictures : []).map((picture) => safeUrl(picture?.img_src)).filter(Boolean).slice(0, 9);
-    if (pictures2.length) {
-      const grid = node3("div", "acm-pics");
-      for (const src of pictures2) {
-        const link3 = grid.appendChild(node3("a", "acm-pic"));
-        link3.href = src;
-        link3.target = "_blank";
-        link3.rel = "noopener noreferrer";
-        const image5 = link3.appendChild(node3("img"));
-        image5.src = bilibiliThumb(src, "160w_160h_1c");
-        image5.alt = "";
-        image5.referrerPolicy = "no-referrer";
-        image5.loading = "lazy";
-      }
-      box.append(grid);
-    }
-    return box;
-  }
-  var emotePanel;
-  async function openEmotes(api3, anchor, insert) {
-    emotePanel?.close();
-    const panel = node3("section", "acm-emotes xp-window");
-    panel.setAttribute("data-bili-blocker-ui", "");
-    panel.setAttribute("role", "dialog");
-    panel.setAttribute("aria-label", "\u8868\u60C5");
-    const caption2 = panel.appendChild(node3("header", "xp-caption"));
-    caption2.append(node3("span", "xp-caption-title", "\u8868\u60C5"));
-    const close = caption2.appendChild(button3("", "xp-caption-button", () => done()));
-    close.className = "xp-caption-button";
-    close.dataset.kind = "close";
-    close.title = "\u5173\u95ED";
-    const tabs2 = panel.appendChild(node3("div", "xp-tabs"));
-    const grid = panel.appendChild(node3("div", "acm-emote-grid xp-tabpanel"));
-    grid.textContent = "\u6B63\u5728\u8BFB\u53D6\u8868\u60C5\u2026";
-    const rect = anchor.getBoundingClientRect();
-    panel.style.left = `${Math.max(4, Math.min(rect.left, innerWidth - 336))}px`;
-    panel.style.top = `${rect.bottom + 4 + 260 > innerHeight ? Math.max(4, rect.top - 264) : rect.bottom + 4}px`;
-    document.body.append(panel);
-    const outside = (event) => {
-      if (!event.composedPath().includes(panel) && !event.composedPath().includes(anchor)) done();
-    };
-    const escape = (event) => {
-      if (event.key === "Escape") {
-        event.stopPropagation();
-        done();
-      }
-    };
-    function done() {
-      panel.remove();
-      document.removeEventListener("pointerdown", outside, true);
-      document.removeEventListener("keydown", escape, true);
-      if (emotePanel === entry) emotePanel = void 0;
-    }
-    const entry = { close: done };
-    emotePanel = entry;
-    document.addEventListener("pointerdown", outside, true);
-    document.addEventListener("keydown", escape, true);
-    let packages;
-    try {
-      packages = await api3.emotes();
-    } catch (error) {
-      grid.textContent = `\u8868\u60C5\u8BFB\u53D6\u5931\u8D25\uFF1A${failure(error)}`;
-      return;
-    }
-    const show = (item) => {
-      for (const tab of tabs2.children) tab.setAttribute("aria-selected", String(tab.dataset.id === String(item.id)));
-      grid.replaceChildren(...item.emotes.map((emote) => {
-        const cell = node3("button", emote.url ? "acm-emote-cell" : "acm-emote-cell acm-emote-text");
-        cell.type = "button";
-        cell.title = emote.text;
-        if (emote.url) {
-          const image5 = cell.appendChild(node3("img"));
-          image5.src = emote.url;
-          image5.alt = emote.text;
-          image5.referrerPolicy = "no-referrer";
-          image5.loading = "lazy";
-        } else cell.textContent = emote.text;
-        cell.addEventListener("click", () => insert(emote.text));
-        return cell;
-      }));
-    };
-    tabs2.replaceChildren(...packages.map((item) => {
-      const tab = node3("button", "xp-tab", item.name);
-      tab.type = "button";
-      tab.dataset.id = String(item.id);
-      tab.addEventListener("click", () => show(item));
-      return tab;
-    }));
-    if (packages[0]) show(packages[0]);
-    else grid.textContent = "\u6CA1\u6709\u53EF\u7528\u7684\u8868\u60C5";
-  }
-  function composer(context, options) {
-    const box = node3("div", "acm-compose");
-    const field = box.appendChild(node3("textarea", "xp-field acm-input"));
-    field.placeholder = options.placeholder;
-    field.rows = 2;
-    if (options.prefix) field.value = options.prefix;
-    const thumbs = box.appendChild(node3("div", "acm-thumbs"));
-    const row = box.appendChild(node3("div", "acm-compose-row"));
-    const note2 = node3("span", "acm-note");
-    const pictures2 = [];
-    const insert = (text3) => {
-      const start = field.selectionStart ?? field.value.length, end = field.selectionEnd ?? start;
-      field.setRangeText(text3, start, end, "end");
-      field.focus();
-      refresh();
-    };
-    const emotes = button3("\u8868\u60C5", "acm-tool", (target) => void openEmotes(context.api, target, insert));
-    const input = node3("input");
-    input.type = "file";
-    input.accept = "image/png,image/jpeg,image/gif,image/webp";
-    input.multiple = true;
-    input.hidden = true;
-    const images2 = button3("\u56FE\u7247", "acm-tool", () => input.click());
-    const send = button3("\u53D1\u8868", "acm-send xp-default", () => void submit());
-    row.append(emotes, images2, input, note2, send);
-    if (options.cancel) row.append(button3("\u53D6\u6D88", "acm-cancel", () => options.cancel()));
-    const refresh = () => {
-      images2.disabled = pictures2.length >= 9;
-      send.disabled = pictures2.some((item) => !item.picture && !item.failed) || pictures2.some((item) => item.failed) || !field.value.trim() && !pictures2.length;
-    };
-    input.addEventListener("change", () => {
-      for (const file of [...input.files ?? []].slice(0, 9 - pictures2.length)) {
-        const element2 = thumbs.appendChild(node3("span", "acm-thumb"));
-        const image5 = element2.appendChild(node3("img"));
-        image5.src = URL.createObjectURL(file);
-        image5.alt = "";
-        const item = { file, element: element2 };
-        element2.appendChild(button3("\u2715", "acm-thumb-remove", () => {
-          URL.revokeObjectURL(image5.src);
-          element2.remove();
-          pictures2.splice(pictures2.indexOf(item), 1);
-          refresh();
-        })).title = "\u53BB\u6389\u8FD9\u5F20\u56FE\u7247";
-        pictures2.push(item);
-        context.api.upload(file).then((picture) => {
-          item.picture = picture;
-        }, () => {
-          item.failed = true;
-          element2.dataset.failed = "";
-          element2.title = "\u4E0A\u4F20\u5931\u8D25\uFF0C\u8BF7\u53BB\u6389\u540E\u91CD\u8BD5";
-        }).finally(refresh);
-      }
-      input.value = "";
-      refresh();
-    });
-    field.addEventListener("input", refresh);
-    field.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
-        event.preventDefault();
-        if (!send.disabled) void submit();
-      }
-      if (event.key === "Escape" && options.cancel) {
-        event.preventDefault();
-        options.cancel();
-      }
-    });
-    async function submit() {
-      send.disabled = true;
-      note2.textContent = "\u6B63\u5728\u53D1\u8868\u2026";
-      try {
-        await options.submit(field.value.trim(), pictures2.flatMap((item) => item.picture ? [item.picture] : []));
-        field.value = options.prefix ?? "";
-        thumbs.replaceChildren();
-        pictures2.length = 0;
-        note2.textContent = "";
-      } catch (error) {
-        note2.textContent = failure(error);
-      }
-      refresh();
-    }
-    refresh();
-    return { box, focus: () => {
-      field.focus();
-      field.setSelectionRange(field.value.length, field.value.length);
-    } };
-  }
-  function createCommentArea(context) {
-    const area = node3("section", "adc-comments");
-    area.setAttribute("aria-label", "\u8BC4\u8BBA");
-    const head = area.appendChild(node3("div", "acm-head"));
-    const title = head.appendChild(node3("strong", "acm-title", "\u8BC4\u8BBA"));
-    const sorts = head.appendChild(node3("span", "acm-sorts"));
-    const status2 = head.appendChild(node3("span", "acm-status"));
-    const original = head.appendChild(node3("a", "acm-original", "\u5728\u539F\u9875\u9762\u67E5\u770B"));
-    original.href = context.page;
-    original.target = "_blank";
-    original.rel = "noopener noreferrer";
-    const name = `acm-sort-${crypto.randomUUID()}`;
-    let mode2 = 3, next = 0, total = 0, loading = false, generation = 0;
-    for (const [value2, label] of [[3, "\u70ED\u95E8"], [2, "\u6700\u65B0"]]) {
-      const choice = sorts.appendChild(node3("label", "acm-sort"));
-      const radio = choice.appendChild(node3("input"));
-      radio.type = "radio";
-      radio.name = name;
-      radio.checked = value2 === mode2;
-      radio.addEventListener("change", () => {
-        if (radio.checked) {
-          mode2 = value2;
-          void load(true);
-        }
-      });
-      choice.append(document.createTextNode(label));
-    }
-    const say = (message, link3 = false) => {
-      status2.textContent = message;
-      original.hidden = false;
-      original.dataset.emphasis = String(link3);
-    };
-    const count2 = (value2) => {
-      total = Math.max(0, value2);
-      title.textContent = `\u8BC4\u8BBA ${formatCount(total) || 0}`;
-      context.onCount(total);
-    };
-    if (context.me) {
-      const compose = composer(context, { placeholder: "\u53D1\u4E00\u6761\u53CB\u5584\u7684\u8BC4\u8BBA", submit: async (message, pictures2) => {
-        const data = await context.api.post({ oid: context.oid, type: context.type, message, pictures: pictures2 });
-        if (data.reply) list.prepend(item(data.reply, false));
-        count2(total + 1);
-      } });
-      area.append(compose.box);
-    }
-    const list = area.appendChild(node3("div", "acm-list"));
-    const more = area.appendChild(button3("\u52A0\u8F7D\u66F4\u591A\u8BC4\u8BBA", "acm-more", () => void load(false)));
-    more.hidden = true;
-    let rules = context.blocking ? readRuleSnapshotWithHistoryAliases() : null;
-    const blocked = /* @__PURE__ */ new Set(), targets = /* @__PURE__ */ new WeakMap();
-    const reveal = () => {
-      for (const element2 of blocked) element2.hidden = !isShowingBlocked();
-    };
-    window.addEventListener(blockedVisibilityChangedEvent, reveal);
-    function guarded(element2) {
-      const target = targets.get(element2);
-      if (!rules || !target || blocked.has(element2)) return element2;
-      const decision = decideComment(target, rules);
-      if (!decision) return element2;
-      recordBlockHistory(target, decision);
-      element2.classList.add("acm-blocked");
-      element2.title = `Bili Atelier \u5DF2\u5C4F\u853D\uFF1A${decision.type} ${decision.matching}`;
-      element2.hidden = !isShowingBlocked();
-      blocked.add(element2);
-      const control = element2.querySelector(":scope > .acm-main > .acm-top > .acm-block");
-      if (control && isUserBlockDecision(decision)) {
-        delete control.dataset.confirmBlock;
-        control.textContent = "\u5DF2\u5C4F\u853D";
-        control.disabled = true;
-      }
-      return element2;
-    }
-    function rescan() {
-      rules = context.blocking ? readRuleSnapshotWithHistoryAliases() : null;
-      for (const element2 of area.querySelectorAll(".acm-item")) guarded(element2);
-      context.onBlocked();
-    }
-    function item(reply, sub, pinned = false) {
-      const element2 = node3("article", sub ? "acm-item acm-sub-item" : "acm-item");
-      const rpid = String(reply?.rpid_str ?? reply?.rpid ?? ""), mid = String(reply?.mid_str ?? reply?.mid ?? reply?.member?.mid ?? "");
-      element2.dataset.rpid = rpid;
-      const space = /^\d+$/.test(mid) ? `https://space.bilibili.com/${mid}` : "";
-      const face = element2.appendChild(node3("a", "acm-face"));
-      if (space) {
-        face.href = space;
-        face.target = "_blank";
-        face.rel = "noopener noreferrer";
-      }
-      const avatar = face.appendChild(node3("img"));
-      avatar.alt = "";
-      avatar.referrerPolicy = "no-referrer";
-      avatar.loading = "lazy";
-      avatar.src = bilibiliThumb(reply?.member?.avatar, sub ? "32w_32h_1c" : "64w_64h_1c");
-      const main = element2.appendChild(node3("div", "acm-main"));
-      const top = main.appendChild(node3("div", "acm-top"));
-      const who = top.appendChild(node3("a", "acm-name", reply?.member?.uname || mid || "\u672A\u77E5\u7528\u6237"));
-      if (space) {
-        who.href = space;
-        who.target = "_blank";
-        who.rel = "noopener noreferrer";
-      }
-      const target = { kind: "comment", el: element2, insertionEl: element2, uid: Number(mid) || void 0, name: reply?.member?.uname, content: reply?.content?.message };
-      targets.set(element2, target);
-      if (context.blocking && !(context.me && mid === context.me)) top.append(createCommentUserBlockButton(target, rescan, "acm-block"));
-      if (mid && mid === context.owner) top.append(node3("span", "acm-badge", "UP"));
-      const level = Number(reply?.member?.level_info?.current_level);
-      if (Number.isFinite(level) && level > 0) top.append(node3("span", "acm-level", `Lv${level}`));
-      if (pinned) top.append(node3("span", "acm-badge", "\u7F6E\u9876"));
-      main.append(commentMessage(reply?.content, context.seek));
-      const meta = main.appendChild(node3("div", "acm-meta"));
-      const when2 = String(reply?.reply_control?.time_desc ?? "").replace(/发布$/, "") || (Number(reply?.ctime) > 0 ? new Date(Number(reply.ctime) * 1e3).toLocaleString() : "");
-      meta.append(node3("span", "acm-when", [when2, reply?.reply_control?.location].filter(Boolean).join(" \xB7 ")));
-      const actions = meta.appendChild(node3("span", "acm-actions"));
-      let likes = Math.max(0, Number(reply?.like) || 0), action = Number(reply?.action) || 0;
-      const like = button3("", "acm-like", () => void toggle(1)), hate = button3("\u8E29", "acm-hate", () => void toggle(2));
-      const paint2 = () => {
-        like.textContent = likes ? `\u70B9\u8D5E ${formatCount(likes)}` : "\u70B9\u8D5E";
-        like.setAttribute("aria-pressed", String(action === 1));
-        hate.setAttribute("aria-pressed", String(action === 2));
-      };
-      async function toggle(which) {
-        if (!context.me) return;
-        const before = { likes, action }, on5 = action !== which;
-        if (which === 1) likes += on5 ? 1 : -1;
-        else if (on5 && action === 1) likes -= 1;
-        action = on5 ? which : 0;
-        paint2();
-        try {
-          await (which === 1 ? context.api.likeReply : context.api.hateReply).call(context.api, context.oid, context.type, rpid, on5);
-        } catch (error) {
-          ({ likes, action } = before);
-          paint2();
-          say(failure(error), true);
-        }
-      }
-      paint2();
-      actions.append(like, hate, button3("\u56DE\u590D", "acm-reply", () => openReply()));
-      if (context.me && (mid === context.me || context.owner === context.me)) actions.append(button3("\u5220\u9664", "acm-delete", () => void remove()));
-      actions.append(button3("\u4E3E\u62A5", "acm-report", () => void report()));
-      if (!context.me) for (const control of actions.querySelectorAll("button")) {
-        control.disabled = true;
-        control.title = "\u767B\u5F55\u540E\u53EF\u7528";
-      }
-      const replies = sub ? null : main.appendChild(node3("div", "acm-sub"));
-      let replyBox = null;
-      function openReply() {
-        if (!context.me) return;
-        if (replyBox) {
-          replyBox.remove();
-          replyBox = null;
-          return;
-        }
-        const root2 = sub ? String(reply?.root_str ?? reply?.root ?? "") : rpid;
-        const compose = composer(context, {
-          placeholder: `\u56DE\u590D @${reply?.member?.uname ?? ""}`,
-          prefix: sub ? `\u56DE\u590D @${reply?.member?.uname ?? ""} :` : "",
-          submit: async (message, pictures2) => {
-            const data = await context.api.post({ oid: context.oid, type: context.type, message, root: root2, parent: rpid, pictures: pictures2 });
-            const host = sub ? element2.parentElement : replies;
-            if (data.reply && host) host.append(item(data.reply, true));
-            count2(total + 1);
-            replyBox?.remove();
-            replyBox = null;
-          },
-          cancel: () => {
-            replyBox?.remove();
-            replyBox = null;
-          }
-        });
-        replyBox = compose.box;
-        replyBox.classList.add("acm-reply-box");
-        main.append(replyBox);
-        compose.focus();
-      }
-      async function remove() {
-        if (!await atelierConfirm("\u786E\u5B9A\u5220\u9664\u8FD9\u6761\u8BC4\u8BBA\u5417\uFF1F", "\u5220\u9664\u8BC4\u8BBA")) return;
-        try {
-          await context.api.deleteReply(context.oid, context.type, rpid);
-          element2.remove();
-          count2(total - 1);
-        } catch (error) {
-          say(failure(error), true);
-        }
-      }
-      async function report() {
-        let reasons;
-        try {
-          reasons = await context.api.reportReasons(context.oid, context.type, rpid);
-        } catch (error) {
-          say(failure(error), true);
-          return;
-        }
-        if (!reasons.length) {
-          say("\u6CA1\u6709\u53EF\u9009\u7684\u4E3E\u62A5\u7406\u7531", true);
-          return;
-        }
-        const reason = await atelierDialog({ title: "\u4E3E\u62A5\u8BC4\u8BBA", message: "\u8BF7\u9009\u62E9\u4E3E\u62A5\u7406\u7531", choices: reasons.map((entry) => ({ value: String(entry.id), label: entry.name })) });
-        if (reason === null) return;
-        const detail = await atelierDialog({ title: "\u4E3E\u62A5\u8BC4\u8BBA", message: "\u8865\u5145\u8BF4\u660E\uFF08\u53EF\u4E0D\u586B\uFF09", input: "", confirmLabel: "\u4E3E\u62A5" });
-        if (detail === null) return;
-        try {
-          await context.api.report(context.oid, context.type, rpid, Number(reason), detail.trim());
-          say("\u4E3E\u62A5\u5DF2\u63D0\u4EA4");
-        } catch (error) {
-          say(failure(error), true);
-        }
-      }
-      if (replies) {
-        const preview = Array.isArray(reply?.replies) ? reply.replies : [], replyCount = Math.max(Number(reply?.rcount) || 0, preview.length);
-        for (const child of preview.slice(0, 3)) replies.append(item(child, true));
-        if (replyCount > Math.min(3, preview.length)) {
-          const open = replies.appendChild(button3(String(reply?.reply_control?.sub_reply_entry_text || `\u5171 ${replyCount} \u6761\u56DE\u590D`) + "\uFF0C\u70B9\u51FB\u67E5\u770B", "acm-open", () => void page(1)));
-          open.classList.add("xp-tool");
-        }
-        async function page(number) {
-          replies.dataset.loading = "";
-          try {
-            const data = await context.api.replies(context.oid, context.type, rpid, number);
-            const pages = Math.max(1, Math.ceil((Number(data.page?.count) || 0) / (Number(data.page?.size) || 10)));
-            replies.replaceChildren(...(Array.isArray(data.replies) ? data.replies : []).map((child) => item(child, true)));
-            if (pages > 1) {
-              const pager = replies.appendChild(node3("div", "acm-pager"));
-              pager.append(button3("\u4E0A\u4E00\u9875", "acm-prev", () => void page(number - 1)), node3("span", "", `\u7B2C ${number} / ${pages} \u9875`), button3("\u4E0B\u4E00\u9875", "acm-next", () => void page(number + 1)));
-              pager.querySelector(".acm-prev").disabled = number <= 1;
-              pager.querySelector(".acm-next").disabled = number >= pages;
-            }
-          } catch (error) {
-            say(failure(error));
-          }
-          delete replies.dataset.loading;
-        }
-      }
-      return guarded(element2);
-    }
-    async function load(first2) {
-      if (loading && !first2) return;
-      const ticket = ++generation;
-      loading = true;
-      more.hidden = true;
-      say("\u6B63\u5728\u8BFB\u53D6\u8BC4\u8BBA\u2026");
-      if (first2) {
-        next = 0;
-        list.replaceChildren();
-      }
-      try {
-        const data = await context.api.comments(context.oid, context.type, mode2, next);
-        if (ticket !== generation) return;
-        const seen = new Set([...list.querySelectorAll(".acm-item")].map((element2) => element2.dataset.rpid));
-        const tops = first2 ? [...Array.isArray(data.top_replies) ? data.top_replies : [], ...data.upper?.top ? [data.upper.top] : []] : [];
-        for (const reply of tops) {
-          const id = String(reply?.rpid_str ?? reply?.rpid);
-          if (!seen.has(id)) {
-            seen.add(id);
-            list.append(item(reply, false, true));
-          }
-        }
-        for (const reply of Array.isArray(data.replies) ? data.replies : []) {
-          const id = String(reply?.rpid_str ?? reply?.rpid);
-          if (!seen.has(id)) {
-            seen.add(id);
-            list.append(item(reply, false));
-          }
-        }
-        if (Number.isFinite(Number(data.cursor?.all_count))) count2(Number(data.cursor.all_count));
-        next = Number(data.cursor?.next) || next + 1;
-        more.hidden = !!data.cursor?.is_end;
-        say(list.childElementCount ? "" : "\u8FD8\u6CA1\u6709\u8BC4\u8BBA");
-      } catch (error) {
-        if (ticket === generation) say(failure(error), true);
-      } finally {
-        if (ticket === generation) loading = false;
-      }
-    }
-    void load(true);
-    return { element: area, dispose: () => {
-      generation++;
-      window.removeEventListener(blockedVisibilityChangedEvent, reveal);
-      emotePanel?.close();
-      area.remove();
-    } };
-  }
-  var commentAreaStyles = (root2) => `
-${root2} .adc-comments{display:flex;flex-direction:column;gap:6px;margin:4px 0 0;padding:6px 8px;background:var(--xp-face);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d);box-shadow:inset 1px 1px var(--xp-dark3d)}
-${root2} .acm-head{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px}
-${root2} .acm-sorts{display:flex;gap:10px}${root2} .acm-sort{display:inline-flex;align-items:center}
-${root2} .acm-status{flex:1;min-width:0;color:var(--xp-muted)}
-${root2} .acm-original{color:var(--xp-task-link)}${root2} .acm-original[data-emphasis=true]{font-weight:bold}
-${root2} .acm-compose{display:flex;flex-direction:column;gap:4px}
-${root2} .acm-input{width:100%;min-height:40px;resize:vertical}
-${root2} .acm-compose-row{display:flex;align-items:center;gap:4px}${root2} .acm-note{flex:1;min-width:0;color:var(--xp-danger)}
-${root2} .acm-compose-row .atelier-control{min-width:0}
-${root2} .acm-thumbs{display:flex;flex-wrap:wrap;gap:4px}${root2} .acm-thumbs:empty{display:none}
-${root2} .acm-thumb{position:relative;width:56px;height:56px;border:1px solid var(--xp-edge);background:var(--xp-window)}
-${root2} .acm-thumb img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
-${root2} .acm-thumb[data-failed]::after{content:"\u5931\u8D25";position:absolute;left:0;right:0;bottom:0;text-align:center;color:#fff;background:#a33024c0}
-${root2} .acm-thumb-remove{position:absolute;top:-6px;right:-6px;min-height:16px!important;padding:0 3px!important;line-height:14px!important}
-${root2} .acm-list{display:flex;flex-direction:column}
-${root2} .acm-item{display:flex;gap:8px;padding:6px 0;border-top:1px solid var(--xp-line)}
-${root2} .acm-list>.acm-item:first-child{border-top:0}
-${root2} .acm-face{flex:none}${root2} .acm-face img{display:block;width:32px;height:32px;object-fit:cover;image-rendering:auto}
-${root2} .acm-sub-item .acm-face img{width:16px;height:16px}
-${root2} .acm-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-${root2} .acm-top{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-${root2} .acm-name{font-weight:bold;color:var(--xp-ink)!important;text-decoration:none}
-${root2} .acm-top .acm-block{min-width:0}
-${root2} .acm-badge{padding:0 3px;color:var(--xp-caption-ink);background:var(--xp-caption)}
-${root2} .acm-level{color:var(--xp-group-text)}
-${root2} .acm-text{overflow-wrap:anywhere}${root2} .acm-link{color:var(--xp-task-link)}
-${root2} .acm-emote{width:20px;height:20px;vertical-align:text-bottom;image-rendering:auto}${root2} .acm-emote-large{width:40px;height:40px}
-${root2} .acm-pics{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}${root2} .acm-pic{display:block;width:80px;height:80px;border:1px solid var(--xp-edge)}
-${root2} .acm-pic img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
-${root2} .acm-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}${root2} .acm-when{flex:1;min-width:0;color:var(--xp-muted)}
-${root2} .acm-actions{display:flex;gap:3px}${root2} .acm-actions .atelier-control{min-width:0}
-${root2} .acm-sub{display:flex;flex-direction:column;margin-top:2px}
-${root2} .acm-sub:not(:empty){padding:0 6px;background:var(--xp-face);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d)}
-${root2} .acm-sub[data-loading]{opacity:.6}
-${root2} .acm-open{align-self:flex-start;margin:3px 0;color:var(--xp-task-link)}
-${root2} .acm-pager{display:flex;align-items:center;gap:6px;padding:4px 0}
-${root2} .acm-reply-box{margin-top:3px}
-${root2} .acm-more{align-self:center}
-${root2} .acm-blocked{outline:1px dashed #a33024;outline-offset:-1px}
-.acm-emotes{position:fixed;z-index:2147483646;width:330px;${xpFont}}
-.acm-emotes .xp-tabs{overflow-x:auto;flex-wrap:nowrap}
-.acm-emote-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:2px;height:190px;overflow:auto;padding:4px;margin:0 4px 4px}
-.acm-emote-cell{display:grid;place-items:center;min-height:34px;padding:1px;border:1px solid transparent;background:transparent;cursor:default}
-.acm-emote-cell:hover{border-color:var(--xp-highlight);background:color-mix(in srgb,var(--xp-highlight) 15%,transparent)}
-.acm-emote-cell img{width:28px;height:28px;object-fit:contain;image-rendering:auto}
-.acm-emote-text{grid-column:span 3;${xpFont};color:var(--xp-ink)}
-`;
-  var commentAreaCss = commentAreaStyles("#atelier-feed");
-
-  // src/modules/local-following/feed-roster.ts
-  var pageSize = 50;
-  var followingsUrl = (mid, page) => `https://api.bilibili.com/x/relation/followings?vmid=${mid}&pn=${page}&ps=${pageSize}&order=desc&order_type=`;
-  function people(raw) {
-    if (raw?.code !== 0 || !Array.isArray(raw?.data?.list)) {
-      const code = Math.abs(Number(raw?.code));
-      throw new LocalFollowReadError(typeof raw?.message === "string" ? raw.message : "\u5173\u6CE8\u5217\u8868\u683C\u5F0F\u65E0\u6548", [412, 429].includes(code) ? code : 0);
-    }
-    return raw.data.list.flatMap((item) => /^\d+$/.test(String(item?.mid)) && typeof item?.uname === "string" ? [{ uid: String(item.mid), name: item.uname, face: safeLocalFace(item.face) }] : []);
-  }
-  async function readFollowings(request2, mid, signal, limits = {}) {
-    const found = /* @__PURE__ */ new Map();
-    let total = 0, error = "", stopped = false;
-    const onError = (_, failure3) => {
-      error ||= failure3 instanceof Error ? failure3.message : "\u8BFB\u53D6\u5931\u8D25";
-      stopped = failure3 instanceof LocalFollowReadError && failure3.stopsBatch;
-      return stopped;
-    };
-    await runConcurrentReads({
-      ...limits,
-      keys: [1],
-      batch: signal,
-      read: (page, readSignal) => request2(followingsUrl(mid, page), readSignal),
-      onValue: (_, raw) => {
-        total = Number(raw?.data?.total) || 0;
-        for (const person of people(raw)) found.set(person.uid, person);
-      },
-      onError
-    });
-    const pages = Math.ceil(total / pageSize);
-    if (!stopped && !signal.aborted && pages > 1) {
-      await runConcurrentReads({
-        ...limits,
-        keys: Array.from({ length: pages - 1 }, (_, index) => index + 2),
-        batch: signal,
-        read: (page, readSignal) => request2(followingsUrl(mid, page), readSignal),
-        onValue: (_, raw) => {
-          for (const person of people(raw)) found.set(person.uid, person);
-        },
-        onError
-      });
-    }
-    const complete = !error && !signal.aborted && found.size >= total;
-    return { at: Date.now(), complete, list: [...found.values()], ...error ? { error } : {} };
-  }
-  var portalUrl = "https://api.bilibili.com/x/polymer/web-dynamic/v1/portal?up_list_more=1&web_location=333.1365";
-  var livePeople = (items) => (Array.isArray(items) ? items : []).flatMap((item) => /^\d+$/.test(String(item?.mid)) && /^\d+$/.test(String(item?.room_id)) && typeof (item?.uname ?? item?.name) === "string" ? [{ uid: String(item.mid), name: item.uname ?? item.name, face: safeLocalFace(item.face), room: String(item.room_id), title: typeof item.title === "string" ? item.title : "" }] : []);
-  async function readLiveUsers(request2, signal) {
-    const raw = await request2(portalUrl, signal);
-    if (raw?.code !== 0) {
-      const code = Math.abs(Number(raw?.code));
-      throw new LocalFollowReadError(typeof raw?.message === "string" && raw.message ? raw.message : "\u76F4\u64AD\u540D\u5355\u683C\u5F0F\u65E0\u6548", [412, 429].includes(code) ? code : 0);
-    }
-    const live = raw.data?.live_users, list = livePeople(live?.items);
-    return { at: Date.now(), count: Math.max(list.length, Number(live?.count) || 0), list };
-  }
-  function parseLiveCopy(value2) {
-    const raw = value2;
-    if (!raw || !Array.isArray(raw.list)) return null;
-    const list = livePeople(raw.list.map((person) => ({ mid: person?.uid, uname: person?.name, face: person?.face, room_id: person?.room, title: person?.title })));
-    return { at: Number(raw.at) || 0, count: Math.max(list.length, Number(raw.count) || 0), list };
-  }
-  function parseFollowingsCopy(value2) {
-    const raw = value2;
-    if (!raw || !Array.isArray(raw.list)) return null;
-    return {
-      at: Number(raw.at) || 0,
-      complete: raw.complete === true,
-      list: raw.list.filter((person) => /^\d+$/.test(String(person?.uid)) && typeof person?.name === "string").map((person) => ({ uid: String(person.uid), name: person.name, face: safeLocalFace(person.face) }))
-    };
-  }
-  var names3 = new Intl.Collator("zh-CN-u-co-pinyin", { sensitivity: "base", numeric: true });
-  function rosterTiles(options) {
-    const tiles = /* @__PURE__ */ new Map();
-    for (const person of options.online) tiles.set(person.uid, { ...person, online: true, local: false, fresh: false });
-    for (const person of options.local) {
-      const known2 = tiles.get(person.uid);
-      if (known2) {
-        known2.local = true;
-        known2.name ||= person.name;
-        known2.face ||= person.face;
-      } else tiles.set(person.uid, { ...person, online: false, local: true, fresh: false });
-    }
-    const list = [...tiles.values()];
-    for (const tile of list) {
-      tile.latest = options.latest(tile.uid);
-      tile.fresh = tile.latest !== void 0 && tile.latest * 1e3 > options.seen(tile.uid);
-    }
-    return list.sort((a, b) => a.latest === void 0 ? b.latest === void 0 ? names3.compare(a.name || a.uid, b.name || b.uid) : 1 : b.latest === void 0 ? -1 : b.latest - a.latest || names3.compare(a.name, b.name));
-  }
-  function tileLines(name, width2 = 60) {
-    const advance = (char) => /[⺀-￿]/.test(char) ? 12 : 7;
-    const chars = [...name.trim()], lines = [];
-    let line = [], used = 0, index = 0;
-    for (; index < chars.length; index++) {
-      const char = chars[index];
-      if (used + advance(char) > width2) {
-        const space = line.lastIndexOf(" ");
-        const carry = advance(char) === 7 && space > 0 ? line.splice(space).slice(1) : [];
-        lines.push(line.join("").trimEnd());
-        if (lines.length === 2) {
-          index -= carry.length;
-          break;
-        }
-        line = carry;
-        used = carry.reduce((sum, value2) => sum + advance(value2), 0);
-      }
-      line.push(char);
-      used += advance(char);
-    }
-    if (lines.length < 2 && line.length) lines.push(line.join(""));
-    if (index < chars.length) lines[1] = [...lines[1]].slice(0, -1).join("") + "\u2026";
-    return lines;
-  }
-
-  // src/modules/local-following/feed-panel.ts
-  var panelClass = "atelier-follow-panel";
-  var stickyTop = () => headerHeight() + 8;
-  var columns = 3;
-  function createFollowPanel(identity, source) {
-    const seenKey = `BiliAtelier_FeedSeen_${identity}`, foldKey2 = `BiliAtelier_FeedPanelFolded_${identity}`;
-    const liveKey = `BiliAtelier_FeedLiveOpen_${identity}`, dynamicKey = `BiliAtelier_FeedDynamicOpen_${identity}`;
-    let seen = (() => {
-      const raw = GM_getValue(seenKey, {});
-      return raw && typeof raw === "object" ? raw : {};
-    })();
-    let liveOpen = GM_getValue(liveKey, false) === true, dynamicOpen = GM_getValue(dynamicKey, true) !== false;
-    const panel = document.createElement("section");
-    panel.className = `${panelClass} xp-window`;
-    panel.setAttribute("data-atelier-local-ui", "");
-    panel.setAttribute("data-bili-blocker-ui", "true");
-    const caption2 = panel.appendChild(document.createElement("header"));
-    caption2.className = "afp-caption xp-caption";
-    const icon2 = caption2.appendChild(document.createElement("span"));
-    icon2.className = "afp-caption-icon";
-    const title = caption2.appendChild(document.createElement("h2"));
-    const note2 = caption2.appendChild(document.createElement("span"));
-    note2.className = "afp-note";
-    const toggle = caption2.appendChild(document.createElement("button"));
-    toggle.type = "button";
-    toggle.className = "afp-toggle xp-caption-button";
-    const body2 = panel.appendChild(document.createElement("div"));
-    body2.className = "afp-body";
-    const view = body2.appendChild(document.createElement("div"));
-    view.className = "afp-view";
-    view.setAttribute("role", "listbox");
-    view.setAttribute("aria-label", "\u5173\u6CE8\u7684 UP \u4E3B");
-    let folded = GM_getValue(foldKey2, false) === true;
-    const fold = () => {
-      body2.hidden = folded;
-      toggle.dataset.kind = folded ? "restore" : "minimize";
-      toggle.title = folded ? "\u8FD8\u539F" : "\u6700\u5C0F\u5316";
-      toggle.setAttribute("aria-label", folded ? "\u5C55\u5F00\u5173\u6CE8\u680F" : "\u6298\u53E0\u5173\u6CE8\u680F");
-      toggle.setAttribute("aria-expanded", String(!folded));
-    };
-    toggle.addEventListener("click", () => {
-      folded = !folded;
-      sound(folded ? "minimize" : "restore");
-      GM_setValue(foldKey2, folded);
-      fold();
-    });
-    fold();
-    let focused = "";
-    const tiles = () => [...view.querySelectorAll(".afp-tile")];
-    const choose = (uid, all) => {
-      if (!all) {
-        seen[uid] = Date.now();
-        GM_setValue(seenKey, seen);
-      }
-      source.select(all || source.selected() === uid ? "" : uid);
-    };
-    const space = (uid) => window.open(`https://space.bilibili.com/${uid}/dynamic`, "_blank", "noopener");
-    const opens = (kind) => kind === "folder" || kind === "up";
-    function activate(tile2) {
-      const kind = tile2.dataset.kind, id = tile2.dataset.uid;
-      sound("folder");
-      if (kind === "live") window.open(tile2.href, "_blank", "noopener");
-      else if (kind === "folder") source.openFolder(id);
-      else if (kind === "up") source.openFolder("");
-      else choose(id, kind === "all" || kind === "folder-all");
-    }
-    function tile(kind, person, picture2) {
-      const anchor = document.createElement("a");
-      anchor.className = `afp-tile afp-tile-${kind}`;
-      anchor.dataset.uid = person.uid;
-      anchor.dataset.kind = kind;
-      const selected = kind === "person" ? source.selected() === person.uid : (kind === "all" || kind === "folder-all") && !source.selected();
-      anchor.setAttribute("role", "option");
-      anchor.setAttribute("aria-pressed", String(selected));
-      anchor.setAttribute("aria-selected", String(selected));
-      anchor.tabIndex = -1;
-      if (kind === "person") {
-        anchor.href = `https://space.bilibili.com/${person.uid}/dynamic`;
-        anchor.target = "_blank";
-        anchor.rel = "noopener";
-      } else if (kind === "live") {
-        anchor.href = `https://live.bilibili.com/${person.room}`;
-        anchor.target = "_blank";
-        anchor.rel = "noopener";
-      } else anchor.href = "#";
-      const when2 = person.latest ? new Date(person.latest * 1e3).toLocaleString() : "\u672A\u77E5";
-      anchor.title = kind === "person" ? `${person.name || person.uid}
-UID\uFF1A${person.uid}
-\u6700\u8FD1\u53D1\u5E03\uFF1A${when2}${person.online && person.local ? "\n\u8D26\u53F7\u5173\u6CE8 \xB7 \u672C\u5730\u5173\u6CE8" : person.local ? "\n\u672C\u5730\u5173\u6CE8" : ""}` : kind === "live" ? `${person.name}
-${person.title || "\u6B63\u5728\u76F4\u64AD"}` : person.name;
-      const face2 = anchor.appendChild(document.createElement("span"));
-      face2.className = "afp-face";
-      face2.append(picture2);
-      if (person.fresh) face2.append(Object.assign(document.createElement("i"), { className: "afp-dot", title: "\u6709\u65B0\u52A8\u6001" }));
-      if (kind === "live") face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-live", textContent: "\u76F4\u64AD" }));
-      if (kind === "person" && person.local && !person.online) face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-local", textContent: "\u672C" }));
-      const name = anchor.appendChild(document.createElement("span"));
-      name.className = "afp-name";
-      for (const line of tileLines(person.name || person.uid)) name.append(Object.assign(document.createElement("span"), { className: "afp-line", textContent: line }));
-      anchor.addEventListener("focus", () => {
-        focused = `${kind}:${person.uid}`;
-        for (const other of tiles()) other.tabIndex = other === anchor ? 0 : -1;
-      });
-      anchor.addEventListener("click", (event) => {
-        if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return;
-        if (kind === "live") {
-          sound("folder");
-          return;
-        }
-        event.preventDefault();
-        if (opens(kind)) anchor.focus();
-        else activate(anchor);
-      });
-      if (opens(kind)) anchor.addEventListener("dblclick", (event) => {
-        event.preventDefault();
-        activate(anchor);
-      });
-      anchor.addEventListener("contextmenu", (event) => {
-        if (kind === "all" || kind === "up") return;
-        event.preventDefault();
-        if (kind === "folder" || kind === "folder-all") source.manage(person.uid === "ungrouped" ? void 0 : person.uid);
-        else {
-          sound("folder");
-          space(person.uid);
-        }
-      });
-      return anchor;
-    }
-    const face = (url) => {
-      const img = document.createElement("img");
-      img.alt = "";
-      img.loading = "lazy";
-      img.decoding = "async";
-      img.referrerPolicy = "no-referrer";
-      img.src = bilibiliThumb(url, "64w_64h_1c") || atelierIcons.app;
-      return img;
-    };
-    const picture = (src) => Object.assign(document.createElement("img"), { alt: "", src, className: "afp-pixel" });
-    function group(text3, open, onClick, tip = "") {
-      const header = document.createElement("button");
-      header.type = "button";
-      header.className = "afp-group";
-      header.setAttribute("aria-expanded", String(open));
-      if (tip) header.title = tip;
-      header.append(Object.assign(document.createElement("span"), { className: "afp-group-title", textContent: text3 }), Object.assign(document.createElement("i"), { className: "afp-chevron" }));
-      header.addEventListener("click", onClick);
-      return header;
-    }
-    const grid = (...children) => {
-      const node4 = document.createElement("div");
-      node4.className = "afp-grid";
-      node4.append(...children);
-      return node4;
-    };
-    view.addEventListener("keydown", (event) => {
-      if (event.key === "Backspace" && source.folder()) {
-        event.preventDefault();
-        sound("folder");
-        source.openFolder("");
-        return;
-      }
-      const list = tiles(), at = list.findIndex((node4) => node4 === document.activeElement);
-      if (at < 0) return;
-      const target = { ArrowLeft: at - 1, ArrowRight: at + 1, ArrowUp: vertical(list, at, -1), ArrowDown: vertical(list, at, 1), Home: 0, End: list.length - 1 }[event.key];
-      if (target !== void 0) {
-        event.preventDefault();
-        list[Math.max(0, Math.min(list.length - 1, target))].focus();
-        return;
-      }
-      if (event.key === "Enter" || event.key === " " && !opens(list[at].dataset.kind)) {
-        event.preventDefault();
-        activate(list[at]);
-        return;
-      }
-      if (event.key === " ") {
-        event.preventDefault();
-        return;
-      }
-      if (event.key === "ContextMenu" || event.key === "F10" && event.shiftKey) {
-        event.preventDefault();
-        list[at].dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true }));
-      }
-    });
-    function vertical(list, at, direction) {
-      const rects = list.map((node4) => node4.getBoundingClientRect());
-      if (rects.every((rect) => !rect.width)) return at + direction * columns;
-      const here = rects[at], rows = [...new Set(rects.map((rect) => Math.round(rect.top)))].sort((a, b) => a - b);
-      const row = rows[rows.indexOf(Math.round(here.top)) + direction];
-      if (row === void 0) return at;
-      let best = at, distance = Infinity;
-      rects.forEach((rect, index) => {
-        const gap2 = Math.abs(rect.left - here.left);
-        if (Math.round(rect.top) === row && gap2 < distance) {
-          best = index;
-          distance = gap2;
-        }
-      });
-      return best;
-    }
-    function render2() {
-      const folder = source.folder();
-      const people2 = rosterTiles({
-        online: source.online(),
-        local: source.local(),
-        latest: source.latest,
-        seen: (uid) => Math.max(seen[uid] ?? 0, source.visitedAt(uid))
-      });
-      let added = false;
-      for (const person of people2) if (seen[person.uid] === void 0) {
-        seen[person.uid] = Date.now();
-        person.fresh = false;
-        added = true;
-      }
-      if (added) GM_setValue(seenKey, seen);
-      title.textContent = `${folder?.name ?? "\u5173\u6CE8"} \xB7 ${people2.length} \u4F4D`;
-      icon2.replaceChildren(folder ? shellIcon(folder.icon, 16) : picture(atelierIcons.following || atelierIcons.folder));
-      note2.textContent = source.incomplete() ? "\u540D\u5355\u4E0D\u5B8C\u6574" : "";
-      const hadFocus = view.contains(document.activeElement);
-      const sections = [];
-      const live = source.live();
-      if (live) {
-        const never = !!live.error && !live.stale && !live.list.length;
-        sections.push(group(
-          never ? "\u6B63\u5728\u76F4\u64AD\uFF08\u8BFB\u53D6\u5931\u8D25\uFF09" : `\u6B63\u5728\u76F4\u64AD (${live.count})${live.stale ? "\uFF08\u672A\u66F4\u65B0\uFF09" : ""}`,
-          liveOpen && !never,
-          () => {
-            if (never) {
-              sound("click");
-              source.retryLive();
-              return;
-            }
-            liveOpen = !liveOpen;
-            sound(liveOpen ? "restore" : "minimize");
-            GM_setValue(liveKey, liveOpen);
-            render2();
-          },
-          live.error
-        ));
-        if (liveOpen && !never && live.list.length) sections.push(grid(...live.list.map((person) => tile("live", person, face(person.face)))));
-      }
-      sections.push(group(`${folder?.name ?? "\u52A8\u6001"} (${people2.length})`, dynamicOpen, () => {
-        dynamicOpen = !dynamicOpen;
-        sound(dynamicOpen ? "restore" : "minimize");
-        GM_setValue(dynamicKey, dynamicOpen);
-        render2();
-      }));
-      if (dynamicOpen) {
-        sections.push(grid(...folder ? [tile("up", { uid: "", name: "\u5411\u4E0A", face: "" }, picture(atelierIcons.up)), tile("folder-all", { uid: folder.id, name: "\u5168\u90E8", face: "" }, shellIcon(folder.icon, 32))] : [tile("all", { uid: "", name: "\u5168\u90E8\u52A8\u6001", face: "" }, picture(atelierIcons.folder)), ...source.folders().map((each) => tile("folder", { uid: each.id, name: each.name, face: "" }, shellIcon(each.icon, 32)))]));
-        if (people2.length) sections.push(grid(...people2.map((person) => tile("person", person, face(person.face)))));
-        else if (folder) sections.push(Object.assign(document.createElement("p"), { className: "afp-empty", textContent: "\u8FD9\u4E2A\u5206\u7EC4\u8FD8\u6CA1\u6709 UP \u4E3B\uFF0C\u53F3\u952E\u6587\u4EF6\u5939\u53EF\u4EE5\u7BA1\u7406\u5206\u7EC4" }));
-      }
-      view.replaceChildren(...sections);
-      const list = tiles(), current4 = list.find((node4) => `${node4.dataset.kind}:${node4.dataset.uid}` === focused) ?? list.find((node4) => node4.getAttribute("aria-selected") === "true") ?? list[0];
-      if (current4) {
-        current4.tabIndex = 0;
-        if (hadFocus) current4.focus();
-      }
-    }
-    observeCrispText(panel);
-    const place = () => {
-      panel.style.top = `calc(${headerBottomCss} + 8px)`;
-      body2.style.maxHeight = `calc(100vh - ${headerBottomCss} - 60px)`;
-    };
-    function mount() {
-      if (panel.isConnected) return;
-      const left = document.querySelector("aside.left");
-      if (!left) return;
-      const live = left.querySelector(".bili-dyn-live-users");
-      if (live) live.insertAdjacentElement("afterend", panel);
-      else left.append(panel);
-      place();
-    }
-    window.addEventListener("resize", place);
-    return { panel, render: render2, mount, unmount: () => panel.remove() };
-  }
-  var p = `.${panelClass}`;
-  var followPanelCss = `
-html[data-atelier-list=drawn] .bili-dyn-live-users{display:none!important}
-${p}{position:sticky;z-index:1;margin-top:8px;${xpFont};text-align:left}
-${p} *{box-sizing:border-box}${p} [hidden]{display:none!important}
-${p} .afp-caption-icon{display:flex;flex:none}${p} .afp-caption-icon img{width:16px;height:16px;image-rendering:pixelated}
-${p} .afp-note{flex:none;color:#ffe7a8;white-space:nowrap}
-${p} .afp-body{overflow-y:auto;padding:0 1px 6px;background:var(--xp-window);border:1px solid var(--xp-edge)}
-${p} .afp-group{display:flex;align-items:center;gap:3px;width:100%;margin:0;padding:5px 4px 3px;border:0;background:linear-gradient(90deg,var(--xp-group-text),transparent) bottom/100% 1px no-repeat;color:var(--xp-group-text);${xpFont};text-align:left;cursor:default}
-${p} .afp-group-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-${p} .afp-chevron{flex:none;width:5px;height:5px;margin:0 2px;border:solid currentColor;border-width:1px 1px 0 0;transform:translateY(1px) rotate(-45deg)}
-${p} .afp-group[aria-expanded=false] .afp-chevron{transform:translateY(-1px) rotate(135deg)}
-${p} .afp-grid{display:grid;grid-template-columns:repeat(${columns},minmax(0,1fr));gap:8px 0;padding-top:5px}
-${p} .afp-tile{display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 1px;color:var(--xp-ink)!important;text-decoration:none!important;outline:none!important;cursor:default}
-${p} .afp-face{position:relative;flex:none;width:32px;height:32px}
-${p} .afp-face>img{display:block;width:32px;height:32px;object-fit:cover;image-rendering:auto}
-${p} .afp-face>img.afp-pixel{object-fit:none;image-rendering:pixelated}
-${p} .afp-tile-up .afp-face>img{width:24px;height:24px;margin:4px}
-${p} .afp-tile[aria-selected=true] .afp-face::after{content:"";position:absolute;inset:0;background:var(--xp-highlight);opacity:.5;pointer-events:none}
-${p} .afp-dot{position:absolute;top:-2px;right:-3px;width:7px;height:7px;background:#3fb34f;border:1px solid var(--xp-window)}
-${p} .afp-badge{position:absolute;${xpFont};font-weight:bold;font-style:normal;color:var(--xp-caption-ink);background:var(--xp-caption);border:1px solid var(--xp-window);padding:0 1px;white-space:nowrap}
-${p} .afp-local{left:-3px;bottom:-2px}${p} .afp-live{right:-6px;bottom:-3px}
-${p} .afp-name{display:flex;flex-direction:column;align-items:center;max-width:100%;padding:0 1px;text-align:center;outline:1px dotted transparent;outline-offset:0}
-${p} .afp-line{white-space:nowrap}
-${p} .afp-empty{margin:4px 6px 0;color:var(--xp-muted)}
-${p} .afp-tile:focus .afp-name{outline-color:var(--xp-ink)}
-${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);color:var(--xp-highlight-ink);outline-color:var(--xp-highlight-xor)}
-`;
-
-  // src/modules/local-following/feed-quick.ts
-  var width = 200;
-  var gap = 12;
-  var margin = 16;
-  function createQuickWindow(options) {
-    const foldKey2 = `BiliAtelier_QuickFolded_${options.identity}`;
-    const win = document.createElement("section");
-    win.className = "alf-quick xp-window";
-    win.setAttribute("aria-label", "\u5FEB\u6377\u64CD\u4F5C");
-    const caption2 = win.appendChild(document.createElement("header"));
-    caption2.className = "xp-caption";
-    const icon2 = caption2.appendChild(document.createElement("img"));
-    icon2.src = atelierIcons.up16;
-    icon2.alt = "";
-    caption2.appendChild(document.createElement("h2")).textContent = "\u5FEB\u6377\u64CD\u4F5C";
-    const toggle = caption2.appendChild(document.createElement("button"));
-    toggle.type = "button";
-    toggle.className = "xp-caption-button";
-    const body2 = win.appendChild(document.createElement("div"));
-    body2.className = "alf-quick-body";
-    const button5 = (className, label) => {
-      const element2 = body2.appendChild(document.createElement("button"));
-      element2.type = "button";
-      element2.className = `atelier-control ${className}`;
-      element2.appendChild(document.createElement("span")).textContent = label;
-      return element2;
-    };
-    const toTop = button5("alf-quick-top", "\u56DE\u5230\u5361\u7247\u9876\u7AEF");
-    toTop.prepend(Object.assign(document.createElement("img"), { src: atelierIcons.up, alt: "" }));
-    const night = button5("alf-quick-night", "\u591C\u95F4\u6A21\u5F0F");
-    let folded = GM_getValue(foldKey2, false) === true;
-    const fold = () => {
-      body2.hidden = folded;
-      toggle.dataset.kind = folded ? "restore" : "minimize";
-      toggle.title = folded ? "\u8FD8\u539F" : "\u6700\u5C0F\u5316";
-      toggle.setAttribute("aria-label", folded ? "\u5C55\u5F00\u5FEB\u6377\u64CD\u4F5C" : "\u6298\u53E0\u5FEB\u6377\u64CD\u4F5C");
-      toggle.setAttribute("aria-expanded", String(!folded));
-    };
-    toggle.addEventListener("click", () => {
-      folded = !folded;
-      sound(folded ? "minimize" : "restore");
-      GM_setValue(foldKey2, folded);
-      fold();
-    });
-    fold();
-    const current4 = () => {
-      for (const card2 of options.list.children) {
-        if (!(card2 instanceof HTMLElement) || !card2.classList.contains("adc-card")) continue;
-        const rect = card2.getBoundingClientRect();
-        if (rect.top < stickyTop() - 0.5 && rect.bottom > stickyTop()) return card2;
-      }
-      return null;
-    };
-    toTop.addEventListener("click", () => {
-      const card2 = current4();
-      if (card2) window.scrollTo({ top: card2.getBoundingClientRect().top + window.scrollY - stickyTop(), behavior: "instant" });
-    });
-    const paintNight = () => night.setAttribute("aria-pressed", String(options.loggedIn && biliTheme() === "dark"));
-    if (options.loggedIn) night.addEventListener("click", () => {
-      toggleBiliNight();
-      paintNight();
-    });
-    else {
-      night.disabled = true;
-      night.title = "\u767B\u5F55\u540E\u53EF\u7528";
-    }
-    paintNight();
-    let frame2 = 0;
-    const update = () => {
-      frame2 = 0;
-      toTop.disabled = !current4();
-      const right = options.feedWindow.getBoundingClientRect().right;
-      win.style.left = `${Math.max(0, Math.min(right + gap, window.innerWidth - width - margin))}px`;
-    };
-    const schedule2 = () => {
-      frame2 ||= requestAnimationFrame(update);
-    };
-    window.addEventListener("scroll", schedule2, { passive: true });
-    window.addEventListener("resize", schedule2);
-    document.addEventListener("biliThemeChange", paintNight);
-    const resize = typeof ResizeObserver === "function" ? new ResizeObserver(schedule2) : null;
-    resize?.observe(options.feedWindow);
-    const cards2 = new MutationObserver(schedule2);
-    cards2.observe(options.list, { childList: true });
-    schedule2();
-    return {
-      element: win,
-      dispose: () => {
-        cancelAnimationFrame(frame2);
-        cards2.disconnect();
-        resize?.disconnect();
-        window.removeEventListener("scroll", schedule2);
-        window.removeEventListener("resize", schedule2);
-        document.removeEventListener("biliThemeChange", paintNight);
-        win.remove();
-      }
-    };
-  }
-  var quickWindowCss = `
-#atelier-feed-root .alf-quick{position:fixed;bottom:${margin}px;z-index:100;width:${width}px;margin:0}
-#atelier-feed-root .alf-quick-body{display:flex;flex-direction:column;gap:4px;padding:6px}
-#atelier-feed-root .alf-quick-body .atelier-control{width:100%;min-width:0;justify-content:flex-start}
-#atelier-feed-root .alf-quick-top img{width:24px;height:24px;image-rendering:pixelated}
-`;
-
   // src/modules/local-following/feed-page.ts
   var barClass = "atelier-local-feed-bar";
   var views = [["online", "\u4EC5\u5728\u7EBF"], ["local", "\u4EC5\u672C\u5730"], ["mixed", "\u5728\u7EBF+\u672C\u5730"]];
   var tabs = [["all", "\u5168\u90E8"], ["video", "\u6295\u7A3F"], ["pgc", "\u8FFD\u756A"], ["article", "\u4E13\u680F"]];
-  function localFeedPageWorld(channel2, writes) {
+  function localFeedPageWorld() {
     const original = window.fetch, base = "/x/polymer/web-dynamic/v1/feed/";
-    const allowed = /* @__PURE__ */ new Set([base + "space", base + "all", "/x/polymer/web-dynamic/v1/portal", "/x/web-interface/nav", "/x/web-interface/card", "/x/relation/followings", "/x/v2/reply/main", "/x/v2/reply/reply", "/x/v2/reply/report/metadata", "/x/emote/user/panel/web"]);
     const parse = (value2) => {
       try {
         return new URL(String(value2), location.href);
@@ -13876,65 +12192,11 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
         return null;
       }
     };
-    const post = (message) => window.postMessage({ channel: channel2, ...message }, location.origin);
     const empty = (url) => {
       if (!url || url.hostname !== "api.bilibili.com" || document.documentElement.getAttribute("data-atelier-feed") !== "drawn") return null;
       if (url.pathname === base + "all/update") return { code: 0, message: "0", ttl: 1, data: { update_num: 0 } };
       return url.pathname === base + "all" ? { code: 0, message: "0", ttl: 1, data: { has_more: false, items: [], offset: "", update_baseline: "", update_num: 0 } } : null;
     };
-    const reads = /* @__PURE__ */ new Map();
-    window.addEventListener("message", (event) => {
-      const data = event.data;
-      if (event.origin !== location.origin || data?.channel !== channel2) return;
-      if (data.kind === "abort") reads.get(data.id)?.abort();
-      else if (data.kind === "read") {
-        const url = parse(data.url), controller = new AbortController();
-        if (!url || url.protocol !== "https:" || url.hostname !== "api.bilibili.com" || !allowed.has(url.pathname)) {
-          post({ kind: "read-result", id: data.id, status: 0, error: "\u65E0\u6548\u8BFB\u53D6" });
-          return;
-        }
-        reads.set(data.id, controller);
-        original.call(window, url.href, { credentials: "include", signal: controller.signal }).then(async (response) => post({ kind: "read-result", id: data.id, status: response.status, body: response.ok ? await response.json() : null })).catch((error) => post({ kind: "read-result", id: data.id, status: 0, error: String(error?.message || error) })).finally(() => reads.delete(data.id));
-      } else if (data.kind === "write") {
-        const spec = Object.prototype.hasOwnProperty.call(writes, data.op) ? writes[data.op] : null;
-        const answer = (message) => post({ kind: "write-result", id: data.id, ...message });
-        const csrf = document.cookie.match(/(?:^|;\s*)bili_jct=([^;]+)/)?.[1] ?? "";
-        if (!spec) {
-          answer({ status: 0, error: "\u4E0D\u5141\u8BB8\u7684\u64CD\u4F5C" });
-          return;
-        }
-        if (!csrf) {
-          answer({ status: 0, error: "\u8BF7\u5148\u767B\u5F55" });
-          return;
-        }
-        const [path, encoding, where] = spec, url = new URL("https://api.bilibili.com" + path);
-        for (const [name, value2] of Object.entries(data.query ?? {})) if (typeof value2 === "string") url.searchParams.set(name, value2);
-        if (where === "query") url.searchParams.set("csrf", csrf);
-        const fields2 = { ...data.body ?? {} };
-        if (where === "body") fields2.csrf = csrf;
-        const scalar = (value2) => typeof value2 === "string" || typeof value2 === "number" || typeof value2 === "boolean";
-        let body2, headers;
-        if (encoding === "json") {
-          body2 = JSON.stringify(fields2);
-          headers = { "Content-Type": "application/json" };
-        } else if (encoding === "form") {
-          const form = new URLSearchParams();
-          for (const [name, value2] of Object.entries(fields2)) if (scalar(value2)) form.set(name, String(value2));
-          body2 = form;
-          headers = { "Content-Type": "application/x-www-form-urlencoded" };
-        } else {
-          if (!(data.file instanceof Blob)) {
-            answer({ status: 0, error: "\u6CA1\u6709\u6587\u4EF6" });
-            return;
-          }
-          const form = new FormData();
-          form.append("file_up", data.file);
-          for (const [name, value2] of Object.entries(fields2)) if (scalar(value2)) form.append(name, String(value2));
-          body2 = form;
-        }
-        original.call(window, url.href, { method: "POST", credentials: "include", headers, body: body2 }).then(async (response) => answer({ status: response.status, body: response.ok ? await response.json() : null })).catch((error) => answer({ status: 0, error: String(error?.message || error) }));
-      }
-    });
     window.fetch = function(...args) {
       const body2 = empty(parse(args[0] instanceof Request ? args[0].url : args[0]));
       return body2 ? Promise.resolve(new Response(JSON.stringify(body2), { status: 200, headers: { "content-type": "application/json" } })) : original.apply(this, args);
@@ -13962,37 +12224,10 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       }, 0);
     };
   }
-  function pageRequest(channel2) {
-    const pending2 = /* @__PURE__ */ new Map();
-    window.addEventListener("message", (event) => {
-      const data = event.data;
-      if (event.origin !== location.origin || data?.channel !== channel2 || data.kind !== "read-result") return;
-      const waiter = pending2.get(data.id);
-      if (!waiter) return;
-      pending2.delete(data.id);
-      if (data.error) waiter.reject(new LocalFollowReadError(`\u7F51\u7EDC\u8BFB\u53D6\u5931\u8D25\uFF1A${data.error}`));
-      else if (data.status < 200 || data.status >= 300) waiter.reject(new LocalFollowReadError(`\u8BFB\u53D6\u5931\u8D25\uFF1AHTTP ${data.status}`, data.status));
-      else waiter.resolve(data.body);
-    });
-    return (value2, signal) => new Promise((resolve, reject) => {
-      const url = localFollowApiUrl(value2), id = crypto.randomUUID();
-      if (signal.aborted) {
-        reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError"));
-        return;
-      }
-      pending2.set(id, { resolve, reject });
-      signal.addEventListener("abort", () => {
-        if (!pending2.delete(id)) return;
-        window.postMessage({ channel: channel2, kind: "abort", id }, location.origin);
-        reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError"));
-      }, { once: true });
-      window.postMessage({ channel: channel2, kind: "read", id, url }, location.origin);
-    });
-  }
   function unpinned(raw) {
     if (!localFeedPinned(raw)) return raw;
-    const { module_tag: _, ...modules } = raw.modules;
-    return { ...raw, modules };
+    const { module_tag: _, ...modules2 } = raw.modules;
+    return { ...raw, modules: modules2 };
   }
   var feedUrl = (type) => `https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?timezone_offset=${(/* @__PURE__ */ new Date()).getTimezoneOffset()}&type=${type}&platform=web&page=1&features=${localFollowFeatures}&web_location=333.1365&offset=`;
   var pageCss = `
@@ -14035,15 +12270,17 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     };
     mark2();
     if (loggedIn && !prefs.native) mountLunaHeader("feed");
-    const channel2 = "atelier-local-feed-" + crypto.randomUUID(), request2 = pageRequest(channel2);
+    let relay;
     try {
-      injectPageScript(`(${localFeedPageWorld.toString()})(${JSON.stringify(channel2)}, ${JSON.stringify(feedWrites)});`);
+      relay = startPageRelay("local-feed", endpoints.feed);
+      injectPageScript(`(${localFeedPageWorld.toString()})();`);
     } catch {
       return;
     }
-    const api3 = new LocalFollowApi(request2);
+    const request2 = relay.read;
+    const api4 = new LocalFollowApi(request2);
     const engine2 = new LocalFeedEngine({
-      api: api3,
+      api: api4,
       directory: localFollowSnapshot,
       prefs: () => prefs,
       loggedIn,
@@ -14183,7 +12420,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       if (!rules) return false;
       const owner = raw?.modules?.module_author ?? {}, holder = document.createElement("div");
       const item = { kind: "dynamic", el: holder, insertionEl: holder, uid: Number(owner.mid) || void 0, name: owner.name, content: dynamicBlockText(raw), title: dynamicVideoTitle(raw) };
-      const decision = decideDynamic(item, rules);
+      const decision = decideBlockableItem(item, rules);
       if (decision) recordBlockHistory(item, decision);
       return !!decision;
     }
@@ -14195,13 +12432,13 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
           hidden++;
           continue;
         }
-        const card2 = renderDynamicCard(author2 ? raw : unpinned(raw));
-        cards2.set(card2, raw);
-        if (!loggedIn) for (const control of card2.querySelectorAll('.adc-actions [data-action="like"],.adc-actions [data-action="forward"]')) {
+        const card3 = renderDynamicCard(author2 ? raw : unpinned(raw));
+        cards2.set(card3, raw);
+        if (!loggedIn) for (const control of card3.querySelectorAll('.adc-actions [data-action="like"],.adc-actions [data-action="forward"]')) {
           control.disabled = true;
           control.title = "\u767B\u5F55\u540E\u53EF\u7528";
         }
-        list.append(card2);
+        list.append(card3);
       }
       if (hidden) status2 += `\uFF1B\u5DF2\u5C4F\u853D ${hidden} \u6761`;
     }
@@ -14235,16 +12472,16 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       });
       return step;
     }
-    const interactions = new FeedInteractions(request2, pageWrite(channel2), (signal) => api3.signingKey(signal), mid ?? "");
+    const interactions = new FeedInteractions(request2, relay.write, (signal) => api4.signingKey(signal), mid ?? "");
     const cards2 = /* @__PURE__ */ new WeakMap();
     let comments;
     const label = (control, total) => {
       control.dataset.count = String(Math.max(0, total));
       control.textContent = total > 0 ? `${control.dataset.label} ${formatCount(total)}` : control.dataset.label;
     };
-    const failure3 = (error) => error instanceof FeedActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u539F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
-    function note2(card2, message, sticky = false) {
-      const pane2 = card2.querySelector(".adc-footer .xp-status-pane");
+    const failure3 = (error) => error instanceof BiliActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u539F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
+    function note2(card3, message, sticky = false) {
+      const pane2 = card3.querySelector(".adc-footer .xp-status-pane");
       if (!pane2) return;
       pane2.dataset.original ??= pane2.textContent ?? "";
       if (sticky) pane2.dataset.original = message;
@@ -14256,14 +12493,14 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     }
     function refilter(keep) {
       const rules = config.blocker.enabled ? readRuleSnapshotWithHistoryAliases() : null;
-      for (const card2 of [...list.children]) {
-        const raw = cards2.get(card2);
+      for (const card3 of [...list.children]) {
+        const raw = cards2.get(card3);
         if (!raw || !blocked(raw, rules)) continue;
-        if (card2 === keep) note2(card2, "\u5DF2\u5C4F\u853D\uFF0C\u5237\u65B0\u540E\u4E0D\u518D\u663E\u793A\u8FD9\u5F20\u5361\u7247", true);
-        else card2.remove();
+        if (card3 === keep) note2(card3, "\u5DF2\u5C4F\u853D\uFF0C\u5237\u65B0\u540E\u4E0D\u518D\u663E\u793A\u8FD9\u5F20\u5361\u7247", true);
+        else card3.remove();
       }
     }
-    async function like(card2, raw, control) {
+    async function like(card3, raw, control) {
       const on5 = control.getAttribute("aria-pressed") !== "true", before = Number(control.dataset.count) || 0;
       control.setAttribute("aria-pressed", String(on5));
       label(control, before + (on5 ? 1 : -1));
@@ -14273,13 +12510,13 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       } catch (error) {
         control.setAttribute("aria-pressed", String(!on5));
         label(control, before);
-        note2(card2, failure3(error));
+        note2(card3, failure3(error));
       } finally {
         control.disabled = false;
       }
     }
-    function forward(card2, raw, control) {
-      const open = card2.querySelector(".adc-forward-box");
+    function forward(card3, raw, control) {
+      const open = card3.querySelector(".adc-forward-box");
       if (open) {
         open.remove();
         return;
@@ -14309,18 +12546,18 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
           await interactions.forward(String(raw.id_str), field.value.trim());
           label(control, (Number(control.dataset.count) || 0) + 1);
           box.remove();
-          note2(card2, "\u5DF2\u8F6C\u53D1");
+          note2(card3, "\u5DF2\u8F6C\u53D1");
         } catch (error) {
           send.disabled = false;
           field.disabled = false;
-          note2(card2, failure3(error));
+          note2(card3, failure3(error));
         }
       }
-      card2.querySelector(".adc-footer")?.before(box);
+      card3.querySelector(".adc-footer")?.before(box);
       field.focus();
     }
-    function comment(card2, raw, control) {
-      const same = comments?.card === card2;
+    function comment(card3, raw, control) {
+      const same = comments?.card === card3;
       comments?.dispose();
       comments = void 0;
       if (same) return;
@@ -14338,22 +12575,22 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
         page: dynamicUrl(raw),
         blocking: config.blocker.enabled,
         onCount: (total) => label(control, total),
-        onBlocked: () => refilter(card2)
+        onBlocked: () => refilter(card3)
       });
-      card2.querySelector(".adc-footer")?.before(area.element);
-      comments = { card: card2, dispose: area.dispose };
+      card3.querySelector(".adc-footer")?.before(area.element);
+      comments = { card: card3, dispose: area.dispose };
     }
     list.addEventListener("click", (event) => {
       const control = event.target.closest(".adc-actions [data-action]");
-      const card2 = control?.closest(".adc-card.xp-window"), raw = card2 && cards2.get(card2);
-      if (!control || !card2 || !raw || control.disabled) return;
-      if (control.dataset.action === "like") void like(card2, raw, control);
+      const card3 = control?.closest(".adc-card.xp-window"), raw = card3 && cards2.get(card3);
+      if (!control || !card3 || !raw || control.disabled) return;
+      if (control.dataset.action === "like") void like(card3, raw, control);
       else if (control.dataset.action === "forward") {
-        sound(card2.querySelector(".adc-forward-box") ? "close" : "open");
-        forward(card2, raw, control);
+        sound(card3.querySelector(".adc-forward-box") ? "close" : "open");
+        forward(card3, raw, control);
       } else {
-        sound(comments?.card === card2 ? "minimize" : "restore");
-        comment(card2, raw, control);
+        sound(comments?.card === card3 ? "minimize" : "restore");
+        comment(card3, raw, control);
       }
     });
     function reload(force = false) {
@@ -14394,7 +12631,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
         bar.replaceChildren(button5("\u4F7F\u7528 Atelier \u52A8\u6001\u5217\u8868", () => {
           prefs = { ...prefs, native: false };
           savePrefs();
-          apply2();
+          apply();
         }, "\u672C\u5730\u5173\u6CE8\u3001\u5173\u6CE8\u680F\u548C\u4E09\u79CD\u663E\u793A\u65B9\u5F0F"));
         return;
       }
@@ -14408,7 +12645,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
           prefs = { ...prefs, view, group: view === "online" ? "" : prefs.group };
           savePrefs();
           author2 = "";
-          apply2();
+          apply();
         });
         control.setAttribute("aria-pressed", String(view === prefs.view));
         if (view === "mixed" && !loggedIn) {
@@ -14483,7 +12720,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
         refreshLive();
       }
     };
-    function apply2() {
+    function apply() {
       mark2();
       if (loggedIn && !prefs.native) mountLunaHeader("feed");
       quick.element.hidden = !drawn();
@@ -14517,7 +12754,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
           if (event.target.matches?.("input,select")) sound("select");
         });
         styleAtelierAction(loadMore);
-        apply2();
+        apply();
       }
       if (drawn()) panel.mount();
     }
@@ -14540,12 +12777,357 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
         prefs = { ...prefs, native: native2 };
         savePrefs();
         if (native2) location.reload();
-        else apply2();
+        else apply();
       }
     });
     if (typeof IntersectionObserver === "function") new IntersectionObserver((entries) => {
       if (entries.some((entry) => entry.isIntersecting)) void load(false);
     }, { rootMargin: "0px 0px 600px 0px" }).observe(footer);
+  }
+
+  // src/modules/local-following/panel.ts
+  var panelId = "atelier-local-following-panel";
+  function localFollowElement(tag, className = "", text3 = "") {
+    const node4 = document.createElement(tag);
+    node4.className = className;
+    node4.textContent = text3;
+    return node4;
+  }
+  function button2(label, action, className = "lf-button") {
+    const node4 = localFollowElement("button", className, label);
+    node4.type = "button";
+    node4.addEventListener("click", () => {
+      try {
+        sound("click");
+        action();
+      } catch (error) {
+        reportLocalFollowError(error);
+      }
+    });
+    return node4;
+  }
+  function reportLocalFollowError(error) {
+    const status2 = document.querySelector(`#${panelId} .lf-footer`);
+    if (status2) status2.textContent = error instanceof Error ? error.message : "\u672C\u5730\u5173\u6CE8\u64CD\u4F5C\u5931\u8D25";
+    sound("error");
+  }
+  function checkbox(label, checked, action) {
+    const wrapper = localFollowElement("label", "lf-check");
+    const input = localFollowElement("input");
+    input.type = "checkbox";
+    input.checked = checked;
+    input.addEventListener("change", () => {
+      try {
+        action(input.checked);
+        sound("select");
+      } catch (error) {
+        input.checked = !input.checked;
+        reportLocalFollowError(error);
+      }
+    });
+    wrapper.append(input, document.createTextNode(label));
+    return { wrapper, input };
+  }
+  function ensureLocalFollowTheme() {
+    ensureLunaTheme();
+    if (document.getElementById("atelier-local-following-style")) return;
+    const style = document.createElement("style");
+    style.id = "atelier-local-following-style";
+    const id = "#" + panelId;
+    style.textContent = `
+#bili-atelier-blocker-panel .luna-following-content{display:flex;padding:8px;overflow:hidden}
+${id}{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;min-width:0;color:var(--xp-ink);${xpFont}}
+${id} *{box-sizing:border-box}${id} [hidden]{display:none!important}
+${id} .lf-layout{display:flex;flex-direction:column;gap:6px;flex:1;min-height:0}
+${id} .lf-sidebar{flex-shrink:0;max-height:160px;overflow:auto}
+${id} .lf-nav{display:flex;gap:3px;overflow:auto;padding-bottom:3px}
+${id} .lf-group-button{flex-shrink:0;white-space:nowrap}
+${id} .lf-group-button[aria-current=page]{font-weight:bold}
+${id} .lf-groups-open{margin-top:3px}
+${id} .lf-main{display:flex;flex-direction:column;min-width:0;min-height:0;flex:1;overflow:auto}
+${id} .lf-main>:not(.lf-directory){flex-shrink:0}
+${id} .lf-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+${id} :is(input:not([type=checkbox]),select){min-height:21px;min-width:0}
+${id} .lf-row input[type=search],${id} .lf-add input{flex:1;min-width:120px}
+${id} .lf-directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:2px;background:var(--xp-window);border:1px solid var(--xp-edge);padding:4px;overflow:auto;min-height:100px;flex:1 0 100px}
+${id} .lf-tile{position:relative;border:1px solid transparent;padding:5px;min-width:0}
+${id} .lf-tile[data-selected=true]{background:var(--xp-highlight);color:var(--xp-highlight-ink)}${id} .lf-tile[data-selected=true] :is(.lf-account,.lf-meta){color:inherit}
+${id} .lf-account{display:flex;gap:7px;color:var(--atelier-ink);text-decoration:none;min-width:0;align-items:center;min-height:40px}
+${id} .lf-face{height:32px;width:32px;object-fit:cover;flex:none;border:1px solid var(--atelier-edge);image-rendering:auto}
+${id} .lf-name{min-width:0;overflow-wrap:anywhere;padding-right:18px;font-weight:bold}
+${id} .lf-select{position:absolute;right:4px;top:4px}
+${id} .lf-meta{display:block;color:var(--xp-muted);overflow-wrap:anywhere;margin-top:2px}
+${id} .lf-check{display:inline-flex;gap:5px;align-items:center;min-height:26px}
+${id} .lf-options{display:flex;gap:5px 12px;flex-wrap:wrap;padding:4px 0}
+${id} .lf-footer{padding:6px;border-top:1px solid var(--atelier-edge);color:var(--atelier-muted);flex-shrink:0;overflow-wrap:anywhere}
+${id} .lf-empty{grid-column:1/-1;padding:16px 8px;color:var(--atelier-muted)}
+${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
+@media(max-width:420px){${id} .lf-directory{grid-template-columns:minmax(0,1fr)}}
+`;
+    (document.head || document.documentElement).appendChild(style);
+  }
+  function openLocalFollowingPanel() {
+    openAtelier("following");
+  }
+  function mountLocalFollowingPanel() {
+    ensureLocalFollowTheme();
+    const events = new AbortController(), reads = new AbortController();
+    const panel = localFollowElement("section");
+    panel.id = panelId;
+    panel.setAttribute("data-bili-blocker-ui", "");
+    panel.setAttribute("aria-label", "\u672C\u5730\u5173\u6CE8");
+    const prefs = readLocalFollowPreferences();
+    let groupId = "all", sort = ["name", "added", "viewed", "updated"].includes(prefs?.sort) ? prefs.sort : "name";
+    let ascending = typeof prefs?.ascending === "boolean" ? prefs.ascending : sort === "name";
+    const storedTypes = Array.isArray(prefs?.types) ? prefs.types.filter((kind) => Object.prototype.hasOwnProperty.call(localFollowUpdateTypes, kind)) : [];
+    let types = storedTypes.length ? [...new Set(storedTypes)] : ["video"];
+    const selected = /* @__PURE__ */ new Set();
+    const footer = localFollowElement("div", "lf-footer", "\u672C\u5730\u76EE\u5F55\u4E0E\u5E73\u53F0\u5173\u6CE8\u5206\u522B\u7BA1\u7406");
+    footer.setAttribute("role", "status");
+    const close = () => {
+      checker.cancel();
+      reads.abort();
+      events.abort();
+      panel.remove();
+    };
+    const layout2 = localFollowElement("div", "lf-layout"), sidebar = localFollowElement("aside", "lf-sidebar"), nav2 = localFollowElement("nav", "lf-nav");
+    nav2.setAttribute("aria-label", "\u672C\u5730\u5206\u7EC4");
+    sidebar.append(nav2, button2("\u5206\u7EC4\u7BA1\u7406", () => openLocalFollowGroups({ group: groupId === "all" || groupId === "ungrouped" ? void 0 : groupId }), "lf-button lf-groups-open"));
+    const main = localFollowElement("div", "lf-main"), addRow = localFollowElement("form", "lf-row lf-add");
+    const input = localFollowElement("input");
+    input.placeholder = "\u7C98\u8D34 UID \u6216\u4E2A\u4EBA\u4E3B\u9875\u94FE\u63A5";
+    input.setAttribute("aria-label", "\u6DFB\u52A0\u8D26\u53F7 UID \u6216\u94FE\u63A5");
+    const add = button2("\u6DFB\u52A0\u672C\u5730\u5173\u6CE8", () => {
+      void addProfile();
+    });
+    async function addProfile() {
+      const feedback = soundTask(void 0, panel);
+      const uid = parseLocalFollowInput(input.value);
+      if (!uid) {
+        footer.textContent = "\u8BF7\u8F93\u5165\u6709\u6548\u7684 UID \u6216 space.bilibili.com \u4E3B\u9875\u94FE\u63A5";
+        feedback.finish("warning");
+        return;
+      }
+      add.disabled = true;
+      footer.textContent = "\u6B63\u5728\u9A8C\u8BC1\u8D26\u53F7\u8D44\u6599\u2026";
+      try {
+        const profile = await new LocalFollowApi().profile(uid, reads.signal);
+        if (reads.signal.aborted) return;
+        const was = JSON.stringify(localFollowSnapshot());
+        addLocalFollow(profile);
+        writeLocalFollowCache(uid, profile);
+        input.value = "";
+        footer.textContent = `\u5DF2\u4FDD\u5B58 ${profile.name}`;
+        if (was !== JSON.stringify(localFollowSnapshot())) feedback.finish("success");
+      } catch (error) {
+        if (!reads.signal.aborted) {
+          footer.textContent = error instanceof Error ? error.message : "\u6DFB\u52A0\u5931\u8D25";
+          feedback.finish("error");
+        }
+      } finally {
+        add.disabled = false;
+      }
+    }
+    addRow.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!add.disabled) void addProfile();
+    });
+    addRow.append(input, add);
+    const toolbar = localFollowElement("div", "lf-row"), search = localFollowElement("input");
+    search.type = "search";
+    search.placeholder = "\u641C\u7D22\u6635\u79F0\u6216 UID";
+    search.setAttribute("aria-label", "\u641C\u7D22\u672C\u5730\u5173\u6CE8");
+    const sortSelect = localFollowElement("select");
+    sortSelect.setAttribute("aria-label", "\u6392\u5E8F\u65B9\u5F0F");
+    for (const [value2, text3] of [["name", "\u6309\u540D\u5B57\uFF0F\u62FC\u97F3"], ["added", "\u6309\u6DFB\u52A0\u65F6\u95F4"], ["viewed", "\u6309\u6700\u8FD1\u67E5\u770B"], ["updated", "\u6309\u5DF2\u83B7\u53D6\u66F4\u65B0\u65F6\u95F4"]]) {
+      const option = localFollowElement("option", "", text3);
+      option.value = value2;
+      sortSelect.append(option);
+    }
+    sortSelect.value = sort;
+    const direction = button2(ascending ? "\u5347\u5E8F" : "\u964D\u5E8F", () => {
+      ascending = !ascending;
+      direction.textContent = ascending ? "\u5347\u5E8F" : "\u964D\u5E8F";
+      savePrefs();
+      render2();
+    });
+    sortSelect.addEventListener("change", () => {
+      sort = sortSelect.value;
+      ascending = sort === "name";
+      direction.textContent = ascending ? "\u5347\u5E8F" : "\u964D\u5E8F";
+      savePrefs();
+      render2();
+      sound("select");
+    });
+    search.addEventListener("input", render2);
+    toolbar.append(search, sortSelect, direction);
+    const typeDetails = localFollowElement("details"), typeList = localFollowElement("div", "lf-options");
+    typeDetails.append(localFollowElement("summary", "", "\u54EA\u4E9B\u5185\u5BB9\u7B97\u66F4\u65B0"), typeList);
+    for (const [kind, label] of Object.entries(localFollowUpdateTypes)) {
+      const control = checkbox(label, types.includes(kind), (checked) => {
+        if (!checked && types.length === 1) {
+          control.input.checked = true;
+          footer.textContent = "\u81F3\u5C11\u4FDD\u7559\u4E00\u79CD\u66F4\u65B0\u7C7B\u578B";
+          sound("warning");
+          return;
+        }
+        types = checked ? [...types, kind] : types.filter((value2) => value2 !== kind);
+        savePrefs();
+        renderDirectory();
+      });
+      typeList.append(control.wrapper);
+    }
+    async function check2(uids) {
+      const feedback = soundTask("start", panel);
+      try {
+        const result = await checker.check(uids);
+        if (result === "success") feedback.finish("complete");
+        else if (result === "partial") feedback.finish("warning");
+        else if (result === "error") feedback.finish("error");
+        else feedback.cancel();
+      } catch (error) {
+        footer.textContent = error instanceof Error ? error.message : "\u68C0\u67E5\u5931\u8D25";
+        feedback.finish("error");
+      }
+    }
+    const actions = localFollowElement("div", "lf-row"), checkChosen = button2("\u68C0\u67E5\u9009\u4E2D", () => void check2([...selected]));
+    const checkGroup = button2("\u68C0\u67E5\u6574\u7EC4", () => void check2(inGroup().map((account) => account.uid)));
+    const cancel = button2("\u53D6\u6D88\u68C0\u67E5", () => {
+      checker.cancel();
+      sound("cancel");
+    });
+    const all = button2("\u9009\u62E9\u5F53\u524D\u7ED3\u679C", () => {
+      for (const account of visible()) selected.add(account.uid);
+      renderDirectory();
+    });
+    const none = button2("\u53D6\u6D88\u9009\u62E9", () => {
+      selected.clear();
+      renderDirectory();
+    });
+    const remove = button2("\u79FB\u9664\u9009\u4E2D\u672C\u5730\u5173\u6CE8", () => {
+      mutate(() => removeLocalFollows([...selected]), "delete");
+      selected.clear();
+      render2();
+    });
+    actions.append(all, none, checkChosen, checkGroup, cancel, remove);
+    const directory = localFollowElement("div", "lf-directory");
+    directory.setAttribute("aria-label", "\u672C\u5730\u5173\u6CE8\u76EE\u5F55");
+    const checker = new LocalFollowChecker(void 0, (state2) => {
+      checkChosen.disabled = state2.running || !selected.size;
+      checkGroup.disabled = state2.running || !inGroup().length;
+      cancel.disabled = !state2.running;
+      footer.textContent = state2.running ? `\u6B63\u5728\u68C0\u67E5 ${state2.completed + state2.failed + 1}/${state2.total}\uFF1B\u6210\u529F ${state2.completed}\uFF0C\u5931\u8D25 ${state2.failed}` : state2.message;
+    });
+    function savePrefs() {
+      writeLocalFollowPreferences({ sort, ascending, types });
+    }
+    function mutate(action, cue) {
+      const before = JSON.stringify(localFollowSnapshot());
+      action();
+      if (before !== JSON.stringify(localFollowSnapshot())) sound(cue);
+    }
+    function inGroup() {
+      return localFollowSnapshot().accounts.filter((account) => groupId === "all" || (groupId === "ungrouped" ? account.groupIds.length === 0 : account.groupIds.includes(groupId)));
+    }
+    function visible() {
+      return sortLocalFollows(inGroup(), sort, ascending, types, search.value);
+    }
+    function date(value2) {
+      return value2 ? new Date(value2).toLocaleString() : "\u65F6\u95F4\u672A\u77E5";
+    }
+    function groupLabel(group) {
+      const peers = localFollowSnapshot().groups.filter((other) => other.name === group.name && other.id !== group.id);
+      if (!peers.length) return group.name;
+      let length = 8;
+      while (peers.some((other) => other.id.slice(0, length) === group.id.slice(0, length))) length++;
+      return `${group.name} \xB7 ${group.id.slice(0, length)}`;
+    }
+    function renderDirectory() {
+      const focusId = panel.contains(document.activeElement) ? document.activeElement?.id : "";
+      const snapshot = localFollowSnapshot();
+      for (const uid of selected) if (!snapshot.accounts.some((account) => account.uid === uid)) selected.delete(uid);
+      directory.replaceChildren();
+      const accounts = visible();
+      for (const account of accounts) {
+        const cache = readLocalFollowCache(account.uid), name = cache.name || account.name || "\u672A\u547D\u540D\u8D26\u53F7";
+        const tile = localFollowElement("div", "lf-tile");
+        tile.dataset.selected = String(selected.has(account.uid));
+        const link3 = localFollowElement("a", "lf-account");
+        link3.href = `https://space.bilibili.com/${account.uid}`;
+        link3.target = "_blank";
+        link3.rel = "noopener noreferrer";
+        link3.id = "lf-account-" + account.uid;
+        link3.addEventListener("click", () => {
+          recordLocalFollowVisit(account.uid);
+          sound("folder");
+        });
+        const face = localFollowElement("img", "lf-face");
+        face.alt = "";
+        face.loading = "lazy";
+        face.referrerPolicy = "no-referrer";
+        face.src = cache.face || account.face || atelierIcons.app;
+        face.addEventListener("error", () => {
+          face.src = atelierIcons.app;
+        }, { once: true });
+        link3.append(face, localFollowElement("span", "lf-name", name));
+        const select = checkbox(`\u9009\u62E9 ${name}`, selected.has(account.uid), (checked) => {
+          if (checked) selected.add(account.uid);
+          else selected.delete(account.uid);
+          renderDirectory();
+        });
+        select.input.className = "lf-select";
+        select.input.setAttribute("aria-label", `\u9009\u62E9 ${name}`);
+        select.input.id = "lf-select-" + account.uid;
+        tile.append(link3, select.input);
+        const time2 = sort === "viewed" ? `\u6700\u8FD1\u67E5\u770B\uFF1A${date(cache.viewedAt)}` : sort === "added" ? `\u6DFB\u52A0\u4E8E\uFF1A${date(account.addedAt)}` : `\u5DF2\u83B7\u53D6\u66F4\u65B0\uFF1A${date(latestLocalFollowUpdate(cache, types))}`;
+        tile.append(localFollowElement("span", "lf-meta", time2));
+        if (account.groupIds.length) tile.append(localFollowElement("span", "lf-meta", account.groupIds.map((id) => snapshot.groups.find((group) => group.id === id)).filter(Boolean).map(groupLabel).join("\u3001")));
+        if (cache.checkError) tile.append(localFollowElement("span", "lf-meta", `\u4E0A\u6B21\u68C0\u67E5\u5931\u8D25\uFF1A${cache.checkError}`));
+        directory.append(tile);
+      }
+      if (!accounts.length) directory.append(localFollowElement("p", "lf-empty", "\u6CA1\u6709\u5339\u914D\u7684\u672C\u5730\u5173\u6CE8\u3002\u53EF\u4ECE\u4E3B\u9875\u6DFB\u52A0\uFF0C\u6216\u5728\u4E0A\u65B9\u7C98\u8D34\u8D26\u53F7\u94FE\u63A5\u3002"));
+      remove.disabled = none.disabled = !selected.size;
+      checkChosen.disabled = checker.state.running || !selected.size;
+      checkGroup.disabled = checker.state.running || !inGroup().length;
+      cancel.disabled = !checker.state.running;
+      if (focusId) document.getElementById(focusId)?.focus();
+    }
+    function render2() {
+      const focusId = panel.contains(document.activeElement) ? document.activeElement?.id : "";
+      const snapshot = localFollowSnapshot();
+      if (groupId !== "all" && groupId !== "ungrouped" && !snapshot.groups.some((group) => group.id === groupId)) groupId = "ungrouped";
+      nav2.replaceChildren();
+      for (const [id, label] of [["all", "\u5168\u90E8\u672C\u5730\u5173\u6CE8"], ["ungrouped", "\u672A\u5206\u7EC4"], ...snapshot.groups.map((group) => [group.id, groupLabel(group)])]) {
+        const node4 = button2(label, () => {
+          if (groupId !== id) sound("folder");
+          groupId = id;
+          render2();
+        }, "lf-button lf-group-button");
+        node4.setAttribute("aria-current", id === groupId ? "page" : "false");
+        nav2.append(node4);
+        node4.id = "lf-group-" + id;
+      }
+      renderDirectory();
+      if (focusId) document.getElementById(focusId)?.focus();
+    }
+    main.append(addRow, toolbar, typeDetails, actions, directory);
+    layout2.append(sidebar, main);
+    panel.append(layout2, footer);
+    window.addEventListener(localFollowChangedEvent, render2, { signal: events.signal });
+    for (const summary of panel.querySelectorAll("summary")) summary.addEventListener("click", () => sound("menu"));
+    window.addEventListener("pagehide", () => close(), { signal: events.signal, once: true });
+    render2();
+    return { host: panel, dispose: close };
+  }
+  function followingPages() {
+    let panel;
+    return {
+      pages: { following: { contentClass: "luna-following-content", draw: (content) => {
+        panel ??= mountLocalFollowingPanel();
+        content.append(panel.host);
+      } } },
+      dispose: () => panel?.dispose()
+    };
   }
 
   // src/modules/local-following/runtime.ts
@@ -14735,60 +13317,818 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     schedule2();
   }
 
-  // src/core/video-page-ready.ts
-  function runAfterVideoPageReady(callback) {
-    if (location.hostname !== "www.bilibili.com" || !/^\/(?:video|list|bangumi\/play)\//i.test(location.pathname)) {
-      callback();
-      return;
-    }
-    const bangumi = /^\/bangumi\/play\//i.test(location.pathname);
-    const isReady = () => {
-      if (document.readyState === "loading") return false;
-      if (bangumi) return !!document.querySelector("#bilibili-player .bpx-player-container");
-      const app = document.getElementById("app");
-      return app !== null && app.childElementCount > 0 && !app.hasAttribute("data-server-rendered");
-    };
-    if (isReady()) {
-      callback();
-      return;
-    }
-    let done = false;
-    const observer = new MutationObserver(check2);
-    function check2() {
-      if (done || !isReady()) return;
-      finish();
-    }
-    function finish() {
-      done = true;
-      observer.disconnect();
-      document.removeEventListener("DOMContentLoaded", check2);
-      callback();
-    }
-    if (bangumi) window.setTimeout(() => {
-      if (!done) finish();
-    }, 2e4);
-    observer.observe(document.documentElement || document, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ["data-server-rendered"]
+  // src/modules/sync/panel.ts
+  var import_qrcode = __toESM(require_browser(), 1);
+
+  // src/modules/sync/b2.ts
+  function parseConfig(input) {
+    const c = input;
+    if (!c || c.schema !== "bili-atelier-b2-config" || c.version !== 1 || ![c.keyId, c.applicationKey, c.bucketId].every((v) => typeof v === "string" && /^[A-Za-z0-9]+$/.test(v)) || typeof c.prefix !== "string" || !/^[A-Za-z0-9_-]+\/$/.test(c.prefix)) throw new Error("\u8BF7\u586B\u5199\u6709\u6548\u7684 Key ID\u3001\u5E94\u7528\u5BC6\u94A5\u3001Bucket ID \u548C\u76EE\u5F55\uFF08\u4F8B\u5982 atelier/\uFF09");
+    return { schema: c.schema, version: c.version, keyId: c.keyId, applicationKey: c.applicationKey, bucketId: c.bucketId, prefix: c.prefix };
+  }
+  function b2Url(value2) {
+    const u = new URL(value2);
+    if (u.protocol !== "https:" || !["backblazeb2.com", "backblaze.com"].some((domain) => u.hostname.endsWith(`.${domain}`)) || u.port || u.username || u.password) throw new Error("B2 \u8FD4\u56DE\u4E86\u4E0D\u5B89\u5168\u7684\u670D\u52A1\u5730\u5740");
+    return value2;
+  }
+  var gmRequest = (url, method, headers, data) => new Promise((resolve, reject) => {
+    GM_xmlhttpRequest({
+      url: b2Url(url),
+      method,
+      headers,
+      data,
+      anonymous: true,
+      timeout: 2e4,
+      onload: (r) => {
+        if (r.responseText?.length > 32 * 1024 * 1024) {
+          reject(new Error("\u540C\u6B65\u6587\u4EF6\u8D85\u8FC7 32 MB\uFF0C\u672A\u5E94\u7528"));
+          return;
+        }
+        if (r.finalUrl) {
+          try {
+            b2Url(r.finalUrl);
+          } catch (e) {
+            reject(e);
+            return;
+          }
+        }
+        if (r.status < 200 || r.status >= 300) {
+          reject(new Error(`B2 HTTP ${r.status}\uFF1A${r.status === 401 ? "\u5BC6\u94A5\u65E0\u6548\u6216\u5DF2\u8FC7\u671F" : r.status === 403 ? "\u6743\u9650\u4E0D\u8DB3\u6216\u8FBE\u5230\u7528\u91CF\u4E0A\u9650" : "\u8BF7\u6C42\u5931\u8D25\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5"}`));
+          return;
+        }
+        try {
+          resolve(JSON.parse(r.responseText));
+        } catch {
+          reject(new Error("B2 \u8FD4\u56DE\u4E86\u65E0\u6548 JSON"));
+        }
+      },
+      onerror: () => reject(new Error("B2 \u7F51\u7EDC\u8FDE\u63A5\u5931\u8D25")),
+      ontimeout: () => reject(new Error("B2 \u8FDE\u63A5\u8D85\u65F6"))
     });
-    document.addEventListener("DOMContentLoaded", check2);
+  });
+  var B2 = class {
+    constructor(config2, request2 = gmRequest) {
+      this.config = config2;
+      this.request = request2;
+    }
+    async authorize() {
+      this.auth = await this.request("https://api.backblazeb2.com/b2api/v4/b2_authorize_account", "GET", { Authorization: `Basic ${btoa(`${this.config.keyId}:${this.config.applicationKey}`)}` });
+      const api4 = this.auth.apiInfo.storageApi;
+      b2Url(api4.apiUrl);
+      b2Url(api4.downloadUrl);
+      const allowed = api4.allowed;
+      if (!["listFiles", "readFiles", "writeFiles"].every((p2) => allowed.capabilities.includes(p2)) || allowed.buckets && !allowed.buckets.some((b) => b.id === this.config.bucketId) || allowed.namePrefix && !this.config.prefix.startsWith(allowed.namePrefix)) throw new Error("\u5E94\u7528\u5BC6\u94A5\u9700\u8981\u76EE\u6807\u76EE\u5F55\u7684 listFiles\u3001readFiles\u3001writeFiles \u6743\u9650");
+    }
+    call(name, body2) {
+      return this.request(`${this.auth.apiInfo.storageApi.apiUrl}/b2api/v3/${name}`, "POST", { Authorization: this.auth.authorizationToken, "Content-Type": "application/json" }, JSON.stringify(body2));
+    }
+    /** Every file under `<prefix><directory>/`, all pages. */
+    async listDirectory(directory) {
+      const files = [];
+      let startFileName;
+      do {
+        const r = await this.call("b2_list_file_names", { bucketId: this.config.bucketId, prefix: `${this.config.prefix}${directory}/`, maxFileCount: 1e3, startFileName });
+        files.push(...r.files);
+        if (r.nextFileName && r.nextFileName === startFileName) throw new Error("B2 \u5206\u9875\u672A\u524D\u8FDB");
+        startFileName = r.nextFileName || void 0;
+      } while (startFileName);
+      return files;
+    }
+    download(fileId) {
+      return this.request(`${this.auth.apiInfo.storageApi.downloadUrl}/b2api/v3/b2_download_file_by_id?fileId=${encodeURIComponent(fileId)}`, "GET", { Authorization: this.auth.authorizationToken });
+    }
+    async upload(name, value2) {
+      const upload = await this.call("b2_get_upload_url", { bucketId: this.config.bucketId });
+      const bytes = new TextEncoder().encode(JSON.stringify(value2));
+      const hash = [...new Uint8Array(await crypto.subtle.digest("SHA-1", bytes))].map((b) => b.toString(16).padStart(2, "0")).join("");
+      return this.request(b2Url(upload.uploadUrl), "POST", {
+        Authorization: upload.authorizationToken,
+        "X-Bz-File-Name": encodeURIComponent(name),
+        "Content-Type": "application/json",
+        "X-Bz-Content-Sha1": hash
+      }, bytes.buffer);
+    }
+  };
+
+  // src/modules/sync/journal.ts
+  var fileName = /^([0-9a-f-]{36})\.json$/;
+  var RemoteDirectory = class {
+    constructor(b2, prefix4, directory, messages2) {
+      this.b2 = b2;
+      this.directory = directory;
+      this.messages = messages2;
+      this.base = `${prefix4}${directory}/`;
+    }
+    /** The files whose IDs `known` lacks, parsed; null when `stopped`. */
+    async newFiles(known2, parse, stopped) {
+      const files = [];
+      for (const file of await this.b2.listDirectory(this.directory)) {
+        if (stopped()) return null;
+        if (!file.fileName.startsWith(this.base)) throw new Error(this.messages.mismatch);
+        const match = file.fileName.slice(this.base.length).match(fileName);
+        if (!match) throw new Error(this.messages.unknown);
+        if (!known2.has(match[1])) files.push([match[1], parse(await this.b2.download(file.fileId))]);
+      }
+      return files;
+    }
+    upload(id, value2) {
+      return this.b2.upload(`${this.base}${id}.json`, value2);
+    }
+  };
+
+  // src/modules/sync/local-follow-journal.ts
+  var localFollowJournal = {
+    directory: "local-following-ops",
+    async pull(remote, stopped) {
+      const files = await remote.newFiles(new Set(localFollowRecords().map(([id]) => id)), parseLocalFollowBatch, stopped);
+      if (files) mergeLocalFollowOperations(localFollowKnown(), ...files.map(([, b]) => b.operations));
+      return files;
+    },
+    apply(files) {
+      mergeRemoteLocalFollow(files);
+    },
+    async upload(remote, stopped) {
+      for (const [id, b] of localFollowRecords()) {
+        if (stopped()) return;
+        if (localFollowIsSent(id)) continue;
+        await remote.upload(id, b);
+        markLocalFollowSent(id);
+      }
+    },
+    pending: localFollowPending
+  };
+
+  // src/modules/viewed/storage.ts
+  function groupViewedItems(values) {
+    const groups = {};
+    const seen = /* @__PURE__ */ new Set();
+    for (const value2 of values) {
+      const id = parseStoredViewedId(value2);
+      if (!id || seen.has(id)) {
+        continue;
+      }
+      seen.add(id);
+      const groupId = viewedGroup(id);
+      if (!groups[groupId]) {
+        groups[groupId] = [];
+      }
+      groups[groupId].push(id);
+    }
+    return groups;
+  }
+  function flattenViewedGroups(groups) {
+    const items = [];
+    const seen = /* @__PURE__ */ new Set();
+    for (const value2 of Object.values(groups)) {
+      if (!Array.isArray(value2)) {
+        continue;
+      }
+      for (const item of value2) {
+        const id = parseStoredViewedId(item);
+        if (!id || seen.has(id)) {
+          continue;
+        }
+        seen.add(id);
+        items.push(id);
+      }
+    }
+    return items;
+  }
+  function viewedGroupStorageKey(groupId) {
+    return `BiliViewed_${groupId}`;
+  }
+  function listViewedGroupKeys() {
+    if (typeof GM_listValues !== "function") {
+      return [];
+    }
+    return GM_listValues().filter((key3) => String(key3).startsWith("BiliViewed_"));
+  }
+  function readViewedGroup(groupId, fallback2 = null) {
+    return GM_getValue(viewedGroupStorageKey(groupId), fallback2);
+  }
+  var journal2;
+  var keysOf2 = (values) => new Set((Array.isArray(values) ? values : []).map(String).filter(isViewedId).map(viewedKey));
+  function writeViewedGroup(groupId, values) {
+    journal2?.(keysOf2(readViewedGroup(groupId, [])), keysOf2(values));
+    GM_setValue(viewedGroupStorageKey(groupId), values);
+  }
+  function putGroups(groups, mode2) {
+    if (mode2 === "overwrite") for (const key3 of listViewedGroupKeys()) GM_deleteValue(key3);
+    for (const [groupId, values] of Object.entries(groups)) GM_setValue(viewedGroupStorageKey(groupId), values);
+  }
+  function readViewedStorage() {
+    const groups = {};
+    for (const key3 of listViewedGroupKeys()) {
+      const groupId = String(key3).slice("BiliViewed_".length);
+      groups[groupId] = flattenViewedGroups({ [groupId]: readViewedGroup(groupId, []) });
+    }
+    return { items: flattenViewedGroups(groups), groups };
+  }
+  function writeViewedStorage(snapshot, mode2) {
+    const incomingItems = snapshot.items?.length ? snapshot.items : snapshot.groups ? flattenViewedGroups(snapshot.groups) : [];
+    const currentItems = mode2 === "append" ? readViewedStorage().items : [];
+    const groups = groupViewedItems(currentItems.concat(incomingItems));
+    journal2?.(keysOf2(readViewedStorage().items), keysOf2(flattenViewedGroups(groups)));
+    putGroups(groups, mode2);
+    return { items: flattenViewedGroups(groups), groups };
+  }
+  var viewedSyncStore = {
+    keys: () => keysOf2(readViewedStorage().items),
+    applySync(desired) {
+      const wanted = new Set([...desired].filter((key3) => key3.startsWith("v:")));
+      if (sameKeys(wanted, viewedSyncStore.keys())) return false;
+      const unsyncable = readViewedStorage().items.filter((id) => !isViewedId(id));
+      putGroups(groupViewedItems([...unsyncable, ...[...wanted].map((key3) => key3.slice(2))]), "overwrite");
+      return true;
+    },
+    setJournal(next) {
+      journal2 = next;
+    }
+  };
+  function isLegacyViewedExport(value2) {
+    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key3) => key3.startsWith("BiliViewed_"));
+  }
+  function normalizeLegacyViewedExport(value2) {
+    const groups = {};
+    for (const [key3, items] of Object.entries(value2)) {
+      if (!key3.startsWith("BiliViewed_") || !Array.isArray(items)) {
+        continue;
+      }
+      const groupId = key3.slice("BiliViewed_".length);
+      groups[groupId] = flattenViewedGroups({ [groupId]: items });
+    }
+    return { items: flattenViewedGroups(groups), groups };
   }
 
-  // src/modules/comment-location/page-world-source.generated.ts
-  var commentLocationPageWorldSource = '// Shows each comment\'s IP location, `reply_control.location` in Bilibili\'s\n// public reply API, after the comment\'s date. It runs in the page world, where\n// the comment components\' classes are reachable.\n(() => {\n  if (window.__BILI_TOOLKIT_COMMENT_LOCATION__) {\n    return;\n  }\n  window.__BILI_TOOLKIT_COMMENT_LOCATION__ = true;\n\n  const labelClass = "btk-comment-location";\n\n  function locationOf(reply) {\n    const text = reply && reply.reply_control && reply.reply_control.location;\n    return typeof text === "string" ? text.trim() : "";\n  }\n\n  function warn(error) {\n    console.warn("[BiliToolkit] \u8BC4\u8BBA\u533A\u5C5E\u5730\u663E\u793A\u5931\u8D25", error);\n  }\n\n  // Video, \u756A\u5267, \u52A8\u6001, \u4E13\u680F, \u8BFE\u7A0B and UP space pages use the lit <bili-comments>\n  // component. Every comment and reply has an action bar whose `data` is the\n  // reply. Its shadow root starts with the date, and its own stylesheet spaces\n  // each later child 20px apart in the date\'s colour.\n  const actionBarTag = "bili-comment-action-buttons-renderer";\n\n  function labelActionBar(bar) {\n    const root = bar.shadowRoot;\n    const date = root && root.getElementById("pubdate");\n    if (!date) {\n      return;\n    }\n    const text = locationOf(bar.data);\n    let label = root.querySelector(`.${labelClass}`);\n    if (!text) {\n      if (label) label.remove();\n      return;\n    }\n    if (!label) {\n      label = document.createElement("div");\n      label.className = labelClass;\n    }\n    if (label.textContent !== text) label.textContent = text;\n    if (date.nextElementSibling !== label) date.after(label);\n  }\n\n  function labelRenderedActionBars(root) {\n    for (const element of root.querySelectorAll("*")) {\n      if (element.localName === actionBarTag) labelActionBar(element);\n      if (element.shadowRoot) labelRenderedActionBars(element.shadowRoot);\n    }\n  }\n\n  customElements.whenDefined(actionBarTag).then(() => {\n    const proto = customElements.get(actionBarTag).prototype;\n    const updated = proto.updated;\n    // Lit calls updated() after every render, including when a recycled bar\n    // gets another reply.\n    proto.updated = function (...args) {\n      if (typeof updated === "function") updated.apply(this, args);\n      try {\n        labelActionBar(this);\n      } catch (error) {\n        warn(error);\n      }\n    };\n    // Bars rendered before this script ran are labelled now, not at their next update.\n    labelRenderedActionBars(document);\n  }).catch(warn);\n\n  // \u97F3\u9891 pages still use the old bbComment component. Its render methods take\n  // the reply first and return HTML, with the date in <span class="time">.\n  const legacyRenderers = ["_createListCon", "_createTopFoldedListCon", "_createSubFoldedListCon", "_createSubReplyItem"];\n  const legacyDate = new RegExp(`<span class="time">[^<]*</span>(?!<span class="${labelClass}")`);\n  const patchedLegacyComments = new WeakSet();\n\n  function escapeHtml(text) {\n    return text.replace(/[&<>"\']/g, char => `&#${char.charCodeAt(0)};`);\n  }\n\n  function patchLegacyComment(Comment) {\n    const proto = typeof Comment === "function" ? Comment.prototype : null;\n    if (!proto || patchedLegacyComments.has(proto)) {\n      return;\n    }\n    patchedLegacyComments.add(proto);\n    for (const name of legacyRenderers) {\n      const render = proto[name];\n      if (typeof render !== "function") continue;\n      proto[name] = function (reply, ...rest) {\n        const html = render.call(this, reply, ...rest);\n        const text = locationOf(reply);\n        if (!text || typeof html !== "string") {\n          return html;\n        }\n        return html.replace(legacyDate, date => `${date}<span class="${labelClass}">${escapeHtml(text)}</span>`);\n      };\n    }\n  }\n\n  // comment.min.js assigns window.bbComment once it loads.\n  let legacyComment = window.bbComment;\n  patchLegacyComment(legacyComment);\n  Object.defineProperty(window, "bbComment", {\n    configurable: true,\n    get: () => legacyComment,\n    set(value) {\n      legacyComment = value;\n      try {\n        patchLegacyComment(value);\n      } catch (error) {\n        warn(error);\n      }\n    },\n  });\n})();\n';
+  // src/core/data-package.ts
+  var atelierDataSchema = "bili-atelier-data";
+  var atelierDataVersion = 1;
+  var ruleKeySet = new Set(ruleDefinitions.map((rule) => rule.key));
+  function splitLegacyBlockerExport(value2) {
+    const rules = {};
+    const legacySettings = {};
+    for (const [key3, data] of Object.entries(value2)) {
+      if (ruleKeySet.has(key3) && Array.isArray(data)) {
+        rules[key3] = data;
+      } else if (!key3.startsWith("BiliViewed_")) {
+        legacySettings[key3] = data;
+      }
+    }
+    return { rules, legacySettings };
+  }
+  function createAtelierDataPackage(input = {}) {
+    return {
+      schema: atelierDataSchema,
+      version: atelierDataVersion,
+      exportedAt: (/* @__PURE__ */ new Date()).toISOString(),
+      viewed: input.viewed || readViewedStorage(),
+      blocker: {
+        rules: input.blockerRules || exportNonEmptyRuleSnapshot(),
+        legacySettings: input.legacySettings
+      }
+    };
+  }
+  function exportAtelierDataPackage() {
+    return createAtelierDataPackage({
+      viewed: readViewedStorage(),
+      blockerRules: exportNonEmptyRuleSnapshot()
+    });
+  }
+  function exportViewedDataPackage() {
+    return createAtelierDataPackage({
+      viewed: readViewedStorage(),
+      blockerRules: {}
+    });
+  }
+  function normalizeAtelierDataInput(value2) {
+    if (!value2 || typeof value2 !== "object") {
+      throw new Error("\u5BFC\u5165\u5185\u5BB9\u5FC5\u987B\u662F JSON \u5BF9\u8C61");
+    }
+    const data = value2;
+    if (data.schema === atelierDataSchema) {
+      return createAtelierDataPackage({
+        viewed: data.viewed || { items: [], groups: {} },
+        blockerRules: data.blocker?.rules || {},
+        legacySettings: data.blocker?.legacySettings
+      });
+    }
+    if (isLegacyViewedExport(data)) {
+      return createAtelierDataPackage({
+        viewed: normalizeLegacyViewedExport(data),
+        blockerRules: {},
+        legacySettings: {}
+      });
+    }
+    const blocker = splitLegacyBlockerExport(data);
+    return createAtelierDataPackage({
+      viewed: { items: [], groups: {} },
+      blockerRules: blocker.rules,
+      legacySettings: blocker.legacySettings
+    });
+  }
+  function importAtelierDataInput(value2, mode2) {
+    const normalized = normalizeAtelierDataInput(value2);
+    const viewed2 = writeViewedStorage(normalized.viewed, mode2);
+    const rulesResult = importRuleSnapshot(normalized.blocker.rules, mode2);
+    return {
+      status: true,
+      res: `\u5BFC\u5165\u5B8C\u6210\uFF1A\u5DF2\u770B ${viewed2.items.length} \u6761\uFF1B${rulesResult.res}`,
+      viewed: viewed2,
+      rules: readRuleSnapshot()
+    };
+  }
+
+  // src/modules/sync/protocol.ts
+  var seedId = (key3) => `seed:${key3}`;
+  function batch(operations) {
+    return { schema: "bili-atelier-sync", version: 1, operations };
+  }
+  function parseBatch(value2) {
+    const b = value2;
+    if (!b || b.schema !== "bili-atelier-sync" || b.version !== 1 || !Array.isArray(b.operations) || b.operations.length > 1e4) throw new Error("\u4E0D\u652F\u6301\u7684\u540C\u6B65\u6570\u636E\u683C\u5F0F\u6216\u7248\u672C");
+    const ids = /* @__PURE__ */ new Set();
+    for (const o of b.operations) {
+      if (!o || typeof o.key !== "string" || !validKey(o.key) || typeof o.id !== "string" || !(o.id === seedId(o.key) || /^[0-9a-f-]{36}$/.test(o.id)) || typeof o.present !== "boolean" || !Array.isArray(o.parents) || o.parents.some((p2) => typeof p2 !== "string" || p2 === o.id) || ids.has(o.id) || o.id === seedId(o.key) && (!o.present || o.parents.length !== 0)) throw new Error("\u540C\u6B65\u8BB0\u5F55\u635F\u574F\uFF0C\u672A\u5E94\u7528");
+      ids.add(o.id);
+    }
+    return b;
+  }
+  function mergeOperations(...groups) {
+    const map = /* @__PURE__ */ new Map();
+    for (const o of groups.flat()) {
+      const previous = map.get(o.id);
+      if (previous && (previous.key !== o.key || previous.present !== o.present || [...previous.parents].sort().join() !== [...o.parents].sort().join())) throw new Error("\u540C\u6B65\u64CD\u4F5C ID \u51B2\u7A81");
+      map.set(o.id, o);
+    }
+    const degrees = /* @__PURE__ */ new Map(), children = /* @__PURE__ */ new Map();
+    for (const o of map.values()) {
+      degrees.set(o.id, 0);
+      for (const p2 of o.parents) {
+        if (!map.has(p2)) {
+          if (p2 !== seedId(o.key)) throw new Error("\u540C\u6B65\u5386\u53F2\u4E0D\u5B8C\u6574\uFF0C\u8BF7\u6062\u590D\u88AB\u5220\u9664\u7684\u4E91\u7AEF\u6587\u4EF6");
+          continue;
+        }
+        if (map.get(p2).key !== o.key) throw new Error("\u540C\u6B65\u64CD\u4F5C\u5F15\u7528\u4E86\u5176\u4ED6\u6761\u76EE");
+        degrees.set(o.id, degrees.get(o.id) + 1);
+        children.set(p2, [...children.get(p2) || [], o.id]);
+      }
+    }
+    const queue = [...degrees].filter(([, n]) => n === 0).map(([id]) => id);
+    for (let i = 0; i < queue.length; i++) for (const id of children.get(queue[i]) || []) {
+      degrees.set(id, degrees.get(id) - 1);
+      if (degrees.get(id) === 0) queue.push(id);
+    }
+    if (queue.length !== map.size) throw new Error("\u540C\u6B65\u5386\u53F2\u5B58\u5728\u5FAA\u73AF\u5F15\u7528\uFF0C\u672A\u5E94\u7528");
+    return [...map.values()];
+  }
+  function frontier(operations) {
+    const removed = new Set(operations.flatMap((o) => o.parents));
+    const result = /* @__PURE__ */ new Map();
+    for (const o of operations) if (!removed.has(o.id)) result.set(o.key, [...result.get(o.key) || [], o]);
+    return result;
+  }
+  function materialize(operations) {
+    return new Set([...frontier(operations)].filter(([, ops]) => ops.every((o) => o.present)).map(([key3]) => key3));
+  }
+  function changes(before, after, known2, uuid2) {
+    const heads = frontier(known2);
+    return [.../* @__PURE__ */ new Set([...before, ...after])].filter((k) => validKey(k) && before.has(k) !== after.has(k)).map((key3) => ({
+      id: uuid2(),
+      key: key3,
+      present: after.has(key3),
+      parents: [.../* @__PURE__ */ new Set([seedId(key3), ...(heads.get(key3) || []).map((o) => o.id)])]
+    }));
+  }
+
+  // src/modules/sync/viewed-journal.ts
+  var prefix2 = "AtelierSync_";
+  var recordsPrefix = `${prefix2}record_`;
+  var stores = [viewedSyncStore, blockedUserSyncStore];
+  function records() {
+    const keys = GM_listValues();
+    const local = keys.filter((k) => k.startsWith(recordsPrefix)).map((k) => [k.slice(recordsPrefix.length), parseBatch(GM_getValue(k))]);
+    const pulls = keys.filter((k) => k.startsWith(prefix2 + "pull_")).flatMap((k) => Object.entries(GM_getValue(k)).map(([id, b]) => [id, parseBatch(b)]));
+    return [...new Map([...local, ...pulls]).entries()];
+  }
+  var known = () => mergeOperations(...records().map(([, b]) => b.operations));
+  var isSent = (id) => GM_getValue(`${prefix2}sent_${id}`, false) === true;
+  function saveOperations(ops) {
+    for (let i = 0; i < ops.length; i += 1e3) GM_setValue(recordsPrefix + crypto.randomUUID(), batch(ops.slice(i, i + 1e3)));
+  }
+  var pulseViewedJournal = () => GM_setValue(`${prefix2}pulse`, crypto.randomUUID());
+  var viewedJournalPulseKey = `${prefix2}pulse`;
+  var viewedJournalMerged = () => GM_getValue(prefix2 + "merged", false) === true;
+  var viewedJournalBackup = () => GM_getValue(`${prefix2}backup`, null);
+  function applyViewedJournal() {
+    const desired = materialize(known());
+    let changed = false;
+    for (const store of stores) changed = store.applySync(desired) || changed;
+    if (changed) window.dispatchEvent(new Event("atelier-sync-applied"));
+  }
+  function startViewedJournal(onChange) {
+    if (!GM_getValue(`${prefix2}initialized`, false)) {
+      if (!viewedJournalBackup()) GM_setValue(`${prefix2}backup`, exportAtelierDataPackage());
+      const keys = new Set(stores.flatMap((store) => [...store.keys()]));
+      saveOperations([...keys].map((key3) => ({ id: seedId(key3), key: key3, present: true, parents: [] })));
+      GM_setValue(`${prefix2}initialized`, true);
+    }
+    applyViewedJournal();
+    for (const store of stores) store.setJournal((before, after) => {
+      saveOperations(changes(before, after, known(), () => crypto.randomUUID()));
+      pulseViewedJournal();
+      onChange();
+    });
+  }
+  var viewedJournal = {
+    directory: "ops",
+    async pull(remote, stopped) {
+      const files = await remote.newFiles(new Set(records().map(([id]) => id)), parseBatch, stopped);
+      if (files) mergeOperations(known(), ...files.map(([, b]) => b.operations));
+      return files;
+    },
+    apply(files) {
+      if (!viewedJournalMerged()) {
+        GM_setValue(prefix2 + "backup", exportAtelierDataPackage());
+        GM_setValue(prefix2 + "merged", true);
+      }
+      if (files.length) GM_setValue(prefix2 + "pull_" + crypto.randomUUID(), Object.fromEntries(files));
+      for (const [id] of files) GM_setValue(prefix2 + "sent_" + id, true);
+      applyViewedJournal();
+    },
+    async upload(remote, stopped) {
+      for (const [id, b] of records()) {
+        if (stopped()) return;
+        if (isSent(id)) continue;
+        await remote.upload(id, b);
+        GM_setValue(`${prefix2}sent_${id}`, true);
+      }
+    },
+    pending: () => records().filter(([id]) => !isSent(id)).reduce((n, [, b]) => n + b.operations.length, 0)
+  };
+
+  // src/modules/sync/service.ts
+  var journals = [viewedJournal, localFollowJournal];
+  var messages = {
+    ops: { mismatch: "\u540C\u6B65\u6587\u4EF6\u76EE\u5F55\u4E0D\u5339\u914D", unknown: "\u540C\u6B65\u76EE\u5F55\u542B\u672A\u77E5\u6587\u4EF6\uFF0C\u8BF7\u4F7F\u7528\u72EC\u7ACB\u7684 atelier/ \u76EE\u5F55" },
+    "local-following-ops": { mismatch: "\u672C\u5730\u5173\u6CE8\u540C\u6B65\u6587\u4EF6\u76EE\u5F55\u4E0D\u5339\u914D", unknown: "\u672C\u5730\u5173\u6CE8\u540C\u6B65\u76EE\u5F55\u542B\u672A\u77E5\u6587\u4EF6\uFF0C\u672A\u5E94\u7528" }
+  };
+  var prefix3 = "AtelierSync_";
+  var getConfig = () => GM_getValue(`${prefix3}config`, null);
+  var paused = () => GM_getValue(`${prefix3}paused`, true);
+  function setPaused(value2) {
+    GM_setValue(`${prefix3}paused`, value2);
+    notify2();
+    if (!value2) schedule();
+  }
+  function saveConfig(value2) {
+    if (busy) throw new Error("\u540C\u6B65\u6B63\u5728\u8FDB\u884C\uFF0C\u8BF7\u5B8C\u6210\u540E\u518D\u4FEE\u6539\u8FDE\u63A5\u914D\u7F6E");
+    const c = parseConfig(value2), old = getConfig();
+    if (old && viewedJournalMerged() && (old.bucketId !== c.bucketId || old.prefix !== c.prefix)) throw new Error("\u5DF2\u6709\u540C\u6B65\u5386\u53F2\uFF0C\u4E0D\u80FD\u76F4\u63A5\u5207\u6362\u5B58\u50A8\u6876\u6216\u76EE\u5F55\uFF1B\u8BF7\u7EE7\u7EED\u4F7F\u7528\u539F\u540C\u6B65\u7A7A\u95F4");
+    GM_setValue(`${prefix3}config`, c);
+    retryAfter = 0;
+    notify2();
+  }
+  function notify2() {
+    window.dispatchEvent(new Event("atelier-sync-status"));
+  }
+  function status() {
+    const followingPending = localFollowJournal.pending();
+    return { pending: viewedJournal.pending() + followingPending, followingPending, busy, lastSuccess: GM_getValue(`${prefix3}success`, ""), error: GM_getValue(`${prefix3}error`, "") };
+  }
+  var timer = 0;
+  var busy = false;
+  var failures = 0;
+  var retryAfter = 0;
+  function schedule() {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => {
+      if (!document.hidden) void synchronize();
+    }, 3e3);
+  }
+  async function testConnection(config2) {
+    const b2 = new B2(parseConfig(config2));
+    await b2.authorize();
+    for (const journal3 of journals) await b2.listDirectory(journal3.directory);
+  }
+  async function synchronize(manual = false) {
+    const config2 = getConfig();
+    if (!config2 || paused() || busy || !manual && Date.now() < retryAfter) return "skipped";
+    busy = true;
+    notify2();
+    try {
+      const b2 = new B2(parseConfig(config2));
+      await b2.authorize();
+      const remote = (journal3) => new RemoteDirectory(b2, config2.prefix, journal3.directory, messages[journal3.directory]);
+      const pulled = [];
+      for (const journal3 of journals) {
+        const result = await journal3.pull(remote(journal3), paused);
+        if (result === null) return "cancelled";
+        pulled.push(result);
+      }
+      if (paused()) return "cancelled";
+      journals.forEach((journal3, index) => journal3.apply(pulled[index]));
+      for (const journal3 of journals) {
+        if (paused()) break;
+        await journal3.upload(remote(journal3), paused);
+      }
+      if (paused()) return "cancelled";
+      GM_setValue(`${prefix3}success`, (/* @__PURE__ */ new Date()).toISOString());
+      GM_setValue(`${prefix3}error`, "");
+      failures = 0;
+      retryAfter = 0;
+      pulseViewedJournal();
+      return "success";
+    } catch (e) {
+      GM_setValue(`${prefix3}error`, e instanceof Error ? e.message : "\u540C\u6B65\u5931\u8D25");
+      retryAfter = Date.now() + Math.min(15 * 6e4, 3e4 * 2 ** Math.min(failures++, 5));
+      return "error";
+    } finally {
+      busy = false;
+      notify2();
+    }
+  }
+  function saveJson(value2, name) {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(value2, null, 2)], { type: "application/json" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1e3);
+  }
+  function downloadBackup() {
+    saveJson(viewedJournalBackup(), "atelier-before-sync.json");
+  }
+  function downloadLocalFollowBackup() {
+    const value2 = localFollowBackup();
+    if (value2 == null) throw new Error("\u672C\u5730\u5173\u6CE8\u5C1A\u672A\u9996\u6B21\u5408\u5E76\uFF0C\u5907\u4EFD\u5C06\u5728\u9996\u6B21\u5408\u5E76\u524D\u4FDD\u5B58");
+    saveJson(value2, "atelier-local-following-before-sync.json");
+  }
+  function startSync() {
+    startViewedJournal(() => {
+      notify2();
+      schedule();
+    });
+    onLocalFollowMutation(() => {
+      notify2();
+      schedule();
+    });
+    if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(viewedJournalPulseKey, (_, __, ___, remote) => {
+      if (remote) {
+        applyViewedJournal();
+        notify2();
+      }
+    });
+    window.addEventListener("online", schedule);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        applyViewedJournal();
+        schedule();
+      }
+    });
+    window.setInterval(() => {
+      if (!document.hidden) void synchronize();
+    }, 6e4);
+    schedule();
+  }
+
+  // src/modules/sync/panel.ts
+  function mountSyncPanel() {
+    const host = document.createElement("div");
+    host.className = "luna-sync";
+    const root2 = host.attachShadow({ mode: "closed" });
+    root2.innerHTML = `<style>
+    ${sharedControlCss}
+    ${xpFieldCss("input")}
+    :host { display:block; color:var(--xp-ink); ${xpFont}; }
+    * { box-sizing:border-box; }
+    h2 { font:inherit; font-weight:bold; margin:0 0 12px; }
+    h3 { font:inherit; font-weight:normal; color:var(--xp-group-text); margin:0 0 10px; }
+    p { margin:0 0 16px; }
+    .hint { color:var(--xp-muted); }
+    section { border-top:1px solid var(--xp-line); padding:12px 0; }
+    .fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 18px; }
+    label { display:block; min-width:0; }
+    input { display:block; width:100%; margin:4px 0 0; }
+    [role=status] { white-space:pre-wrap; overflow-wrap:anywhere; background:var(--xp-window); border:1px solid var(--xp-edge); padding:6px 8px; margin:12px 0; }
+    .actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .actions .atelier-control { min-width:75px; }
+    .qr:not(:empty) { border:1px solid var(--xp-edge); padding:14px; margin-top:16px; background:var(--xp-window); }
+    canvas { display:block; max-width:100%; height:auto!important; margin-bottom:12px; }
+    @media(max-width:850px) { .fields { grid-template-columns:minmax(0,1fr); } h2 { font-size:1.4em; } }
+  </style>
+  <h2>PC / Android \u540C\u6B65</h2>
+  <p class="hint">\u901A\u8FC7 Backblaze B2 \u540C\u6B65\u5DF2\u770B\u6807\u8BB0\u3001UID\uFF0F\u7CBE\u786E\u7528\u6237\u540D\u9ED1\u540D\u5355\uFF0C\u4EE5\u53CA\u672C\u5730\u5173\u6CE8\u548C\u5206\u7EC4\uFF0C\u5305\u62EC\u65B0\u589E\u4E0E\u79FB\u9664\u3002</p>
+  <section><h3>\u8FDE\u63A5\u8BBE\u7F6E</h3><div class="fields"></div>
+  <p class="hint" style="margin-top:12px">\u4E24\u7AEF\u4F7F\u7528\u540C\u4E00 Bucket \u548C\u540C\u6B65\u76EE\u5F55\u3002\u9996\u6B21\u5408\u5E76\u540E\u4E0D\u80FD\u66F4\u6362\u8FD9\u4E24\u9879\uFF1B\u540C\u4E00\u7A7A\u95F4\u5185\u53EF\u66F4\u65B0\u5BC6\u94A5\u3002\u5176\u4ED6\u5C4F\u853D\u89C4\u5219\u548C\u5386\u53F2\u8BB0\u5F55\u4E0D\u53C2\u4E0E\u4E91\u540C\u6B65\u3002</p>
+  <div class="actions settings"></div></section>
+  <section><h3>\u540C\u6B65\u72B6\u6001</h3><p role="status" aria-live="polite"></p><div class="actions controls"></div>
+  <p class="hint" style="margin-top:12px">\u542F\u7528\u540E\u81EA\u52A8\u540C\u6B65\uFF1B\u6682\u505C\u671F\u95F4\u4ECD\u4FDD\u7559\u672C\u5730\u6539\u52A8\uFF0C\u91CD\u65B0\u542F\u7528\u540E\u7EE7\u7EED\u4E0A\u4F20\u3002\u9996\u6B21\u4E91\u7AEF\u5408\u5E76\u524D\u4F1A\u4FDD\u7559\u672C\u5730\u5907\u4EFD\u3002</p></section>
+  <section><h3>\u624B\u673A\u914D\u7F6E\u4E0E\u5907\u4EFD</h3><div class="actions transfer"></div><div class="qr"></div></section>`;
+    const fields2 = /* @__PURE__ */ new Map();
+    const cleanupPixels = observeCrispText(root2);
+    const c = getConfig();
+    for (const [key3, label, value2] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
+      const row = document.createElement("label");
+      row.textContent = label;
+      const input = document.createElement("input");
+      input.name = key3;
+      input.type = key3 === "applicationKey" ? "password" : "text";
+      input.autocomplete = "off";
+      input.spellcheck = false;
+      input.value = value2;
+      input.addEventListener("input", () => hideSecrets());
+      fields2.set(key3, input);
+      row.append(input);
+      root2.querySelector(".fields").append(row);
+    }
+    const fieldValues = () => Object.fromEntries([...fields2].map(([k, v]) => [k, v.value.trim()]));
+    let saved = JSON.stringify(fieldValues());
+    let message = "";
+    let disposed = false;
+    let qrGeneration = 0;
+    function hideSecrets() {
+      qrGeneration++;
+      root2.querySelector(".qr").replaceChildren();
+    }
+    const render2 = () => {
+      if (disposed) return;
+      const s = status();
+      root2.querySelector('[role="status"]').textContent = `${paused() ? "\u5DF2\u6682\u505C" : "\u5DF2\u542F\u7528"} \xB7 ${s.busy ? "\u540C\u6B65\u4E2D" : `\u5F85\u4E0A\u4F20 ${s.pending} \u6761\u64CD\u4F5C`}
+\u6700\u8FD1\u6210\u529F\uFF1A${s.lastSuccess ? new Date(s.lastSuccess).toLocaleString() : "\u5C1A\u672A\u540C\u6B65"}${s.error ? `
+${s.error}` : ""}${message ? `
+${message}` : ""}`;
+    };
+    const config2 = () => parseConfig({ schema: "bili-atelier-b2-config", version: 1, ...fieldValues() });
+    const action = (group, label, run, primary = false, done = "success", long = false) => {
+      const button5 = document.createElement("button");
+      button5.type = "button";
+      button5.textContent = label;
+      button5.className = "atelier-control";
+      if (primary) button5.classList.add("xp-default");
+      button5.onclick = async () => {
+        const feedback = soundTask(long ? "start" : void 0, () => !disposed && host.isConnected && !host.closest('[data-minimized="true"]'));
+        button5.disabled = true;
+        message = "";
+        try {
+          const result = await run();
+          if (result === "skipped") {
+            message = "\u672C\u6B21\u6CA1\u6709\u5F00\u59CB\u65B0\u7684\u540C\u6B65\uFF0C\u8BF7\u68C0\u67E5\u8FDE\u63A5\u8BBE\u7F6E\u548C\u5F53\u524D\u72B6\u6001\u3002";
+            feedback.finish("warning");
+          } else feedback.finish(result === "error" ? "error" : result === "cancelled" ? "cancel" : done);
+        } catch (e) {
+          message = e instanceof Error ? e.message : "\u64CD\u4F5C\u5931\u8D25";
+          feedback.finish("error");
+        } finally {
+          button5.disabled = false;
+          render2();
+        }
+      };
+      root2.querySelector("." + group).append(button5);
+    };
+    action("settings", "\u6D4B\u8BD5\u8FDE\u63A5", async () => {
+      await testConnection(config2());
+      message = "\u8BA4\u8BC1\u3001\u76EE\u5F55\u8BFB\u53D6\u53CA\u6743\u9650\u68C0\u67E5\u901A\u8FC7\uFF1B\u9996\u6B21\u540C\u6B65\u5C06\u9A8C\u8BC1\u4E0A\u4F20\u3002";
+    }, false, "success", true);
+    action("settings", "\u4FDD\u5B58\u5E76\u542F\u7528", () => {
+      saveConfig(config2());
+      saved = JSON.stringify(fieldValues());
+      setPaused(false);
+    }, true);
+    action("controls", "\u6682\u505C\u540C\u6B65", () => setPaused(true), false, "select");
+    action("controls", "\u7ACB\u5373\u540C\u6B65", () => {
+      if (paused()) throw new Error("\u8BF7\u5148\u4FDD\u5B58\u5E76\u542F\u7528\u540C\u6B65");
+      return synchronize(true);
+    }, false, "complete", true);
+    action("transfer", "\u4E0B\u8F7D\u9996\u6B21\u5907\u4EFD", downloadBackup);
+    action("transfer", "\u4E0B\u8F7D\u672C\u5730\u5173\u6CE8\u9996\u6B21\u5907\u4EFD", downloadLocalFollowBackup);
+    action("transfer", "\u663E\u793A\u914D\u7F6E\u4E8C\u7EF4\u7801", async () => {
+      const qr = root2.querySelector(".qr");
+      if (qr.childNodes.length) {
+        hideSecrets();
+        return;
+      }
+      const generation = ++qrGeneration;
+      const text3 = JSON.stringify(config2());
+      const hint = document.createElement("p");
+      hint.className = "hint";
+      hint.textContent = "\u4E8C\u7EF4\u7801\u5305\u542B\u8BBF\u95EE\u5BC6\u94A5\uFF0C\u8BF7\u52FF\u5206\u4EAB\u3002\u518D\u6B21\u70B9\u51FB\u53EF\u9690\u85CF\u3002\u624B\u673A\u53EF\u626B\u7801\u590D\u5236\u6587\u672C\uFF0C\u5728\u4E91\u540C\u6B65\u8BBE\u7F6E\u4E2D\u7C98\u8D34\u5BFC\u5165\u3002";
+      const canvas = document.createElement("canvas");
+      await import_qrcode.default.toCanvas(canvas, text3, { width: 320, errorCorrectionLevel: "M" });
+      if (disposed || generation !== qrGeneration) return;
+      const copy = document.createElement("button");
+      copy.type = "button";
+      copy.className = "atelier-control";
+      copy.textContent = "\u590D\u5236\u914D\u7F6E\u6587\u672C";
+      copy.onclick = async () => {
+        const feedback = soundTask(void 0, () => !disposed && copy.isConnected && host.isConnected);
+        try {
+          await navigator.clipboard.writeText(text3);
+          message = "\u914D\u7F6E\u6587\u672C\u5DF2\u590D\u5236";
+          feedback.finish("success");
+        } catch {
+          message = "\u65E0\u6CD5\u8BBF\u95EE\u526A\u8D34\u677F\uFF0C\u8BF7\u4F7F\u7528\u4E8C\u7EF4\u7801";
+          feedback.finish("warning");
+        }
+        render2();
+      };
+      qr.append(hint, canvas, copy);
+    }, false, "menu");
+    render2();
+    window.addEventListener("atelier-sync-status", render2);
+    return {
+      host,
+      isDirty: () => saved !== JSON.stringify(fieldValues()),
+      hideSecrets,
+      dispose() {
+        disposed = true;
+        cleanupPixels();
+        hideSecrets();
+        window.removeEventListener("atelier-sync-status", render2);
+        host.remove();
+      }
+    };
+  }
+  function registerSyncPanel(open) {
+    if (typeof GM_registerMenuCommand === "function") GM_registerMenuCommand("Bili Atelier \u4E91\u540C\u6B65", open);
+  }
+  function syncPages() {
+    let panel;
+    return {
+      pages: { sync: { draw: (content) => {
+        panel ??= mountSyncPanel();
+        content.append(panel.host);
+      } } },
+      isDirty: () => !!panel?.isDirty(),
+      leave: () => panel?.hideSecrets(),
+      dispose: () => panel?.dispose()
+    };
+  }
+
+  // src/modules/video-luna/prefs.ts
+  var key2 = "BiliAtelier_VideoLuna";
+  function videoLunaEnabled() {
+    const stored = typeof GM_getValue === "function" ? GM_getValue(key2, null) : null;
+    return stored?.enabled !== false;
+  }
+  function setVideoLunaEnabled(enabled) {
+    if (typeof GM_setValue === "function") GM_setValue(key2, { enabled });
+  }
+  var coverKey = "BiliAtelier_VideoCover";
+  var videoCoverChanged = "atelier-video-cover-changed";
+  function videoCoverEnabled() {
+    const stored = typeof GM_getValue === "function" ? GM_getValue(coverKey, null) : null;
+    return stored?.enabled !== false;
+  }
+  function setVideoCoverEnabled(enabled) {
+    if (typeof GM_setValue === "function") GM_setValue(coverKey, { enabled });
+    window.dispatchEvent(new Event(videoCoverChanged));
+  }
+  var isLunaVideoLocation = (where = location) => where.hostname === "www.bilibili.com" && (/^\/video\/(?:BV|av)/i.test(where.pathname) || isLunaListPath(where.pathname) || isLunaBangumiPath(where.pathname));
+  var isLunaListPath = (pathname) => /^\/list\/(?:ml\d+|watchlater|\d+)\/?$/i.test(pathname);
+  var isLunaBangumiPath = (pathname) => /^\/bangumi\/play\/(?:ep|ss)\d+\/?$/i.test(pathname);
+  var videoAttribute = "data-atelier-video";
+  var nativeAttribute = "data-atelier-native";
+  function showNativeArea(area) {
+    const html = document.documentElement, areas = new Set((html.getAttribute(nativeAttribute) ?? "").split(/\s+/).filter(Boolean));
+    if (areas.has(area)) return;
+    areas.add(area);
+    html.setAttribute(nativeAttribute, [...areas].join(" "));
+  }
+  var on2 = `html[${videoAttribute}=luna]`;
+  var unless = (area) => `${on2}:not([${nativeAttribute}~=${area}])`;
+  var videoHideCss = `
+${unless("head")} :is(#viewbox_report,.playlist-container--left>.video-info-container){display:none!important}
+${unless("info")} :is(#v_desc,#bgm-entry,.video-tag-container,#commentapp,.playlist-container--left>.video-desc-container,.plp-l #comment-module){display:none!important}
+${unless("info")} :is(#arc_toolbar_report,#playlistToolbar,.plp-l .toolbar){height:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;visibility:hidden!important}
+${unless("up")} :is(:is(.right-container-inner,.playlist-container--right)>.up-panel-container,.plp-l [class*=mediainfo_mediaInfoWrap]){display:none!important}
+${unless("pod")} :is(.rcmd-tab .video-pod,.plp-r [class*=PaginatedEpList_root]){display:none!important}
+${unless("list")} .playlist-container--right>.action-list-container{display:none!important}
+${unless("rec")} :is(.rcmd-tab>:not(.video-pod),.playlist-container--right>.recommend-list-container,.plp-r [class*=recommend_wrap]){display:none!important}
+${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danmukuBox),.right-bottom-banner,.video-card-ad-small,#slide_ad,.ad-floor-exp){display:none!important}
+`;
+  function prepareVideoLuna() {
+    if (typeof GM_getValue !== "function" || !isLunaVideoLocation() || !videoLunaEnabled()) return false;
+    document.documentElement.setAttribute(videoAttribute, "luna");
+    prepareLunaHeader();
+    if (!document.getElementById("atelier-video-hide")) {
+      const style = document.createElement("style");
+      style.id = "atelier-video-hide";
+      style.textContent = videoHideCss;
+      (document.head || document.documentElement).append(style);
+    }
+    return true;
+  }
+  function showNativePage() {
+    document.documentElement.setAttribute(videoAttribute, "native");
+  }
 
   // src/modules/viewed/marks.ts
   var viewedMarksChanged = "atelier-viewed-marks-changed";
-  var viewedIdFromBvid = (bvid, part) => {
-    const id = String(bvid ?? "").replace(/^BV/i, "");
-    return getLegacyViewedGroupId(id) ? part ? `${id}-${part}` : id : "";
-  };
+  var groupOf = (id) => isViewedId(id) ? viewedGroup(id) : "";
   function viewedLookup() {
     const groups = /* @__PURE__ */ new Map();
     return (id) => {
-      const group = getLegacyViewedGroupId(id);
+      const group = groupOf(id);
       if (!group) return false;
       let set = groups.get(group);
       if (!set) {
@@ -14801,7 +14141,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
   }
   var isViewedVideo = (id) => viewedLookup()(id);
   function setViewedVideo(id, viewed2) {
-    const group = getLegacyViewedGroupId(id);
+    const group = groupOf(id);
     if (!group) return false;
     const stored = readViewedGroup(group, null), values = Array.isArray(stored) ? stored.map(String) : [];
     const present = values.includes(id);
@@ -14817,534 +14157,24 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     return viewed2;
   }
 
-  // src/modules/viewed/ids.ts
-  var alphabet = "FcwAPNKTMug3GV5Lj7EJnHpWsx4tb8haYeviqBz6rkCy12mUSDQX9RdoZf";
-  function bvidFromAid(aid) {
-    if (!Number.isSafeInteger(aid) || aid <= 0 || aid >= 2 ** 51) return "";
-    let rest = (BigInt(aid) | 1n << 51n) ^ 23442827791579n;
-    const digits = [];
-    for (let i = 0; i < 9; i++) {
-      digits.unshift(alphabet[Number(rest % 58n)]);
-      rest /= 58n;
-    }
-    [digits[0], digits[6]] = [digits[6], digits[0]];
-    [digits[1], digits[4]] = [digits[4], digits[1]];
-    return "BV1" + digits.join("");
-  }
-  var bvidPattern = /^BV1[0-9A-Za-z]{9}$/i;
-  var isBvid = (value2) => typeof value2 === "string" && bvidPattern.test(value2);
-  function viewedIdFromHref(href) {
-    if (!href) return "";
-    let url;
-    try {
-      url = new URL(href, location.href);
-    } catch {
-      return "";
-    }
-    const host = url.hostname;
-    if (host === "b23.tv") {
-      const code = url.pathname.split("/")[1];
-      return isBvid(code) ? viewedIdFromBvid(code) : "";
-    }
-    if (!/(^|\.)bilibili\.com$/.test(host)) return "";
-    const [, section, value2 = ""] = url.pathname.split("/");
-    if (section === "video") {
-      if (isBvid(value2)) return viewedIdFromBvid(value2);
-      const av = /^av(\d+)$/i.exec(value2);
-      return av ? viewedIdFromBvid(bvidFromAid(Number(av[1]))) : "";
-    }
-    if (section === "list") {
-      const bvid = url.searchParams.get("bvid");
-      return isBvid(bvid) ? viewedIdFromBvid(bvid) : "";
-    }
-    if (section === "bangumi") {
-      const episode = /^\/bangumi\/play\/((?:ep|ss)[1-9]\d*)\/?$/.exec(url.pathname);
-      return episode ? episode[1] : "";
-    }
-    return "";
-  }
-
-  // src/modules/viewed/pages.ts
-  var firstLink = (host) => viewedIdFromHref(host.querySelector("a[href]")?.getAttribute("href"));
-  var firstImage = (host) => host.querySelector("img");
-  var card = (hosts, outermost = false) => ({ hosts, outermost, id: firstLink, cover: firstImage });
-  var beforeTitle = (title) => (host, button5) => {
-    const target = host.querySelector(title);
-    if (!target) return false;
-    target.before(button5);
-    return true;
-  };
-  var pageState = () => (typeof unsafeWindow !== "undefined" ? unsafeWindow : window).__INITIAL_STATE__;
-  var pathBvid = () => /^\/video\/(BV1[0-9A-Za-z]{9})/i.exec(location.pathname)?.[1] ?? "";
-  var playingBvid = () => {
-    const bvid = pageState()?.bvid;
-    return isBvid(bvid) ? bvid : pathBvid();
-  };
-  function playingId() {
-    const state2 = pageState();
-    if (!isBvid(state2?.bvid)) return viewedIdFromBvid(pathBvid());
-    return viewedIdFromBvid(state2.bvid, Number(state2.videoData?.videos) > 1 ? Number(state2.p) || 1 : void 0);
-  }
-  function partId(bvid, row, list, rows) {
-    const index = list ? [...list.querySelectorAll(rows)].indexOf(row) : -1;
-    return bvid && index >= 0 ? viewedIdFromBvid(bvid, index + 1) : "";
-  }
-  function collectionBvid(item) {
-    const key3 = item?.getAttribute("data-key");
-    if (isBvid(key3)) return key3;
-    return /\/video\/(BV1[0-9A-Za-z]{9})/i.exec(item?.querySelector('a[href*="/video/BV"]')?.getAttribute("href") ?? "")?.[1] ?? "";
-  }
-  var mainVideo = {
-    hosts: ".video-info-meta .pubdate-ip",
-    id: playingId,
-    inline: (host, button5) => {
-      host.append(button5);
-      return true;
-    }
-  };
-  var recommendations = card(".card-box .pic-box");
-  var collection = [
-    { hosts: ".pod-item .cover", id: (host) => viewedIdFromBvid(collectionBvid(host.closest(".pod-item"))), cover: firstImage },
-    { hosts: ".pod-item", id: (host) => host.querySelector(".cover") ? "" : viewedIdFromBvid(collectionBvid(host)), inline: beforeTitle(".title") },
-    { hosts: ".pod-item .page-item", id: (host) => partId(collectionBvid(host.closest(".pod-item")), host, host.parentElement, ":scope > .page-item"), inline: beforeTitle(".title") },
-    {
-      hosts: ".multip .video-pod__item, .multip.grid .page",
-      id: (host) => {
-        const list = host.closest(".multip");
-        return host.closest(".pod-item") ? "" : partId(playingBvid(), host, list, list?.matches(".grid") ? ".page" : ".video-pod__item");
-      },
-      inline: (host, button5) => {
-        const title = host.querySelector(".title") ?? [...host.children].find((child) => child.tagName === "SPAN");
-        if (title) title.before(button5);
-        else host.prepend(button5);
-        return true;
-      }
-    }
-  ];
-  var endScreen = {
-    hosts: ".bpx-player-ending-related-item",
-    id: (host) => {
-      const items = [...host.parentElement?.querySelectorAll(":scope > .bpx-player-ending-related-item") ?? []];
-      const related = pageState()?.related, bvid = Array.isArray(related) ? related[items.indexOf(host)]?.bvid : "";
-      return isBvid(bvid) ? viewedIdFromBvid(bvid) : "";
-    },
-    cover: (host) => host.querySelector(".bpx-player-ending-related-item-img")
-  };
-  var cards = card(".bili-video-card, .video-card", true);
-  var dynamicVideo = card(".bili-dyn-content__orig__major");
-  var feedVideo = {
-    hosts: ".adc-video[data-bvid]",
-    id: (host) => isBvid(host.dataset.bvid) ? viewedIdFromBvid(host.dataset.bvid) : "",
-    cover: (host) => host.querySelector(".adc-cover")
-  };
-  var coverList = (bulk) => ({
-    spots: [card(".bili-video-card__cover")],
-    bulk,
-    css: ".bili-video-card__cover>.btnView{left:auto;right:0;z-index:201}"
-  });
-  function viewedPage(where = location) {
-    const { hostname, pathname } = where;
-    if (hostname === "search.bilibili.com") return { spots: [cards, card(".media-card")] };
-    if (hostname === "space.bilibili.com") return { spots: [card(".bili-video-card__cover"), dynamicVideo] };
-    if (hostname === "t.bilibili.com") return { spots: [feedVideo, dynamicVideo] };
-    if (hostname !== "www.bilibili.com") return null;
-    if (/^\/video\//i.test(pathname)) return { spots: [mainVideo, recommendations, ...collection, endScreen] };
-    if (/^\/list\//i.test(pathname)) return { spots: [mainVideo, recommendations] };
-    if (/^\/(?:account\/)?history\b/.test(pathname)) return coverList(".breadcrumbs__top .right");
-    if (/^\/watchlater\b/.test(pathname)) return coverList(".list-header-options");
-    if (/^\/(?:bangumi|cheese|festival)\//.test(pathname)) return null;
-    return { spots: [cards] };
-  }
-
-  // src/modules/viewed/marker.ts
-  var coverMark = "data-atelier-viewed-cover";
-  var baseCss = `
-.btnView{position:absolute;left:0;top:0;z-index:3;opacity:.8}
-.btnView:is(:hover,:focus-visible){opacity:1}
-.btnView.atelier-viewed-inline{position:static;flex:0 0 auto;margin:0 6px 0 0}
-.pubdate-ip>.btnView.atelier-viewed-inline{margin:0 0 0 10px}
-.atelier-viewed-bulk{margin:0 12px 0 0}
-[${coverMark}]{opacity:.45!important}`;
-  var buttons = /* @__PURE__ */ new WeakMap();
-  var covers = /* @__PURE__ */ new WeakMap();
-  function paint(button5, viewed2) {
-    const label = viewed2 ? "\u5DF2\u770B" : "\u672A\u770B";
-    if (button5.textContent !== label) button5.textContent = label;
-    if (button5.classList.contains("btnIsView") !== viewed2) {
-      button5.classList.toggle("btnIsView", viewed2);
-      button5.classList.toggle("btnNotView", !viewed2);
-    }
-    if (button5.getAttribute("aria-pressed") !== String(viewed2)) button5.setAttribute("aria-pressed", String(viewed2));
-    const cover = covers.get(button5);
-    if (cover && cover.hasAttribute(coverMark) !== viewed2) cover.toggleAttribute(coverMark, viewed2);
-  }
-  function repaintAll() {
-    const viewed2 = viewedLookup();
-    for (const button5 of document.querySelectorAll("button.btnView[data-av]")) paint(button5, viewed2(button5.dataset.av));
-  }
-  function makeButton() {
-    const button5 = document.createElement("button");
-    button5.type = "button";
-    button5.className = "btnView btnNotView";
-    button5.setAttribute("aria-label", "\u5DF2\u770B");
-    button5.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (button5.dataset.av) toggleViewedVideo(button5.dataset.av);
-    });
-    styleAtelierAction(button5);
-    return button5;
-  }
-  function setCover(button5, cover) {
-    const before = covers.get(button5);
-    if (before === cover) return;
-    before?.removeAttribute(coverMark);
-    if (cover) {
-      covers.set(button5, cover);
-      cover.toggleAttribute(coverMark, button5.classList.contains("btnIsView"));
-    } else covers.delete(button5);
-  }
-  function mark(spot, host, viewed2) {
-    let button5 = buttons.get(host);
-    if (button5 && !host.contains(button5)) {
-      setCover(button5, null);
-      button5 = void 0;
-    }
-    const id = spot.id(host), cover = spot.cover ? spot.cover(host) : null;
-    if (!id || spot.cover && !cover) {
-      if (button5) {
-        setCover(button5, null);
-        button5.remove();
-        buttons.delete(host);
-      }
-      return;
-    }
-    if (!button5) {
-      button5 = makeButton();
-      button5.dataset.av = id;
-      paint(button5, viewed2(id));
-      if (spot.cover) host.append(button5);
-      else {
-        button5.classList.add("atelier-viewed-inline");
-        if (!spot.inline(host, button5)) return;
-      }
-      buttons.set(host, button5);
-    } else if (spot.cover && button5.parentElement !== host) host.append(button5);
-    if (button5.dataset.av !== id) {
-      button5.dataset.av = id;
-      paint(button5, viewed2(id));
-    }
-    setCover(button5, cover);
-  }
-  async function markAllViewed() {
-    const feedback = soundTask();
-    const ids = [...new Set([...document.querySelectorAll("button.btnView.btnNotView[data-av]")].map((button5) => button5.dataset.av))];
-    if (!ids.length) {
-      showInfoLog("\u672C\u9875\u5DF2\u52A0\u8F7D\u7684\u89C6\u9891\u90FD\u5DF2\u6807\u4E3A\u5DF2\u770B");
-      feedback.finish("click");
-      return;
-    }
-    if (!await atelierConfirm(`\u628A\u672C\u9875\u5DF2\u52A0\u8F7D\u7684 ${ids.length} \u4E2A\u672A\u770B\u89C6\u9891\u90FD\u6807\u4E3A\u5DF2\u770B\uFF1F\u6B64\u64CD\u4F5C\u4E0D\u80FD\u64A4\u9500\u3002`)) {
-      feedback.finish("cancel");
-      return;
-    }
-    const changed = ids.filter((id) => setViewedVideo(id, true)).length;
-    showInfoLog("\u4E00\u952E\u5DF2\u770B\uFF1A" + changed + " \u4E2A\u89C6\u9891", "success");
-    feedback.finish(changed ? "success" : "click");
-  }
-  function ensureBulk(page) {
-    const place = page.bulk && document.querySelector(page.bulk);
-    if (!place || place.querySelector(":scope > .atelier-viewed-bulk")) return;
-    const button5 = document.createElement("button");
-    button5.type = "button";
-    button5.className = "atelier-viewed-bulk";
-    button5.textContent = "\u4E00\u952E\u5DF2\u770B";
-    button5.title = "\u628A\u672C\u9875\u5DF2\u52A0\u8F7D\u7684\u672A\u770B\u89C6\u9891\u90FD\u6807\u4E3A\u5DF2\u770B\uFF1B\u5F80\u4E0B\u7FFB\u53EF\u52A0\u8F7D\u66F4\u591A";
-    button5.addEventListener("click", () => {
-      void markAllViewed();
-    });
-    styleAtelierAction(button5);
-    place.prepend(button5);
-  }
-  function startViewedMarker() {
-    const page = viewedPage();
-    if (!page) return;
-    const style = document.createElement("style");
-    style.setAttribute("data-atelier-viewed", "");
-    const hosts = page.spots.filter((spot) => spot.cover).map((spot) => spot.hosts).join(",");
-    style.textContent = baseCss + `
-:is(${hosts}){position:relative}
-${page.css ?? ""}`;
-    document.head.append(style);
-    const scan = () => {
-      const viewed2 = viewedLookup();
-      for (const spot of page.spots) {
-        for (const host of document.querySelectorAll(spot.hosts)) {
-          if (spot.outermost && host.parentElement?.closest(spot.hosts)) continue;
-          if (host.closest(".bili-header, a[href]")) continue;
-          mark(spot, host, viewed2);
-        }
-      }
-      ensureBulk(page);
-    };
-    const watched = page.spots.map((spot) => spot.hosts).concat(page.bulk ?? []).join(",");
-    const inHost = (node4) => {
-      const element2 = node4 instanceof Element ? node4 : node4.parentElement;
-      return !!element2 && !element2.closest(".btnView") && !!element2.closest(watched);
-    };
-    const bringsHost = (node4) => node4 instanceof Element && !node4.matches(".btnView") && !!(node4.closest(watched) || node4.querySelector(watched));
-    const matters = (record) => record.type !== "childList" ? inHost(record.target) : [...record.addedNodes].some(bringsHost) || record.removedNodes.length > 0 && inHost(record.target);
-    let timer2 = 0;
-    new MutationObserver((records2) => {
-      if (timer2 || !records2.some(matters)) return;
-      timer2 = window.setTimeout(() => {
-        timer2 = 0;
-        scan();
-      }, 80);
-    }).observe(document.documentElement, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["href", "data-key", "data-bvid", "class"] });
-    window.addEventListener(viewedMarksChanged, repaintAll);
-    window.addEventListener("atelier-sync-applied", repaintAll);
-    scan();
-  }
-
-  // src/ui/launcher.ts
-  function startAtelierLauncher() {
-    if (document.getElementById("atelier-launcher")) return;
-    if (!document.body) {
-      const observer = new MutationObserver(() => {
-        if (document.body) {
-          observer.disconnect();
-          startAtelierLauncher();
-        }
-      });
-      observer.observe(document.documentElement || document, { childList: true, subtree: true });
-      return;
-    }
-    ensureLunaTheme();
-    const host = document.createElement("div");
-    host.id = "atelier-launcher";
-    host.setAttribute("data-bili-blocker-ui", "");
-    const button5 = document.createElement("button");
-    button5.type = "button";
-    button5.className = "atelier-launcher-button xp-button";
-    button5.setAttribute("aria-label", "\u6253\u5F00 Atelier \u5FEB\u6377\u83DC\u5355");
-    button5.setAttribute("aria-haspopup", "menu");
-    button5.setAttribute("aria-expanded", "false");
-    button5.title = "Atelier \xB7 \u62D6\u52A8\u53EF\u8C03\u6574\u4F4D\u7F6E";
-    const image5 = document.createElement("img");
-    image5.src = atelierIcons.tv;
-    image5.alt = "";
-    image5.draggable = false;
-    button5.append(image5);
-    const menu = document.createElement("nav");
-    menu.className = "atelier-quick-menu xp-menu";
-    menu.hidden = true;
-    menu.id = "atelier-quick-menu";
-    menu.setAttribute("role", "menu");
-    menu.setAttribute("aria-label", "Atelier \u5FEB\u6377\u83DC\u5355");
-    button5.setAttribute("aria-controls", menu.id);
-    const title = document.createElement("h2");
-    title.textContent = "Bili Atelier";
-    menu.append(title);
-    const entries = [];
-    const navigable = () => entries.filter((entry) => !entry.hidden && !entry.disabled);
-    const toggle = (open, focus = false) => {
-      menu.hidden = !open;
-      button5.setAttribute("aria-expanded", String(open));
-      if (open) {
-        const above = host.getBoundingClientRect().top + 44 >= menu.offsetHeight;
-        menu.style.top = above ? "auto" : "0";
-        menu.style.bottom = above ? "0" : "auto";
-      }
-      if (open) updatePageItems();
-      if (focus) (open ? navigable()[0] : button5)?.focus();
-    };
-    for (const area of atelierAreas) {
-      const entry = document.createElement("button");
-      entry.type = "button";
-      entry.className = "xp-menu-item";
-      entry.setAttribute("role", "menuitem");
-      const icon2 = document.createElement("img");
-      icon2.src = atelierIcons[area.id];
-      icon2.alt = "";
-      entry.append(icon2, document.createTextNode(area.label));
-      entry.addEventListener("click", () => {
-        toggle(false);
-        openAtelier(area.id);
-      });
-      menu.append(entry);
-      entries.push(entry);
-    }
-    const checkItem = (label) => {
-      const item = document.createElement("button");
-      item.type = "button";
-      item.className = "xp-menu-item";
-      item.setAttribute("role", "menuitemcheckbox");
-      const mark2 = document.createElement("span");
-      mark2.className = "atelier-menu-check";
-      mark2.setAttribute("aria-hidden", "true");
-      item.append(mark2, document.createTextNode(label));
-      return { item, mark: mark2 };
-    };
-    const night = checkItem("\u591C\u95F4\u6A21\u5F0F");
-    night.item.addEventListener("click", () => {
-      toggle(false);
-      toggleBiliNight();
-      updatePageItems();
-    });
-    const pageMode = document.createElement("button");
-    pageMode.type = "button";
-    pageMode.className = "xp-menu-item";
-    pageMode.setAttribute("role", "menuitem");
-    const pageModeIcon = document.createElement("img");
-    pageModeIcon.src = atelierIcons.app;
-    pageModeIcon.alt = "";
-    const pageModeLabel = document.createElement("span");
-    pageMode.append(pageModeIcon, pageModeLabel);
-    pageMode.addEventListener("click", () => {
-      const mode2 = currentPageMode();
-      toggle(false);
-      mode2?.setNative(!mode2.native());
-    });
-    function updatePageItems() {
-      const loggedIn = biliLoggedIn(), dark = loggedIn && biliTheme() === "dark";
-      night.item.disabled = !loggedIn;
-      night.item.title = loggedIn ? "" : "\u767B\u5F55\u540E\u53EF\u7528";
-      night.item.setAttribute("aria-checked", String(dark));
-      night.mark.classList.toggle("checked", dark);
-      const mode2 = currentPageMode();
-      pageMode.hidden = !mode2;
-      pageModeLabel.textContent = mode2?.native() ? "Luna \u9875\u9762" : "\u539F\u751F\u9875\u9762";
-      pageMode.title = mode2?.native() ? "\u6362\u56DE Atelier \u753B\u7684 Luna \u9875\u9762" : "\u9000\u56DE B \u7AD9\u539F\u6765\u7684\u9875\u9762\uFF08\u4F1A\u5237\u65B0\u4E00\u6B21\uFF09";
-    }
-    const pageSeparator = document.createElement("div");
-    pageSeparator.className = "xp-menu-separator";
-    menu.append(pageSeparator, night.item, pageMode);
-    entries.push(night.item, pageMode);
-    window.addEventListener(pageModeChanged, updatePageItems);
-    document.addEventListener("biliThemeChange", updatePageItems);
-    updatePageItems();
-    const visibility = document.createElement("button");
-    visibility.type = "button";
-    visibility.className = "xp-menu-item";
-    visibility.setAttribute("role", "menuitemcheckbox");
-    const check2 = document.createElement("span");
-    check2.className = "atelier-menu-check";
-    check2.setAttribute("aria-hidden", "true");
-    visibility.append(check2, document.createTextNode("\u4E34\u65F6\u663E\u793A\u88AB\u5C4F\u853D\u9879"));
-    const updateVisibility = () => {
-      visibility.setAttribute("aria-checked", String(isShowingBlocked()));
-      check2.classList.toggle("checked", isShowingBlocked());
-    };
-    visibility.addEventListener("click", () => {
-      toggleBlockedVisibility();
-      toggle(false);
-    });
-    window.addEventListener(blockedVisibilityChangedEvent, updateVisibility);
-    updateVisibility();
-    const separator = document.createElement("div");
-    separator.className = "xp-menu-separator";
-    menu.append(separator, visibility);
-    entries.push(visibility);
-    let edge = readUiPreferences().edge, y = readUiPreferences().y;
-    const position = () => {
-      host.dataset.edge = edge;
-      host.style.left = edge === "left" ? "6px" : "auto";
-      host.style.right = edge === "right" ? "6px" : "auto";
-      host.style.top = `${Math.max(6, Math.min(innerHeight - 54, y * (innerHeight - 48)))}px`;
-    };
-    let drag, suppressClick = false;
-    button5.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0) return;
-      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, top: host.getBoundingClientRect().top, moved: false };
-      button5.setPointerCapture(event.pointerId);
-    });
-    button5.addEventListener("pointermove", (event) => {
-      if (!drag || drag.id !== event.pointerId) return;
-      if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 5) drag.moved = true;
-      if (!drag.moved) return;
-      toggle(false);
-      host.style.right = "auto";
-      host.style.left = `${Math.max(0, Math.min(innerWidth - 48, event.clientX - 24))}px`;
-      host.style.top = `${Math.max(6, Math.min(innerHeight - 54, drag.top + event.clientY - drag.y))}px`;
-    });
-    const release = (event) => {
-      if (!drag || drag.id !== event.pointerId) return;
-      suppressClick = drag.moved;
-      if (drag.moved && event.type !== "pointercancel") {
-        edge = event.clientX < innerWidth / 2 ? "left" : "right";
-        y = Math.max(0, Math.min(1, (drag.top + event.clientY - drag.y) / Math.max(1, innerHeight - 48)));
-        saveUiPreferences({ edge, y });
-      }
-      drag = void 0;
-      position();
-      window.setTimeout(() => {
-        suppressClick = false;
-      }, 0);
-    };
-    button5.addEventListener("pointerup", release);
-    button5.addEventListener("pointercancel", release);
-    button5.addEventListener("click", () => {
-      if (suppressClick) {
-        suppressClick = false;
-        return;
-      }
-      sound("menu");
-      toggle(menu.hidden, true);
-    });
-    host.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        event.stopPropagation();
-        toggle(false, true);
-      }
-      if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
-        event.preventDefault();
-        if (menu.hidden) toggle(true);
-        const items = navigable(), at = items.indexOf(document.activeElement);
-        const next = event.key === "Home" ? 0 : event.key === "End" ? items.length - 1 : (at + (event.key === "ArrowUp" ? -1 : 1) + items.length) % items.length;
-        items[next]?.focus();
-      }
-    });
-    document.addEventListener("pointerdown", (event) => {
-      if (!event.composedPath().includes(host)) toggle(false);
-    });
-    document.addEventListener("focusin", (event) => {
-      if (!host.contains(event.target)) toggle(false);
-    });
-    document.addEventListener("fullscreenchange", () => {
-      host.hidden = !!document.fullscreenElement;
-      toggle(false);
-    });
-    window.addEventListener("resize", position);
-    window.addEventListener("atelier-reset-launcher", () => {
-      ({ edge, y } = readUiPreferences());
-      position();
-    });
-    host.append(menu, button5);
-    document.body.append(host);
-    observeCrispText(menu);
-    position();
-  }
-
   // src/modules/video-luna/actions.ts
   function ok2(raw) {
-    if (!raw || raw.code !== 0) throw new FeedActionError(typeof raw?.message === "string" && raw.message ? raw.message : "\u64CD\u4F5C\u5931\u8D25", Number(raw?.code) || 0);
+    if (!raw || raw.code !== 0) throw new BiliActionError(typeof raw?.message === "string" && raw.message ? raw.message : "\u64CD\u4F5C\u5931\u8D25", Number(raw?.code) || 0);
     return raw.data ?? {};
   }
   var pgcOk = (raw) => {
     ok2(raw);
     return raw.result ?? raw.data ?? {};
   };
-  var api2 = "https://api.bilibili.com";
+  var api3 = "https://api.bilibili.com";
   var VideoActions = class {
     constructor(read2, write) {
       this.read = read2;
       this.write = write;
     }
     get(path) {
-      return this.read(api2 + path, new AbortController().signal).then(ok2, (error) => {
-        throw error instanceof FeedActionError ? error : new FeedActionError(error instanceof Error ? error.message : "\u8BFB\u53D6\u5931\u8D25");
+      return this.read(api3 + path, new AbortController().signal).then(ok2, (error) => {
+        throw error instanceof BiliActionError ? error : new BiliActionError(error instanceof Error ? error.message : "\u8BFB\u53D6\u5931\u8D25");
       });
     }
     async send(op, body2) {
@@ -15427,8 +14257,8 @@ ${page.css ?? ""}`;
       return this.pgcGet(`/pgc/web/timeline?types=${type}&before=0&after=7`);
     }
     pgcGet(path) {
-      return this.read(api2 + path, new AbortController().signal).then(pgcOk, (error) => {
-        throw error instanceof FeedActionError ? error : new FeedActionError(error instanceof Error ? error.message : "\u8BFB\u53D6\u5931\u8D25");
+      return this.read(api3 + path, new AbortController().signal).then(pgcOk, (error) => {
+        throw error instanceof BiliActionError ? error : new BiliActionError(error instanceof Error ? error.message : "\u8BFB\u53D6\u5931\u8D25");
       });
     }
     async pgc(op, query) {
@@ -15450,50 +14280,7 @@ ${page.css ?? ""}`;
   };
 
   // src/modules/video-luna/bridge.ts
-  var videoReads = [
-    "/x/web-interface/nav",
-    "/x/web-interface/archive/relation",
-    "/x/web-interface/card",
-    "/x/v3/fav/folder/created/list-all",
-    "/x/relation",
-    "/x/relation/relations",
-    "/x/relation/tags",
-    "/x/relation/tag/user",
-    "/x/v2/reply/main",
-    "/x/v2/reply/reply",
-    "/x/v2/reply/report/metadata",
-    "/x/emote/user/panel/web",
-    // 番剧: a whole season with its sections and the viewer's 追番 and progress;
-    // its episodes' counts; the 新番时间表 for the next episode.
-    "/pgc/view/web/season",
-    "/pgc/view/web/ep/list",
-    "/pgc/web/timeline"
-  ];
-  var videoWrites = {
-    like: ["/x/web-interface/archive/like", "form", "body", 1],
-    coin: ["/x/web-interface/coin/add", "form", "body", 1],
-    triple: ["/x/web-interface/archive/like/triple", "form", "body", 1],
-    fav: ["/x/v3/fav/resource/deal", "form", "body", 0],
-    "fav-folder": ["/x/v3/fav/folder/add", "form", "body", 0],
-    follow: ["/x/relation/modify", "form", "body", 0],
-    "follow-tags": ["/x/relation/tags/addUsers", "form", "body", 0],
-    watchlater: ["/x/v2/history/toview/add", "form", "body", 0],
-    "season-fav": ["/x/v3/fav/season/fav", "form", "body", 0],
-    "season-unfav": ["/x/v3/fav/season/unfav", "form", "body", 0],
-    reply: ["/x/v2/reply/add", "form", "body", 0],
-    "reply-like": ["/x/v2/reply/action", "form", "body", 0],
-    "reply-hate": ["/x/v2/reply/hate", "form", "body", 0],
-    "reply-delete": ["/x/v2/reply/del", "form", "body", 0],
-    "reply-report": ["/x/v2/reply/report", "form", "body", 0],
-    upload: ["/x/dynamic/feed/draw/upload_bfs", "file", "body", 0],
-    // The 番剧 page sends these with every field in the query string.
-    "pgc-follow-add": ["/pgc/web/follow/add", "form", "query", 0],
-    "pgc-follow-del": ["/pgc/web/follow/del", "form", "query", 0],
-    "pgc-follow-status": ["/pgc/web/follow/status/update", "form", "query", 0],
-    "pgc-triple": ["/pgc/season/episode/like/triple", "form", "query", 0]
-  };
-  function videoPageWorld(channel2, reads, writes) {
-    const original = window.fetch, allowed = new Set(reads);
+  function videoPageWorld(channel2) {
     const post = (message) => window.postMessage({ channel: channel2, ...message }, location.origin);
     const app = () => document.getElementById("app")?.__vue__;
     const actionList = () => document.querySelector(".action-list-container")?.__vue__;
@@ -15689,15 +14476,6 @@ ${page.css ?? ""}`;
       } catch {
       }
     }, 250);
-    const risk = () => {
-      const player = window.player;
-      try {
-        return { eab_x: player?.isPaused?.() ? 2 : 1, ramval: player?.getMediaInfo?.()?.absolutePlayTime ?? 0, source: "web_normal", ga: 1, statistics: '{"appId":100,"platform":5}', spmid: "333.788.0.0" };
-      } catch {
-        return {};
-      }
-    };
-    const reading = /* @__PURE__ */ new Map();
     window.addEventListener("message", (event) => {
       const data = event.data;
       if (event.origin !== location.origin || data?.channel !== channel2) return;
@@ -15750,9 +14528,9 @@ ${page.css ?? ""}`;
               done(false);
               return;
             }
-            const started6 = Date.now(), wait = () => {
+            const started7 = Date.now(), wait = () => {
               if (!has(key3)) done(true);
-              else if (Date.now() - started6 > 3e3) done(false);
+              else if (Date.now() - started7 > 3e3) done(false);
               else window.setTimeout(wait, 100);
             };
             Promise.resolve(item.itemDelete(item.info, { target: wrap })).then(wait, () => done(false));
@@ -15778,99 +14556,25 @@ ${page.css ?? ""}`;
         } catch {
         }
         playback = "";
-      } else if (data.kind === "abort") reading.get(data.id)?.abort();
-      else if (data.kind === "read") {
-        let url = null;
-        try {
-          url = new URL(String(data.url));
-        } catch {
-        }
-        if (!url || url.protocol !== "https:" || url.hostname !== "api.bilibili.com" || !allowed.has(url.pathname)) {
-          post({ kind: "read-result", id: data.id, status: 0, error: "\u65E0\u6548\u8BFB\u53D6" });
-          return;
-        }
-        const controller = new AbortController();
-        reading.set(data.id, controller);
-        original.call(window, url.href, { credentials: "include", signal: controller.signal }).then(async (response) => post({ kind: "read-result", id: data.id, status: response.status, body: response.ok ? await response.json() : null })).catch((error) => post({ kind: "read-result", id: data.id, status: 0, error: String(error?.message || error) })).finally(() => reading.delete(data.id));
-      } else if (data.kind === "write") {
-        const spec = Object.prototype.hasOwnProperty.call(writes, data.op) ? writes[data.op] : null;
-        const answer = (message) => post({ kind: "write-result", id: data.id, ...message });
-        const csrf = document.cookie.match(/(?:^|;\s*)bili_jct=([^;]+)/)?.[1] ?? "";
-        if (!spec) {
-          answer({ status: 0, error: "\u4E0D\u5141\u8BB8\u7684\u64CD\u4F5C" });
-          return;
-        }
-        if (!csrf) {
-          answer({ status: 0, error: "\u8BF7\u5148\u767B\u5F55" });
-          return;
-        }
-        const [path, encoding, where, withRisk] = spec, url = new URL("https://api.bilibili.com" + path);
-        for (const [name, value2] of Object.entries(data.query ?? {})) if (typeof value2 === "string") url.searchParams.set(name, value2);
-        if (where === "query") url.searchParams.set("csrf", csrf);
-        const fields2 = { ...withRisk ? risk() : {}, ...data.body ?? {} };
-        if (where === "body") fields2.csrf = csrf;
-        const scalar = (value2) => typeof value2 === "string" || typeof value2 === "number" || typeof value2 === "boolean";
-        let body2, headers;
-        if (encoding === "json") {
-          body2 = JSON.stringify(fields2);
-          headers = { "Content-Type": "application/json" };
-        } else if (encoding === "form") {
-          const form = new URLSearchParams();
-          for (const [name, value2] of Object.entries(fields2)) if (scalar(value2)) form.set(name, String(value2));
-          body2 = form;
-          headers = { "Content-Type": "application/x-www-form-urlencoded" };
-        } else {
-          if (!(data.file instanceof Blob)) {
-            answer({ status: 0, error: "\u6CA1\u6709\u6587\u4EF6" });
-            return;
-          }
-          const form = new FormData();
-          form.append("file_up", data.file);
-          for (const [name, value2] of Object.entries(fields2)) if (scalar(value2)) form.append(name, String(value2));
-          body2 = form;
-        }
-        original.call(window, url.href, { method: "POST", credentials: "include", headers, body: body2 }).then(async (response) => answer({ status: response.status, body: response.ok ? await response.json() : null })).catch((error) => answer({ status: 0, error: String(error?.message || error) }));
       }
     });
   }
   function startVideoBridge(onState) {
-    const channel2 = "atelier-video-" + crypto.randomUUID();
-    const reads = /* @__PURE__ */ new Map();
+    const relay = startPageRelay("video", endpoints.video), channel2 = relay.channel;
     const commands = /* @__PURE__ */ new Map();
     const playbacks = /* @__PURE__ */ new Set();
     window.addEventListener("message", (event) => {
       const data = event.data;
       if (event.origin !== location.origin || data?.channel !== channel2) return;
       if (data.kind === "state" && data.state) onState(data.state);
-      else if (data.kind === "playback" && data.state) for (const listener2 of playbacks) listener2(data.state);
+      else if (data.kind === "playback" && data.state) for (const listener of playbacks) listener(data.state);
       else if (data.kind === "command-result") {
         commands.get(data.id)?.(!!data.ok);
         commands.delete(data.id);
-      } else if (data.kind === "read-result") {
-        const waiter = reads.get(data.id);
-        if (!waiter) return;
-        reads.delete(data.id);
-        if (data.error) waiter.reject(new LocalFollowReadError(`\u7F51\u7EDC\u8BFB\u53D6\u5931\u8D25\uFF1A${data.error}`));
-        else if (data.status < 200 || data.status >= 300) waiter.reject(new LocalFollowReadError(`\u8BFB\u53D6\u5931\u8D25\uFF1AHTTP ${data.status}`, data.status));
-        else waiter.resolve(data.body);
       }
     });
-    injectPageScript(`(${videoPageWorld.toString()})(${JSON.stringify(channel2)}, ${JSON.stringify(videoReads)}, ${JSON.stringify(videoWrites)});`);
+    injectPageScript(`(${videoPageWorld.toString()})(${JSON.stringify(channel2)});`);
     const send = (message) => window.postMessage({ channel: channel2, ...message }, location.origin);
-    const request2 = (url, signal) => new Promise((resolve, reject) => {
-      const id = crypto.randomUUID();
-      if (signal.aborted) {
-        reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError"));
-        return;
-      }
-      reads.set(id, { resolve, reject });
-      signal.addEventListener("abort", () => {
-        if (!reads.delete(id)) return;
-        send({ kind: "abort", id });
-        reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError"));
-      }, { once: true });
-      send({ kind: "read", id, url });
-    });
     const command = (message, ms) => new Promise((resolve) => {
       const id = crypto.randomUUID();
       commands.set(id, resolve);
@@ -15880,15 +14584,15 @@ ${page.css ?? ""}`;
       }, ms);
     });
     return {
-      request: request2,
-      write: pageWrite(channel2),
+      request: relay.read,
+      write: relay.write,
       switchTo: (target) => command({ kind: "switch", target }, 3e3),
       list: ({ op, ...args }) => command({ kind: "list", op, ...args }, 1e4),
       seek: (seconds2) => send({ kind: "seek", time: seconds2 }),
       refresh: () => send({ kind: "refresh" }),
       player: (command2) => send({ kind: "player", ...command2 }),
-      onPlayback: (listener2) => {
-        playbacks.add(listener2);
+      onPlayback: (listener) => {
+        playbacks.add(listener);
       }
     };
   }
@@ -15896,7 +14600,7 @@ ${page.css ?? ""}`;
   // src/modules/video-luna/context.ts
   var guestTitle = "\u767B\u5F55\u540E\u53EF\u7528";
   function failure2(error) {
-    return error instanceof FeedActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u7535\u89C6\u83DC\u5355\u5207\u5230\u539F\u751F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
+    return error instanceof BiliActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u7535\u89C6\u83DC\u5355\u5207\u5230\u539F\u751F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
   }
   var note = (message, tone = "info") => showInfoLog(message, tone);
 
@@ -16161,8 +14865,8 @@ ${page.css ?? ""}`;
   };
   var icons = Object.fromEntries(Object.keys(iconParts).map((name) => [name, () => pixelIcon(iconParts[name])]));
   function iconUrl(name, ink) {
-    const paths2 = iconParts[name].map(([d, fill]) => `<path d="${d}" fill="${fill === "ink" ? ink : fill}"/>`).join("");
-    return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" shape-rendering="crispEdges">${paths2}</svg>`)}")`;
+    const paths = iconParts[name].map(([d, fill]) => `<path d="${d}" fill="${fill === "ink" ? ink : fill}"/>`).join("");
+    return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" shape-rendering="crispEdges">${paths}</svg>`)}")`;
   }
 
   // src/modules/video-luna/dialog.ts
@@ -16626,7 +15330,7 @@ ${page.css ?? ""}`;
     const size = status2.appendChild(el2("span", "xp-status-pane"));
     status2.appendChild(el2("span", "xp-status-pane vl-status-spring"));
     let shown2 = null;
-    const save = status2.appendChild(xpButton("\u4FDD\u5B58\u2026", () => void download2()));
+    const save = status2.appendChild(xpButton("\u4FDD\u5B58\u2026", () => void download()));
     observeCrispText(root2);
     let dragged = false;
     const center = () => {
@@ -16651,7 +15355,7 @@ ${page.css ?? ""}`;
       root2.remove();
       current3 = null;
     }
-    async function download2() {
+    async function download() {
       const image5 = shown2;
       if (!image5) return;
       try {
@@ -17328,7 +16032,7 @@ ${page.css ?? ""}`;
   var bangumiUrl = (path) => `https://www.bilibili.com/bangumi/play/${path}`;
   var bangumiViewedId = (kind, id) => {
     const value2 = `${kind}${id}`;
-    return id > 0 && getLegacyViewedGroupId(value2) ? value2 : "";
+    return isViewedId(value2) ? value2 : "";
   };
   function episodeTitle(episode) {
     if (!episode) return "";
@@ -18662,7 +17366,7 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     function blockedBy(item, rules, holder) {
       if (!rules) return null;
       const target = { kind: "video", el: holder, insertionEl: holder, uid: Number(item?.owner?.mid) || void 0, name: item?.owner?.name, title: item?.title, bv: item?.bvid };
-      const decision = decideVideo(target, rules);
+      const decision = decideBlockableItem(target, rules);
       if (decision) recordBlockHistory(target, decision);
       return decision;
     }
@@ -19462,7 +18166,7 @@ ${on4} .main-container .plp-r.sticky{top:var(--vl-hold-top,var(--vl-stick,min(va
   var dm = `${skin} #danmukuBox`;
   var adv = `${dm} .bpx-player-adv-danmaku-panel`;
   var locked = `${dm} .bpx-player-adv-danmaku-panel.mask`;
-  var button4 = `box-sizing:border-box;${xpFont};color:var(--xp-ink)!important;background:var(--xp-fallback,var(--xp-face))!important;border:0 solid transparent;border-radius:0!important;box-shadow:none!important;${image4("button", 0)};image-rendering:pixelated;cursor:default!important`;
+  var button3 = `box-sizing:border-box;${xpFont};color:var(--xp-ink)!important;background:var(--xp-fallback,var(--xp-face))!important;border:0 solid transparent;border-radius:0!important;box-shadow:none!important;${image4("button", 0)};image-rendering:pixelated;cursor:default!important`;
   var buttonInside = "background:none!important;border:0!important;border-radius:0!important;padding:0!important;min-width:0!important;height:auto!important;line-height:inherit!important;font:inherit!important;color:inherit!important";
   var check = (part) => `content:"";flex:none;width:var(--xp-${part}-w,13px);height:var(--xp-${part}-h,13px);margin:0 4px 0 0;background:var(--xp-${part}-0) center/100% 100% no-repeat;image-rendering:pixelated`;
   var videoSkinCss = `
@@ -19529,7 +18233,7 @@ ${dm} :is(.dm-info-block-btn,.dm-info-report-btn){${xpFont};color:var(--xp-ink);
 ${dm} .bpx-player-dm-btn-footer{box-sizing:border-box;display:flex;align-items:stretch;gap:6px;height:23px!important;margin:8px!important;cursor:default!important}
 ${dm} .bpx-player-dm-btn-footer::before{content:attr(data-vl-count);flex:1;min-width:0;display:flex;align-items:center;padding:0 4px;${sunken};${xpFont};color:var(--xp-ink);white-space:nowrap;overflow:hidden}
 /* The player shows \u67E5\u770B\u5386\u53F2\u5F39\u5E55 once the list has loaded: no display here. */
-${dm} .bpx-player-dm-btn-history{flex:none;width:auto!important;height:23px!important;margin:0!important;padding:2px 9px!important;line-height:19px!important;text-align:center;${button4}}
+${dm} .bpx-player-dm-btn-history{flex:none;width:auto!important;height:23px!important;margin:0!important;padding:2px 9px!important;line-height:19px!important;text-align:center;${button3}}
 ${dm} .bpx-player-dm-btn-history::after{content:"\u2026"}
 ${dm} .bpx-player-dm-btn-history:hover{border-image-source:var(--xp-button-1)}
 ${dm} .bpx-player-dm-btn-history:active{border-image-source:var(--xp-button-2)}
@@ -19553,7 +18257,7 @@ ${dm} .bpx-player-block-switch .bui-switch-input:checked+.bui-switch-label{backg
 ${dm} .bpx-player-block-top>div:first-child:hover .bui-switch-input:checked+.bui-switch-label{background-image:var(--xp-checkbox-5)}
 ${dm} .bpx-player-block-label{margin:0!important;font-size:0!important;line-height:normal!important;font-weight:normal!important;${crisp}}
 ${dm} .bpx-player-block-label::after{content:"\u542F\u7528\u5C4F\u853D\u5217\u8868";${xpFont};color:var(--xp-ink)}
-${dm} .bpx-player-block-sync-btn{position:relative;display:inline-flex;align-items:center;min-height:23px;margin:0!important;padding:2px 9px!important;line-height:var(--xp-line)!important;${button4}}
+${dm} .bpx-player-block-sync-btn{position:relative;display:inline-flex;align-items:center;min-height:23px;margin:0!important;padding:2px 9px!important;line-height:var(--xp-line)!important;${button3}}
 ${dm} .bpx-player-block-sync-btn:hover{border-image-source:var(--xp-button-1)}
 ${dm} .bpx-player-block-sync-btn:active{border-image-source:var(--xp-button-2)}
 ${dm} .bpx-player-block-sync-btn.bpx-player-hide{border-image-source:var(--xp-button-3);color:var(--xp-graytext)!important}
@@ -19561,7 +18265,7 @@ ${dm} .bpx-player-sync-icon{display:none!important}
 ${dm} .bpx-player-block-sync-btn::after,${dm} .bpx-player-block-sync-btn:hover::after{top:calc(100% + 2px)!important;right:0;z-index:4;padding:1px 4px 2px!important;${xpFont};color:var(--xp-info-ink)!important;background:var(--xp-info)!important;border:1px solid var(--xp-ink);border-radius:0!important;box-shadow:2px 2px 2px #0005;transition:none!important;white-space:nowrap}
 ${dm} .bpx-player-block-add{gap:4px;margin-top:8px;line-height:var(--xp-line)!important}
 ${dm} .bpx-player-block-add-input{flex:1;min-width:0;width:auto!important;height:23px!important;margin:0!important;padding:2px 3px!important;line-height:normal!important}
-${dm} .bpx-player-block-add-btn{flex:none!important;min-width:64px;height:23px!important;line-height:19px!important;padding:2px 9px!important;text-align:center;${button4}}
+${dm} .bpx-player-block-add-btn{flex:none!important;min-width:64px;height:23px!important;line-height:19px!important;padding:2px 9px!important;text-align:center;${button3}}
 ${dm} .bpx-player-block-add-btn:hover{border-image-source:var(--xp-button-1)}
 ${dm} .bpx-player-block-add-btn:active{border-image-source:var(--xp-button-2)}
 ${dm} .bpx-player-block-add-btn .bui-area{${buttonInside}}
@@ -19650,7 +18354,7 @@ ${dm} .bpx-player-adv-danmaku-checkbox:hover .bui-checkbox-label::before{backgro
 ${dm} .bpx-player-adv-danmaku-checkbox .bui-checkbox-input:checked+.bui-checkbox-label::before{background-image:var(--xp-checkbox-4)}
 ${dm} .bpx-player-adv-danmaku-checkbox:hover .bui-checkbox-input:checked+.bui-checkbox-label::before{background-image:var(--xp-checkbox-5)}
 ${dm} .bpx-player-adv-danmaku-checkbox .bui-checkbox-name{${xpFont};color:var(--xp-ink)!important;${crisp}}
-${dm} .bpx-player-adv-danmaku-btn{width:auto!important;min-width:68px;height:23px!important;margin-right:8px;padding:0 9px!important;line-height:21px!important;text-align:center;${button4}}
+${dm} .bpx-player-adv-danmaku-btn{width:auto!important;min-width:68px;height:23px!important;margin-right:8px;padding:0 9px!important;line-height:21px!important;text-align:center;${button3}}
 ${dm} .bpx-player-adv-danmaku-btn .bui-area{${buttonInside}}
 ${dm} .bpx-player-adv-danmaku-btn:hover{border-image-source:var(--xp-button-1)}
 ${dm} :is(.bpx-player-adv-danmaku-btn:active,.bpx-player-adv-danmaku-btn.active){border-image-source:var(--xp-button-2)}
@@ -19675,7 +18379,7 @@ ${dm} .bpx-player-adv-danmaku-dialog .bui-dialog-close>*{opacity:0!important}
 ${dm} .bpx-player-adv-danmaku-dialog-content{padding:12px 10px 0!important}
 ${dm} .bpx-player-adv-danmaku-dialog-text{${xpFont};color:var(--xp-ink)!important;text-align:left!important}
 ${dm} .bpx-player-adv-danmaku-dialog-functions{gap:6px;justify-content:flex-end!important}
-${dm} .bpx-player-adv-danmaku-dialog-function{min-width:75px!important;height:23px!important;margin:0!important;padding:0 9px!important;line-height:21px!important;${button4}}
+${dm} .bpx-player-adv-danmaku-dialog-function{min-width:75px!important;height:23px!important;margin:0!important;padding:0 9px!important;line-height:21px!important;${button3}}
 ${dm} .bpx-player-adv-danmaku-dialog-function:hover{border-image-source:var(--xp-button-1)}
 ${dm} .bpx-player-adv-danmaku-dialog-function:active{border-image-source:var(--xp-button-2)}
 
@@ -20238,170 +18942,1318 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
     }, giveUpMs2);
   }
 
-  // src/main.ts
-  var videoHeaderReadySelector = "#biliMainHeader .bili-header, #biliMainHeader .mini-header, .bili-header";
-  function hasGmStorage() {
-    return typeof GM_getValue === "function" && typeof GM_setValue === "function" && typeof GM_deleteValue === "function" && typeof GM_listValues === "function";
+  // src/modules/viewed/pages.ts
+  var firstLink = (host) => viewedIdFromHref(host.querySelector("a[href]")?.getAttribute("href"));
+  var firstImage = (host) => host.querySelector("img");
+  var card2 = (hosts, outermost = false) => ({ hosts, outermost, id: firstLink, cover: firstImage });
+  var beforeTitle = (title) => (host, button5) => {
+    const target = host.querySelector(title);
+    if (!target) return false;
+    target.before(button5);
+    return true;
+  };
+  var pageState = () => (typeof unsafeWindow !== "undefined" ? unsafeWindow : window).__INITIAL_STATE__;
+  var pathBvid = () => /^\/video\/(BV1[0-9A-Za-z]{9})/i.exec(location.pathname)?.[1] ?? "";
+  var playingBvid = () => {
+    const bvid = pageState()?.bvid;
+    return isBvid(bvid) ? bvid : pathBvid();
+  };
+  function playingId() {
+    const state2 = pageState();
+    if (!isBvid(state2?.bvid)) return viewedIdFromBvid(pathBvid());
+    return viewedIdFromBvid(state2.bvid, Number(state2.videoData?.videos) > 1 ? Number(state2.p) || 1 : void 0);
   }
-  function isBilibiliVideoPage() {
-    return location.hostname === "www.bilibili.com" && /^\/video\//i.test(location.pathname);
+  function partId(bvid, row, list, rows) {
+    const index = list ? [...list.querySelectorAll(rows)].indexOf(row) : -1;
+    return bvid && index >= 0 ? viewedIdFromBvid(bvid, index + 1) : "";
   }
-  function isVideoHeaderReady() {
-    return Boolean(document.querySelector(videoHeaderReadySelector));
+  function collectionBvid(item) {
+    const key3 = item?.getAttribute("data-key");
+    if (isBvid(key3)) return key3;
+    return /\/video\/(BV1[0-9A-Za-z]{9})/i.exec(item?.querySelector('a[href*="/video/BV"]')?.getAttribute("href") ?? "")?.[1] ?? "";
   }
-  function waitForVideoHeaderBeforeCommentLocation(callback) {
-    if (!config.commentLocation.videoPageHeaderGate || !isBilibiliVideoPage() || isVideoHeaderReady()) {
-      callback();
+  var mainVideo = {
+    hosts: ".video-info-meta .pubdate-ip",
+    id: playingId,
+    inline: (host, button5) => {
+      host.append(button5);
+      return true;
+    }
+  };
+  var recommendations = card2(".card-box .pic-box");
+  var collection = [
+    { hosts: ".pod-item .cover", id: (host) => viewedIdFromBvid(collectionBvid(host.closest(".pod-item"))), cover: firstImage },
+    { hosts: ".pod-item", id: (host) => host.querySelector(".cover") ? "" : viewedIdFromBvid(collectionBvid(host)), inline: beforeTitle(".title") },
+    { hosts: ".pod-item .page-item", id: (host) => partId(collectionBvid(host.closest(".pod-item")), host, host.parentElement, ":scope > .page-item"), inline: beforeTitle(".title") },
+    {
+      hosts: ".multip .video-pod__item, .multip.grid .page",
+      id: (host) => {
+        const list = host.closest(".multip");
+        return host.closest(".pod-item") ? "" : partId(playingBvid(), host, list, list?.matches(".grid") ? ".page" : ".video-pod__item");
+      },
+      inline: (host, button5) => {
+        const title = host.querySelector(".title") ?? [...host.children].find((child) => child.tagName === "SPAN");
+        if (title) title.before(button5);
+        else host.prepend(button5);
+        return true;
+      }
+    }
+  ];
+  var endScreen = {
+    hosts: ".bpx-player-ending-related-item",
+    id: (host) => {
+      const items = [...host.parentElement?.querySelectorAll(":scope > .bpx-player-ending-related-item") ?? []];
+      const related = pageState()?.related, bvid = Array.isArray(related) ? related[items.indexOf(host)]?.bvid : "";
+      return isBvid(bvid) ? viewedIdFromBvid(bvid) : "";
+    },
+    cover: (host) => host.querySelector(".bpx-player-ending-related-item-img")
+  };
+  var cards = card2(".bili-video-card, .video-card", true);
+  var dynamicVideo = card2(".bili-dyn-content__orig__major");
+  var feedVideo = {
+    hosts: ".adc-video[data-bvid]",
+    id: (host) => isBvid(host.dataset.bvid) ? viewedIdFromBvid(host.dataset.bvid) : "",
+    cover: (host) => host.querySelector(".adc-cover")
+  };
+  var coverList = (bulk) => ({
+    spots: [card2(".bili-video-card__cover")],
+    bulk,
+    css: ".bili-video-card__cover>.btnView{left:auto;right:0;z-index:201}"
+  });
+  function viewedPage(where = location) {
+    const { hostname, pathname } = where;
+    if (hostname === "search.bilibili.com") return { spots: [cards, card2(".media-card")] };
+    if (hostname === "space.bilibili.com") return { spots: [card2(".bili-video-card__cover"), dynamicVideo] };
+    if (hostname === "t.bilibili.com") return { spots: [feedVideo, dynamicVideo] };
+    if (hostname !== "www.bilibili.com") return null;
+    if (/^\/video\//i.test(pathname)) return { spots: [mainVideo, recommendations, ...collection, endScreen] };
+    if (/^\/list\//i.test(pathname)) return { spots: [mainVideo, recommendations] };
+    if (/^\/(?:account\/)?history\b/.test(pathname)) return coverList(".breadcrumbs__top .right");
+    if (/^\/watchlater\b/.test(pathname)) return coverList(".list-header-options");
+    if (/^\/(?:bangumi|cheese|festival)\//.test(pathname)) return null;
+    return { spots: [cards] };
+  }
+
+  // src/modules/viewed/marker.ts
+  var coverMark = "data-atelier-viewed-cover";
+  var baseCss = `
+.btnView{position:absolute;left:0;top:0;z-index:3;opacity:.8}
+.btnView:is(:hover,:focus-visible){opacity:1}
+.btnView.atelier-viewed-inline{position:static;flex:0 0 auto;margin:0 6px 0 0}
+.pubdate-ip>.btnView.atelier-viewed-inline{margin:0 0 0 10px}
+.atelier-viewed-bulk{margin:0 12px 0 0}
+[${coverMark}]{opacity:.45!important}`;
+  var buttons = /* @__PURE__ */ new WeakMap();
+  var covers = /* @__PURE__ */ new WeakMap();
+  function paint(button5, viewed2) {
+    const label = viewed2 ? "\u5DF2\u770B" : "\u672A\u770B";
+    if (button5.textContent !== label) button5.textContent = label;
+    if (button5.classList.contains("btnIsView") !== viewed2) {
+      button5.classList.toggle("btnIsView", viewed2);
+      button5.classList.toggle("btnNotView", !viewed2);
+    }
+    if (button5.getAttribute("aria-pressed") !== String(viewed2)) button5.setAttribute("aria-pressed", String(viewed2));
+    const cover = covers.get(button5);
+    if (cover && cover.hasAttribute(coverMark) !== viewed2) cover.toggleAttribute(coverMark, viewed2);
+  }
+  function repaintAll() {
+    const viewed2 = viewedLookup();
+    for (const button5 of document.querySelectorAll("button.btnView[data-av]")) paint(button5, viewed2(button5.dataset.av));
+  }
+  function makeButton() {
+    const button5 = document.createElement("button");
+    button5.type = "button";
+    button5.className = "btnView btnNotView";
+    button5.setAttribute("aria-label", "\u5DF2\u770B");
+    button5.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (button5.dataset.av) toggleViewedVideo(button5.dataset.av);
+    });
+    styleAtelierAction(button5);
+    return button5;
+  }
+  function setCover(button5, cover) {
+    const before = covers.get(button5);
+    if (before === cover) return;
+    before?.removeAttribute(coverMark);
+    if (cover) {
+      covers.set(button5, cover);
+      cover.toggleAttribute(coverMark, button5.classList.contains("btnIsView"));
+    } else covers.delete(button5);
+  }
+  function mark(spot, host, viewed2) {
+    let button5 = buttons.get(host);
+    if (button5 && !host.contains(button5)) {
+      setCover(button5, null);
+      button5 = void 0;
+    }
+    const id = spot.id(host), cover = spot.cover ? spot.cover(host) : null;
+    if (!id || spot.cover && !cover) {
+      if (button5) {
+        setCover(button5, null);
+        button5.remove();
+        buttons.delete(host);
+      }
       return;
     }
-    let done = false;
-    let timeoutId = 0;
-    let observer = null;
-    const finish = (reason) => {
-      if (done) {
+    if (!button5) {
+      button5 = makeButton();
+      button5.dataset.av = id;
+      paint(button5, viewed2(id));
+      if (spot.cover) host.append(button5);
+      else {
+        button5.classList.add("atelier-viewed-inline");
+        if (!spot.inline(host, button5)) return;
+      }
+      buttons.set(host, button5);
+    } else if (spot.cover && button5.parentElement !== host) host.append(button5);
+    if (button5.dataset.av !== id) {
+      button5.dataset.av = id;
+      paint(button5, viewed2(id));
+    }
+    setCover(button5, cover);
+  }
+  async function markAllViewed() {
+    const feedback = soundTask();
+    const ids = [...new Set([...document.querySelectorAll("button.btnView.btnNotView[data-av]")].map((button5) => button5.dataset.av))];
+    if (!ids.length) {
+      showInfoLog("\u672C\u9875\u5DF2\u52A0\u8F7D\u7684\u89C6\u9891\u90FD\u5DF2\u6807\u4E3A\u5DF2\u770B");
+      feedback.finish("click");
+      return;
+    }
+    if (!await atelierConfirm(`\u628A\u672C\u9875\u5DF2\u52A0\u8F7D\u7684 ${ids.length} \u4E2A\u672A\u770B\u89C6\u9891\u90FD\u6807\u4E3A\u5DF2\u770B\uFF1F\u6B64\u64CD\u4F5C\u4E0D\u80FD\u64A4\u9500\u3002`)) {
+      feedback.finish("cancel");
+      return;
+    }
+    const changed = ids.filter((id) => setViewedVideo(id, true)).length;
+    showInfoLog("\u4E00\u952E\u5DF2\u770B\uFF1A" + changed + " \u4E2A\u89C6\u9891", "success");
+    feedback.finish(changed ? "success" : "click");
+  }
+  function ensureBulk(page) {
+    const place = page.bulk && document.querySelector(page.bulk);
+    if (!place || place.querySelector(":scope > .atelier-viewed-bulk")) return;
+    const button5 = document.createElement("button");
+    button5.type = "button";
+    button5.className = "atelier-viewed-bulk";
+    button5.textContent = "\u4E00\u952E\u5DF2\u770B";
+    button5.title = "\u628A\u672C\u9875\u5DF2\u52A0\u8F7D\u7684\u672A\u770B\u89C6\u9891\u90FD\u6807\u4E3A\u5DF2\u770B\uFF1B\u5F80\u4E0B\u7FFB\u53EF\u52A0\u8F7D\u66F4\u591A";
+    button5.addEventListener("click", () => {
+      void markAllViewed();
+    });
+    styleAtelierAction(button5);
+    place.prepend(button5);
+  }
+  function startViewedMarker() {
+    const page = viewedPage();
+    if (!page) return;
+    const style = document.createElement("style");
+    style.setAttribute("data-atelier-viewed", "");
+    const hosts = page.spots.filter((spot) => spot.cover).map((spot) => spot.hosts).join(",");
+    style.textContent = baseCss + `
+:is(${hosts}){position:relative}
+${page.css ?? ""}`;
+    document.head.append(style);
+    const scan = () => {
+      const viewed2 = viewedLookup();
+      for (const spot of page.spots) {
+        for (const host of document.querySelectorAll(spot.hosts)) {
+          if (spot.outermost && host.parentElement?.closest(spot.hosts)) continue;
+          if (host.closest(".bili-header, a[href]")) continue;
+          mark(spot, host, viewed2);
+        }
+      }
+      ensureBulk(page);
+    };
+    const watched = page.spots.map((spot) => spot.hosts).concat(page.bulk ?? []).join(",");
+    const inHost = (node4) => {
+      const element2 = node4 instanceof Element ? node4 : node4.parentElement;
+      return !!element2 && !element2.closest(".btnView") && !!element2.closest(watched);
+    };
+    const bringsHost = (node4) => node4 instanceof Element && !node4.matches(".btnView") && !!(node4.closest(watched) || node4.querySelector(watched));
+    const matters = (record) => record.type !== "childList" ? inHost(record.target) : [...record.addedNodes].some(bringsHost) || record.removedNodes.length > 0 && inHost(record.target);
+    let timer2 = 0;
+    new MutationObserver((records2) => {
+      if (timer2 || !records2.some(matters)) return;
+      timer2 = window.setTimeout(() => {
+        timer2 = 0;
+        scan();
+      }, 80);
+    }).observe(document.documentElement, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["href", "data-key", "data-bvid", "class"] });
+    window.addEventListener(viewedMarksChanged, repaintAll);
+    window.addEventListener("atelier-sync-applied", repaintAll);
+    scan();
+  }
+
+  // src/ui/atelier-dom.ts
+  function element(tag, className = "", text3 = "") {
+    const node4 = document.createElement(tag);
+    node4.className = className;
+    node4.textContent = text3;
+    return node4;
+  }
+  function icon(src, size = 28) {
+    const image5 = element("img");
+    image5.src = src;
+    image5.alt = "";
+    image5.width = image5.height = size;
+    return image5;
+  }
+  function button4(text3, action, className = "luna-button") {
+    const node4 = element("button", className, text3);
+    node4.type = "button";
+    node4.addEventListener("click", () => {
+      sound("click");
+      action();
+    });
+    return node4;
+  }
+  function downloadJson(value2, fileName2) {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(value2, null, 2)], { type: "application/json;charset=utf-8" }));
+    const link3 = element("a");
+    link3.href = url;
+    link3.download = fileName2;
+    document.body.appendChild(link3);
+    link3.click();
+    link3.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1e3);
+  }
+
+  // src/ui/atelier-window.ts
+  var factories = [];
+  function registerAtelierPages(factory) {
+    factories.push(factory);
+  }
+  var notifyAtelierDataChanged = () => window.dispatchEvent(new Event("atelier-sync-applied"));
+  var active;
+  function toggleAtelierWindow(section) {
+    if (!active?.toggle(section)) openAtelierWindow(section);
+  }
+  function openAtelierWindow(initialSection = "following") {
+    if (active && document.getElementById(atelierPanelId)) {
+      active.show(initialSection);
+      return;
+    }
+    ensureLunaTheme();
+    const previousFocus = document.activeElement;
+    const events = new AbortController();
+    const panel = element("section");
+    panel.id = atelierPanelId;
+    panel.className = "xp-window";
+    panel.setAttribute("data-bili-blocker-ui", "");
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-labelledby", "bili-atelier-title");
+    let section = initialSection;
+    const cleanupPixels = observeCrispText(panel);
+    const navButtons = /* @__PURE__ */ new Map();
+    const status2 = element("span", "luna-status xp-status-pane");
+    status2.setAttribute("role", "status");
+    status2.setAttribute("aria-live", "polite");
+    const win = {
+      element: panel,
+      signal: events.signal,
+      current: () => section,
+      show: (next, user = false) => show(next, user),
+      updateStatus,
+      isDirty: () => groups.some((group2) => group2.isDirty?.()),
+      reload: () => {
+        for (const group2 of groups) group2.reload?.();
+      }
+    };
+    const groups = factories.map((factory) => factory(win));
+    const groupOf2 = (id) => groups.find((group2) => group2.pages[id]);
+    function updateStatus(message) {
+      const current4 = groupOf2(section);
+      const source = [current4, ...groups].find((group2) => group2?.status && (group2 === current4 || group2.isDirty?.()));
+      status2.textContent = message || source?.status?.() || "";
+      status2.dataset.dirty = String(!!source?.isDirty?.());
+    }
+    let closing = false;
+    async function close() {
+      if (closing) return;
+      closing = true;
+      const feedback = soundTask();
+      if (win.isDirty() && !await atelierConfirm("\u89C4\u5219\u6216\u540C\u6B65\u8BBE\u7F6E\u5C1A\u672A\u4FDD\u5B58\uFF0C\u786E\u5B9A\u653E\u5F03\u4FEE\u6539\u5E76\u5173\u95ED\u5417\uFF1F")) {
+        closing = false;
+        feedback.finish("cancel");
         return;
       }
-      done = true;
-      observer?.disconnect();
-      if (timeoutId) {
-        window.clearTimeout(timeoutId);
+      events.abort();
+      for (const group2 of groups) group2.dispose?.();
+      cleanupPixels();
+      panel.remove();
+      active = void 0;
+      if (previousFocus?.isConnected) previousFocus.focus();
+      feedback.finish("close");
+    }
+    function save() {
+      groupOf2(section)?.save?.();
+    }
+    const caption2 = element("header", "luna-caption xp-caption");
+    const title = element("h1", "", "Bili Atelier");
+    title.id = "bili-atelier-title";
+    const captionActions = element("div", "luna-caption-actions");
+    function captionButton2(name, label, action) {
+      const node4 = button4("", action, "luna-caption-button xp-caption-button");
+      node4.title = label;
+      node4.setAttribute("aria-label", label);
+      node4.dataset.kind = name;
+      captionActions.appendChild(node4);
+      return node4;
+    }
+    const minimize = captionButton2("minimize", "\u6700\u5C0F\u5316", () => {
+      const minimized = panel.dataset.minimized !== "true";
+      if (minimized) groupOf2(section)?.leave?.();
+      panel.dataset.minimized = String(minimized);
+      updateWindowPosition();
+      minimize.title = minimized ? "\u5C55\u5F00\u7A97\u53E3" : "\u6700\u5C0F\u5316";
+      minimize.setAttribute("aria-label", minimize.title);
+      sound(minimized ? "minimize" : "restore");
+    });
+    const maximize = captionButton2("maximize", "\u6700\u5927\u5316", () => {
+      panel.dataset.minimized = "false";
+      minimize.title = "\u6700\u5C0F\u5316";
+      minimize.setAttribute("aria-label", minimize.title);
+      const maximized = panel.dataset.maximized !== "true";
+      panel.dataset.maximized = String(maximized);
+      updateWindowPosition();
+      maximize.title = maximized ? "\u8FD8\u539F\u7A97\u53E3" : "\u6700\u5927\u5316";
+      maximize.setAttribute("aria-label", maximize.title);
+      maximize.dataset.kind = maximized ? "restore" : "maximize";
+      sound(maximized ? "maximize" : "restore");
+    });
+    captionButton2("close", "\u5173\u95ED\u7A97\u53E3", close);
+    caption2.append(icon(atelierIcons.tv, 16), title, captionActions);
+    const updateWindowPosition = enableWindowDrag(panel, caption2, events.signal);
+    const layout2 = element("div", "luna-layout");
+    const sidebar = element("div", "luna-sidebar xp-taskpane");
+    const group = element("section", "xp-task-group");
+    group.dataset.special = "";
+    const groupHead = button4("\u5DE5\u4F5C\u53F0", () => {
+      group.toggleAttribute("data-collapsed");
+      groupHead.setAttribute("aria-expanded", String(!group.hasAttribute("data-collapsed")));
+    }, "xp-task-head");
+    groupHead.setAttribute("aria-expanded", "true");
+    const nav2 = element("nav", "luna-nav xp-task-body");
+    nav2.setAttribute("aria-label", "Atelier \u529F\u80FD\u76EE\u5F55");
+    for (const area of atelierAreas) {
+      const node4 = button4("", () => show(area.id, true), "luna-nav-button xp-task-link");
+      node4.append(icon(atelierIcons[area.id], 16), document.createTextNode(area.label));
+      navButtons.set(area.id, node4);
+      nav2.appendChild(node4);
+    }
+    group.append(groupHead, nav2);
+    sidebar.append(group);
+    const main = element("div", "luna-main");
+    const breadcrumb = element("div", "luna-breadcrumb");
+    const address = element("div", "luna-address");
+    breadcrumb.append(document.createTextNode("\u5730\u5740"), address);
+    const sectionTabs = element("nav", "luna-section-tabs xp-tabs");
+    sectionTabs.setAttribute("aria-label", "\u5F53\u524D\u680F\u76EE\u5B50\u9875\u9762");
+    const content = element("div", "luna-content");
+    const footer = element("footer", "luna-footer");
+    const saveButton = button4("\u4FDD\u5B58\u89C4\u5219", save, "luna-button luna-button-primary xp-default");
+    footer.append(saveButton, button4("\u5173\u95ED", close));
+    main.append(breadcrumb, sectionTabs, content, footer);
+    layout2.append(sidebar, main);
+    const statusBar = element("div", "xp-status");
+    statusBar.append(status2);
+    panel.append(caption2, layout2, statusBar);
+    let drawnClass = "";
+    function show(next, user = false) {
+      if (user && next !== section) sound("folder");
+      else if (user && panel.dataset.minimized === "true") sound("restore");
+      groupOf2(section)?.leave?.();
+      section = next;
+      const owner = groupOf2(section), page = owner?.pages[section];
+      saveButton.hidden = !(page?.saves && owner?.save);
+      panel.dataset.minimized = "false";
+      updateWindowPosition();
+      minimize.title = "\u6700\u5C0F\u5316";
+      minimize.setAttribute("aria-label", minimize.title);
+      const area = areaFor(section);
+      for (const [id, node4] of navButtons) {
+        if (id === area) node4.setAttribute("aria-current", "page");
+        else node4.removeAttribute("aria-current");
       }
-      debugLog(`comment-location video header gate released: ${reason}`);
-      callback();
-    };
-    const check2 = () => {
-      if (isVideoHeaderReady()) {
-        finish("header-ready");
+      const label = atelierAreas.find((item) => item.id === area).label;
+      address.replaceChildren(icon(atelierIcons[area], 16), document.createTextNode("Bili Atelier \u203A " + label));
+      const tabs2 = atelierTabs[area];
+      sectionTabs.replaceChildren();
+      sectionTabs.hidden = !tabs2.length;
+      for (const [id, tabLabel] of tabs2) {
+        const tab = button4(tabLabel, () => show(id, true), "luna-section-tab xp-tab");
+        if (id === section) tab.setAttribute("aria-current", "page");
+        sectionTabs.append(tab);
+      }
+      content.replaceChildren();
+      content.classList.toggle("xp-tabpanel", !!tabs2.length);
+      if (drawnClass) content.classList.remove(drawnClass);
+      drawnClass = page?.contentClass ?? "";
+      if (drawnClass) content.classList.add(drawnClass);
+      page?.draw(content);
+      content.scrollTop = 0;
+      updateStatus();
+    }
+    panel.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        close();
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!saveButton.hidden) save();
+      }
+    });
+    window.addEventListener("beforeunload", (event) => {
+      if (win.isDirty()) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    }, { signal: events.signal });
+    active = {
+      show: (next) => show(next, true),
+      toggle: (next) => {
+        if (section !== next || !panel.isConnected) return false;
+        minimize.click();
+        return true;
       }
     };
-    observer = new MutationObserver(check2);
-    observer.observe(document.documentElement || document, { childList: true, subtree: true });
-    document.addEventListener("DOMContentLoaded", check2, { once: true });
-    timeoutId = window.setTimeout(() => finish("timeout"), config.commentLocation.videoPageHeaderGateTimeoutMs);
+    document.body.appendChild(panel);
+    show(initialSection);
+    navButtons.get(areaFor(initialSection))?.focus();
+    sound("open");
   }
-  var commentLocationInjected = false;
-  function injectCommentLocation() {
-    if (commentLocationInjected) {
-      return;
+
+  // src/modules/blocker/panel.ts
+  var categories = [
+    { id: "user", label: "\u7528\u6237", description: "\u6309\u7528\u6237\u8EAB\u4EFD\u8FC7\u6EE4\u5185\u5BB9\uFF0C\u767D\u540D\u5355\u4F18\u5148\u4FDD\u7559\u3002", keys: ["precise_uid", "precise_uid_white", "name", "precise_name", "nameCanonical"] },
+    { id: "video", label: "\u89C6\u9891", description: "\u6309\u6807\u9898\u8FC7\u6EE4\u4E0D\u60F3\u770B\u5230\u7684\u89C6\u9891", keys: ["title", "titleCanonical"] },
+    { id: "comment", label: "\u8BC4\u8BBA", description: "\u6309\u8BC4\u8BBA\u6B63\u6587\u4E2D\u7684\u5173\u952E\u8BCD\u8FC7\u6EE4\u5185\u5BB9\u3002", keys: ["commentOn", "commentOnCanonical"] },
+    { id: "dynamic", label: "\u52A8\u6001", description: "\u6309\u52A8\u6001\u6B63\u6587\u4E2D\u7684\u5173\u952E\u8BCD\u8FC7\u6EE4\u5185\u5BB9\u3002", keys: ["dynamic", "dynamicCanonical"] },
+    { id: "live", label: "\u76F4\u64AD", description: "\u6309\u76F4\u64AD\u6807\u9898\u3001\u76F4\u64AD\u95F4\u6216\u5206\u533A\u8FC7\u6EE4\u5185\u5BB9\u3002", keys: ["liveTitle", "liveTitleCanonical", "precise_liveRoomId", "precise_partition"] }
+  ];
+  var modeLabels = {
+    precise_uid: "\u7528\u6237 UID",
+    precise_uid_white: "UID \u767D\u540D\u5355",
+    name: "\u6A21\u7CCA\u7528\u6237\u540D",
+    precise_name: "\u7CBE\u786E\u7528\u6237\u540D",
+    nameCanonical: "\u6B63\u5219\u7528\u6237\u540D",
+    title: "\u6A21\u7CCA\u5339\u914D",
+    titleCanonical: "\u6B63\u5219\u5339\u914D",
+    commentOn: "\u6A21\u7CCA\u5339\u914D",
+    commentOnCanonical: "\u6B63\u5219\u5339\u914D",
+    dynamic: "\u6A21\u7CCA\u5339\u914D",
+    dynamicCanonical: "\u6B63\u5219\u5339\u914D",
+    liveTitle: "\u6A21\u7CCA\u6807\u9898",
+    liveTitleCanonical: "\u6B63\u5219\u6807\u9898",
+    precise_liveRoomId: "\u76F4\u64AD\u95F4 ID",
+    precise_partition: "\u76F4\u64AD\u5206\u533A"
+  };
+  function blockerPages(win) {
+    const snapshot = readRuleSnapshot();
+    const fields2 = /* @__PURE__ */ new Map();
+    const saved = /* @__PURE__ */ new Map();
+    let selectedKey = "title";
+    const isDirty = () => [...fields2].some(([key3, field]) => field.value !== saved.get(key3));
+    for (const rule of ruleDefinitions) {
+      const field = element("textarea", "luna-editor");
+      field.id = "bili-rule-" + rule.key;
+      field.value = formatRuleText(snapshot[rule.key]);
+      field.spellcheck = false;
+      field.setAttribute("aria-label", rule.label);
+      field.addEventListener("input", () => win.updateStatus());
+      fields2.set(rule.key, field);
+      saved.set(rule.key, field.value);
     }
-    commentLocationInjected = true;
-    try {
-      injectPageScript(commentLocationPageWorldSource);
-      debugLog("comment-location injected");
-    } catch (error) {
-      warnLog("\u8BC4\u8BBA\u533A\u5C5E\u5730\u6A21\u5757\u6CE8\u5165\u5931\u8D25", error);
+    function syncSavedRules(discardDrafts = false) {
+      const current4 = readRuleSnapshot();
+      for (const rule of ruleDefinitions) {
+        const field = fields2.get(rule.key);
+        if (discardDrafts || field.value === saved.get(rule.key)) {
+          field.value = formatRuleText(current4[rule.key]);
+          saved.set(rule.key, field.value);
+        }
+      }
+      win.updateStatus();
     }
+    function save() {
+      const changed = isDirty();
+      const latest = readRuleSnapshot();
+      for (const rule of ruleDefinitions) {
+        const field = fields2.get(rule.key);
+        if (field.value === saved.get(rule.key)) continue;
+        let next = parseRuleText(field.value, rule.integer);
+        if (rule.key === "precise_uid" || rule.key === "precise_name") {
+          const identity = (value2) => String(value2).trim().toLowerCase();
+          const baseline = new Set(parseRuleText(saved.get(rule.key), rule.integer).map(identity));
+          const draft = new Set(next.map(identity));
+          const current4 = latest[rule.key].filter((value2) => !baseline.has(identity(value2)) || draft.has(identity(value2)));
+          const present = new Set(current4.map(identity));
+          next = current4.concat(next.filter((value2) => !baseline.has(identity(value2)) && !present.has(identity(value2))));
+        }
+        writeRuleList(rule.key, next);
+      }
+      syncSavedRules(true);
+      notifyAtelierDataChanged();
+      showInfoLog("\u5DF2\u4FDD\u5B58\u5C4F\u853D\u89C4\u5219", "success");
+      if (changed) sound("save");
+    }
+    function rulesPage(category) {
+      return {
+        contentClass: "luna-rules-content",
+        saves: true,
+        draw(content) {
+          syncSavedRules();
+          if (!category.keys.includes(selectedKey)) selectedKey = category.keys[0];
+          content.append(element("h2", "", category.label + "\u5C4F\u853D\u89C4\u5219"), element("p", "luna-description", category.description));
+          const tabs2 = element("div", "luna-rule-tabs");
+          tabs2.setAttribute("role", "tablist");
+          tabs2.setAttribute("aria-label", category.label + "\u5339\u914D\u65B9\u5F0F");
+          const editorHost = element("div", "luna-editor-host");
+          editorHost.setAttribute("role", "tabpanel");
+          editorHost.id = "bili-atelier-rule-editor";
+          const modeButtons = /* @__PURE__ */ new Map();
+          function selectMode(key3, user = false) {
+            if (user && selectedKey !== key3) sound("select");
+            selectedKey = key3;
+            for (const [mode2, node4] of modeButtons) {
+              node4.setAttribute("aria-selected", String(mode2 === key3));
+              node4.tabIndex = mode2 === key3 ? 0 : -1;
+            }
+            editorHost.setAttribute("aria-labelledby", "bili-atelier-mode-" + key3);
+            editorHost.replaceChildren(fields2.get(key3));
+          }
+          for (const key3 of category.keys) {
+            const tab = button4(modeLabels[key3], () => selectMode(key3, true), "luna-rule-tab");
+            const mark2 = element("span", "luna-radio");
+            mark2.setAttribute("aria-hidden", "true");
+            tab.prepend(mark2);
+            tab.id = "bili-atelier-mode-" + key3;
+            tab.setAttribute("role", "tab");
+            tab.setAttribute("aria-controls", editorHost.id);
+            tab.addEventListener("keydown", (event) => {
+              if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+              event.preventDefault();
+              const index = category.keys.indexOf(key3);
+              const next = event.key === "Home" ? 0 : event.key === "End" ? category.keys.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + category.keys.length) % category.keys.length;
+              selectMode(category.keys[next], true);
+              modeButtons.get(category.keys[next]).focus();
+            });
+            modeButtons.set(key3, tab);
+            tabs2.appendChild(tab);
+          }
+          selectMode(selectedKey);
+          content.append(tabs2, editorHost, element("p", "luna-hint", "\u6BCF\u884C\u4E00\u6761\u89C4\u5219"));
+        }
+      };
+    }
+    let history2;
+    function refreshHistory() {
+      if (history2?.isConnected) renderHistoryPanel(history2, () => {
+        syncSavedRules();
+        notifyAtelierDataChanged();
+      });
+    }
+    window.addEventListener("atelier-sync-applied", () => syncSavedRules(), { signal: win.signal });
+    document.addEventListener(historyChangedEvent, () => {
+      if (win.current() === "history") refreshHistory();
+    }, { signal: win.signal });
+    return {
+      pages: {
+        ...Object.fromEntries(categories.map((category) => [category.id, rulesPage(category)])),
+        history: {
+          draw(content) {
+            history2 = element("div", "luna-history");
+            content.append(element("h2", "", "\u5C4F\u853D\u5386\u53F2"), element("p", "luna-description", "\u67E5\u770B\u5DF2\u9690\u85CF\u7684\u5185\u5BB9\uFF0C\u4E5F\u53EF\u4EE5\u89E3\u9664\u5BF9\u5E94\u7684\u5C4F\u853D\u89C4\u5219\u3002"), history2);
+            refreshHistory();
+          }
+        }
+      },
+      status() {
+        if (!isDirty() && !categories.some((category) => category.id === win.current())) return "";
+        const count2 = [...fields2].reduce((sum, [key3, field]) => sum + parseRuleText(field.value, ruleDefinitions.find((rule) => rule.key === key3)?.integer).length, 0);
+        return count2 + " \u6761\u89C4\u5219 \xB7 " + (isDirty() ? "\u6709\u672A\u4FDD\u5B58\u7684\u4FEE\u6539" : "\u5DF2\u4FDD\u5B58");
+      },
+      isDirty,
+      save,
+      reload: () => syncSavedRules(true)
+    };
   }
-  function startCommentLocation() {
-    if (!config.commentLocation.enabled) {
-      return;
+
+  // src/modules/sounds/panel.ts
+  function mountSoundPanel() {
+    const host = document.createElement("section");
+    host.className = "luna-sounds";
+    host.innerHTML = `<style>
+    .luna-sounds{display:flex;flex-direction:column;gap:10px;min-width:0}
+    .luna-sounds h2{font-size:14px!important}.luna-sounds p{line-height:1.5!important}
+    .luna-sound-group{padding:14px;border:2px solid;border-color:var(--atelier-edge) var(--atelier-highlight) var(--atelier-highlight) var(--atelier-edge);background:var(--atelier-surface);min-width:0}
+    .luna-sound-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0}
+    .luna-sound-row label{display:flex;align-items:center;gap:8px;min-width:0}
+    .luna-sound-row input[type=range]{width:clamp(100px,25vw,240px);max-width:100%;accent-color:var(--atelier-accent)}
+    .luna-sound-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--atelier-accent)}
+    .luna-sound-row output{min-width:4ch;font-variant-numeric:tabular-nums}
+    .luna-sounds select{max-width:100%;min-width:0;padding:5px;background:var(--atelier-field);border:2px inset var(--atelier-edge)}
+    .luna-sounds summary{cursor:pointer;padding:7px 0}.luna-sounds [role=status]{border:1px solid var(--atelier-edge);padding:10px;background:var(--atelier-panel)}
+  </style><h2>\u8BBE\u7F6E \u203A \u97F3\u6548</h2><p>\u8F7B\u67D4\u7684 Windows XP \u4EA4\u4E92\u58F0\u97F3\u3002\u901A\u77E5\u548C\u64CD\u4F5C\u7ED3\u679C\u59CB\u7EC8\u9759\u97F3\uFF1B\u97F3\u91CF\u53EA\u5F71\u54CD\u6309\u94AE\u3001\u5BFC\u822A\u548C\u7A97\u53E3\uFF0C\u504F\u597D\u4FDD\u5B58\u5728\u672C\u673A\u3002</p>`;
+    let prefs = readSoundPreferences();
+    const events = new AbortController();
+    const controls = [];
+    const status2 = document.createElement("p");
+    status2.setAttribute("role", "status");
+    status2.setAttribute("aria-live", "polite");
+    const refresh = () => {
+      prefs = readSoundPreferences();
+      controls.forEach((update) => update());
+      status2.textContent = soundPlaybackStatus();
+    };
+    const save = () => writeSoundPreferences(prefs);
+    const button5 = (label, run) => {
+      const node4 = document.createElement("button");
+      node4.type = "button";
+      node4.className = "luna-button";
+      node4.textContent = label;
+      node4.addEventListener("click", () => {
+        run();
+        status2.textContent = soundPlaybackStatus();
+      });
+      return node4;
+    };
+    function row(name, category) {
+      const section = document.createElement("section");
+      section.className = "luna-sound-group";
+      const values = () => category ? prefs.categories[category] : prefs;
+      const line2 = document.createElement("div");
+      line2.className = "luna-sound-row";
+      const label = document.createElement("label"), enabled = document.createElement("input");
+      enabled.type = "checkbox";
+      enabled.setAttribute("aria-label", name + "\u5F00\u5173");
+      label.append(enabled, document.createTextNode(name));
+      line2.append(label);
+      enabled.addEventListener("change", () => {
+        values().enabled = enabled.checked;
+        save();
+        sound("select");
+      });
+      const volumeLabel = document.createElement("label");
+      volumeLabel.textContent = "\u97F3\u91CF";
+      const volume2 = document.createElement("input");
+      volume2.type = "range";
+      volume2.min = "0";
+      volume2.max = "100";
+      volume2.step = "1";
+      volume2.setAttribute("aria-label", name + "\u97F3\u91CF");
+      const output = document.createElement("output");
+      volume2.addEventListener("input", () => {
+        values().volume = Number(volume2.value) / 100;
+        output.value = volume2.value + "%";
+        save();
+      });
+      volume2.addEventListener("change", () => sound("select"));
+      volumeLabel.append(volume2, output);
+      line2.append(volumeLabel);
+      if (category) line2.append(button5("\u8BD5\u542C" + name, () => previewSound(catalog_default.categories.find((item) => item.id === category).sample, category)));
+      controls.push(() => {
+        enabled.checked = values().enabled;
+        volume2.value = String(Math.round(values().volume * 100));
+        output.value = volume2.value + "%";
+      });
+      section.append(line2);
+      host.append(section);
     }
-    waitForVideoHeaderBeforeCommentLocation(injectCommentLocation);
+    row("\u603B\u97F3\u6548");
+    for (const category of catalog_default.categories) row(category.name, category.id);
+    const details = document.createElement("details"), summary = document.createElement("summary");
+    summary.textContent = "\u5168\u90E8 26 \u79CD\u539F\u7248\u58F0\u97F3\u8BD5\u542C";
+    details.append(summary);
+    summary.addEventListener("click", () => sound("menu"));
+    const line = document.createElement("div");
+    line.className = "luna-sound-row";
+    const select = document.createElement("select");
+    select.setAttribute("aria-label", "\u8BD5\u542C\u58F0\u97F3");
+    for (const clip of catalog_default.sounds) {
+      const option = document.createElement("option");
+      option.value = clip.id;
+      option.textContent = clip.name + (clip.previewOnly ? "\uFF08\u4EC5\u8BD5\u542C\uFF09" : "") + ` \xB7 ${(clip.durationMs / 1e3).toFixed(2)} \u79D2`;
+      select.append(option);
+    }
+    select.addEventListener("change", () => {
+      stopSoundPreview();
+      sound("select");
+    });
+    line.append(select, button5("\u8BD5\u542C\u6240\u9009\u58F0\u97F3", () => {
+      const cue = Object.values(catalog_default.cues).find((cue2) => cue2.sound === select.value);
+      previewSound(select.value, cue?.category || "navigation");
+    }), button5("\u505C\u6B62\u8BD5\u542C", () => {
+      stopSoundPreview();
+      sound("cancel");
+    }));
+    const hint = document.createElement("p");
+    hint.textContent = "\u901A\u77E5\u3001\u64CD\u4F5C\u7ED3\u679C\u4EE5\u53CA\u957F\u5F00\u673A\u3001\u5173\u673A\u3001\u767B\u5F55\u548C\u786C\u4EF6\u63D0\u793A\u6837\u672C\u4EC5\u4F9B\u624B\u52A8\u8BD5\u542C\uFF0C\u4E0D\u4F1A\u81EA\u52A8\u54CD\u8D77\u3002\u672A\u5206\u914D\u7ED9\u65E5\u5E38\u52A8\u4F5C\u7684\u6837\u672C\u4F7F\u7528\u201C\u5BFC\u822A\u4E0E\u7A97\u53E3\u201D\u97F3\u91CF\u3002";
+    details.append(line, hint);
+    host.append(details);
+    const quiet = document.createElement("p");
+    quiet.textContent = "\u5F53\u524D\u9875\u6216\u811A\u672C\u8986\u76D6\u7684 B \u7AD9\u6807\u7B7E\u64AD\u653E\u5A92\u4F53\u65F6\uFF08\u5305\u62EC\u9759\u97F3\u89C6\u9891\uFF09\uFF0C\u754C\u9762\u97F3\u6548\u6682\u65F6\u5B89\u9759\uFF1B\u5207\u5230\u540E\u53F0\u3001\u5173\u95ED\u7A97\u53E3\u6216\u53D7\u6D4F\u89C8\u5668\u9650\u5236\u7684\u58F0\u97F3\u4E0D\u4F1A\u8865\u64AD\u3002\u8BD5\u542C\u4E5F\u9075\u5B88\u5F00\u5173\u4E0E\u97F3\u91CF\u3002";
+    host.append(quiet, status2);
+    window.addEventListener(soundPreferencesChanged, refresh, { signal: events.signal });
+    refresh();
+    return { host, dispose() {
+      events.abort();
+      stopSoundPreview();
+      host.remove();
+    } };
   }
-  function startViewedMarkerModule() {
-    if (!config.viewedMarker.enabled) {
-      return;
+  function soundPages() {
+    let panel;
+    return {
+      pages: { sounds: { draw: (content) => {
+        panel ??= mountSoundPanel();
+        content.append(panel.host);
+      } } },
+      leave: stopSoundPreview,
+      dispose: () => panel?.dispose()
+    };
+  }
+
+  // src/ui/appearance-page.ts
+  function appearancePage() {
+    const page = element("div", "atelier-appearance");
+    const preview = element("div", "atelier-appearance-preview");
+    preview.setAttribute("aria-hidden", "true");
+    const sample = (className, title, inactive, kinds2, body2) => {
+      const frame2 = element("div", "xp-window " + className);
+      if (inactive) frame2.dataset.inactive = "";
+      const caption2 = element("div", "xp-caption");
+      caption2.append(element("span", "xp-caption-title", title));
+      for (const kind of kinds2) {
+        const control = element("span", "xp-caption-button");
+        control.dataset.kind = kind;
+        caption2.append(control);
+      }
+      const content = element("div", "preview-body");
+      content.append(...body2);
+      frame2.append(caption2, content);
+      return frame2;
+    };
+    preview.append(
+      sample("preview-inactive", "\u975E\u6D3B\u52A8\u7A97\u53E3", true, ["minimize", "maximize", "close"], []),
+      sample("preview-active", "\u6D3B\u52A8\u7A97\u53E3", false, ["minimize", "maximize", "close"], [element("span", "", "\u7A97\u53E3\u6587\u5B57")]),
+      sample("preview-message", "\u6D88\u606F\u6846", false, ["close"], [element("span", "", "\u6D88\u606F\u6587\u5B57"), element("span", "xp-button", "\u786E\u5B9A")])
+    );
+    const row = (label, control) => {
+      const line = element("label", "atelier-appearance-row");
+      line.append(element("span", "", label), control);
+      return line;
+    };
+    const choice = (options, value2, change) => {
+      const node4 = element("select");
+      for (const [key3, text3] of options) {
+        const option = element("option", "", text3);
+        option.value = key3;
+        node4.append(option);
+      }
+      node4.value = value2;
+      node4.addEventListener("change", () => {
+        change(node4.value);
+        sound("select");
+      });
+      return node4;
+    };
+    const prefs = readUiPreferences();
+    page.append(
+      element("h2", "", "\u5916\u89C2"),
+      preview,
+      row("\u8272\u5F69\u65B9\u6848(C):", choice(Object.entries(lunaSchemeNames), prefs.scheme, (value2) => saveUiPreferences({ scheme: value2 }))),
+      row("\u660E\u6697(D):", choice([["page", "\u8DDF\u968F\u7F51\u9875"], ["light", "\u6D45\u8272"], ["dark", "\u6DF1\u8272"]], prefs.theme, (value2) => saveUiPreferences({ theme: value2 }))),
+      element("p", "luna-hint", "\u6587\u5B57\u4F7F\u7528 Windows XP \u5B8B\u4F53\u7684\u539F\u751F\u70B9\u9635\uFF0C\u6309\u5C4F\u5E55\u7F29\u653E\u9009\u62E9\u6700\u63A5\u8FD1\u7684\u5C3A\u5BF8\u3002"),
+      videoLunaRow(),
+      videoCoverRow(),
+      hiddenCountRow(),
+      button4("\u91CD\u7F6E\u7535\u89C6\u5165\u53E3\u4F4D\u7F6E", () => {
+        saveUiPreferences({ edge: "right", y: 0.72 });
+        window.dispatchEvent(new Event("atelier-reset-launcher"));
+      })
+    );
+    return page;
+  }
+  function videoLunaRow() {
+    const line = element("label", "atelier-appearance-row atelier-check-row");
+    const box = element("input");
+    box.type = "checkbox";
+    box.checked = videoLunaEnabled();
+    box.addEventListener("change", () => {
+      sound("select");
+      const mode2 = isLunaVideoLocation() ? currentPageMode() : null;
+      if (mode2) mode2.setNative(!box.checked);
+      else setVideoLunaEnabled(box.checked);
+    });
+    line.append(box, element("span", "", "\u89C6\u9891\u64AD\u653E\u9875\u4F7F\u7528 Luna \u754C\u9762\uFF08\u5173\u95ED\u540E\u663E\u793A B \u7AD9\u539F\u6765\u7684\u9875\u9762\uFF09"));
+    return line;
+  }
+  function videoCoverRow() {
+    const line = element("label", "atelier-appearance-row atelier-check-row");
+    const box = element("input");
+    box.type = "checkbox";
+    box.checked = videoCoverEnabled();
+    box.addEventListener("change", () => {
+      sound("select");
+      setVideoCoverEnabled(box.checked);
+    });
+    line.append(box, element("span", "", "\u8FDB\u5165\u89C6\u9891\u65F6\u663E\u793A\u5C01\u9762\uFF08\u6307\u5411\u753B\u9762\u65F6\u663E\u793A\u9996\u5E27\uFF0C\u5F00\u59CB\u64AD\u653E\u540E\u4E0D\u518D\u663E\u793A\uFF09"));
+    return line;
+  }
+  function hiddenCountRow() {
+    const line = element("label", "atelier-appearance-row atelier-check-row");
+    const box = element("input");
+    box.type = "checkbox";
+    box.checked = readUiPreferences().hiddenCount;
+    box.addEventListener("change", () => {
+      sound("select");
+      saveUiPreferences({ hiddenCount: box.checked });
+    });
+    line.append(box, element("span", "", "\u56DE\u590D\u6570\u540E\u663E\u793A\u672C\u5730\u9690\u85CF\u6570\uFF08\u5DF2\u52A0\u8F7D\u7684\u8BC4\u8BBA\u4E2D\u88AB\u672C\u5730\u9ED1\u540D\u5355\u9690\u85CF\u4E86\u51E0\u6761\uFF09"));
+    return line;
+  }
+  var appearancePages = () => ({ pages: { settings: { draw: (content) => content.append(appearancePage()) } } });
+
+  // src/ui/data-pages.ts
+  var dated = (stem2) => stem2 + "-" + (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) + ".json";
+  function dataPages(win) {
+    function dataGroup(title, hint, actions) {
+      const group = element("section", "luna-data-group xp-groupbox");
+      const row = element("div", "luna-button-row");
+      row.append(...actions);
+      group.append(element("h3", "", title), element("p", "luna-hint", hint), row);
+      return group;
     }
-    if (!hasGmStorage()) {
-      warnLog("\u5DF2\u770B\u6A21\u5757\u9700\u8981 GM_* \u5B58\u50A8\u6743\u9650\uFF0C\u5F53\u524D\u73AF\u5883\u4E0D\u53EF\u7528\u3002");
-      return;
+    function downloadViewed() {
+      const data = exportViewedDataPackage();
+      downloadJson(data, dated("bili-atelier-viewed"));
+      showInfoLog("\u5DF2\u751F\u6210 " + data.viewed.items.length + " \u6761\u5DF2\u770B\u8BB0\u5F55\u7684\u4E0B\u8F7D\u6587\u4EF6", "success");
+      sound("success");
     }
-    let started6 = false;
-    const start = () => {
-      if (started6) {
+    async function importText(text3, mode2) {
+      if (win.isDirty() && !await atelierConfirm("\u5BFC\u5165\u4F1A\u91CD\u65B0\u8F7D\u5165\u89C4\u5219\u5E76\u653E\u5F03\u5C1A\u672A\u4FDD\u5B58\u7684\u4FEE\u6539\u3002\u7EE7\u7EED\u5417\uFF1F")) return false;
+      if (mode2 === "overwrite" && !await atelierConfirm("\u8986\u76D6\u5BFC\u5165\u4F1A\u66FF\u6362\u5DF2\u770B\u8BB0\u5F55\u548C\u5BF9\u5E94\u5C4F\u853D\u89C4\u5219\u3002\u786E\u5B9A\u7EE7\u7EED\u5417\uFF1F")) return false;
+      if (!win.element.isConnected) return false;
+      const result = importAtelierDataInput(JSON.parse(text3), mode2);
+      win.reload();
+      notifyAtelierDataChanged();
+      win.updateStatus(result.res);
+      showInfoLog(result.res + "\uFF1B\u5DF2\u770B\u72B6\u6001\u53EF\u80FD\u9700\u8981\u5237\u65B0\u9875\u9762\u540E\u5B8C\u5168\u751F\u6548\u3002", "success", 5200);
+      return true;
+    }
+    async function pasteImport(mode2) {
+      const feedback = soundTask(void 0, win.element);
+      const text3 = await atelierPrompt("\u7C98\u8D34\u7EDF\u4E00\u6570\u636E JSON\uFF0C\u4E5F\u517C\u5BB9\u65E7\u5C4F\u853D/\u5DF2\u770B JSON");
+      if (!text3) {
+        feedback.finish("cancel");
         return;
       }
-      started6 = true;
       try {
-        startViewedMarker();
-        debugLog("viewed-marker started");
+        feedback.finish(await importText(text3, mode2) ? "success" : "cancel");
       } catch (error) {
-        warnLog("\u5DF2\u770B\u6A21\u5757\u542F\u52A8\u5931\u8D25", error);
+        void atelierAlert("\u5BFC\u5165\u5931\u8D25\uFF1A" + String(error));
+        feedback.finish("error");
+      }
+    }
+    function fileImport(label, mode2) {
+      const input = element("input");
+      input.type = "file";
+      input.accept = ".txt,.json,application/json,text/plain";
+      input.hidden = true;
+      input.addEventListener("change", async () => {
+        const feedback = soundTask("start", win.element);
+        const file = input.files?.[0];
+        input.value = "";
+        if (!file) return;
+        try {
+          const text3 = await file.text();
+          if (win.element.isConnected) feedback.finish(await importText(text3, mode2) ? "success" : "cancel");
+        } catch (error) {
+          void atelierAlert("\u5BFC\u5165\u5931\u8D25\uFF1A" + String(error));
+          feedback.finish("error");
+        }
+      });
+      const wrapper = element("span");
+      wrapper.append(button4(label, () => input.click()), input);
+      return wrapper;
+    }
+    window.addEventListener("atelier-sync-applied", () => {
+      if (win.current() === "viewed") win.show("viewed");
+    }, { signal: win.signal });
+    return {
+      pages: {
+        viewed: {
+          draw(content) {
+            const snapshot = readViewedStorage();
+            content.append(
+              element("h2", "", "\u5DF2\u770B\u6807\u8BB0"),
+              element("p", "luna-description", "\u7EE7\u7EED\u4F7F\u7528\u89C6\u9891\u5361\u7247\u4E0A\u7684\u5DF2\u770B\u6309\u94AE\u7BA1\u7406\u89C2\u770B\u72B6\u6001\u3002"),
+              element("p", "", "\u5DF2\u4FDD\u5B58 " + snapshot.items.length + " \u6761\u5DF2\u770B\u8BB0\u5F55")
+            );
+            const list = element("pre", "luna-viewed-list", snapshot.items.length ? snapshot.items.slice(0, 100).join("\n") : "\u8FD8\u6CA1\u6709\u5DF2\u770B\u8BB0\u5F55\u3002\u6807\u8BB0\u89C6\u9891\u540E\uFF0C\u8BB0\u5F55\u4F1A\u663E\u793A\u5728\u8FD9\u91CC\u3002");
+            list.setAttribute("aria-label", "\u5DF2\u770B\u89C6\u9891 ID");
+            content.append(list);
+            if (snapshot.items.length > 100) content.append(element("p", "luna-hint", "\u6B64\u5904\u9884\u89C8\u524D 100 \u6761\uFF1B\u5BFC\u51FA\u6587\u4EF6\u5305\u542B\u5168\u90E8\u8BB0\u5F55\u3002"));
+            content.append(dataGroup("\u6570\u636E\u5907\u4EFD", "\u53EF\u5C06\u5DF2\u770B\u8BB0\u5F55\u4E0B\u8F7D\u5230\u624B\u673A\uFF0C\u6216\u8FDB\u5165\u6570\u636E\u7BA1\u7406\u5BFC\u5165\u5DF2\u6709\u8BB0\u5F55\u3002", [
+              button4("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
+              button4("\u5BFC\u5165\u5DF2\u770B\u8BB0\u5F55\u2026", () => win.show("data", true)),
+              button4("\u5237\u65B0\u8BB0\u5F55", () => win.show("viewed", true))
+            ]));
+          }
+        },
+        data: {
+          draw(content) {
+            content.append(element("h2", "", "\u6570\u636E\u7BA1\u7406"), element("p", "luna-description", "\u5907\u4EFD\u4F60\u7684\u5DF2\u770B\u8BB0\u5F55\u548C\u5C4F\u853D\u89C4\u5219\uFF0C\u4E5F\u53EF\u5BFC\u5165\u5230\u624B\u673A\u3002"));
+            content.append(dataGroup("\u5BFC\u51FA\u4E0E\u624B\u673A\u5BFC\u5165", "\u5BFC\u51FA\u5F53\u524D\u5DF2\u4FDD\u5B58\u7684\u6570\u636E\uFF1B\u4FEE\u6539\u89C4\u5219\u540E\u8BF7\u5148\u4FDD\u5B58\u3002", [
+              button4("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
+              button4("\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", () => {
+                downloadJson(exportAtelierDataPackage(), dated("bili-atelier-data"));
+                showInfoLog("\u5DF2\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u542B\u5DF2\u770B\u548C\u5C4F\u853D\u89C4\u5219\uFF09", "success");
+                sound("success");
+              }),
+              button4("\u5BFC\u51FA\u7EDF\u4E00 JSON", async () => {
+                const feedback = soundTask(void 0, win.element);
+                const json = JSON.stringify(exportAtelierDataPackage(), null, 2);
+                let copied = false;
+                try {
+                  if (navigator.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(json);
+                    copied = true;
+                  }
+                } catch {
+                }
+                await atelierPrompt(copied ? "\u7EDF\u4E00\u6570\u636E JSON\uFF08\u5DF2\u590D\u5236\u5230\u526A\u8D34\u677F\uFF09" : "\u7EDF\u4E00\u6570\u636E JSON\uFF08\u8BF7\u624B\u52A8\u590D\u5236\uFF09", json, true);
+                showInfoLog("\u5DF2\u5BFC\u51FA\u7EDF\u4E00 JSON", "success");
+                feedback.finish("success");
+              })
+            ]));
+            content.append(dataGroup("\u8FFD\u52A0\u5BFC\u5165", "\u5408\u5E76\u5E76\u53BB\u91CD\uFF0C\u4FDD\u7559\u5DF2\u6709\u8BB0\u5F55\u3002\u517C\u5BB9\u65E7\u5C4F\u853D / \u5DF2\u770B JSON\u3002", [
+              button4("\u8FFD\u52A0\u5BFC\u5165\u7EDF\u4E00 JSON", () => pasteImport("append")),
+              fileImport("\u4ECE\u6587\u4EF6\u8FFD\u52A0\u5BFC\u5165", "append")
+            ]));
+            content.append(dataGroup("\u8986\u76D6\u5BFC\u5165", "\u66FF\u6362\u5DF2\u770B\u8BB0\u5F55\u53CA\u5BFC\u5165\u6587\u4EF6\u4E2D\u7684\u89C4\u5219\u3002\u64CD\u4F5C\u524D\u4F1A\u518D\u6B21\u786E\u8BA4\u3002", [
+              button4("\u8986\u76D6\u5BFC\u5165\u7EDF\u4E00 JSON", () => pasteImport("overwrite")),
+              fileImport("\u4ECE\u6587\u4EF6\u8986\u76D6\u5BFC\u5165", "overwrite")
+            ]));
+          }
+        }
+      }
+    };
+  }
+
+  // src/ui/atelier-pages.ts
+  var started6 = false;
+  function startAtelierWindow() {
+    if (started6) return;
+    started6 = true;
+    for (const factory of [followingPages, dataPages, blockerPages, syncPages, appearancePages, soundPages]) registerAtelierPages(factory);
+    registerAtelierNavigation({ open: openAtelierWindow, toggle: toggleAtelierWindow });
+  }
+
+  // src/ui/launcher.ts
+  function startAtelierLauncher() {
+    if (document.getElementById("atelier-launcher")) return;
+    if (!document.body) {
+      const observer = new MutationObserver(() => {
+        if (document.body) {
+          observer.disconnect();
+          startAtelierLauncher();
+        }
+      });
+      observer.observe(document.documentElement || document, { childList: true, subtree: true });
+      return;
+    }
+    ensureLunaTheme();
+    const host = document.createElement("div");
+    host.id = "atelier-launcher";
+    host.setAttribute("data-bili-blocker-ui", "");
+    const button5 = document.createElement("button");
+    button5.type = "button";
+    button5.className = "atelier-launcher-button xp-button";
+    button5.setAttribute("aria-label", "\u6253\u5F00 Atelier \u5FEB\u6377\u83DC\u5355");
+    button5.setAttribute("aria-haspopup", "menu");
+    button5.setAttribute("aria-expanded", "false");
+    button5.title = "Atelier \xB7 \u62D6\u52A8\u53EF\u8C03\u6574\u4F4D\u7F6E";
+    const image5 = document.createElement("img");
+    image5.src = atelierIcons.tv;
+    image5.alt = "";
+    image5.draggable = false;
+    button5.append(image5);
+    const menu = document.createElement("nav");
+    menu.className = "atelier-quick-menu xp-menu";
+    menu.hidden = true;
+    menu.id = "atelier-quick-menu";
+    menu.setAttribute("role", "menu");
+    menu.setAttribute("aria-label", "Atelier \u5FEB\u6377\u83DC\u5355");
+    button5.setAttribute("aria-controls", menu.id);
+    const title = document.createElement("h2");
+    title.textContent = "Bili Atelier";
+    menu.append(title);
+    const entries = [];
+    const navigable = () => entries.filter((entry) => !entry.hidden && !entry.disabled);
+    const toggle = (open, focus = false) => {
+      menu.hidden = !open;
+      button5.setAttribute("aria-expanded", String(open));
+      if (open) {
+        const above = host.getBoundingClientRect().top + 44 >= menu.offsetHeight;
+        menu.style.top = above ? "auto" : "0";
+        menu.style.bottom = above ? "0" : "auto";
+      }
+      if (open) updatePageItems();
+      if (focus) (open ? navigable()[0] : button5)?.focus();
+    };
+    for (const area of atelierAreas) {
+      const entry = document.createElement("button");
+      entry.type = "button";
+      entry.className = "xp-menu-item";
+      entry.setAttribute("role", "menuitem");
+      const icon2 = document.createElement("img");
+      icon2.src = atelierIcons[area.id];
+      icon2.alt = "";
+      entry.append(icon2, document.createTextNode(area.label));
+      entry.addEventListener("click", () => {
+        toggle(false);
+        openAtelier(area.id);
+      });
+      menu.append(entry);
+      entries.push(entry);
+    }
+    const checkItem = (label) => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "xp-menu-item";
+      item.setAttribute("role", "menuitemcheckbox");
+      const mark2 = document.createElement("span");
+      mark2.className = "atelier-menu-check";
+      mark2.setAttribute("aria-hidden", "true");
+      item.append(mark2, document.createTextNode(label));
+      return { item, mark: mark2 };
+    };
+    const night = checkItem("\u591C\u95F4\u6A21\u5F0F");
+    night.item.addEventListener("click", () => {
+      toggle(false);
+      toggleBiliNight();
+      updatePageItems();
+    });
+    const pageMode = document.createElement("button");
+    pageMode.type = "button";
+    pageMode.className = "xp-menu-item";
+    pageMode.setAttribute("role", "menuitem");
+    const pageModeIcon = document.createElement("img");
+    pageModeIcon.src = atelierIcons.app;
+    pageModeIcon.alt = "";
+    const pageModeLabel = document.createElement("span");
+    pageMode.append(pageModeIcon, pageModeLabel);
+    pageMode.addEventListener("click", () => {
+      const mode2 = currentPageMode();
+      toggle(false);
+      mode2?.setNative(!mode2.native());
+    });
+    function updatePageItems() {
+      const loggedIn = biliLoggedIn(), dark = loggedIn && biliTheme() === "dark";
+      night.item.disabled = !loggedIn;
+      night.item.title = loggedIn ? "" : "\u767B\u5F55\u540E\u53EF\u7528";
+      night.item.setAttribute("aria-checked", String(dark));
+      night.mark.classList.toggle("checked", dark);
+      const mode2 = currentPageMode();
+      pageMode.hidden = !mode2;
+      pageModeLabel.textContent = mode2?.native() ? "Luna \u9875\u9762" : "\u539F\u751F\u9875\u9762";
+      pageMode.title = mode2?.native() ? "\u6362\u56DE Atelier \u753B\u7684 Luna \u9875\u9762" : "\u9000\u56DE B \u7AD9\u539F\u6765\u7684\u9875\u9762\uFF08\u4F1A\u5237\u65B0\u4E00\u6B21\uFF09";
+    }
+    const pageSeparator = document.createElement("div");
+    pageSeparator.className = "xp-menu-separator";
+    menu.append(pageSeparator, night.item, pageMode);
+    entries.push(night.item, pageMode);
+    window.addEventListener(pageModeChanged, updatePageItems);
+    document.addEventListener("biliThemeChange", updatePageItems);
+    updatePageItems();
+    const visibility = document.createElement("button");
+    visibility.type = "button";
+    visibility.className = "xp-menu-item";
+    visibility.setAttribute("role", "menuitemcheckbox");
+    const check2 = document.createElement("span");
+    check2.className = "atelier-menu-check";
+    check2.setAttribute("aria-hidden", "true");
+    visibility.append(check2, document.createTextNode("\u4E34\u65F6\u663E\u793A\u88AB\u5C4F\u853D\u9879"));
+    const updateVisibility = () => {
+      visibility.setAttribute("aria-checked", String(isShowingBlocked()));
+      check2.classList.toggle("checked", isShowingBlocked());
+    };
+    visibility.addEventListener("click", () => {
+      toggleBlockedVisibility();
+      toggle(false);
+    });
+    window.addEventListener(blockedVisibilityChangedEvent, updateVisibility);
+    updateVisibility();
+    const separator = document.createElement("div");
+    separator.className = "xp-menu-separator";
+    menu.append(separator, visibility);
+    entries.push(visibility);
+    let edge = readUiPreferences().edge, y = readUiPreferences().y;
+    const position = () => {
+      host.dataset.edge = edge;
+      host.style.left = edge === "left" ? "6px" : "auto";
+      host.style.right = edge === "right" ? "6px" : "auto";
+      host.style.top = `${Math.max(6, Math.min(innerHeight - 54, y * (innerHeight - 48)))}px`;
+    };
+    let drag, suppressClick = false;
+    button5.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
+      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, top: host.getBoundingClientRect().top, moved: false };
+      button5.setPointerCapture(event.pointerId);
+    });
+    button5.addEventListener("pointermove", (event) => {
+      if (!drag || drag.id !== event.pointerId) return;
+      if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 5) drag.moved = true;
+      if (!drag.moved) return;
+      toggle(false);
+      host.style.right = "auto";
+      host.style.left = `${Math.max(0, Math.min(innerWidth - 48, event.clientX - 24))}px`;
+      host.style.top = `${Math.max(6, Math.min(innerHeight - 54, drag.top + event.clientY - drag.y))}px`;
+    });
+    const release = (event) => {
+      if (!drag || drag.id !== event.pointerId) return;
+      suppressClick = drag.moved;
+      if (drag.moved && event.type !== "pointercancel") {
+        edge = event.clientX < innerWidth / 2 ? "left" : "right";
+        y = Math.max(0, Math.min(1, (drag.top + event.clientY - drag.y) / Math.max(1, innerHeight - 48)));
+        saveUiPreferences({ edge, y });
+      }
+      drag = void 0;
+      position();
+      window.setTimeout(() => {
+        suppressClick = false;
+      }, 0);
+    };
+    button5.addEventListener("pointerup", release);
+    button5.addEventListener("pointercancel", release);
+    button5.addEventListener("click", () => {
+      if (suppressClick) {
+        suppressClick = false;
+        return;
+      }
+      sound("menu");
+      toggle(menu.hidden, true);
+    });
+    host.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        toggle(false, true);
+      }
+      if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+        event.preventDefault();
+        if (menu.hidden) toggle(true);
+        const items = navigable(), at = items.indexOf(document.activeElement);
+        const next = event.key === "Home" ? 0 : event.key === "End" ? items.length - 1 : (at + (event.key === "ArrowUp" ? -1 : 1) + items.length) % items.length;
+        items[next]?.focus();
+      }
+    });
+    document.addEventListener("pointerdown", (event) => {
+      if (!event.composedPath().includes(host)) toggle(false);
+    });
+    document.addEventListener("focusin", (event) => {
+      if (!host.contains(event.target)) toggle(false);
+    });
+    document.addEventListener("fullscreenchange", () => {
+      host.hidden = !!document.fullscreenElement;
+      toggle(false);
+    });
+    window.addEventListener("resize", position);
+    window.addEventListener("atelier-reset-launcher", () => {
+      ({ edge, y } = readUiPreferences());
+      position();
+    });
+    host.append(menu, button5);
+    document.body.append(host);
+    observeCrispText(menu);
+    position();
+  }
+
+  // src/main.ts
+  var hasGmStorage = () => [typeof GM_getValue, typeof GM_setValue, typeof GM_deleteValue, typeof GM_listValues].every((type) => type === "function");
+  function whenHeadExists(name, callback) {
+    const run = () => {
+      try {
+        callback();
+      } catch (error) {
+        warnLog(`${name}\u542F\u52A8\u5931\u8D25`, error);
       }
     };
     if (document.head) {
-      start();
+      run();
       return;
     }
-    const observer = new MutationObserver(() => {
-      if (!document.head) {
-        return;
-      }
+    let started7 = false;
+    const start = () => {
+      if (started7) return;
+      started7 = true;
       observer.disconnect();
-      start();
+      run();
+    };
+    const observer = new MutationObserver(() => {
+      if (document.head) start();
     });
     observer.observe(document.documentElement, { childList: true });
-    document.addEventListener("DOMContentLoaded", () => {
-      observer.disconnect();
-      start();
-    }, { once: true });
+    document.addEventListener("DOMContentLoaded", start, { once: true });
   }
-  function startBlockerModule() {
-    if (!config.blocker.enabled) {
-      return;
-    }
-    if (!hasGmStorage()) {
-      warnLog("\u5C4F\u853D\u6A21\u5757\u9700\u8981 GM_* \u5B58\u50A8\u6743\u9650\uFF0C\u5F53\u524D\u73AF\u5883\u4E0D\u53EF\u7528\u3002");
-      return;
-    }
-    try {
-      startBlocker();
-      debugLog("blocker scheduled");
-    } catch (error) {
-      warnLog("\u5C4F\u853D\u6A21\u5757\u542F\u52A8\u5931\u8D25", error);
-    }
-  }
-  if (hasGmStorage()) prepareVideoLuna();
-  if (hasGmStorage()) {
-    registerAtelierNavigation((section) => openBlockerPanel(
-      () => window.dispatchEvent(new Event("atelier-sync-applied")),
-      (container, rescan) => renderHistoryPanel(container, rescan, true),
-      section
-    ));
-    startSounds();
-    const openSounds = () => openBlockerPanel(
-      () => window.dispatchEvent(new Event("atelier-sync-applied")),
-      (container, rescan) => renderHistoryPanel(container, rescan, true),
-      "sounds"
-    );
-    window.addEventListener("atelier-open-sounds", openSounds);
-    if (typeof GM_registerMenuCommand === "function") GM_registerMenuCommand("Bili Atelier \u97F3\u6548\u8BBE\u7F6E", openSounds);
-    try {
-      startLocalFollowingStore();
-    } catch (error) {
-      warnLog("\u672C\u5730\u5173\u6CE8\u5B58\u50A8\u521D\u59CB\u5316\u5931\u8D25", error);
-    }
-    try {
+  var modules = [
+    // The Luna player page hides the blocks it replaces before Bilibili's page
+    // renders, with a head stylesheet only; the windows come after hydration.
+    { name: "Luna \u89C6\u9891\u9875\u9884\u5907", phase: "start", gm: {}, start: prepareVideoLuna },
+    { name: "Atelier \u7A97\u53E3", phase: "start", gm: {}, start: startAtelierWindow },
+    {
+      name: "\u97F3\u6548",
+      phase: "start",
+      gm: {},
+      start() {
+        startSounds();
+        const open = () => openAtelier("sounds");
+        window.addEventListener("atelier-open-sounds", open);
+        if (typeof GM_registerMenuCommand === "function") GM_registerMenuCommand("Bili Atelier \u97F3\u6548\u8BBE\u7F6E", open);
+      }
+    },
+    { name: "\u672C\u5730\u5173\u6CE8\u5B58\u50A8", phase: "start", gm: {}, start: startLocalFollowingStore },
+    { name: "\u4E91\u540C\u6B65", phase: "start", gm: {}, start() {
       startSync();
-      registerSyncPanel(() => openBlockerPanel(
-        () => window.dispatchEvent(new Event("atelier-sync-applied")),
-        (container, rescan) => renderHistoryPanel(container, rescan, true),
-        "sync"
-      ));
-    } catch (error) {
-      warnLog("\u4E91\u540C\u6B65\u521D\u59CB\u5316\u5931\u8D25", error);
+      registerSyncPanel(() => openAtelier("sync"));
+    } },
+    { name: "\u8BC4\u8BBA\u533A\u5C5E\u5730\u6A21\u5757", phase: "start", enabled: config.commentLocation.enabled, start: startCommentLocation },
+    { name: "Luna \u89C6\u9891\u9875", phase: "page", gm: {}, start() {
+      registerVideoPageMode();
+      mountVideoLuna();
+    }, recover: showNativePage },
+    { name: "\u7535\u89C6\u5165\u53E3", phase: "page", gm: {}, start: startAtelierLauncher },
+    { name: "\u672C\u5730\u5173\u6CE8", phase: "page", gm: {}, start: startLocalFollowing },
+    { name: "\u5DF2\u770B\u6A21\u5757", phase: "page", gm: { missing: "\u5DF2\u770B\u6A21\u5757\u9700\u8981 GM_* \u5B58\u50A8\u6743\u9650\uFF0C\u5F53\u524D\u73AF\u5883\u4E0D\u53EF\u7528\u3002" }, enabled: config.viewedMarker.enabled, start: () => whenHeadExists("\u5DF2\u770B\u6A21\u5757", startViewedMarker) },
+    { name: "\u5C4F\u853D\u6A21\u5757", phase: "page", gm: { missing: "\u5C4F\u853D\u6A21\u5757\u9700\u8981 GM_* \u5B58\u50A8\u6743\u9650\uFF0C\u5F53\u524D\u73AF\u5883\u4E0D\u53EF\u7528\u3002" }, enabled: config.blocker.enabled, start: startBlocker }
+  ];
+  function startAll(phase) {
+    for (const module of modules) {
+      if (module.phase !== phase || module.enabled === false) continue;
+      if (module.gm && !hasGmStorage()) {
+        if (module.gm.missing) warnLog(module.gm.missing);
+        continue;
+      }
+      try {
+        module.start();
+        debugLog(`${module.name} started`);
+      } catch (error) {
+        try {
+          module.recover?.();
+        } catch {
+        }
+        warnLog(`${module.name}\u542F\u52A8\u5931\u8D25`, error);
+      }
     }
   }
-  startCommentLocation();
-  runAfterVideoPageReady(() => {
-    if (hasGmStorage()) {
-      registerVideoPageMode();
-      try {
-        mountVideoLuna();
-      } catch (error) {
-        showNativePage();
-        warnLog("Luna \u89C6\u9891\u9875\u521D\u59CB\u5316\u5931\u8D25\uFF0C\u5DF2\u6062\u590D\u539F\u751F\u9875\u9762", error);
-      }
-      startAtelierLauncher();
-      try {
-        startLocalFollowing();
-      } catch (error) {
-        warnLog("\u672C\u5730\u5173\u6CE8\u521D\u59CB\u5316\u5931\u8D25", error);
-      }
-    }
-    startViewedMarkerModule();
-    startBlockerModule();
-  });
+  startAll("start");
+  runAfterVideoPageReady(() => startAll("page"));
 })();
 /*! Full license texts of the bundled libraries:
 
