@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.7.0
+// @version      0.8.0
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -114,9 +114,9 @@
   };
   var __copyProps = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
-      for (let key6 of __getOwnPropNames(from))
-        if (!__hasOwnProp.call(to, key6) && key6 !== except)
-          __defProp(to, key6, { get: () => from[key6], enumerable: !(desc = __getOwnPropDesc(from, key6)) || desc.enumerable });
+      for (let key7 of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key7) && key7 !== except)
+          __defProp(to, key7, { get: () => from[key7], enumerable: !(desc = __getOwnPropDesc(from, key7)) || desc.enumerable });
     }
     return to;
   };
@@ -1232,7 +1232,7 @@
       NumericData.prototype.getBitsLength = function getBitsLength() {
         return NumericData.getBitsLength(this.data.length);
       };
-      NumericData.prototype.write = function write2(bitBuffer) {
+      NumericData.prototype.write = function write3(bitBuffer) {
         let i, group, value2;
         for (i = 0; i + 3 <= this.data.length; i += 3) {
           group = this.data.substr(i, 3);
@@ -1314,7 +1314,7 @@
       AlphanumericData.prototype.getBitsLength = function getBitsLength() {
         return AlphanumericData.getBitsLength(this.data.length);
       };
-      AlphanumericData.prototype.write = function write2(bitBuffer) {
+      AlphanumericData.prototype.write = function write3(bitBuffer) {
         let i;
         for (i = 0; i + 2 <= this.data.length; i += 2) {
           let value2 = ALPHA_NUM_CHARS.indexOf(this.data[i]) * 45;
@@ -1459,11 +1459,11 @@
          */
         PriorityQueue: {
           make: function(opts) {
-            var T = dijkstra.PriorityQueue, t = {}, key6;
+            var T = dijkstra.PriorityQueue, t = {}, key7;
             opts = opts || {};
-            for (key6 in T) {
-              if (T.hasOwnProperty(key6)) {
-                t[key6] = T[key6];
+            for (key7 in T) {
+              if (T.hasOwnProperty(key7)) {
+                t[key7] = T[key7];
               }
             }
             t.queue = [];
@@ -1613,18 +1613,18 @@
           const currentNodeIds = [];
           for (let j = 0; j < nodeGroup.length; j++) {
             const node4 = nodeGroup[j];
-            const key6 = "" + i + j;
-            currentNodeIds.push(key6);
-            table[key6] = { node: node4, lastCount: 0 };
-            graph[key6] = {};
+            const key7 = "" + i + j;
+            currentNodeIds.push(key7);
+            table[key7] = { node: node4, lastCount: 0 };
+            graph[key7] = {};
             for (let n = 0; n < prevNodeIds.length; n++) {
               const prevNodeId = prevNodeIds[n];
               if (table[prevNodeId] && table[prevNodeId].node.mode === node4.mode) {
-                graph[prevNodeId][key6] = getSegmentBitsLength(table[prevNodeId].lastCount + node4.length, node4.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node4.mode);
+                graph[prevNodeId][key7] = getSegmentBitsLength(table[prevNodeId].lastCount + node4.length, node4.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node4.mode);
                 table[prevNodeId].lastCount += node4.length;
               } else {
                 if (table[prevNodeId]) table[prevNodeId].lastCount = node4.length;
-                graph[prevNodeId][key6] = getSegmentBitsLength(node4.length, node4.mode) + 4 + Mode.getCharCountIndicator(node4.mode, version);
+                graph[prevNodeId][key7] = getSegmentBitsLength(node4.length, node4.mode) + 4 + Mode.getCharCountIndicator(node4.mode, version);
               }
             }
           }
@@ -1978,13 +1978,13 @@
       exports.getOptions = function getOptions(options) {
         if (!options) options = {};
         if (!options.color) options.color = {};
-        const margin2 = typeof options.margin === "undefined" || options.margin === null || options.margin < 0 ? 4 : options.margin;
-        const width2 = options.width && options.width >= 21 ? options.width : void 0;
+        const margin = typeof options.margin === "undefined" || options.margin === null || options.margin < 0 ? 4 : options.margin;
+        const width = options.width && options.width >= 21 ? options.width : void 0;
         const scale = options.scale || 4;
         return {
-          width: width2,
-          scale: width2 ? 4 : scale,
-          margin: margin2,
+          width,
+          scale: width ? 4 : scale,
+          margin,
           color: {
             dark: hex2rgba(options.color.dark || "#000000ff"),
             light: hex2rgba(options.color.light || "#ffffffff")
@@ -2093,7 +2093,7 @@
         if (typeof y !== "undefined") str += " " + y;
         return str;
       }
-      function qrToPath(data, size, margin2) {
+      function qrToPath(data, size, margin) {
         let path = "";
         let moveBy = 0;
         let newRow = false;
@@ -2105,7 +2105,7 @@
           if (data[i]) {
             lineLength++;
             if (!(i > 0 && col > 0 && data[i - 1])) {
-              path += newRow ? svgCmd("M", col + margin2, 0.5 + row + margin2) : svgCmd("m", moveBy, 0);
+              path += newRow ? svgCmd("M", col + margin, 0.5 + row + margin) : svgCmd("m", moveBy, 0);
               moveBy = 0;
               newRow = false;
             }
@@ -2127,8 +2127,8 @@
         const bg = !opts.color.light.a ? "" : "<path " + getColorAttrib(opts.color.light, "fill") + ' d="M0 0h' + qrcodesize + "v" + qrcodesize + 'H0z"/>';
         const path = "<path " + getColorAttrib(opts.color.dark, "stroke") + ' d="' + qrToPath(data, size, opts.margin) + '"/>';
         const viewBox = 'viewBox="0 0 ' + qrcodesize + " " + qrcodesize + '"';
-        const width2 = !opts.width ? "" : 'width="' + opts.width + '" height="' + opts.width + '" ';
-        const svgTag = '<svg xmlns="http://www.w3.org/2000/svg" ' + width2 + viewBox + ' shape-rendering="crispEdges">' + bg + path + "</svg>\n";
+        const width = !opts.width ? "" : 'width="' + opts.width + '" height="' + opts.width + '" ';
+        const svgTag = '<svg xmlns="http://www.w3.org/2000/svg" ' + width + viewBox + ' shape-rendering="crispEdges">' + bg + path + "</svg>\n";
         if (typeof cb === "function") {
           cb(null, svgTag);
         }
@@ -3887,7 +3887,7 @@
   var lunaSchemeNames = { blue: "\u9ED8\u8BA4\uFF08\u84DD\uFF09", olive: "\u6A44\u6984\u7EFF", silver: "\u94F6\u8272" };
   var isLunaScheme = (value2) => typeof value2 === "string" && Object.prototype.hasOwnProperty.call(lunaSchemes, value2);
   var theme = (scheme) => lunaSchemes[scheme].theme;
-  var value = (scheme, section, key6, fallback2) => theme(scheme)[section]?.[key6] || fallback2;
+  var value = (scheme, section, key7, fallback2) => theme(scheme)[section]?.[key7] || fallback2;
   var darkPalettes = {
     blue: { face: "#23272f", window: "#191c22", ink: "#e8eaee", muted: "#a3a9b5", edge: "#56678a", line: "#3a3f4a", light3d: "#3b414d", shadow3d: "#14171c", dark3d: "#0b0d10", lift: "#b7c3d9", gradient1: "#26355a", gradient2: "#1c2744", taskFill: "#2a3550", taskText: "#c7d6f5", taskLink: "#a9c1f2", groupText: "#9cb8ff" },
     olive: { face: "#2a2d22", window: "#1c1e16", ink: "#ecebdf", muted: "#b3b8a2", edge: "#76845a", line: "#3d4132", light3d: "#42473a", shadow3d: "#15170f", dark3d: "#0c0d08", lift: "#c8cfb0", gradient1: "#353c27", gradient2: "#282d1d", taskFill: "#343a28", taskText: "#d6dcbf", taskLink: "#c9d69f", groupText: "#c0d091" },
@@ -3895,7 +3895,7 @@
   };
   var dim = (hex, factor = 0.7) => "#" + [1, 3, 5].map((at) => Math.round(parseInt(hex.slice(at, at + 2), 16) * factor).toString(16).padStart(2, "0")).join("");
   function lunaTokens(scheme, dark) {
-    const sys = (key6, fallback2) => value(scheme, "SysMetrics", key6, fallback2);
+    const sys = (key7, fallback2) => value(scheme, "SysMetrics", key7, fallback2);
     const light = {
       face: sys("btnface", "#ece9d8"),
       window: sys("window", "#ffffff"),
@@ -3916,7 +3916,7 @@
     const base = dark ? darkPalettes[scheme] : light;
     const caption2 = sys("activecaption", "#0054e3"), inactive = sys("inactivecaption", "#7a96df");
     return {
-      ...Object.fromEntries(Object.entries(base).filter(([key6]) => key6 !== "lift")),
+      ...Object.fromEntries(Object.entries(base).filter(([key7]) => key7 !== "lift")),
       graytext: dark ? dim(sys("graytext", "#aca899")) : sys("graytext", "#aca899"),
       highlight: sys("highlight", "#316ac5"),
       "highlight-ink": sys("highlighttext", "#ffffff"),
@@ -3939,11 +3939,11 @@
     const parsed = value(scheme, section, "sizingmargins", "").split(",").map(Number);
     return parsed.length === 4 && parsed.every(Number.isFinite) ? parsed : fallback2;
   };
-  function crop(image6, x, y, width2, height) {
+  function crop(image6, x, y, width, height) {
     const canvas = document.createElement("canvas");
-    canvas.width = width2;
+    canvas.width = width;
     canvas.height = height;
-    canvas.getContext("2d").drawImage(image6, x, y, width2, height, 0, 0, width2, height);
+    canvas.getContext("2d").drawImage(image6, x, y, width, height, 0, 0, width, height);
     return canvas;
   }
   var state = (image6, index, count2, horizontal = false) => horizontal ? crop(image6, index * image6.width / count2, 0, image6.width / count2, image6.height) : crop(image6, 0, index * image6.height / count2, image6.width, image6.height / count2);
@@ -4069,8 +4069,8 @@
   var px = (value2) => `${+value2.toFixed(4)}px`;
   var rendered = /* @__PURE__ */ new Map();
   function lunaImageVars(scheme, dark, dpr) {
-    const key6 = `${scheme}|${dark}|${dpr}`;
-    if (rendered.has(key6)) return rendered.get(key6);
+    const key7 = `${scheme}|${dark}|${dpr}`;
+    if (rendered.has(key7)) return rendered.get(key7);
     const work = (async () => {
       if (/jsdom/i.test(navigator.userAgent) || !document.createElement("canvas").getContext?.("2d")) return "";
       const loader = async (which) => {
@@ -4107,7 +4107,7 @@
       vars.push("--xp-fallback:transparent", "--xp-fallback-caption:transparent");
       return vars.join(";");
     })().catch(() => "");
-    rendered.set(key6, work);
+    rendered.set(key7, work);
     return work;
   }
 
@@ -4200,9 +4200,9 @@ ${unzoomedScope}{zoom:${back}}`;
   }
   var wholePage = false;
   var applied = 1;
-  function zoomWholePage(on5 = true) {
-    if (wholePage === on5) return;
-    wholePage = on5;
+  function zoomWholePage(on7 = true) {
+    if (wholePage === on7) return;
+    wholePage = on7;
     syncZoom(true);
   }
   function syncZoom(force = false) {
@@ -4218,7 +4218,7 @@ ${unzoomedScope}{zoom:${back}}`;
     window.dispatchEvent(new Event("resize"));
   }
   var vh = (n) => `calc(${n}vh / var(--atelier-zoom, 1))`;
-  var zoomMedia = (css, zoom = applied) => zoom === 1 ? css : css.replace(/(@media[^{]*?\(\s*(?:max|min)-width\s*:\s*)(\d+(?:\.\d+)?)px/g, (_, head, width2) => `${head}${+(Number(width2) * zoom).toFixed(2)}px`);
+  var zoomMedia = (css, zoom = applied) => zoom === 1 ? css : css.replace(/(@media[^{]*?\(\s*(?:max|min)-width\s*:\s*)(\d+(?:\.\d+)?)px/g, (_, head, width) => `${head}${+(Number(width) * zoom).toFixed(2)}px`);
   var zoomViewportUnits = (css) => css.replace(/(?<=[\s,(:])(\d+(?:\.\d+)?)v([wh])\b/g, (_, n, axis2) => `calc(${n}v${axis2} / var(--atelier-zoom, 1))`);
   var zoomedStyles = /* @__PURE__ */ new Map();
   function setZoomedCss(style, css) {
@@ -4581,12 +4581,12 @@ ${xpControlCss}`);
     ensureCrispFilter(document);
     let current4 = "", fontDpr = 0;
     const update = () => {
-      const { scheme, dark, dpr } = appearanceState(), { scale: scale2, zoom } = currentPixelScale(), key6 = `${scheme}|${dark}|${dpr}|${scale2}`;
-      if (key6 === current4) {
+      const { scheme, dark, dpr } = appearanceState(), { scale: scale2, zoom } = currentPixelScale(), key7 = `${scheme}|${dark}|${dpr}|${scale2}`;
+      if (key7 === current4) {
         syncZoom();
         return;
       }
-      current4 = key6;
+      current4 = key7;
       const font = xpFontCss(dpr), drawn = scale2 ? xpFontCss(scale2) : null;
       if (fontDpr !== dpr) {
         fonts.textContent = font.faces;
@@ -4617,7 +4617,7 @@ ${unzoomedScope}{${font.vars};--atelier-zoom:1${images2 && ";" + images2}}
 ${zoomCss(zoom)}` : "");
       theme2.textContent = sheet();
       void Promise.all([lunaImageVars(scheme, dark, dpr), scale2 ? lunaImageVars(scheme, dark, scale2) : ""]).then(([images2, drawnImages]) => {
-        if (current4 === key6 && (images2 || drawnImages)) theme2.textContent = sheet(images2, drawnImages);
+        if (current4 === key7 && (images2 || drawnImages)) theme2.textContent = sheet(images2, drawnImages);
       });
       watchScale(dpr);
       syncZoom();
@@ -5510,7 +5510,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
   // src/modules/sounds/media.ts
   var pulseKey = "AtelierSounds_mediaPulse";
   function startSoundMediaMonitor(changed) {
-    const key6 = soundMediaPrefix + crypto.randomUUID();
+    const key7 = soundMediaPrefix + crypto.randomUUID();
     const media2 = /* @__PURE__ */ new Set(), roots2 = /* @__PURE__ */ new WeakSet(), frames = /* @__PURE__ */ new WeakSet();
     let suspended = false, playing = false, published = false;
     const events = new AbortController();
@@ -5524,12 +5524,12 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     function publish(force = false) {
       if (playing && !suspended) {
         if (force || !published) {
-          GM_setValue(key6, { version: 1, at: Date.now(), playing: true });
+          GM_setValue(key7, { version: 1, at: Date.now(), playing: true });
           signal();
         }
         published = true;
       } else if (published) {
-        GM_deleteValue(key6);
+        GM_deleteValue(key7);
         published = false;
         signal();
       }
@@ -5547,7 +5547,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
       const foundFrames = [...root2.querySelectorAll("iframe")];
       if (root2.tagName === "IFRAME") foundFrames.unshift(root2);
       for (const frame2 of foundFrames) {
-        const read3 = () => {
+        const read4 = () => {
           try {
             if (frame2.contentDocument) watch(frame2.contentDocument);
           } catch {
@@ -5555,9 +5555,9 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
         };
         if (!frames.has(frame2)) {
           frames.add(frame2);
-          frame2.addEventListener("load", read3, { signal: events.signal });
+          frame2.addEventListener("load", read4, { signal: events.signal });
         }
-        read3();
+        read4();
       }
     }
     function watch(root2) {
@@ -5596,7 +5596,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
       if (playing && !suspended) return true;
       const now = Date.now();
       for (const other of GM_listValues()) {
-        if (!other.startsWith(soundMediaPrefix) || other === key6) continue;
+        if (!other.startsWith(soundMediaPrefix) || other === key7) continue;
         if (activeMediaHeartbeat(GM_getValue(other), now)) return true;
       }
       return false;
@@ -6377,13 +6377,13 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
   var viewedKey = (id) => `v:${id}`;
   var uidKey = (uid) => `u:${String(uid).trim()}`;
   var nameKey = (name) => `n:${String(name).trim().toLowerCase()}`;
-  function validKey(key6) {
-    const value2 = key6.slice(2);
-    if (key6.startsWith("v:")) return isViewedId(value2);
-    if (key6.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
-    return key6.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
+  function validKey(key7) {
+    const value2 = key7.slice(2);
+    if (key7.startsWith("v:")) return isViewedId(value2);
+    if (key7.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
+    return key7.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
   }
-  var sameKeys = (a, b) => a.size === b.size && [...a].every((key6) => b.has(key6));
+  var sameKeys = (a, b) => a.size === b.size && [...a].every((key7) => b.has(key7));
 
   // src/modules/blocker/rules.ts
   var ruleDefinitions = [
@@ -6421,31 +6421,31 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     }
     return normalized;
   }
-  function readRuleList(key6) {
-    const integer = integerRuleKeys.has(key6);
-    return normalizeStoredRules(GM_getValue(key6, []), integer);
+  function readRuleList(key7) {
+    const integer = integerRuleKeys.has(key7);
+    return normalizeStoredRules(GM_getValue(key7, []), integer);
   }
   var syncedRules = { precise_uid: { prefix: "u:", key: uidKey }, precise_name: { prefix: "n:", key: nameKey } };
-  var isSyncedRule = (key6) => Object.prototype.hasOwnProperty.call(syncedRules, key6);
+  var isSyncedRule = (key7) => Object.prototype.hasOwnProperty.call(syncedRules, key7);
   var journal;
-  var keysOf = (key6, values) => new Set(values.map(syncedRules[key6].key).filter(validKey));
-  function writeRuleList(key6, values) {
-    const integer = integerRuleKeys.has(key6);
+  var keysOf = (key7, values) => new Set(values.map(syncedRules[key7].key).filter(validKey));
+  function writeRuleList(key7, values) {
+    const integer = integerRuleKeys.has(key7);
     const normalized = normalizeStoredRules(values, integer);
-    if (isSyncedRule(key6)) journal?.(keysOf(key6, readRuleList(key6)), keysOf(key6, normalized));
-    GM_setValue(key6, normalized);
+    if (isSyncedRule(key7)) journal?.(keysOf(key7, readRuleList(key7)), keysOf(key7, normalized));
+    GM_setValue(key7, normalized);
     return normalized;
   }
   var blockedUserSyncStore = {
     keys: () => /* @__PURE__ */ new Set([...keysOf("precise_uid", readRuleList("precise_uid")), ...keysOf("precise_name", readRuleList("precise_name"))]),
     applySync(desired) {
-      const mine = new Set([...desired].filter((key6) => key6.startsWith("u:") || key6.startsWith("n:")));
+      const mine = new Set([...desired].filter((key7) => key7.startsWith("u:") || key7.startsWith("n:")));
       if (sameKeys(mine, blockedUserSyncStore.keys())) return false;
-      for (const key6 of Object.keys(syncedRules)) {
-        const { prefix: prefix4, key: toKey } = syncedRules[key6];
-        const local = readRuleList(key6).filter((value2) => !validKey(toKey(value2)));
+      for (const key7 of Object.keys(syncedRules)) {
+        const { prefix: prefix4, key: toKey } = syncedRules[key7];
+        const local = readRuleList(key7).filter((value2) => !validKey(toKey(value2)));
         const synced = [...mine].filter((entry) => entry.startsWith(prefix4)).map((entry) => entry.slice(prefix4.length));
-        GM_setValue(key6, normalizeStoredRules([...local, ...synced], integerRuleKeys.has(key6)));
+        GM_setValue(key7, normalizeStoredRules([...local, ...synced], integerRuleKeys.has(key7)));
       }
       return true;
     },
@@ -6460,31 +6460,31 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     }
     return snapshot;
   }
-  function addRuleItem(key6, value2) {
-    const validation = validateRuleInput(value2, integerRuleKeys.has(key6));
+  function addRuleItem(key7, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key7));
     if (!validation.status) {
       return validation;
     }
-    const current4 = readRuleList(key6);
+    const current4 = readRuleList(key7);
     if (current4.includes(validation.res)) {
       return { status: false, res: "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" };
     }
     current4.push(validation.res);
-    writeRuleList(key6, current4);
+    writeRuleList(key7, current4);
     return { status: true, res: "\u6DFB\u52A0\u6210\u529F", value: validation.res };
   }
-  function removeRuleItem(key6, value2) {
-    const validation = validateRuleInput(value2, integerRuleKeys.has(key6));
+  function removeRuleItem(key7, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key7));
     if (!validation.status) {
       return validation;
     }
-    const current4 = readRuleList(key6);
+    const current4 = readRuleList(key7);
     const index = current4.findIndex((item) => item === validation.res);
     if (index < 0) {
       return { status: false, res: "\u89C4\u5219\u4E0D\u5B58\u5728" };
     }
     current4.splice(index, 1);
-    writeRuleList(key6, current4);
+    writeRuleList(key7, current4);
     return { status: true, res: "\u5DF2\u89E3\u9664\u5C4F\u853D", value: validation.res };
   }
   function importRuleSnapshot(data, mode2) {
@@ -8084,6 +8084,8 @@ ${concealCss}
           "/x/web-interface/archive/relation",
           card,
           "/x/v3/fav/folder/created/list-all",
+          // 相关推荐's publish times, a batch of archives at a time.
+          "/x/v3/fav/resource/infos",
           "/x/relation",
           "/x/relation/relations",
           "/x/relation/tags",
@@ -8173,19 +8175,19 @@ ${concealCss}
       return false;
     }
   }
-  function readKey(key6) {
-    if (typeof key6 !== "string") throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
-    const parts2 = key6.split(":");
+  function readKey(key7) {
+    if (typeof key7 !== "string") throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
+    const parts2 = key7.split(":");
     if (parts2.length === 2 && parts2[0] === "follow" && validUid(parts2[1])) return { kind: "follow", uid: parts2[1] };
     if (parts2.length === 2 && parts2[0] === "group" && validUuid(parts2[1])) return { kind: "group", group: parts2[1] };
     if (parts2.length === 2 && parts2[0] === "group-icon" && validUuid(parts2[1])) return { kind: "icon", group: parts2[1] };
     if (parts2.length === 4 && parts2[0] === "member" && validUid(parts2[1]) && validUuid(parts2[2]) && validUuid(parts2[3]))
       return { kind: "member", uid: parts2[1], generation: parts2[2], group: parts2[3] };
-    if (key6 === "group-order") return { kind: "order" };
+    if (key7 === "group-order") return { kind: "order" };
     throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
   }
-  function readValue(key6, value2) {
-    switch (key6.kind) {
+  function readValue(key7, value2) {
+    switch (key7.kind) {
       case "follow":
         if (value2 === null) return null;
         if (fields(value2, ["name", "face", "addedAt"]) && typeof value2.name === "string" && validFace(value2.face) && typeof value2.addedAt === "number" && Number.isSafeInteger(value2.addedAt) && value2.addedAt >= 0)
@@ -8209,8 +8211,8 @@ ${concealCss}
   function readOperation(input) {
     if (!fields(input, ["id", "key", "value", "parents"]) || !validUuid(input.id) || !Array.isArray(input.parents) || !input.parents.every(validUuid) || new Set(input.parents).size !== input.parents.length || input.parents.includes(input.id))
       throw new Error("\u672C\u5730\u5173\u6CE8\u64CD\u4F5C\u635F\u574F");
-    const key6 = readKey(input.key);
-    return { id: input.id, key: input.key, value: readValue(key6, input.value), parents: [...input.parents].sort(lexical) };
+    const key7 = readKey(input.key);
+    return { id: input.id, key: input.key, value: readValue(key7, input.value), parents: [...input.parents].sort(lexical) };
   }
   function parseLocalFollowBatch(input) {
     if (!fields(input, ["schema", "version", "operations"]) || input.schema !== "bili-atelier-local-following" || input.version !== 1 && input.version !== 2 || !Array.isArray(input.operations) || input.operations.length > 1e4)
@@ -8241,14 +8243,14 @@ ${concealCss}
         if (!children.has(parentId)) children.set(parentId, []);
         children.get(parentId).push(op.id);
       }
-      const key6 = readKey(op.key);
-      if (key6.kind === "member") {
-        const generation = map.get(key6.generation);
-        if (!generation || generation.key !== `follow:${key6.uid}` || generation.value === null || !groupKeys.has(`group:${key6.group}`))
+      const key7 = readKey(op.key);
+      if (key7.kind === "member") {
+        const generation = map.get(key7.generation);
+        if (!generation || generation.key !== `follow:${key7.uid}` || generation.value === null || !groupKeys.has(`group:${key7.group}`))
           throw new Error("\u672C\u5730\u5173\u6CE8\u6210\u5458\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u8D26\u53F7\u4EE3\u6216\u5206\u7EC4");
       }
-      if (key6.kind === "icon" && !groupKeys.has(`group:${key6.group}`)) throw new Error("\u672C\u5730\u5173\u6CE8\u56FE\u6807\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
-      if (key6.kind === "order" && op.value.some((id) => !groupKeys.has(`group:${id}`)))
+      if (key7.kind === "icon" && !groupKeys.has(`group:${key7.group}`)) throw new Error("\u672C\u5730\u5173\u6CE8\u56FE\u6807\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
+      if (key7.kind === "order" && op.value.some((id) => !groupKeys.has(`group:${id}`)))
         throw new Error("\u672C\u5730\u5173\u6CE8\u6392\u5E8F\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
     }
     const queue = [...degrees].filter(([, n]) => n === 0).map(([id]) => id);
@@ -8276,10 +8278,10 @@ ${concealCss}
   }
   function materializeLocalFollow(operations) {
     const heads = localFollowFrontier(operations), groupMap = /* @__PURE__ */ new Map();
-    for (const [key6, ops] of heads) if (key6.startsWith("group:")) {
+    for (const [key7, ops] of heads) if (key7.startsWith("group:")) {
       const value2 = winner(ops).value;
       if (value2 === null) continue;
-      const id = key6.slice(6), icon2 = heads.get(`group-icon:${id}`);
+      const id = key7.slice(6), icon2 = heads.get(`group-icon:${id}`);
       groupMap.set(id, icon2 ? { id, name: value2, icon: winner(icon2).value } : { id, name: value2 });
     }
     const orderHeads = heads.get("group-order");
@@ -8288,10 +8290,10 @@ ${concealCss}
     order.push(...[...groupMap.keys()].filter((id) => !ordered.has(id)).sort(lexical));
     const groups = order.map((id) => groupMap.get(id));
     const accounts = [];
-    for (const [key6, ops] of heads) if (key6.startsWith("follow:")) {
+    for (const [key7, ops] of heads) if (key7.startsWith("follow:")) {
       const chosen = winner(ops);
       if (chosen.value === null) continue;
-      const uid = key6.slice(7), generations = ops.map((o) => o.id);
+      const uid = key7.slice(7), generations = ops.map((o) => o.id);
       const groupIds = order.filter((group) => {
         const memberships = generations.flatMap((generation) => heads.get(`member:${uid}:${generation}:${group}`) || []);
         return memberships.some((o) => o.value === true) && !memberships.some((o) => o.value === false);
@@ -8307,7 +8309,7 @@ ${concealCss}
   var localFollowChangedEvent = "atelier-local-following-changed";
   var listeners = /* @__PURE__ */ new Set();
   var uuid = () => crypto.randomUUID();
-  var recordKeys = () => GM_listValues().filter((key6) => key6.startsWith(prefix + "record_") || key6.startsWith(prefix + "pull_")).sort();
+  var recordKeys = () => GM_listValues().filter((key7) => key7.startsWith(prefix + "record_") || key7.startsWith(prefix + "pull_")).sort();
   function localFollowRecords(keys = recordKeys()) {
     const result = /* @__PURE__ */ new Map();
     const add = (id, raw) => {
@@ -8319,10 +8321,10 @@ ${concealCss}
       }
       result.set(id, batch2);
     };
-    for (const key6 of keys) {
-      if (key6.startsWith(prefix + "record_")) add(key6.slice((prefix + "record_").length), GM_getValue(key6));
-      else if (key6.startsWith(prefix + "pull_")) {
-        const value2 = GM_getValue(key6);
+    for (const key7 of keys) {
+      if (key7.startsWith(prefix + "record_")) add(key7.slice((prefix + "record_").length), GM_getValue(key7));
+      else if (key7.startsWith(prefix + "pull_")) {
+        const value2 = GM_getValue(key7);
         if (!value2 || typeof value2 !== "object" || Array.isArray(value2)) throw new Error("\u672C\u5730\u5173\u6CE8\u62C9\u53D6\u65E5\u5FD7\u635F\u574F");
         for (const [id, raw] of Object.entries(value2)) add(id, raw);
       }
@@ -8407,10 +8409,10 @@ ${concealCss}
     if (!changes2.length) return;
     const heads = localFollowFrontier(known2);
     const operations = [];
-    for (const [key6, value2] of changes2) {
-      const operation = { id: uuid(), key: key6, value: value2, parents: (heads.get(key6) ?? []).map((head) => head.id).sort() };
+    for (const [key7, value2] of changes2) {
+      const operation = { id: uuid(), key: key7, value: value2, parents: (heads.get(key7) ?? []).map((head) => head.id).sort() };
       operations.push(operation);
-      heads.set(key6, [operation]);
+      heads.set(key7, [operation]);
     }
     mergeLocalFollowOperations(known2, operations);
     if (operations.length <= 1e4) GM_setValue(prefix + "record_" + uuid(), localFollowBatch(operations));
@@ -8599,10 +8601,10 @@ ${concealCss}
     return [a0, b0, c0, d0].flatMap((n) => [0, 8, 16, 24].map((shift) => (n >>> shift & 255).toString(16).padStart(2, "0"))).join("");
   }
   var mixin = [46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13];
-  function localFollowWbiQuery(params, key6, now = Date.now()) {
+  function localFollowWbiQuery(params, key7, now = Date.now()) {
     const values = { ...params, wts: String(Math.floor(now / 1e3)) };
     const query = Object.keys(values).sort().map((name) => `${encodeURIComponent(name)}=${encodeURIComponent(values[name].replace(/[!'()*]/g, ""))}`).join("&");
-    return `${query}&w_rid=${localFollowMd5(query + key6)}`;
+    return `${query}&w_rid=${localFollowMd5(query + key7)}`;
   }
   function successful(raw) {
     if (!raw || raw.code !== 0 || !raw.data || typeof raw.data !== "object") {
@@ -8655,9 +8657,9 @@ ${concealCss}
     }
     async dynamic(uid, signal, offset = "") {
       if (!normalizeLocalUid(uid)) throw new Error("\u65E0\u6548\u8D26\u53F7");
-      const key6 = await this.signingKey(signal);
+      const key7 = await this.signingKey(signal);
       if (signal.aborted) throw new DOMException("\u68C0\u67E5\u5DF2\u53D6\u6D88", "AbortError");
-      const query = localFollowWbiQuery({ host_mid: uid, offset, timezone_offset: String((/* @__PURE__ */ new Date()).getTimezoneOffset()), platform: "web", features: localFollowFeatures, web_location: "333.1387" }, key6);
+      const query = localFollowWbiQuery({ host_mid: uid, offset, timezone_offset: String((/* @__PURE__ */ new Date()).getTimezoneOffset()), platform: "web", features: localFollowFeatures, web_location: "333.1387" }, key7);
       const data = successful(await this.request(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?${query}`, signal));
       if (!Array.isArray(data.items)) throw new BiliReadError("\u52A8\u6001\u9875\u683C\u5F0F\u65E0\u6548\uFF0C\u4FDD\u7559\u5DF2\u6709\u8BB0\u5F55");
       return data;
@@ -9052,7 +9054,7 @@ ${concealCss}
     else options.batch.addEventListener("abort", stopAll, { once: true });
     const worker = async () => {
       while (!stopped && queue.length) {
-        const key6 = queue.shift(), controller = new AbortController();
+        const key7 = queue.shift(), controller = new AbortController();
         active2.add(controller);
         let timedOut = false;
         const timer2 = setTimeout(() => {
@@ -9061,12 +9063,12 @@ ${concealCss}
         }, timeout);
         const aborted = new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError")), { once: true }));
         try {
-          const value2 = await Promise.race([options.read(key6, controller.signal), aborted]);
-          if (!stopped && !controller.signal.aborted) options.onValue(key6, value2);
+          const value2 = await Promise.race([options.read(key7, controller.signal), aborted]);
+          if (!stopped && !controller.signal.aborted) options.onValue(key7, value2);
         } catch (error) {
           if (timedOut && !stopped) {
-            if (options.onError(key6, new LocalReadTimeout(timeout))) stopAll();
-          } else if (!stopped && !controller.signal.aborted && options.onError(key6, error)) stopAll();
+            if (options.onError(key7, new LocalReadTimeout(timeout))) stopAll();
+          } else if (!stopped && !controller.signal.aborted && options.onError(key7, error)) stopAll();
         } finally {
           clearTimeout(timer2);
           active2.delete(controller);
@@ -9243,9 +9245,9 @@ ${concealCss}
         const local = Object.fromEntries(Object.entries(entry.local ?? {}).filter(([uid, generation]) => live.get(uid) === generation));
         return entry.online || Object.keys(local).length ? [{ ...entry, local }] : [];
       });
-      for (const key6 of Object.keys(this.cache.cursors)) {
-        const [kind, uid, generation] = key6.split(":");
-        if (kind === "local" && live.get(uid) !== generation) delete this.cache.cursors[key6];
+      for (const key7 of Object.keys(this.cache.cursors)) {
+        const [kind, uid, generation] = key7.split(":");
+        if (kind === "local" && live.get(uid) !== generation) delete this.cache.cursors[key7];
       }
     }
     stale(source) {
@@ -9333,15 +9335,15 @@ ${concealCss}
       this.prune();
       let session = this.session;
       if (options.first || !session || session.type !== type) session = this.session = { id: Math.random().toString(36).slice(2, 10), type, delivered: /* @__PURE__ */ new Set(), baseline: "", pages: 0 };
-      let failed = 0, stopped = false, first2 = "", read3 = 0, total = 0;
+      let failed = 0, stopped = false, first2 = "", read4 = 0, total = 0;
       const failedKeys = /* @__PURE__ */ new Set();
       const tally = (result) => {
         failed += result.failed;
         stopped ||= result.stopped;
         first2 ||= result.first;
-        read3 += result.read;
+        read4 += result.read;
         total += result.total;
-        for (const key6 of result.failedKeys) failedKeys.add(key6);
+        for (const key7 of result.failedKeys) failedKeys.add(key7);
         return result;
       };
       if (options.first) {
@@ -9370,7 +9372,7 @@ ${concealCss}
       session.pages++;
       this.persist();
       const more = !stopped && !!slice.length && (this.continuation(type, failedKeys).length > 0 || pending2().length > 0);
-      this.status = stopped ? `\u670D\u52A1\u9650\u5236\uFF0C\u5DF2\u505C\u6B62\uFF1A${first2}` : failed ? `\u5DF2\u8BFB\u53D6 ${read3}/${total} \u4E2A\u6765\u6E90\uFF0C\u5931\u8D25 ${failed}\uFF08${first2}\uFF09` : total ? `\u5DF2\u8BFB\u53D6 ${read3} \u4E2A\u6765\u6E90` : "\u4F7F\u7528\u672C\u673A\u7F13\u5B58";
+      this.status = stopped ? `\u670D\u52A1\u9650\u5236\uFF0C\u5DF2\u505C\u6B62\uFF1A${first2}` : failed ? `\u5DF2\u8BFB\u53D6 ${read4}/${total} \u4E2A\u6765\u6E90\uFF0C\u5931\u8D25 ${failed}\uFF08${first2}\uFF09` : total ? `\u5DF2\u8BFB\u53D6 ${read4} \u4E2A\u6765\u6E90` : "\u4F7F\u7528\u672C\u673A\u7F13\u5B58";
       return { code: 0, message: "0", ttl: 1, data: { has_more: more, items: slice.map((entry) => entry.raw), offset: `${tokenPrefix}${session.id}:${session.pages}`, update_baseline: session.baseline, update_num: 0 } };
     }
     /** One UP's own stream, read from their space feed in their own order
@@ -9378,7 +9380,7 @@ ${concealCss}
      * cursors; re-selecting within 15 minutes replays it without a read. */
     async authorPage(uid, type, options) {
       const signal = options.signal ?? new AbortController().signal, kinds2 = typeKinds[type];
-      let error, read3 = 0;
+      let error, read4 = 0;
       const fetch2 = async (fromTop) => {
         let data;
         const stream2 = this.authors.get(uid);
@@ -9387,7 +9389,7 @@ ${concealCss}
           batch: signal,
           limit: 1,
           timeout: this.deps.timeout,
-          read: (key6, readSignal) => this.deps.api.dynamic(key6, readSignal, fromTop || !stream2 ? "" : stream2.offset),
+          read: (key7, readSignal) => this.deps.api.dynamic(key7, readSignal, fromTop || !stream2 ? "" : stream2.offset),
           onValue: (_, value2) => {
             data = value2;
           },
@@ -9397,7 +9399,7 @@ ${concealCss}
           }
         });
         if (!data) return false;
-        read3++;
+        read4++;
         (this.deps.observe ?? observeLocalFollowDynamics)(data, uid);
         const items = data.items.filter((raw) => raw && typeof raw.id_str === "string" && raw.id_str && author(raw) === uid);
         const offset = typeof data.offset === "string" ? data.offset : String(data.offset ?? "");
@@ -9435,7 +9437,7 @@ ${concealCss}
       const stream = this.authors.get(uid);
       const stopped = error instanceof BiliReadError && error.stopsBatch;
       const message = error instanceof Error ? error.message : error ? "\u8BFB\u53D6\u5931\u8D25" : "";
-      this.status = stopped ? `\u670D\u52A1\u9650\u5236\uFF0C\u5DF2\u505C\u6B62\uFF1A${message}` : message ? `\u8BFB\u53D6\u5931\u8D25\uFF1A${message}` : read3 ? "\u5DF2\u8BFB\u53D6 1 \u4E2A\u6765\u6E90" : "\u4F7F\u7528\u672C\u9875\u7F13\u5B58";
+      this.status = stopped ? `\u670D\u52A1\u9650\u5236\uFF0C\u5DF2\u505C\u6B62\uFF1A${message}` : message ? `\u8BFB\u53D6\u5931\u8D25\uFF1A${message}` : read4 ? "\u5DF2\u8BFB\u53D6 1 \u4E2A\u6765\u6E90" : "\u4F7F\u7528\u672C\u9875\u7F13\u5B58";
       const more = !stopped && !!slice.length && !!stream && (stream.next < stream.items.length || stream.hasMore);
       return { code: 0, message: "0", ttl: 1, data: { has_more: more, items: slice, offset: `${tokenPrefix}author:${uid}`, update_baseline: "", update_num: 0 } };
     }
@@ -9462,8 +9464,8 @@ ${concealCss}
       if (entries.length > localFeedCacheLimit) {
         const bound = time(entries[localFeedCacheLimit - 1].raw);
         entries = entries.filter((entry) => time(entry.raw) >= bound && time(entry.raw) > 0);
-        cursors2 = Object.fromEntries(Object.entries(cursors2).map(([key6, cursor]) => [
-          key6,
+        cursors2 = Object.fromEntries(Object.entries(cursors2).map(([key7, cursor]) => [
+          key7,
           cursor.frontier !== void 0 && cursor.frontier < bound ? { offset: "", hasMore: true, fetchedAt: cursor.fetchedAt } : cursor
         ]));
       }
@@ -9699,18 +9701,18 @@ ${concealCss}
     const content = card3.appendChild(body(raw));
     if (!nested) {
       const stat = raw?.modules?.module_stat ?? {}, actions = node("div", "adc-actions");
-      for (const [label, key6] of [["\u8F6C\u53D1", "forward"], ["\u8BC4\u8BBA", "comment"], ["\u70B9\u8D5E", "like"]]) {
-        const button5 = actions.appendChild(node("button", `adc-button atelier-control adc-${key6}`, label));
+      for (const [label, key7] of [["\u8F6C\u53D1", "forward"], ["\u8BC4\u8BBA", "comment"], ["\u70B9\u8D5E", "like"]]) {
+        const button5 = actions.appendChild(node("button", `adc-button atelier-control adc-${key7}`, label));
         button5.type = "button";
-        button5.dataset.action = key6;
+        button5.dataset.action = key7;
         button5.dataset.label = label;
-        button5.dataset.count = String(Math.max(0, Number(stat[key6]?.count) || 0));
-        const value2 = count(stat[key6]?.count);
+        button5.dataset.count = String(Math.max(0, Number(stat[key7]?.count) || 0));
+        const value2 = count(stat[key7]?.count);
         if (value2) button5.textContent = `${label} ${value2}`;
-        if (key6 === "like") button5.setAttribute("aria-pressed", String(stat.like?.status === true));
-        if (stat[key6]?.disabled || stat[key6]?.forbidden) {
+        if (key7 === "like") button5.setAttribute("aria-pressed", String(stat.like?.status === true));
+        if (stat[key7]?.disabled || stat[key7]?.forbidden) {
           button5.disabled = true;
-          button5.title = key6 === "comment" ? "\u8FD9\u6761\u52A8\u6001\u7684\u8BC4\u8BBA\u533A\u5DF2\u5173\u95ED" : key6 === "like" ? "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u70B9\u8D5E" : "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u8F6C\u53D1";
+          button5.title = key7 === "comment" ? "\u8FD9\u6761\u52A8\u6001\u7684\u8BC4\u8BBA\u533A\u5DF2\u5173\u95ED" : key7 === "like" ? "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u70B9\u8D5E" : "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u8F6C\u53D1";
         }
       }
       const last = node("div", "adc-last");
@@ -9800,9 +9802,9 @@ ${root} .btnView{z-index:3}
     return raw.data ?? {};
   }
   var FeedInteractions = class {
-    constructor(read3, write2, signingKey, mid) {
-      this.read = read3;
-      this.write = write2;
+    constructor(read4, write3, signingKey, mid) {
+      this.read = read4;
+      this.write = write3;
       this.signingKey = signingKey;
       this.mid = mid;
     }
@@ -9814,8 +9816,8 @@ ${root} .btnView{z-index:3}
     async send(op, payload) {
       return ok(await this.write(op, payload));
     }
-    like(dynId, on5) {
-      return this.send("like", { body: { dyn_id_str: dynId, up: on5 ? 1 : 2, spmid: "333.1365.0.0" } });
+    like(dynId, on7) {
+      return this.send("like", { body: { dyn_id_str: dynId, up: on7 ? 1 : 2, spmid: "333.1365.0.0" } });
     }
     /** The page's own forward flow: submit check, then the scene-4 create. */
     async forward(dynId, text4) {
@@ -9842,11 +9844,11 @@ ${root} .btnView{z-index:3}
       const signed = new URLSearchParams(localFollowWbiQuery({ web_location: "333.1365" }, await this.signingKey(new AbortController().signal)));
       return this.send("reply", { query: Object.fromEntries(signed), body: body2 });
     }
-    likeReply(oid, type, rpid, on5) {
-      return this.send("reply-like", { body: { oid, type, rpid, action: on5 ? 1 : 0 } });
+    likeReply(oid, type, rpid, on7) {
+      return this.send("reply-like", { body: { oid, type, rpid, action: on7 ? 1 : 0 } });
     }
-    hateReply(oid, type, rpid, on5) {
-      return this.send("reply-hate", { body: { oid, type, rpid, action: on5 ? 1 : 0 } });
+    hateReply(oid, type, rpid, on7) {
+      return this.send("reply-hate", { body: { oid, type, rpid, action: on7 ? 1 : 0 } });
     }
     deleteReply(oid, type, rpid) {
       return this.send("reply-delete", { body: { oid, type, rpid } });
@@ -10264,13 +10266,13 @@ ${root} .btnView{z-index:3}
       };
       async function toggle(which) {
         if (!context.me) return;
-        const before = { likes, action }, on5 = action !== which;
-        if (which === 1) likes += on5 ? 1 : -1;
-        else if (on5 && action === 1) likes -= 1;
-        action = on5 ? which : 0;
+        const before = { likes, action }, on7 = action !== which;
+        if (which === 1) likes += on7 ? 1 : -1;
+        else if (on7 && action === 1) likes -= 1;
+        action = on7 ? which : 0;
         paint2();
         try {
-          await (which === 1 ? context.api.likeReply : context.api.hateReply).call(context.api, context.oid, context.type, rpid, on5);
+          await (which === 1 ? context.api.likeReply : context.api.hateReply).call(context.api, context.oid, context.type, rpid, on7);
         } catch (error) {
           ({ likes, action } = before);
           paint2();
@@ -10577,13 +10579,13 @@ ${root2} .acm-blocked{outline:1px dashed #a33024;outline-offset:-1px}
     }
     return list.sort((a, b) => a.latest === void 0 ? b.latest === void 0 ? names2.compare(a.name || a.uid, b.name || b.uid) : 1 : b.latest === void 0 ? -1 : b.latest - a.latest || names2.compare(a.name, b.name));
   }
-  function tileLines(name, width2 = 60) {
+  function tileLines(name, width = 60) {
     const advance = (char) => /[⺀-￿]/.test(char) ? 12 : 7;
     const chars = [...name.trim()], lines = [];
     let line = [], used = 0, index = 0;
     for (; index < chars.length; index++) {
       const char = chars[index];
-      if (used + advance(char) > width2) {
+      if (used + advance(char) > width) {
         const space = line.lastIndexOf(" ");
         const carry = advance(char) === 7 && space > 0 ? line.splice(space).slice(1) : [];
         lines.push(line.join("").trimEnd());
@@ -10607,7 +10609,7 @@ ${root2} .acm-blocked{outline:1px dashed #a33024;outline-offset:-1px}
   var stickyTop = () => headerHeight() + 8;
   var columns = 3;
   function createFollowPanel(identity, source) {
-    const seenKey = `BiliAtelier_FeedSeen_${identity}`, foldKey2 = `BiliAtelier_FeedPanelFolded_${identity}`;
+    const seenKey = `BiliAtelier_FeedSeen_${identity}`, foldKey3 = `BiliAtelier_FeedPanelFolded_${identity}`;
     const liveKey = `BiliAtelier_FeedLiveOpen_${identity}`, dynamicKey = `BiliAtelier_FeedDynamicOpen_${identity}`;
     let seen = (() => {
       const raw = GM_getValue(seenKey, {});
@@ -10634,7 +10636,7 @@ ${root2} .acm-blocked{outline:1px dashed #a33024;outline-offset:-1px}
     view.className = "afp-view";
     view.setAttribute("role", "listbox");
     view.setAttribute("aria-label", "\u5173\u6CE8\u7684 UP \u4E3B");
-    let folded = GM_getValue(foldKey2, false) === true;
+    let folded = GM_getValue(foldKey3, false) === true;
     const fold = () => {
       body2.hidden = folded;
       toggle.dataset.kind = folded ? "restore" : "minimize";
@@ -10645,7 +10647,7 @@ ${root2} .acm-blocked{outline:1px dashed #a33024;outline-offset:-1px}
     toggle.addEventListener("click", () => {
       folded = !folded;
       sound(folded ? "minimize" : "restore");
-      GM_setValue(foldKey2, folded);
+      GM_setValue(foldKey3, folded);
       fold();
     });
     fold();
@@ -10793,10 +10795,10 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}` : person.name;
       if (row === void 0) return at;
       let best = at, distance = Infinity;
       rects.forEach((rect, index) => {
-        const gap2 = Math.abs(rect.left - here.left);
-        if (Math.round(rect.top) === row && gap2 < distance) {
+        const gap = Math.abs(rect.left - here.left);
+        if (Math.round(rect.top) === row && gap < distance) {
           best = index;
-          distance = gap2;
+          distance = gap;
         }
       });
       return best;
@@ -10889,7 +10891,7 @@ ${p} .afp-group{display:flex;align-items:center;gap:3px;width:100%;margin:0;padd
 ${p} .afp-group-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 ${p} .afp-chevron{flex:none;width:5px;height:5px;margin:0 2px;border:solid currentColor;border-width:1px 1px 0 0;transform:translateY(1px) rotate(-45deg)}
 ${p} .afp-group[aria-expanded=false] .afp-chevron{transform:translateY(-1px) rotate(135deg)}
-${p} .afp-grid{display:grid;grid-template-columns:repeat(${columns},minmax(0,1fr));gap:8px 0;padding-top:5px}
+${p} .afp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(84px,33.333%),1fr));gap:8px 0;padding-top:5px}
 ${p} .afp-tile{display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 1px;color:var(--xp-ink)!important;text-decoration:none!important;outline:none!important;cursor:default}
 ${p} .afp-face{position:relative;flex:none;width:32px;height:32px}
 ${p} .afp-face>img{display:block;width:32px;height:32px;object-fit:cover;image-rendering:auto}
@@ -10943,11 +10945,8 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
   }
 
   // src/modules/local-following/feed-quick.ts
-  var width = 200;
-  var gap = 12;
-  var margin = 16;
   function createQuickWindow(options) {
-    const foldKey2 = `BiliAtelier_QuickFolded_${options.identity}`;
+    const foldKey3 = `BiliAtelier_QuickFolded_${options.identity}`;
     const win = document.createElement("section");
     win.className = "alf-quick xp-window";
     win.setAttribute("aria-label", "\u5FEB\u6377\u64CD\u4F5C");
@@ -10969,10 +10968,13 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       element2.appendChild(document.createElement("span")).textContent = label;
       return element2;
     };
+    const pageTop = button5("alf-quick-top alf-quick-page", "\u56DE\u5230\u9876\u90E8");
+    pageTop.prepend(Object.assign(document.createElement("img"), { src: atelierIcons.up, alt: "" }));
+    pageTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "instant" }));
     const toTop = button5("alf-quick-top", "\u56DE\u5230\u5361\u7247\u9876\u7AEF");
     toTop.prepend(Object.assign(document.createElement("img"), { src: atelierIcons.up, alt: "" }));
     const night = button5("alf-quick-night", "\u591C\u95F4\u6A21\u5F0F");
-    let folded = GM_getValue(foldKey2, false) === true;
+    let folded = GM_getValue(foldKey3, false) === true;
     const fold = () => {
       body2.hidden = folded;
       toggle.dataset.kind = folded ? "restore" : "minimize";
@@ -10983,7 +10985,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     toggle.addEventListener("click", () => {
       folded = !folded;
       sound(folded ? "minimize" : "restore");
-      GM_setValue(foldKey2, folded);
+      GM_setValue(foldKey3, folded);
       fold();
     });
     fold();
@@ -11014,9 +11016,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     const update = () => {
       frame2 = 0;
       toTop.disabled = !current4();
-      const right = options.feedWindow.getBoundingClientRect().right;
-      const z = zoomOf(win);
-      placeFixed(win, { left: Math.max(0, Math.min(right + gap * z, window.innerWidth - (width + margin) * z)) });
+      pageTop.disabled = window.scrollY < 1;
     };
     const schedule2 = () => {
       frame2 ||= requestAnimationFrame(update);
@@ -11043,11 +11043,2300 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     };
   }
   var quickWindowCss = `
-#atelier-feed-root .alf-quick{position:fixed;bottom:${margin}px;z-index:100;width:${width}px;margin:0}
-#atelier-feed-root .alf-quick-body{display:flex;flex-direction:column;gap:4px;padding:6px}
-#atelier-feed-root .alf-quick-body .atelier-control{width:100%;min-width:0;justify-content:flex-start}
-#atelier-feed-root .alf-quick-top img{width:24px;height:24px;image-rendering:pixelated}
+.alf-quick{margin:0 0 8px;${xpFont};text-align:left}
+.alf-quick *{box-sizing:border-box}.alf-quick [hidden]{display:none!important}
+.alf-quick-body{display:flex;flex-direction:column;gap:4px;padding:6px}
+.alf-quick-body .atelier-control{width:100%;min-width:0;justify-content:flex-start}
+.alf-quick-top img{width:24px;height:24px;image-rendering:pixelated}
 `;
+
+  // src/modules/local-following/feed-columns.ts
+  var searchIcon = 23;
+  var on = "html[data-atelier-feed=drawn]";
+  function mountFeedColumns(quick) {
+    const caption2 = (icon2, title) => {
+      const header = document.createElement("header");
+      header.className = "xp-caption alf-column-caption";
+      header.setAttribute("data-bili-blocker-ui", "true");
+      header.append(icon2, Object.assign(document.createElement("h2"), { textContent: title }));
+      return header;
+    };
+    const info = document.querySelector("aside.left .bili-dyn-my-info");
+    const card3 = info?.parentElement;
+    if (info && card3 && !card3.classList.contains("alf-me")) {
+      card3.classList.add("alf-me", "xp-window");
+      card3.prepend(caption2(Object.assign(document.createElement("img"), { src: atelierIcons.following, alt: "" }), "\u6211\u7684\u4FE1\u606F"));
+      observeCrispText(card3);
+    }
+    const trends = document.querySelector("aside.right .bili-dyn-search-trendings");
+    if (trends && !trends.classList.contains("alf-trends")) {
+      trends.classList.add("alf-trends", "xp-window");
+      trends.prepend(caption2(shellIcon(searchIcon, 16), "bilibili\u70ED\u641C"));
+      observeCrispText(trends);
+    }
+    const sticky = trends?.parentElement;
+    if (sticky && quick.parentElement !== sticky) sticky.append(quick);
+  }
+  var feedColumnsCss = `
+${on} aside.right>section:has(>.bili-dyn-banner),html[data-atelier-list=drawn] .bili-dyn-sidebar{display:none!important}
+.alf-column-caption h2{margin:0;font:bold var(--xp-caption-size)/var(--xp-line) var(--xp-caption-font);color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+${on} :is(.alf-me,.alf-trends){margin:0 0 8px;padding:0;border-radius:0;box-shadow:none;${xpFont};text-align:left}
+${on} .alf-me>.bili-dyn-my-info{margin:0;padding:8px 10px;border:1px solid var(--xp-edge);border-radius:0;background:var(--xp-window);box-shadow:none}
+${on} .alf-me .bili-dyn-my-info__header{margin:0;padding:0}
+${on} .alf-me .bili-dyn-my-info__header .avatar{border-radius:0;border:1px solid var(--xp-line)}
+${on} .alf-me .info__name{font:bold var(--xp-font-size)/var(--xp-line) var(--xp-font)!important}
+${on} .alf-me .info__label-text{border-radius:0!important;padding:0 3px!important;font:var(--xp-font-size)/var(--xp-line) var(--xp-font)!important}
+${on} .alf-me .bili-dyn-my-info__content{margin:6px 0 0;padding:6px 0 0;border-top:1px solid var(--xp-line)}
+${on} .alf-me .bili-dyn-my-info__stat__item{color:var(--xp-task-link)!important;text-decoration:none!important;cursor:pointer}
+${on} .alf-me .bili-dyn-my-info__stat__item:hover{text-decoration:underline!important}
+${on} .alf-me :is(.item-num,.item-desc){font:var(--xp-font-size)/var(--xp-line) var(--xp-font)!important;color:inherit!important}
+${on} .alf-me .item-num{font-weight:bold!important}
+${on} .alf-trends>.title{display:none!important}
+${on} .alf-trends>.trending-list{margin:0;padding:2px;border:1px solid var(--xp-edge);background:var(--xp-window)}
+${on} .alf-trends a.trending{display:flex;align-items:center;gap:6px;height:auto!important;min-height:0!important;margin:0;padding:2px 6px;border-radius:0;color:var(--xp-ink)!important;text-decoration:none!important;background:none}
+${on} .alf-trends a.trending:hover{background:var(--xp-highlight);color:var(--xp-highlight-ink)!important}
+${on} .alf-trends a.trending :is(.prefix,.text){font:var(--xp-font-size)/var(--xp-line) var(--xp-font)!important;color:inherit!important;background:none!important}
+${on} .alf-trends a.trending .prefix{flex:none;width:2em;height:auto!important;text-align:right;color:var(--xp-muted)!important}
+${on} .alf-trends a.trending:hover .prefix{color:inherit!important}
+${on} .alf-trends a.trending .text{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+${on} .alf-trends a.trending .mark{flex:none}
+${on} aside.right>section.sticky{top:calc(${headerBottomCss} + 8px)!important}
+`;
+
+  // src/ui/page-layout.ts
+  var pageLayoutChanged = "atelier-page-layout-changed";
+  var layout = null;
+  function registerPageLayout(next) {
+    layout = next;
+    notifyPageLayoutChanged();
+  }
+  var currentPageLayout = () => layout;
+  var notifyPageLayoutChanged = () => window.dispatchEvent(new Event(pageLayoutChanged));
+
+  // src/ui/side-bounds.ts
+  var inside = 4;
+  var outside = 2;
+  var blankOf = (m) => (m.content.left - m.stage.left + (m.stage.right - m.content.right)) / 2;
+  var blankMax = (m) => Math.max(0, (m.stage.right - m.stage.left - m.least) / 2);
+  function dragBlank(start, dx, side, max) {
+    return Math.round(Math.min(Math.max(start + (side === "left" ? dx : -dx), 0), max));
+  }
+  function hitBound(m, x, y, top, bottom, unit = 1) {
+    if (y < top || y >= bottom) return null;
+    if (x >= m.content.left - outside * unit && x < m.content.left + inside * unit) return "left";
+    if (x >= m.content.right - inside * unit && x < m.content.right + outside * unit) return "right";
+    return null;
+  }
+  var attribute = "data-atelier-bounds";
+  var sideBoundsCss = `
+.atelier-bound-bar{position:fixed;z-index:2147483646;width:${inside}px;margin:0;padding:0;border:0;pointer-events:none;background:repeating-conic-gradient(#fff 0 25%,#000 0 50%) 0 0/2px 2px;mix-blend-mode:difference}
+:is(html[${attribute}],html[${attribute}] *){cursor:ew-resize!important}
+html[${attribute}=drag] *{user-select:none!important}
+.atelier-bound-sheet{position:fixed;inset:0;z-index:2147483647}
+`;
+  var covers = "dialog,[role=dialog],[role=menu],header.lh,.vl-menu-host,.xp-tooltip";
+  function startSideBounds(host) {
+    const root2 = document.documentElement;
+    if (!document.getElementById("atelier-side-bounds")) {
+      const style = document.createElement("style");
+      style.id = "atelier-side-bounds";
+      style.textContent = sideBoundsCss;
+      (document.head || root2).append(style);
+    }
+    const bars = [0, 1].map(() => {
+      const bar = document.createElement("div");
+      bar.className = "atelier-bound-bar";
+      bar.setAttribute("aria-hidden", "true");
+      bar.setAttribute("data-bili-blocker-ui", "true");
+      return bar;
+    });
+    const show = (left, right) => {
+      const top = headerScreenHeight(), height = Math.max(0, innerHeight - top);
+      const dot = currentPixelScale().scale ? 1 : 1 / (window.devicePixelRatio || 1), tile = `${2 * dot}px`;
+      bars.forEach((bar, index) => {
+        if (!bar.isConnected) document.body.append(bar);
+        bar.style.backgroundSize = `${tile} ${tile}`;
+        placeFixed(bar, { left: index ? right - inside * zoomOf(bar) : left, top, height });
+      });
+    };
+    const hide = () => {
+      for (const bar of bars) bar.remove();
+    };
+    const setState = (state2) => {
+      if (state2) {
+        if (root2.getAttribute(attribute) !== state2) root2.setAttribute(attribute, state2);
+      } else root2.removeAttribute(attribute);
+    };
+    const covered = (x, y) => !!document.elementFromPoint?.(x, y)?.closest(covers);
+    function hit(x, y) {
+      const m = host.measure();
+      if (!m) return null;
+      const side = hitBound(m, x, y, headerScreenHeight(), innerHeight, zoomOf(document.body));
+      return side && !covered(x, y) ? { m, side } : null;
+    }
+    let dragging = false, hover = null, frame2 = 0;
+    const repaintHover = () => {
+      frame2 = 0;
+      if (dragging) return;
+      const found = hover && hover.pointerType !== "touch" && !hover.buttons ? hit(hover.clientX, hover.clientY) : null;
+      if (found) {
+        show(found.m.content.left, found.m.content.right);
+        setState("hover");
+      } else if (root2.getAttribute(attribute) === "hover") {
+        hide();
+        setState("");
+      }
+    };
+    window.addEventListener("pointermove", (event) => {
+      hover = event;
+      frame2 ||= requestAnimationFrame(repaintHover);
+    }, { passive: true });
+    document.addEventListener("pointerleave", () => {
+      hover = null;
+      frame2 ||= requestAnimationFrame(repaintHover);
+    });
+    window.addEventListener("scroll", () => {
+      if (hover) frame2 ||= requestAnimationFrame(repaintHover);
+    }, { passive: true });
+    window.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || dragging) return;
+      const found = hit(event.clientX, event.clientY);
+      if (!found) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const { m, side } = found, start = blankOf(m), max = blankMax(m), x = event.clientX;
+      const sheet = document.body.appendChild(document.createElement("div"));
+      sheet.className = "atelier-bound-sheet";
+      sheet.setAttribute("data-bili-blocker-ui", "true");
+      dragging = true;
+      setState("drag");
+      let blank = Math.round(start), moveFrame = 0, last = x;
+      const place2 = () => {
+        moveFrame = 0;
+        blank = dragBlank(start, last - x, side, max);
+        show(m.stage.left + blank, m.stage.right - blank);
+      };
+      show(m.content.left, m.content.right);
+      const move = (next) => {
+        last = next.clientX;
+        moveFrame ||= requestAnimationFrame(place2);
+      };
+      const finish = (apply) => {
+        window.removeEventListener("pointermove", move, true);
+        window.removeEventListener("pointerup", up, true);
+        window.removeEventListener("pointercancel", cancel, true);
+        window.removeEventListener("blur", cancel);
+        window.removeEventListener("keydown", key7, true);
+        cancelAnimationFrame(moveFrame);
+        sheet.remove();
+        hide();
+        dragging = false;
+        setState("");
+        if (apply) {
+          blank = dragBlank(start, last - x, side, max);
+          if (Math.abs(blank - start) >= 1) host.commit(blank);
+        }
+        frame2 ||= requestAnimationFrame(repaintHover);
+      };
+      const up = () => finish(true), cancel = () => finish(false);
+      const key7 = (next) => {
+        if (next.key === "Escape") {
+          next.preventDefault();
+          next.stopImmediatePropagation();
+          cancel();
+        }
+      };
+      window.addEventListener("pointermove", move, true);
+      window.addEventListener("pointerup", up, true);
+      window.addEventListener("pointercancel", cancel, true);
+      window.addEventListener("blur", cancel);
+      window.addEventListener("keydown", key7, true);
+    }, true);
+    window.addEventListener("dblclick", (event) => {
+      if (!hit(event.clientX, event.clientY)) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      hide();
+      setState("");
+      host.reset();
+    }, true);
+  }
+
+  // src/modules/luna-header/bridge.ts
+  function startHeaderBridge() {
+    const relay = startPageRelay("header", endpoints.header);
+    return async (url) => {
+      const stop = new AbortController(), timer2 = window.setTimeout(() => stop.abort(), 1e4);
+      try {
+        const body2 = await relay.read(url, stop.signal);
+        if (body2?.code !== 0) throw new Error(typeof body2?.message === "string" && body2.message ? body2.message : "\u8BFB\u53D6\u5931\u8D25");
+        return body2.data;
+      } catch (error) {
+        throw stop.signal.aborted ? new Error("\u8BFB\u53D6\u8D85\u65F6") : error;
+      } finally {
+        window.clearTimeout(timer2);
+      }
+    };
+  }
+
+  // src/ui/assets/xp-icons/ie-back.png
+  var ie_back_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAEWklEQVR42rWWXWjVZRzHP+fstM3N7ZyW5uYEZ6XuomyRSEUYQlcVpCFSSbjoBcpgIAR5EdpVGF006DamUCDShXaREljJQiWGzjdyuvSsvbiXs5fz9n95/s/z+3Vx5tG1aRr0u/v/nj/fz/M8v+/veR74nyN219FjtADtOF7A0gakYhZw9OJIYzkCHNa3mLk/QEl4T11FXfvG+udprV5FKlHLkopqJoJhBgrXuJYf4GJ2lEzRn0Hp1HfZe2+AY2wGut5Y9npqR+N2xBbIR+PkzDjZcJS8mSBnxjHOA2DEL/Lb8AgZ3++NhWySXXNXE/uHeHtdvK7ri9Wf81jlcgrRJFlzg5yZIBuOUogmKZjMgov+OT1IX2a6l5BNsvsWpKL8x4+04Tj69ZovaU4kmQ6HmAoHmQwGmQmGieF4ZeWHrFjcytVszzzAqlSSvGcaJ4vBM3qcA/MB2zj6XvP2xidqWpgOh5gM/2LaH2LKHyBZ+RC7njxAS/06VifXczXbw1Q4Mh/SkCQ9lmvxn7Pn9FcuA8QBOEL70kRD28b6xxnz+hktXmG82M+E/ydLqpvpWPcNixJ1ZaGFxAEidTz96FIwdMV3kyoDYoaOlx98ljGvn3Gvnwn/GjkzzvKa1fPEv73yKZPBXICg+GoJ1JGsryJZU5mKGTYDxGOHSCG0NSXiTPjXyfhpjPNYUbt2QfHTYz+UvxUw6vAkIhSL7yJCtTQvqwXhVYAEEW1LH6ilGI7gNAJYUHyo2EdDdTMvrfygnLPqEEBUODd9irNTJzHiWFSbAENLCSBQqbG7it/Mr6hde8em98RyKtONUYdUK0BbCRDO8dJ/DqeCLxaHEMUdBKV8AgdEzNmKzvPvzFvFmcxxBgp/YFVQwKogKKKKRTgzdZJALZE4CjMRRKVmS2BJD+cKc2azEKQ1tYGD17+iP3+JUBxWhUgFow6rSqgWp4rRWYBHL0Bcd5KORaQznj8HMlC8zL5zO/BsHoCaRB17nvqOppo1s84p2TIQhy8RRhxFMYRq8W5YsJy41WgRh88PZ8rWC9TiS8TV/EX2nH2Tos0BUJuoZ9/6QySrmjDqyrb01OKrJVSh6Fv8PoeG7L8FEDr7RqZnxvIenhiMOHyxBOK4nL3Axz3bKMxCFifqebFpK4FYArV4s7P3xBKKo9hj0YD9cpR0GSC7SWPp/OXCEAUTlRvHm53hpdx5Pvr9NfJRlnyU5fRkN0WJbtsiixFHYdAQ9MgMRT5b8LiOf0JXqqayff36hyFBuYhOleC2IpYKK4TiEJRAHHZcMN8DIVukm8PzT1MgvoEToe9aM2N+a1UyAVUQiiNUS6SCrxEWIRBXhodiic4q0U9AyNvSzcF/vTIrdrIX6GhorEqlHqlEk6VGMipEMmvLwBL1K+40aI40sEW6S9a8p0u/4n1aMHRg2RzXWEsiFUPCks2sJ+gIIPQCndJdcsz9vypuwrbSpgEp3Gyi1Je90n3n18TN+BtKItHNDFrr8wAAAABJRU5ErkJggg==";
+
+  // src/ui/assets/xp-icons/ie-forward.png
+  var ie_forward_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAETklEQVR42rWWz2+URRjHP7tddlu30kWo4lpaorTFiy6EqokXNGIQBarRRE0IVA82QWlI4MDBUK6e9A8w1ES9iBE0KokHNHigUKWUYCwt7UoJdHcL7ru/3l8z83jY7nbXtkZinGTyJjPzfD/PzDzPMy/8zy3wj7OniQG9CLvxWY+QQENAkUUYxeMUcFL2kLx7wGkGgYGuxq7Y87FniIdXEw0AxuWKNcZsKcVEfobpXA7X10Nojsk7i0GBZbw+03VPV+LgugNsCMfJ+WnyXpqcl8FyZyn4tyl4cwC4RnMhk2IsPZdF0ycHOLk84DQxhDMvrXkxcXjde+S8eWE/jeWmKHhzWO4sWvxFfk1bOc5MzeD6us8cYmhpwLdc3L7qucTBjn7yXhrLu0XOy5B3M1juLZ5t28PqSJwTUx9gq/wiyFzR5ovRiSywyRwpH1ewOnuKwYdXtCf6H3qD2dI4qdIkqeI10sVJMvY11jVvZEd7P08+sIuBxz6mKXTvIsCaaBNPd8RjuByvjAXnxWMIA6/fv52MPUWmNEW6NEnGniLnpTFi6jxui3YvCTEIG+ItNIdWbA0eobcKCHj0doc7YmtDEWaLV8nY08zZSTxdqhrfKI7z6dX3l4QI4IqmZHw80WzsWEVAsXdhB8LuzsbVZEpl7ysR8vd2LvX1kpBAsBFPFI4p9/vWRECVdxACwCPRZBzuODMAdLZsoTPWs2yK3CiO0xbtrkIOPz7E0V/fxDMWtih0g9AYasDZr7eWAZr1LaGFgOqM9bCjvf9fl4OO5kc5uukzDo28hudncUUTbmrAKen5I/IhEmz4TzWntamNlZEHcUTjisZ4AsXKESmyN4vFWDwaBWAie4HvaoxFBIVBACWG9uhGnmjdVp0vqBzvnn+F33OXcUWhRTBKQC8ARl2lt1YMJqwRJqyR8pQYPNFoDK7RtEW7eWHz3jrx/edf5oo1hi8aJQZHFKXrCgzJSpj+NP2nVbdlQXBE4YjCFUVJ+7RFuzm2+XOioZVV8f7hXi5lL5bXiMIWRf66D4qkPjEPQDOUTOVwlS5fSSWmTfnrGE082s1gjXjet3j73E4uW6MLOWA0Ja0oTCjE5pNqHpjDJF1X/3hpJlMWFI1jao18elq30VwrPryLK7kxijXrbaNw5jTuuMkCH9bXIkXfL5Pp7I07BWzt44rCNuXuiGb49lkKKkfet3hreCdj1mg1c0u6/LUdReEHBSWOme/JLqqmwSPsCweCx5/aspZIcxCF4BqNRvCMrrtEg+AYjRbBE41na7wvQdIMmbP0VTTrgl9+ZlR65I+bM8VeCUA4FsQXg2N8fAy26LKYGByjUSI4RuGnDf43IJl68WWfzIb9JICvwpGG9a2PNNIYD6JCBiW1O1J4aYO+CPo3ssBH5iyDd/XoN+xjH4YBXBLhliCmHHEYY9C3gCJJ4OS8ePLu/yoqoFeJoUmIMz9gA5rkcqK17S864MIGMpaUkwAAAABJRU5ErkJggg==";
+
+  // src/ui/assets/xp-icons/ie-home.png
+  var ie_home_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAEMklEQVR42p2WTWgUdxjGf7uzM7O7EzebxDTFWhu7aqUeuq0BBWlZLb0UW7cIvVRo2ktOevFUEHvwJoUighjBKq1VKIJCqRT6kY0XSxUbaaW0IbBJqZov3LizXzP/jx5mnWS7SbUOvKf/8Hve55l35p0IT3gdhFwZckAJKJyCseXui/0XRA9vTZNIDGJZJRynEHnr6+LDs00B/OPtb2To7usonDp3a+f/EtDDW9NY1i9YVj+JBMTj6Kv7iiSTl5Fy9MvdFzors9VHOo2sCE8mRzDNLI4D8TgkEmDboDVUKlCrMf/bXeQdD29OFZ59XAf69LYstn0G286SSPCwe2wbpAzhVKv09MXQKcHMhLGig+gy8BHi8SzJJGHZNvg+uG4gUC4H5ayj0p/HTSVyNz7aNbicQCitz+eyxGIjJJNp4vFFuGlCoxGAKxWoVoNKrUfvHkau30Vpeo57E1P5/EubJ7+6OT7WJqDP57JEIgE8kQjAjgOGAfV6GAmVCrguIrUBdg9TjyYRUmFltlGamcedncvvfTU3efHa9VDEaIMnEgE8Elnsdkn3jVWbiL19MoQ3fIVQmo7NA5TnSlTdRj7/+p7JS6PfjQXPIBbL4ThpkknC7rUOwLVaSyw15wWs/El8w0EqjSc0Umt8qZBKs/bNd7HWbETaPWc+++TiYDimX1y5rveljgfTolRr1tUqulanrLpw3vsckejDCztXeCJw4EmFJzWNus/4yA2qjTjK7NgZBfCjqzn3YD91z1iclGbJaoMF1UVy74lHwoXSSCPK2tdeoVRTJSAdjumq/gwXjMNMVtYGIq6LqHksyC469p5AdmUeCfeaUQlgfHx8bGho4HIooDX0PdfN92sOczWyh0ZNMl1P89OWo9CzAV8qfKGamWvu3b3P77enuDbyK1e/vYmvgjNPKqRe5k1WWuN5iu4ek6L1IT9P70MDmV6Lui/xhMJXutm54vTxb0LI0+t6AwdLXLUJSKGJKPA8hRGL0PuUhZQaIxppg3tCtX5eoAXuK72MgyZcKhC+RkqNEBrPUGF3ckmXLQJah/EEIrr1W+RPzr9TnSmjNPi+CuHC1yj5MNfFfJcCQgdLzqT+l8DQ0MBl9887HyzcmkSKAC5lUL7QLfk2hEI0AdFoFNu2sew4QhGetTkAOHBgx9nqXzMvL9z4oyQaAuE34bId7kuF4zh0dnaSSqVIOg4NoXDvu/x9e4qJH8dortL2hXP06A9ZEbfOWBszWWXadMUj7Hg+Rl2olpxHzl3DNE1M08SwYriuW6yWKwXf90allIVjx94vrrjRjhy5kva1HrFe3JLtWb2K7RkDqTSzMw94MF/Br2imi7NFwzAKpmmOxmKxwtDQQPGxVybAoUOX0r7vf9qx7pnBuHSZmrhTNA2r0N3dPdrb27si8P//nhw8n9u//2z/kwL+AfLt8lEOBF6DAAAAAElFTkSuQmCC";
+
+  // src/ui/assets/xp-icons/ie-media.png
+  var ie_media_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAEjklEQVR42u2VS2xUZRTHfzP3zsxt59FpS6klPCaGhISHlPgKIYYmRmJikApi4kKdMS6AxEAXGt1Y3UEkQqIQ6aZlYUIaFrAiIJEqaCxpw9AGCI8OxdLXtDNz7537nHtnrouhFFAwxIUbT/LlW3zfOb/zPznfd+B/+wfzPe5gwPOSU9rwlv7xSmtT7bXEjyNvEBIGRj2vKR0QVx89tsF3Yu7uoUOGd/nyacbG/lh36tTu9BMBA57XNjx9q3vWOJ6AILFQEdmeIqtnuF0YI1MocHu0i4XRjelyJJbKvONLzwGGhn6WRTHUceHCvp65eP5Hsz5+5YdzmcLnibjk0BReS1xaT1PNy0SDjcRCIQKCgGYt5ubNXOv0jYlLHPGSc/6CEIxHIi3d27f3HvgLYMDz2noud3RP6fvx+QQCfolnwi7N4RAxaSVB4VkAypWl+CUbRBFdOQuzH3fPxYhGFxGNthCJtOxJpX7pfgjQN9rbfeHOMfRSCcvVmNZN8laMGe06DYEK0eALOJUdaM4epNozVafwXtC/Yx7QQiSyCPDQ9Wxy8+Yj7eJcabbsG0qElixnRrpLfU0W0X+JUr6E4J8i47tKqXwQywXZhKLZD/XboTgO5fkSh8PNafBaNW0Sw5hBUcYPiADnhtQt49NBguUviETeZ6SQw3RswsFJACpeklIZxlTIGR7oCyBwDSoquPOAYDDSIcujbYYx06kodzHNfEIEuHit2EqpRNmUmC0KuOUiqm0T8PuBjwgKO8iZMJKHsm6AmwZHhVIMSpX7gGJxgt7et7/csOHTtZYltwNpEaBimAlsm7LexPTtb7CWJQn41yH4G4EAsgWGXQHDAP0q0FnN3FbBmVegaVXFliV3AO1AhwgwK5dkFCWOIFDmOfL2aag/ihCaQgycwTEVUPeA60K5D4QrYAA2SJX4AwomH+z61OBgV58IEFsQSVMstuHzgeeBWw/GJ5TD5yjHdoLTB+4t0HeC9TqUNTBGCEgnSND2UIkABge7RoEeABGgZeXSk2Klv81VFHAciEZBksC5l10Fgu4ZEvYaVgW3EvVvxQk4yMVXMJh44l8kAmQK9Cxes6xztP96HNcF24ZAAEJNYL5FY/gK70YOs2vXeiSplrExyOVAll9kePh3RFHEsqy/BfgBzr7mk0OrVnwVjNZCsQiqWl25HJRusFU4zHtvvsrChbUIQpXt91dXXV0Ds7MT6Hrh8QoArn8YP1j/vbm24adfk9r4OJqqgiDwkvcBK5c8z+QkVO51pKpWK6nrJo5j4zg2plnE7xcfDwAo7KhJ1X5r31meyXQ25nJolkWipgHX9dC0ahMJQnXXdVCUHLpeIJ+fwLb1p5gHe/OJulyus0nT2ld4bnx1XYjm5sWEwxEEIYBlaShKDkWZQZanyOXGyGYznD+/3/dEBffts4ZRBVIKpG4lf2tdYE7vdpxiUpLC968YhoJhqMjyFKqaxTDUg0810R61bdt6LkUi4dZQSLr3WjVUNYuqZtG0Qs/Fi4dT/woAsGnT10nXtTaCk3DdErqeTwMnBwe7+v6zqf8nWqE9uupXsisAAAAASUVORK5CYII=";
+
+  // src/ui/assets/xp-icons/ie-history.png
+  var ie_history_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAFjUlEQVR42sWVW2wU5xXHf55d787OenfGewHba8eLHYMTCgwYpMZt1E1bKbeWGkWK+pDWpg+18kDBrlBAAmH60PBQVVQtsXZUCQdVSpTSikhEKFHBjotqcjFZIAZfCuza2Lv4wq4ve9+Z6YNJRVqkoFZVz/PR73++c75z/vA/jrJHTTxx4kQQUA3DUE3TxDCMqGEYke7u7sh/JRAOhztkWd5bVVWl1tbWks/nMQyDXC5HMpkkkUik4vH4bwzDOH7w4MHUIwuEw2FVUZSTqqqqDQ0NJBIJZmZmyGQyFItFSqUSLpcLl8tFMpnkxo0bqYWFhd2HDx8+85UC4XBYDQQC/U3bmpTev/ZyYfQCk4VxLGUCetZBg/9p1DWtfKP+BXLT1/GL4PF4mJqaIhaL7e7p6en7gmV5CDzo8/mGblfcVtrf+jE3hE/wbDSoC7ixW60U8jmiiRE+jX3A9eTf+O5z3ehWP3euX8bn9WCxWNpUVY0NDg5GHvqCU6dO9Z/Lngu9O30a73qJNbKT2dEVGsu20d7aTmh9iKCRR/dv4PWhPpSKIOsqW0in0kTff4tA1RomJydTS0tLW48dOxYV/qX60NDKUOjd6dP4n1yFT19donvrUfp/3k/HUx0EvUFW/BuYAJ5/qgO/WcOxV3YyeWua+m+3EY/HkWVZMU3zCMCXBO5k7uzVRsN41jvwSBKibqXZvp1939lHAVgE4sAMUASmxsc5sbeTuk0hmja2UFm7DjGwDkGw4HZXdnR1dSlfErg4f7FNXmfH45LwOBws3c3R3tpOAZgH0kD2fu7t8XF+3dlJ7ddCvPDqEXyVsFYET0Mz+byBLPsAQsIDi6ROrExQ2yDjlyQ8oogNK0FvkCxgAnkgHo/z8cAAv+rsxKFUs3PPERQFkhmoc4K3cSPp9AqVlQFM01T/KWCaprIozaHY7cg2G7IoUla2Ck4Bmftt6evpYT4SIbO8TG1zC5FzGpf/cpZ0FsS7UbYe3YXbXo4kyei6jpWfchIIvjbymmL3Cvgcq/2322w0Nq7lJ327qfYG0YHvt7aztLzM+Pg4Lm8Nc7Fx5mLgrVumYcf3EABHNoVVdCCKMqZpYgU+dHpsHdtCPrz34VaLBYfDwYb1XtQtjczNr3D2jwm+uaWN5iPPcmVojJd/1EJNrQtBgHQGqp0gVAe5+dt+Zl7/JU3NDgzDwMIwkeKTulJuCl9vbvRjs1pxOp04JSd2ux0TAa33Er9oP42nIoijwsVjTUEqXHYAMlkwTdjgAZ8drs4tkIstUF4ucevWZ2+uzkCj6+ZociB6cxFJkhBFEbvdjugQ6e09z892hqn3qRTykElDLge6vgo3DPBL0OiG2SLELg/R1LSDqakRdF0fePCb7rp0aSqytFjCIToQHSLvvPMxP1APo9a3kb4PLulQKKy25Qv40zVQMiCazZAam0GWq0kkogOapj2wyRqpbLa4+09//ixlYmFo6CaO5e20te5jrRNsZasVp9OQL4Bih+1V8Ezt6r0ZKcKFN/vYuvl5rl0bIJmcOfrvx26YRG5jcezq1akf3psweUl6EVd1I7rNRcAFm/yw5fMzbNZeJfhKBx47LBfh80yGwbf/wKbHnkEQrJw///vjmqaFH3pNGWa0YrMc29O0p63eV0ds+CKL8zOU+Wq4qztIp3MY9+5ye9tz/H05Q+TapwyfPkvLEy8iCFbee+945I03frfrKw3n0KFDHS6X66Tb7cYwTHK5EkWhDKskUSjkkWxOsvdWePzxHQQCTzA29hFXrrzfl8ksdmmalnokyzxw4EBQEISTbndlyOutQlECWK0ioihjsZRTKsHsbJSRkcHo4uJsl6ZpZ/4j09+/f3+wVCq1mab5LUmSFadTYXp6AtM0P9R1/YymaRH+X/EP/opL/0KNX2gAAAAASUVORK5CYII=";
+
+  // src/ui/assets/xp-icons/ie-mail.png
+  var ie_mail_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADwElEQVR42p2W30/bVhTHP4ndBFKSeXgDEjUiBZp1U9kosG5tNQlt0vYypEn7B7qnvHZ/wv4C9spT/4I90fel3TSkqZVYKZvGoJgFwWAJxCRxbOdeew92Mn4EGLvSkY+v7/187znn+toRLtHm559NAFp4u1QoTFcvmhO5BPgRMHHi0bfAN+cJRf4j/PtMuqbdnSyhpyywfVZf6fy0MowrFAP4qlCYLl5aoA3P36hoMx9sgACaXnj1cW2F4m8jGAf9Z0YTuRA+WtFmPtwA1wfHB5fwGpoPRjlFsfQWrlRPRRM5Fz4Swh3/CDQUED54PrgueB61hsqT3VtsN4NoCoXprwHULvAHb8eX5saGmtqAto741ceP93GlLxOkxvbAA6SElmCnlsKxoeKkiPlOG/MQOC0wP//sAfBIG9JJf/ZFp9/d+hnbPsSprhNVeymXa2zvNjDMNI4yiFAHycTK4HmnsqEegT8E5vTXLXL9e8cGxa7dAaBn7BPAIYnkOoL7uNR2VmhZG9jGCk/X3keNK8TiSmdu9AhnDqBykMCM3OhSmRbQJMxTaC2S6WH6hsZY/PtjrHiGO7N5epLx0xF0VntFUhcQVDMGyND3QpG27wASt2Gy8LiOaSd5bzaPqieQ3VIE8NGno/xpVHn6osJa+TlTk9dIZ/pDEQecV+zseJT3DnFdheRVl+XVJGYzyfhsnriewAnluwpE4gq3Z3IMjw/wcnGLhcd75Ee3mJrweblc5/eNFG4rRl8yQyIZp7pm4bqSd77MEw3hZxaZMMNNoEdPcPvzPLtGlbXFEqvfucRiCSbvZ8nmNJSYggQqFYsfFlbZXd4jcy+HlCAEiBZdi9wpYzPMcCqnMXRrEICpmRyZvI4TU6gDdUDVE4zdy1JZrbD5Y4lDE8wqCHlGBK0Q7IVmVSxKz7e5Pj7AazmNeliNo5bM6+QAo2jgKAkib+hIcY6AIHhfhIDN4ia9yTjDd7M0QqBowyWdlKiDOv3vSvZfGNAQx0I4JuDY4B+CFFD5pYRTc7g5m6d2AthqBWOkBLcV9PkDA6iDFmJrC6LR7gKNBtgq2H9VMf8ICuf1JjDN00ApA6G2LyV46SzYAkyzu0CtDrgu7rLB1ayO8qbOwX4QcVdgSwanaaMBtRo0m4GdtU2dhoS1daI9cdSRLPsH/wI9LwTadgCzrMCczu5fAorAk9DvclSUSgHtZp7DehRfiABSrwerbDaDMILWhhXP+wE4LuC6oGl4e+UAZlntI7h6dHVnfX8vFgCoVgGME8Al/mf7BzZkFAP6qHjgAAAAAElFTkSuQmCC";
+
+  // src/ui/assets/xp-icons/ie-new-window.png
+  var ie_new_window_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAB3UlEQVR42u2Vu0scURTGf3d3UuwSksEijQg+AmEDWdYqbfQP0EJsfYCkCAlYJI2IeZCUYat0Ae1F2MLCQtRCRSTBkCbBJgupfIyMMejO7Ny5KWZnZzY77si6NuKF4XLmzHzfOec791y4WTFLAPD0y9itZCJ/J63prQAtS8Wf03IR6PMJ1BUlMKcBoGmg3209/KEx5hEIgfrQ2UQpwHHBdit7xRYVf8crg4T3ZbmpABMiWlRbBrbW6qrYEqQLUlyCwCiZ9C/28f3oW8373SGvV2w3lGUzBOmkztbgTn30YT3ciAzmNg3G5/cbgs8O36P/UZLsQledz6mAWg4ILYLg7YoJ6VRDgpllk88HExzbZp3PcrxdqkDoGoLOlOTXdE9kZMcWnJVhqPCSjb21qm/0/iTPHuQZWe9FqkBocdEuCoMXigW2Sx8ByOg5prJ5cm1PkAo+PV6t/iPVORo0Av9pFpn6Og7Ai4dveJ557bWk8kqT1vSqbYc0SFwE/MSGpd8Fum/n6N5brgP3a+6D+6f6XIL/wf9aMNA+ybvsKik64sGdoKNqCMwzGXsGTkoyFty3IzXoff+jIUFbKh7ckiCiRsXOdIZdI2bOqKDfAZTynpqBJzyS8I12VRfONVj/AN4eEie/VWhyAAAAAElFTkSuQmCC";
+
+  // src/ui/assets/xp-icons/ie-notes.png
+  var ie_notes_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABHElEQVR42r2VrU4DQRSFv+liKmqbNFiCw60iCOp5CdQqNM8CQfAM1IEBD0kTREMlEAIV0M1mfzo7O4PYbDdZRSZ7uXLE/eaec24uCJcCeJkdu74bJx/3hBFqp3nYP7kDTG+Ap8shADXAWXApKN27RC3AZhDkQgAskAKx9ASFFKACmwKJ4AQuEwTg6hTx0ztg0EqkRTa5lchsQGvBmBoNxkhN4MAasFYwpmYDZSkpUSHogbNQSXqAg8pA4OfB2+KWPPn6gweq8gLk8ScMdxlNDjE6ZvV8BbDu7EFRp8mnnGU02WN8cMRydt40n3Y8KEENPAFgsleWN2dk3+9rYBpGzDselEDgCXCsFg/bnzfNt0f/8YK+jv5pGHHNf9YvrHePiIYee0EAAAAASUVORK5CYII=";
+
+  // src/ui/assets/xp-icons/ie-go-16.png
+  var ie_go_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACdklEQVR42qWTy0tUcRTHP/fecZrRzCERe5hMQVhBNVa73i16QVB/QDUrMYpULGpRSESLdrVqFbWLgihbhLVpwkXRc0ijh1I6KflAZ7x65869v8dtMTQ0hBB0lge+n+/hnPOF/yzjr04PcSCJZicFIADDI42kOzhGan5ADzGg60Dtvvb9NdupMyNMut+YLoyQmfvOR3uC/smplCtkR3CCdDmgh1gsVPOsfXlrYn10ZVHojjDlDlFQcyWPWeHzZGA4Nznn7tZnihATgICuzmUtibhVxbD9jr7JHkbn+tnTcLRs3OqKMIeaVsUiwnpgXiJWBNwnvm1Bc/viQJGx02Ts9wC0rLvGwcZWzm+6VwYJWyZb4vVxwyX5e4Lk2kgtw/ZbxvODCO0B8Hj4Bq6cpaGqqQQRgSanCiytj1IZDh0HMA2XnVGVxRHZMqcR5wuPMzcAaKhq4lzzXSoME1dLpqVH2LASACEkqECwumYLbRtuznvvFQvX0Nl8h5YXe8lrSWSRRRHg/vvTfLb7yCkPESicCVEEGD7pWc/fNTDzhlO9Gxn0pgFYbEXZseQIrWuvAvBo9A6X+06T14JZJSjk1FBxiYLuL+PZ0pJqQ1EAti45XCa++OEkU9LFVj7OqMDP6BSAqc+Q6s9MpcYcB1sVcLVEB7C/4XhJfDbdSlZ6uFoyIz3slyKHzyUAC0Bv1s/Hp/PJmroFEc9Q5LXkZ2GMdPY1Vz5doBBIHCVwlMB/GqC/ckKnirkoZcE6SaIibN5a1lSZqG6sIK8lrpb4WuFogfwRoF6R0xk6dC+3502jlSRpBkZbqNJIaAHK1wRZhoIcD4HrupehPwW/AFKOOnUF2JcnAAAAAElFTkSuQmCC";
+
+  // src/ui/assets/xp-icons/ie-favorites-16.png
+  var ie_favorites_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB+ElEQVR42q2RW0jTcRTHP2sby60NpwmxFs0L5S0cSUQiYQ+9JfgiFETs6R8+hEYvEUF7jJIW0YVfL92gRj1oYReIaFkjMVfipTKnjiJnIf3H1NFydXqpcJGLpPN4vt/z4Zzzhb/UwAVEaeQvpi/LNRw8XNZmr2rHusIUWBJgTbEj4ClbicttaVgSAICZexQ55zxKw/NPAKXhBSBxB5fbAvDHLQwAnUe3BGxOt9dqGssy1e08Da/rwV7BlXOjodLq6iw9bajqNACEVdlEXeNuD44qsBVDxgGZWfh4FvQgODfBqkNgLodUL8xFQb4RunkLE8BQJLrta8p/pLISX2H5Vli+GmZeQXIY8txgWwumEZh/Bp8eEB98wuNH6f5Egv2/393Qc4YX6admkcFCkecWkVi9yOxBEVGSHN8j908U6EqjLefjuy826/K2TWTYJfJhl0jmpMiX49J3tUJ+PXexFJRGk3fHsXySt8HqgbwNYKyB1DvWrQegKSegpLa51U4IJEFs/DM32lUo/gYwb8duek9JqbGVHNl7JkceirzcKAPXikRp+H/0fWN913XRO2QyVCNKw7cYwJ8cOyXdAXSlZa+qNLzh4L4JmY/J5QPWjp9940JTYy39Q+G76elpWvaep2eh1hVhanNB76V4tD+tx0dVV4Qp/kd9B558zOMZgZROAAAAAElFTkSuQmCC";
+
+  // src/ui/assets/xp-icons/views.png
+  var views_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABuElEQVR42u2VsUscQRjFf7fZFTQW9smBjY2FCLGKWBxcIWEDpgtoYTXWKWzSSBqLNOmvskwVSdjY2QTS5Zr8B3JF4NCgeMux485NitmdmT2S3F64dD5Y+PaxfO+b973dhXtMQAPxbR04BZZn2PcaeEVn4yQAjmbcHGAJeAcQEkU7LMxDFM1W4vJqyQgA+u3KP/XIcshHkClQ2tyXaB5eARD87yWH40Sn07W1EE9s/fCoZ+vBmyZgpl88aVi+91JPFqgDWViRqSqvRsxGIC8aqbGBpaoh4NviIy1s+TmsTt7fMyr9FGSdEyRJYus4jm398VNCOfBmO7ZWfT1P0Bo0sLoZTxbwm/pxbG/HNo7lDoZ3sLYVI5WxrZZFvPYEjt3Ui087lr44F2YXGtIPLkX5sylTpAsb8tHvUzQ+sZw2RdJ7Uysp0tU0TRfTY7PkVALeZ6D/xdjy49ZNLhVQ2HKTAarWm+y8frEn7Ek+v3f8xnNh6+9njn/UEn8X0MDuviBTJiGl17fSNZXKnUBpeNwSSAXaS5ePYHyhJeZC1yRswEIEYQBzDxw/kO75kTZceVVO0Djo3v/b/4hfZb7EzJo6c74AAAAASUVORK5CYII=";
+
+  // src/ui/page-mode.ts
+  var pageModeChanged = "atelier-page-mode-changed";
+  var mode = null;
+  function registerPageMode(next) {
+    mode = next;
+    window.dispatchEvent(new Event(pageModeChanged));
+  }
+  var currentPageMode = () => mode;
+  var notifyPageModeChanged = () => window.dispatchEvent(new Event(pageModeChanged));
+
+  // src/modules/luna-header/menu.ts
+  function node3(tag, className = "", text4) {
+    const element2 = document.createElement(tag);
+    if (className) element2.className = className;
+    if (text4 !== void 0) element2.textContent = text4;
+    return element2;
+  }
+  var hoverDelay = 250;
+  var MenuChain = class {
+    constructor(host) {
+      this.host = host;
+      this.panels = [];
+      this.timer = 0;
+      document.addEventListener("pointerdown", (event) => {
+        if (this.panels.length && !event.composedPath().some((target) => this.panels.includes(target)) && !event.target?.closest?.("[data-menu-anchor]")) this.close();
+      }, true);
+      document.addEventListener("keydown", (event) => this.key(event), true);
+      window.addEventListener("resize", () => this.close());
+      window.addEventListener("blur", () => this.close());
+    }
+    get isOpen() {
+      return this.panels.length > 0;
+    }
+    /** Opens a top menu under (or, right aligned, ending at) an anchor. */
+    open(items, anchor, options = {}) {
+      this.close();
+      this.onClose = options.onClose;
+      const rect = anchor.getBoundingClientRect();
+      const panel = this.panel(items, 0, options.focus ?? false);
+      this.place(panel, () => ({ x: options.align === "right" ? rect.right - screenWidth(panel) : rect.left, y: rect.bottom }));
+      sound("menu");
+    }
+    close() {
+      window.clearTimeout(this.timer);
+      if (!this.panels.length) return;
+      for (const panel of this.panels) panel.remove();
+      this.panels = [];
+      const done = this.onClose;
+      this.onClose = void 0;
+      done?.();
+    }
+    place(panel, at) {
+      const { x, y } = at();
+      placeFixed(panel, { left: Math.max(2, Math.min(x, innerWidth - screenWidth(panel) - 2)), top: Math.max(2, Math.min(y, innerHeight - screenHeight(panel) - 2)) });
+    }
+    panel(source, depth, focus) {
+      const panel = node3("div", "xp-menu lh-pop");
+      panel.setAttribute("role", "menu");
+      panel.setAttribute("data-bili-blocker-ui", "true");
+      for (const old of this.panels.splice(depth)) old.remove();
+      this.panels[depth] = panel;
+      this.host.append(panel);
+      observeCrispText(panel);
+      const fill = (items) => {
+        panel.replaceChildren(...items.map((item) => item === "-" ? node3("div", "xp-menu-separator") : this.row(item, panel, depth)));
+        if (!items.length) panel.append(this.row({ label: "\uFF08\u7A7A\uFF09", disabled: true }, panel, depth));
+        if (focus) this.rows(panel)[0]?.focus({ preventScroll: true });
+      };
+      if (source instanceof Promise) {
+        panel.append(this.row({ label: "\u6B63\u5728\u8BFB\u53D6\u2026", disabled: true }, panel, depth));
+        source.then(
+          (items) => {
+            if (panel.isConnected) {
+              const before = panel.getBoundingClientRect();
+              fill(items);
+              this.place(panel, () => ({ x: before.left, y: before.top }));
+            }
+          },
+          (error) => {
+            if (panel.isConnected) fill([{ label: `\u8BFB\u53D6\u5931\u8D25\uFF1A${error instanceof Error ? error.message : error}`, disabled: true }]);
+          }
+        );
+      } else fill(source);
+      return panel;
+    }
+    row(item, panel, depth) {
+      const row = item.href && !item.disabled ? node3("a", "xp-menu-item lh-item") : node3("button", "xp-menu-item lh-item");
+      if (row instanceof HTMLAnchorElement) {
+        row.href = item.href;
+        row.target = "_blank";
+        row.rel = "noopener noreferrer";
+      } else row.type = "button";
+      row.setAttribute("role", item.checked === void 0 ? "menuitem" : "menuitemcheckbox");
+      if (item.checked !== void 0) row.setAttribute("aria-checked", String(item.checked));
+      row.append(node3("span", "lh-check", item.checked ? "\u2713" : ""));
+      const glyph = row.appendChild(node3("span", "lh-item-icon"));
+      if (typeof item.icon === "string") {
+        const image6 = glyph.appendChild(node3("img"));
+        image6.src = item.icon;
+        image6.alt = "";
+      } else if (item.icon) glyph.append(item.icon);
+      row.append(node3("span", item.bold || item.count ? "lh-item-label lh-bold" : "lh-item-label", item.label));
+      if (item.count) row.append(node3("span", "lh-count", `(${item.count > 99 ? "99+" : item.count})`));
+      if (item.note) row.append(node3("span", "lh-item-note", item.note));
+      if (item.items) {
+        row.append(node3("span", "lh-sub"));
+        row.setAttribute("aria-haspopup", "menu");
+      }
+      if (item.title) row.title = item.title;
+      if (item.disabled) {
+        row.setAttribute("aria-disabled", "true");
+        if (row instanceof HTMLButtonElement) row.disabled = true;
+      }
+      const openSub = (focus) => {
+        if (!item.items || item.disabled) return;
+        if (row.dataset.open !== void 0 && this.panels[depth + 1]) return;
+        for (const sibling of panel.querySelectorAll("[data-open]")) delete sibling.dataset.open;
+        row.dataset.open = "";
+        const sub = this.panel(item.items(), depth + 1, focus);
+        const rect = row.getBoundingClientRect();
+        const width = screenWidth(sub), lap = 3 * zoomOf(sub);
+        this.place(sub, () => ({ x: rect.right + width > innerWidth ? rect.left - width + lap : rect.right - lap, y: rect.top - lap }));
+      };
+      row.addEventListener("pointerenter", () => {
+        window.clearTimeout(this.timer);
+        if (item.items) this.timer = window.setTimeout(() => openSub(false), hoverDelay);
+        else this.timer = window.setTimeout(() => {
+          for (const panelBelow of this.panels.splice(depth + 1)) panelBelow.remove();
+          for (const open of panel.querySelectorAll("[data-open]")) delete open.dataset.open;
+        }, hoverDelay);
+      });
+      row.addEventListener("click", (event) => {
+        if (item.disabled) {
+          event.preventDefault();
+          return;
+        }
+        if (item.items) {
+          event.preventDefault();
+          window.clearTimeout(this.timer);
+          openSub(true);
+          return;
+        }
+        sound("click");
+        if (!item.href) {
+          event.preventDefault();
+          item.action?.();
+        }
+        this.close();
+      });
+      row.atelierOpenSub = openSub;
+      return row;
+    }
+    rows(panel) {
+      return [...panel.querySelectorAll(".lh-item:not([aria-disabled=true])")];
+    }
+    key(event) {
+      if (!this.panels.length) return;
+      const panel = this.panels.find((each) => each.contains(document.activeElement)) ?? this.panels[this.panels.length - 1];
+      const rows = this.rows(panel), index = rows.indexOf(document.activeElement);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        if (this.panels.length > 1 && panel !== this.panels[0]) {
+          this.panels.pop()?.remove();
+          this.rows(this.panels[this.panels.length - 1]).find((row) => row.dataset.open !== void 0)?.focus();
+        } else this.close();
+      } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        rows[(index + (event.key === "ArrowUp" ? -1 : 1) + rows.length) % rows.length]?.focus();
+      } else if (event.key === "ArrowRight" && index >= 0 && rows[index].atelierOpenSub && rows[index].getAttribute("aria-haspopup")) {
+        event.preventDefault();
+        rows[index].atelierOpenSub(true);
+      } else if (event.key === "ArrowLeft" && panel !== this.panels[0]) {
+        event.preventDefault();
+        const depth = this.panels.indexOf(panel);
+        for (const below of this.panels.splice(depth)) below.remove();
+        this.rows(this.panels[this.panels.length - 1]).find((row) => row.dataset.open !== void 0)?.focus();
+      }
+    }
+  };
+
+  // src/modules/luna-header/unread.ts
+  var UnreadNumber = 1;
+  var RedDot = 2;
+  var NoReminder = 3;
+  var number = (value2) => Math.max(0, Number(value2) || 0);
+  function unreadBadge(feed, single, setting) {
+    const notify3 = [UnreadNumber, RedDot, NoReminder].includes(Number(setting?.msg_notify)) ? Number(setting.msg_notify) : UnreadNumber;
+    const folded = Number(setting?.show_unfollowed_msg) === 1;
+    const people2 = number(single?.follow_unread) + (folded ? 0 : number(single?.unfollow_unread));
+    const services = number(single?.biz_msg_follow_unread) + (folded ? 0 : number(single?.biz_msg_unfollow_unread));
+    const entries = {
+      reply: { count: number(feed?.reply), dot: false },
+      at: { count: number(feed?.at), dot: false },
+      like: { count: number(feed?.like), dot: false },
+      // 系统通知 the account chose to see as a dot.
+      system: { count: number(feed?.sys_msg), dot: Number(feed?.sys_msg_style) === 1 },
+      // Messages from people are counted; from service accounts only a dot.
+      whisper: people2 > 0 ? { count: people2, dot: false } : { count: services, dot: true }
+    };
+    let numbers = 0, dots = 0;
+    for (const entry of Object.values(entries)) if (entry.dot) dots += entry.count;
+    else numbers += entry.count;
+    if (notify3 === NoReminder) {
+      for (const entry of Object.values(entries)) entry.count = 0;
+      return { count: 0, dot: false, entries };
+    }
+    if (notify3 === RedDot) return { count: 0, dot: numbers > 0, entries };
+    return numbers === 0 && dots > 0 ? { count: 0, dot: true, entries } : { count: numbers, dot: false, entries };
+  }
+  function dynamicOffsets(cookie, mid) {
+    const read4 = (name) => {
+      const value2 = new RegExp(`(?:^|;\\s*)${name}_${mid}=([^;]*)`).exec(cookie)?.[1] ?? "";
+      return value2 && value2 !== "undefined" ? decodeURIComponent(value2) : "";
+    };
+    const offsets = { all: read4("bp_t_offset"), video: read4("bp_video_offset"), article: read4("bp_article_offset") };
+    return { ...offsets, first: !offsets.all && !offsets.video && !offsets.article };
+  }
+
+  // src/modules/luna-header/header.ts
+  var api2 = "https://api.bilibili.com";
+  var vc = "https://api.vc.bilibili.com";
+  var foldKey = "BiliAtelier_HeaderFolded";
+  var headerFoldEvent = "atelier-header-fold";
+  function el(tag, className = "", text4) {
+    const element2 = document.createElement(tag);
+    if (className) element2.className = className;
+    if (text4 !== void 0) element2.textContent = text4;
+    return element2;
+  }
+  var image3 = (src, size = 24) => {
+    const node4 = el("img", "lh-icon");
+    node4.src = src;
+    node4.width = node4.height = size;
+    node4.alt = "";
+    node4.draggable = false;
+    return node4;
+  };
+  var titled = (label, key7) => {
+    const span = el("span");
+    span.append(label + "(", el("u", "", key7), ")");
+    return span;
+  };
+  var newTab = (href) => window.open(href, "_blank", "noopener");
+  var video = () => shellIcon(224, 16);
+  function when(seconds2) {
+    const value2 = Number(seconds2) * 1e3;
+    if (!Number.isFinite(value2) || value2 <= 0) return "";
+    const date2 = new Date(value2), today = /* @__PURE__ */ new Date(), day = 864e5;
+    const start = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    return value2 >= start ? "\u4ECA\u5929" : value2 >= start - day ? "\u6628\u5929" : `${date2.getMonth() + 1}-${date2.getDate()}`;
+  }
+  function openBiliLogin() {
+    const native2 = document.querySelector(".header-avatar-unlogin-wrap,.header-login-entry");
+    if (native2) native2.click();
+    else location.href = `https://passport.bilibili.com/login?gourl=${encodeURIComponent(location.href)}`;
+  }
+  function createLunaHeader(options) {
+    const { read: read4 } = options;
+    const loggedIn = biliLoggedIn();
+    const header = el("header", "lh");
+    header.setAttribute("data-bili-blocker-ui", "true");
+    header.setAttribute("aria-label", "Bili Atelier \u9876\u680F");
+    const chain = new MenuChain(header);
+    let me = { mid: document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1] ?? "", name: "", face: "", level: 0 };
+    const bar = header.appendChild(el("div", "lh-band lh-menubar"));
+    bar.setAttribute("role", "menubar");
+    const menus = bar.appendChild(el("nav", "lh-menus"));
+    let active2 = null;
+    const openFrom = (anchor, items, align = "left", focus = false) => {
+      active2?.removeAttribute("data-open");
+      active2 = anchor;
+      anchor.setAttribute("data-open", "");
+      chain.open(items(), anchor, { align, focus, onClose: () => {
+        anchor.removeAttribute("data-open");
+        if (active2 === anchor) active2 = null;
+      } });
+    };
+    const toggleFrom = (anchor, items, align = "left") => {
+      if (active2 === anchor && chain.isOpen) chain.close();
+      else openFrom(anchor, items, align);
+    };
+    const openers = {};
+    const menu = (id, label2, key7, items) => {
+      const button6 = menus.appendChild(el("button", "lh-menu-title"));
+      button6.type = "button";
+      button6.append(titled(label2, key7));
+      button6.setAttribute("data-menu-anchor", "");
+      button6.setAttribute("aria-haspopup", "menu");
+      button6.addEventListener("click", () => toggleFrom(button6, items));
+      button6.addEventListener("pointerenter", () => {
+        if (chain.isOpen && active2 && active2 !== button6 && active2.classList.contains("lh-menu-title")) openFrom(button6, items);
+      });
+      openers[key7.toLowerCase()] = () => openFrom(button6, items, "left", true);
+      return button6;
+    };
+    const brand = bar.appendChild(el("div", "lh-brand"));
+    const fold = bar.insertBefore(el("button", "lh-fold"), brand);
+    fold.type = "button";
+    let folded = typeof GM_getValue === "function" && GM_getValue(foldKey, false) === true;
+    const paintFold = () => {
+      header.toggleAttribute("data-folded", folded);
+      fold.title = folded ? "\u5C55\u5F00\u5DE5\u5177\u680F" : "\u6298\u53E0\u5DE5\u5177\u680F";
+      fold.setAttribute("aria-label", fold.title);
+      fold.setAttribute("aria-expanded", String(!folded));
+    };
+    fold.addEventListener("click", () => {
+      folded = !folded;
+      sound(folded ? "minimize" : "restore");
+      if (typeof GM_setValue === "function") GM_setValue(foldKey, folded);
+      paintFold();
+      header.dispatchEvent(new Event(headerFoldEvent));
+    });
+    paintFold();
+    const channels = [
+      { label: "\u9996\u9875", href: "https://www.bilibili.com/" },
+      "-",
+      { label: "\u756A\u5267", href: "https://www.bilibili.com/anime/" },
+      { label: "\u76F4\u64AD", href: "https://live.bilibili.com/" },
+      { label: "\u6E38\u620F\u4E2D\u5FC3", href: "https://game.bilibili.com/platform" },
+      { label: "\u4F1A\u5458\u8D2D", href: "https://show.bilibili.com/platform/home.html?msource=pc_web" },
+      { label: "\u6F2B\u753B", href: "https://manga.bilibili.com/" },
+      { label: "\u8D5B\u4E8B", href: "https://www.bilibili.com/match/home/" },
+      "-",
+      { label: "\u5168\u90E8\u5206\u533A", items: () => [
+        ["\u52A8\u753B", "douga"],
+        ["\u756A\u5267", "anime"],
+        ["\u56FD\u521B", "guochuang"],
+        ["\u97F3\u4E50", "music"],
+        ["\u821E\u8E48", "dance"],
+        ["\u6E38\u620F", "game"],
+        ["\u77E5\u8BC6", "knowledge"],
+        ["\u79D1\u6280", "tech"],
+        ["\u8FD0\u52A8", "sports"],
+        ["\u6C7D\u8F66", "car"],
+        ["\u751F\u6D3B", "life"],
+        ["\u7F8E\u98DF", "food"],
+        ["\u52A8\u7269\u5708", "animal"],
+        ["\u9B3C\u755C", "kichiku"],
+        ["\u65F6\u5C1A", "fashion"],
+        ["\u8D44\u8BAF", "information"],
+        ["\u5A31\u4E50", "ent"],
+        ["\u5F71\u89C6", "cinephile"],
+        ["\u7EAA\u5F55\u7247", "documentary"],
+        ["\u7535\u5F71", "movie"],
+        ["\u7535\u89C6\u5267", "tv"]
+      ].map(([label2, slug]) => ({ label: label2, href: `https://www.bilibili.com/c/${slug}/` })) },
+      "-",
+      { label: "\u4E0B\u8F7D\u5BA2\u6237\u7AEF", href: "https://app.bilibili.com/" }
+    ];
+    menu("channel", "\u9891\u9053", "C", () => channels);
+    menu("favorites", "\u6536\u85CF", "A", () => loggedIn ? favorites2() : [{ label: "\u767B\u5F55\u540E\u67E5\u770B\u6536\u85CF\u5939", action: openBiliLogin }]);
+    menu("view", "\u67E5\u770B", "V", () => {
+      const mode2 = currentPageMode(), wide2 = document.documentElement.getAttribute("data-atelier-screen") === "wide";
+      return [
+        { label: "\u591C\u95F4\u6A21\u5F0F", checked: loggedIn && biliTheme() === "dark", disabled: !loggedIn, title: loggedIn ? "" : "\u767B\u5F55\u540E\u53EF\u7528", action: toggleBiliNight },
+        ...mode2 ? [{ label: mode2.native() ? "Luna \u9875\u9762" : "\u539F\u751F\u9875\u9762", action: () => mode2.setNative(!mode2.native()) }] : [],
+        ...options.page === "video" ? ["-", { label: "\u5BBD\u5C4F", checked: wide2, action: () => document.querySelector(".bpx-player-ctrl-wide")?.click() }] : []
+      ];
+    });
+    menu("tools", "\u5DE5\u5177", "T", () => [
+      ...atelierAreas.map((area) => ({ label: area.label, icon: atelierIcons[area.id], bold: area.id === "settings", action: () => openAtelier(area.id) })),
+      "-",
+      { label: "\u4E34\u65F6\u663E\u793A\u88AB\u5C4F\u853D\u9879", checked: isShowingBlocked(), action: toggleBlockedVisibility }
+    ]);
+    async function favorites2() {
+      const groups = await read4(`${api2}/x/v3/fav/folder/list4navigate`);
+      const folders = (Array.isArray(groups) ? groups : []).flatMap((group) => Array.isArray(group?.mediaListResponse?.list) ? group.mediaListResponse.list : []);
+      return [
+        { label: "\u6253\u5F00\u6211\u7684\u6536\u85CF\u5939", icon: ie_favorites_16_default, href: `https://space.bilibili.com/${me.mid}/favlist` },
+        "-",
+        ...folders.slice(0, 30).map((folder) => ({
+          label: String(folder?.title ?? ""),
+          icon: shellFolderImages[16],
+          note: String(Number(folder?.media_count) || 0),
+          items: () => folderItems(Number(folder?.id), Number(folder?.media_count) || 0)
+        }))
+      ];
+    }
+    async function folderItems(id, total) {
+      const data = await read4(`${api2}/x/v3/fav/resource/list4navigate?platform=web&media_id=${id}`);
+      const medias = Array.isArray(data?.medias) ? data.medias : Array.isArray(data) ? data : [];
+      return [
+        ...medias.slice(0, 10).map((media2) => ({ label: String(media2?.title ?? ""), icon: video(), href: media2?.bvid ? `https://www.bilibili.com/video/${media2.bvid}/` : String(media2?.link ?? `https://www.bilibili.com/`) })),
+        "-",
+        { label: `\u6253\u5F00\u8FD9\u4E2A\u6536\u85CF\u5939\uFF08\u5171 ${total} \u4E2A\uFF09`, href: `https://space.bilibili.com/${me.mid}/favlist?fid=${id}` }
+      ];
+    }
+    const toolbar = header.appendChild(el("div", "lh-band lh-toolbar xp-toolbar"));
+    toolbar.setAttribute("role", "toolbar");
+    toolbar.setAttribute("aria-label", "\u6807\u51C6\u6309\u94AE");
+    const label = (text4) => el("span", "lh-tool-label", text4);
+    const button5 = (icon2, text4, action, showText = true) => {
+      const control = toolbar.appendChild(el("button", "xp-tool lh-tool"));
+      control.type = "button";
+      control.append(image3(icon2));
+      if (showText) control.append(label(text4));
+      else control.title = text4;
+      control.setAttribute("aria-label", text4);
+      control.addEventListener("click", action);
+      return control;
+    };
+    const link3 = (icon2, text4, href) => {
+      const control = toolbar.appendChild(el("a", "xp-tool lh-tool"));
+      control.href = href;
+      control.target = "_blank";
+      control.rel = "noopener noreferrer";
+      control.append(image3(icon2), label(text4));
+      return control;
+    };
+    const split = (main, text4, items) => {
+      const arrow = toolbar.appendChild(el("button", "xp-tool lh-split"));
+      arrow.type = "button";
+      arrow.setAttribute("aria-label", `${text4}\u5217\u8868`);
+      arrow.setAttribute("data-menu-anchor", "");
+      arrow.append(el("span", "lh-drop"));
+      arrow.addEventListener("click", () => {
+        if (!loggedIn) {
+          openBiliLogin();
+          return;
+        }
+        toggleFrom(arrow, items);
+      });
+      main.classList.add("lh-split-main");
+    };
+    const separator = () => toolbar.appendChild(el("span", "xp-tool-separator"));
+    button5(ie_back_default, "\u540E\u9000", () => history.back());
+    button5(ie_forward_default, "\u524D\u8FDB", () => history.forward(), false);
+    separator();
+    link3(ie_home_default, "\u9996\u9875", "https://www.bilibili.com/");
+    const dynamic = link3(ie_media_default, "\u52A8\u6001", "https://t.bilibili.com/");
+    const messages2 = button5(ie_mail_default, "\u6D88\u606F", () => {
+      if (!loggedIn) {
+        openBiliLogin();
+        return;
+      }
+      toggleFrom(messages2, () => refreshCounts(true).then(messageItems, messageItems));
+    });
+    messages2.setAttribute("data-menu-anchor", "");
+    messages2.setAttribute("aria-haspopup", "menu");
+    split(link3(ie_history_default, "\u5386\u53F2", "https://www.bilibili.com/history"), "\u5386\u53F2", historyItems);
+    split(link3(ie_notes_default, "\u7A0D\u540E\u518D\u770B", "https://www.bilibili.com/watchlater/#/list"), "\u7A0D\u540E\u518D\u770B", laterItems);
+    separator();
+    link3(ie_new_window_default, "\u6295\u7A3F", "https://member.bilibili.com/platform/upload/video/frame");
+    if (options.page === "video" || options.page === "history" || options.page === "feed") {
+      const line = separator();
+      const reset = button5(views_default, "\u91CD\u7F6E\u5E03\u5C40", async () => {
+        const layout2 = currentPageLayout();
+        if (!layout2 || layout2.isDefault()) return;
+        if (await atelierDialog({ title: "\u91CD\u7F6E\u5E03\u5C40", message: "\u8981\u628A\u8FD9\u4E9B\u7A97\u53E3\u7684\u5927\u5C0F\u90FD\u6062\u590D\u6210\u9ED8\u8BA4\u503C\u5417\uFF1F", confirmLabel: "\u662F", cancelLabel: "\u5426" }) === null) return;
+        layout2.reset();
+      });
+      const paintReset = () => {
+        const layout2 = currentPageLayout();
+        line.hidden = reset.hidden = !layout2;
+        reset.disabled = !layout2 || layout2.isDefault();
+      };
+      paintReset();
+      window.addEventListener(pageLayoutChanged, paintReset);
+    }
+    let unread = unreadBadge(null, null, null);
+    const entry = (label2, kind, href) => {
+      const { count: count2, dot } = unread.entries[kind];
+      return { label: label2, href, ...dot ? { bold: count2 > 0 } : { count: count2 } };
+    };
+    function messageItems() {
+      return [
+        entry("\u56DE\u590D\u6211\u7684", "reply", "https://message.bilibili.com/#/reply"),
+        entry("@ \u6211\u7684", "at", "https://message.bilibili.com/#/at"),
+        entry("\u6536\u5230\u7684\u8D5E", "like", "https://message.bilibili.com/#/love"),
+        entry("\u7CFB\u7EDF\u901A\u77E5", "system", "https://message.bilibili.com/#/system"),
+        entry("\u6211\u7684\u6D88\u606F", "whisper", "https://message.bilibili.com/#/whisper"),
+        "-",
+        { label: "\u6253\u5F00\u6D88\u606F\u4E2D\u5FC3", href: "https://message.bilibili.com/" }
+      ];
+    }
+    async function historyItems() {
+      const data = await read4(`${api2}/x/web-interface/history/cursor?ps=10&type=archive`);
+      const list2 = Array.isArray(data?.list) ? data.list : [];
+      return [
+        ...list2.slice(0, 10).map((item) => {
+          const bvid = item?.history?.bvid, page = Number(item?.history?.page) || 1;
+          const href = typeof item?.uri === "string" && /^https?:\/\//.test(item.uri) ? item.uri : bvid ? `https://www.bilibili.com/video/${bvid}/${page > 1 ? `?p=${page}` : ""}` : "https://www.bilibili.com/history";
+          return { label: String(item?.title ?? ""), icon: video(), note: when(item?.view_at), href };
+        }),
+        ...list2.length ? ["-"] : [],
+        { label: "\u67E5\u770B\u5168\u90E8\u5386\u53F2\u8BB0\u5F55", href: "https://www.bilibili.com/history" }
+      ];
+    }
+    async function laterItems() {
+      const data = await read4(`${api2}/x/v2/history/toview/web`);
+      const list2 = Array.isArray(data?.list) ? data.list : [], total = Number(data?.count) || list2.length;
+      return [
+        ...list2.slice(0, 10).map((item) => ({ label: String(item?.title ?? ""), icon: video(), href: `https://www.bilibili.com/list/watchlater?bvid=${encodeURIComponent(String(item?.bvid ?? ""))}&oid=${Number(item?.aid) || ""}` })),
+        ...list2.length ? ["-"] : [],
+        { label: `\u67E5\u770B\u5168\u90E8\u7A0D\u540E\u518D\u770B\uFF08\u5171 ${total} \u4E2A\uFF09`, href: "https://www.bilibili.com/watchlater/#/list" }
+      ];
+    }
+    const paintCount = (control, text4, count2, dot = false) => {
+      const target = control.querySelector(".lh-tool-label");
+      target.replaceChildren(text4);
+      target.classList.toggle("lh-bold", count2 > 0 || dot);
+      if (count2 > 0 && !dot) target.append(el("span", "lh-count", ` (${count2 > 99 ? "99+" : count2})`));
+    };
+    const address = header.appendChild(el("form", "lh-band lh-address"));
+    address.setAttribute("role", "search");
+    const fieldLabel = address.appendChild(el("label", "lh-address-label"));
+    fieldLabel.append(titled("\u641C\u7D22", "D"));
+    const combo = address.appendChild(el("div", "lh-combo"));
+    const field = combo.appendChild(el("input", "lh-search"));
+    field.type = "search";
+    field.name = "keyword";
+    field.autocomplete = "off";
+    field.placeholder = "\u641C\u7D22\u89C6\u9891\u3001UP \u4E3B\u6216\u756A\u5267";
+    field.id = `lh-search-${crypto.randomUUID()}`;
+    fieldLabel.htmlFor = field.id;
+    const dropdown = combo.appendChild(el("button", "lh-combo-button"));
+    dropdown.type = "button";
+    dropdown.tabIndex = -1;
+    dropdown.setAttribute("aria-label", "\u641C\u7D22\u5EFA\u8BAE");
+    const go = address.appendChild(el("button", "xp-tool lh-go"));
+    go.type = "submit";
+    go.append(image3(ie_go_16_default, 16), el("span", "", "\u8F6C\u5230"));
+    const list = el("div", "lh-autocomplete");
+    list.hidden = true;
+    list.setAttribute("role", "listbox");
+    header.append(list);
+    let suggestions = [], pick = -1, ticket = 0, suggestTimer = 0;
+    const search = (keyword) => {
+      hideList();
+      newTab(keyword.trim() ? `https://search.bilibili.com/all?keyword=${encodeURIComponent(keyword.trim())}` : "https://search.bilibili.com/");
+    };
+    address.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sound("click");
+      search(pick >= 0 ? suggestions[pick] : field.value);
+    });
+    const hideList = () => {
+      list.hidden = true;
+      pick = -1;
+    };
+    const showList = () => {
+      list.replaceChildren(...suggestions.map((text4, index) => {
+        const row = el("div", index === pick ? "lh-suggest lh-hot" : "lh-suggest", text4);
+        row.setAttribute("role", "option");
+        row.addEventListener("pointerdown", (event) => {
+          event.preventDefault();
+          field.value = text4;
+          search(text4);
+        });
+        return row;
+      }));
+      list.hidden = !suggestions.length;
+      const rect = combo.getBoundingClientRect();
+      placeFixed(list, { left: rect.left, top: rect.bottom, width: rect.width });
+    };
+    const suggest = () => {
+      const term = field.value.trim(), mine = ++ticket;
+      if (!term) {
+        suggestions = [];
+        hideList();
+        return;
+      }
+      read4(`${api2}/x/web-interface/suggest?term=${encodeURIComponent(term)}&main_ver=v1`).then((data) => {
+        if (mine !== ticket) return;
+        suggestions = (Array.isArray(data?.result?.tag) ? data.result.tag : []).map((tag) => String(tag?.value ?? "")).filter(Boolean).slice(0, 10);
+        pick = -1;
+        showList();
+      }, () => {
+        if (mine === ticket) hideList();
+      });
+    };
+    field.addEventListener("input", () => {
+      window.clearTimeout(suggestTimer);
+      suggestTimer = window.setTimeout(suggest, 150);
+    });
+    field.addEventListener("keydown", (event) => {
+      if (list.hidden || !suggestions.length) return;
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        const next = pick + (event.key === "ArrowUp" ? -1 : 1);
+        pick = next >= suggestions.length ? -1 : next < -1 ? suggestions.length - 1 : next;
+        showList();
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        hideList();
+      }
+    });
+    field.addEventListener("blur", () => window.setTimeout(hideList, 100));
+    dropdown.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      if (list.hidden) {
+        field.focus();
+        suggest();
+      } else hideList();
+    });
+    go.addEventListener("pointerdown", () => hideList());
+    function paintBrand() {
+      brand.replaceChildren();
+      if (!loggedIn) {
+        const login = brand.appendChild(el("button", "xp-button lh-login", "\u767B\u5F55"));
+        login.type = "button";
+        login.addEventListener("click", () => {
+          sound("click");
+          openBiliLogin();
+        });
+        brand.classList.add("lh-brand-guest");
+        return;
+      }
+      const face = brand.appendChild(el("button", "lh-face-button"));
+      face.type = "button";
+      face.title = me.name || "\u6211\u7684\u8D26\u53F7";
+      face.setAttribute("aria-label", "\u8D26\u53F7\u83DC\u5355");
+      face.setAttribute("data-menu-anchor", "");
+      const picture = face.appendChild(el("img", "lh-face"));
+      picture.alt = "";
+      picture.referrerPolicy = "no-referrer";
+      if (me.face) picture.src = me.face.replace(/^http:/, "https:") + (/hdslb\.com\//.test(me.face) && !me.face.includes("@") ? "@48w_48h_1c.webp" : "");
+      face.addEventListener("click", () => toggleFrom(face, () => [
+        { label: me.name || "\u6211\u7684\u8D26\u53F7", bold: true, note: me.level ? `Lv${me.level}` : "", href: `https://space.bilibili.com/${me.mid}` },
+        "-",
+        { label: "\u4E2A\u4EBA\u7A7A\u95F4", href: `https://space.bilibili.com/${me.mid}` },
+        { label: "\u6295\u7A3F\u7BA1\u7406", href: "https://member.bilibili.com/platform/upload-manager/article" },
+        { label: "\u6211\u7684\u6536\u85CF", href: `https://space.bilibili.com/${me.mid}/favlist` },
+        { label: "B\u5E01\u94B1\u5305", href: "https://pay.bilibili.com/pay-v2-web/bcoin_index" },
+        { label: "\u8D26\u53F7\u8BBE\u7F6E", href: "https://account.bilibili.com/account/home" }
+      ], "right"));
+    }
+    paintBrand();
+    header.addEventListener("keydown", (event) => {
+      if (!event.altKey || event.ctrlKey || event.metaKey) return;
+      const key7 = event.key.toLowerCase();
+      if (key7 === "d") {
+        event.preventDefault();
+        field.focus();
+        field.select();
+        return;
+      }
+      if (openers[key7]) {
+        event.preventDefault();
+        openers[key7]();
+      }
+    });
+    let lastCounts = 0;
+    async function refreshCounts(force = false) {
+      if (!loggedIn || !force && Date.now() - lastCounts < 6e4) return;
+      lastCounts = Date.now();
+      const seen = dynamicOffsets(document.cookie, me.mid);
+      const [setting, feed, single, entrance] = await Promise.allSettled([
+        read4(`${vc}/link_setting/v1/link_setting/get?build=0&mobi_app=web&msg_notify=1&show_unfollowed_msg=1`),
+        read4(`${vc}/x/im/web/msgfeed/unread?build=0&mobi_app=web`),
+        read4(`${vc}/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0`),
+        read4(`${api2}/x/web-interface/dynamic/entrance?alltype_offset=${encodeURIComponent(seen.all)}&video_offset=${encodeURIComponent(seen.video)}&article_offset=${encodeURIComponent(seen.article)}`)
+      ]);
+      if (feed.status === "fulfilled" && single.status === "fulfilled") {
+        unread = unreadBadge(feed.value, single.value, setting.status === "fulfilled" ? setting.value : null);
+        paintCount(messages2, "\u6D88\u606F", unread.count, unread.dot);
+      }
+      if (entrance.status === "fulfilled") {
+        const count2 = Math.max(0, Number(entrance.value?.update_info?.item?.count) || 0);
+        paintCount(dynamic, "\u52A8\u6001", count2, seen.first && count2 > 0);
+      }
+    }
+    async function loadAccount() {
+      if (!loggedIn) return;
+      try {
+        const data = await read4(`${api2}/x/web-interface/nav`);
+        if (data?.isLogin) {
+          me = { mid: String(data.mid ?? me.mid), name: String(data.uname ?? ""), face: String(data.face ?? ""), level: Number(data.level_info?.current_level) || 0 };
+          paintBrand();
+        }
+      } catch {
+      }
+    }
+    void loadAccount();
+    void refreshCounts(true);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") void refreshCounts();
+    });
+    window.setInterval(() => {
+      if (document.visibilityState === "visible") void refreshCounts();
+    }, 6e4);
+    return { element: header, close: () => {
+      chain.close();
+      hideList();
+    } };
+  }
+
+  // src/modules/luna-header/styles.ts
+  var lunaHeaderAttribute = "data-luna-header";
+  var on2 = `html[${lunaHeaderAttribute}]`;
+  var lunaHeaderHideCss = `
+${on2} :is(#biliMainHeader,#bili-header-container){height:var(${headerHeightVar},88px)!important;min-height:0!important}
+${on2} :is(#biliMainHeader,#bili-header-container) .bili-header{visibility:hidden!important}
+`;
+  var lunaHeaderCss = `
+.lh{position:fixed;top:0;left:0;right:0;z-index:1002;display:flex;flex-direction:column;${xpFont};color:var(--xp-ink);text-align:left;background:var(--xp-face);border-bottom:1px solid var(--xp-shadow3d);box-shadow:0 1px var(--xp-light3d),0 2px 3px #0002;user-select:none}
+.lh *{box-sizing:border-box}
+.lh [hidden]{display:none!important}
+.lh-band{display:flex;align-items:center;min-width:0;margin:0;border-top:1px solid var(--xp-light3d);border-bottom:1px solid var(--xp-shadow3d)}
+.lh-band:first-child{border-top:0}
+.lh-menubar{height:22px;padding:0 0 0 2px}
+.lh-menus{display:flex;align-items:center;flex:1;min-width:0}
+.lh-menu-title{${xpFont};color:var(--xp-ink);height:20px;padding:0 7px;margin:0;border:0;border-radius:0;background:transparent;cursor:default}
+.lh-menu-title:hover,.lh-menu-title[data-open]{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
+.lh u{text-decoration:underline}
+/* The fold button: XP's task pane chevrons, up to fold, down to unfold. */
+.lh-fold{flex:none;align-self:center;width:var(--xp-task-collapse-w,19px);height:var(--xp-task-collapse-h,19px);margin:0 4px;padding:0;border:0;background:var(--xp-task-collapse-0) center/100% 100% no-repeat;image-rendering:pixelated;cursor:default}
+.lh-fold:hover{background-image:var(--xp-task-collapse-1)}.lh-fold:active{background-image:var(--xp-task-collapse-2)}
+.lh[data-folded] .lh-fold{background-image:var(--xp-task-expand-0)}.lh[data-folded] .lh-fold:hover{background-image:var(--xp-task-expand-1)}.lh[data-folded] .lh-fold:active{background-image:var(--xp-task-expand-2)}
+.lh[data-folded]>:is(.lh-toolbar,.lh-address),.lh[data-folded] .lh-autocomplete{display:none!important}
+.lh-brand{flex:none;align-self:stretch;display:flex;align-items:center;justify-content:center;width:42px;border-left:1px solid var(--xp-shadow3d);box-shadow:inset 1px 0 var(--xp-light3d);background:var(--xp-window)}
+.lh-brand-guest{width:auto;padding:0 3px;background:var(--xp-face)}
+.lh-face-button{display:flex;align-items:center;justify-content:center;width:100%;height:100%;padding:0;margin:0;border:0;background:transparent;cursor:default}
+.lh-face-button[data-open]{background:var(--xp-highlight)}
+.lh-face{display:block;width:20px;height:20px;border:1px solid var(--xp-edge);object-fit:cover;background:var(--xp-face)}
+.lh-login{min-height:19px!important;padding:0 6px!important}
+.lh-toolbar{gap:1px;padding:2px 4px;border-width:1px 0;flex-wrap:nowrap;overflow:hidden}
+.lh-tool{gap:4px;min-height:36px;padding:2px 6px 2px 4px;color:var(--xp-ink)!important;text-decoration:none!important}
+.lh-tool:disabled{color:var(--xp-graytext)!important}
+.lh-tool:disabled .lh-icon{filter:grayscale(1);opacity:.5}
+.lh-tool[data-open],.lh-split[data-open]{border-image-source:var(--xp-tool-2)}
+.lh-split-main{padding-right:4px}
+.lh-split{min-height:36px;padding:0 3px;margin-left:-1px}
+.lh-icon{flex:none;image-rendering:pixelated}
+.lh-bold{font-weight:bold}
+.lh-count{color:var(--xp-task-link);font-weight:bold}
+.lh-drop{display:block;width:0;height:0;border:3px solid transparent;border-top-color:currentColor;border-bottom:0}
+.lh-address{gap:4px;height:26px;padding:0 4px}
+.lh-address-label{flex:none;padding:0 2px 0 3px;color:var(--xp-muted)}
+.lh-combo{position:relative;flex:1;min-width:0;display:flex;height:21px;background:var(--xp-window);border:1px solid var(--xp-edge)}
+.lh-search{flex:1;min-width:0;height:19px;padding:0 3px;margin:0;border:0;border-radius:0;outline:0;background:transparent;box-shadow:none;${xpFont};color:var(--xp-ink)}
+.lh-search::-webkit-search-cancel-button{display:none}
+.lh-search::placeholder{color:var(--xp-graytext)}
+.lh-combo-button{flex:none;width:var(--xp-combo-w,15px);height:19px;padding:0;margin:0;border:0;background:var(--xp-combo-0) center/100% 100% no-repeat;image-rendering:pixelated;cursor:default}
+.lh-combo-button:hover{background-image:var(--xp-combo-1)}
+.lh-go{gap:3px;min-height:21px;padding:0 6px 0 3px}
+.lh-pop{position:fixed;z-index:1003;min-width:180px;max-height:calc(100vh - 8px);overflow:auto}
+.lh-item{gap:4px!important;padding-right:10px!important;text-decoration:none!important}
+a.lh-item{color:var(--xp-ink)}
+.lh-item[data-open]{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
+.lh-item[aria-disabled=true]{color:var(--xp-graytext)!important;background:transparent!important}
+.lh-check{flex:none;width:12px;text-align:center}
+.lh-item-icon{flex:none;display:inline-flex;width:16px;height:16px}.lh-item-icon img{width:16px;height:16px;image-rendering:pixelated}
+.lh-item-label{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px}
+.lh-item .lh-count{margin-left:6px}
+.lh-item-note{flex:none;margin-left:18px;color:var(--xp-muted)}
+.lh-item:is(:hover,:focus,[data-open]) :is(.lh-count,.lh-item-note){color:inherit}
+.lh-sub{flex:none;width:0;height:0;margin-left:12px;border:4px solid transparent;border-left-color:currentColor;border-right:0}
+.lh-autocomplete{position:fixed;z-index:1003;background:var(--xp-window);border:1px solid var(--xp-ink);box-shadow:2px 2px 2px #0005}
+.lh-suggest{padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:default}
+.lh-suggest:hover,.lh-hot{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
+`;
+
+  // src/modules/luna-header/runtime.ts
+  var giveUpMs = 1e4;
+  function prepareLunaHeader() {
+    document.documentElement.setAttribute(lunaHeaderAttribute, "");
+    if (document.getElementById("atelier-header-hide")) return;
+    const style = document.createElement("style");
+    style.id = "atelier-header-hide";
+    style.textContent = lunaHeaderHideCss;
+    (document.head || document.documentElement).append(style);
+  }
+  var current = null;
+  var read = null;
+  function mountLunaHeader(page) {
+    if (current) return;
+    prepareLunaHeader();
+    zoomWholePage();
+    const root2 = document.documentElement;
+    const fail = (error) => {
+      current?.element.remove();
+      current = null;
+      zoomWholePage(false);
+      root2.removeAttribute(lunaHeaderAttribute);
+      root2.style.removeProperty(headerHeightVar);
+      warnLog("Luna \u9876\u680F\u6CA1\u80FD\u753B\u51FA\u6765\uFF0C\u5DF2\u6062\u590D B \u7AD9\u539F\u6765\u7684\u9876\u680F", error);
+    };
+    const timer2 = window.setTimeout(() => {
+      if (!current?.element.isConnected) fail();
+    }, giveUpMs);
+    const attach = () => {
+      if (!document.body) {
+        window.setTimeout(attach, 50);
+        return;
+      }
+      try {
+        ensureAppearance();
+        if (!document.getElementById("atelier-luna-header")) {
+          const style = document.createElement("style");
+          style.id = "atelier-luna-header";
+          setZoomedCss(style, lunaHeaderCss);
+          (document.head || document.documentElement).append(style);
+        }
+        read ??= startHeaderBridge();
+        current = createLunaHeader({ page, read });
+        document.body.append(current.element);
+        observeCrispText(current.element);
+        window.clearTimeout(timer2);
+        const measure = () => {
+          const height = current?.element.offsetHeight ?? 0;
+          if (height > 0) root2.style.setProperty(headerHeightVar, `${height}px`);
+        };
+        measure();
+        if (typeof ResizeObserver === "function") new ResizeObserver(measure).observe(current.element);
+        current.element.addEventListener(headerFoldEvent, () => {
+          measure();
+          window.dispatchEvent(new Event("resize"));
+        });
+        if (page === "feed") followStickyPanels();
+      } catch (error) {
+        window.clearTimeout(timer2);
+        fail(error);
+      }
+    };
+    attach();
+  }
+  function followStickyPanels() {
+    const fix = () => {
+      for (const element2 of document.querySelectorAll("aside > *, aside > * > *")) {
+        if (element2.dataset.atelierSticky !== void 0) continue;
+        const style = getComputedStyle(element2);
+        if (style.position !== "sticky" || style.top !== "72px") continue;
+        element2.dataset.atelierSticky = "";
+        element2.style.setProperty("top", `calc(var(${headerHeightVar}, 64px) + 8px)`, "important");
+      }
+    };
+    for (const delay of [500, 2e3, 6e3]) window.setTimeout(fix, delay);
+  }
+
+  // src/modules/video-luna/prefs.ts
+  var key3 = "BiliAtelier_VideoLuna";
+  function videoLunaEnabled() {
+    const stored = typeof GM_getValue === "function" ? GM_getValue(key3, null) : null;
+    return stored?.enabled !== false;
+  }
+  function setVideoLunaEnabled(enabled) {
+    if (typeof GM_setValue === "function") GM_setValue(key3, { enabled });
+  }
+  var coverKey = "BiliAtelier_VideoCover";
+  var videoCoverChanged = "atelier-video-cover-changed";
+  function videoCoverEnabled() {
+    const stored = typeof GM_getValue === "function" ? GM_getValue(coverKey, null) : null;
+    return stored?.enabled !== false;
+  }
+  function setVideoCoverEnabled(enabled) {
+    if (typeof GM_setValue === "function") GM_setValue(coverKey, { enabled });
+    window.dispatchEvent(new Event(videoCoverChanged));
+  }
+  var isLunaVideoLocation = (where = location) => where.hostname === "www.bilibili.com" && (/^\/video\/(?:BV|av)/i.test(where.pathname) || isLunaListPath(where.pathname) || isLunaBangumiPath(where.pathname));
+  var isLunaListPath = (pathname) => /^\/list\/(?:ml\d+|watchlater|\d+)\/?$/i.test(pathname);
+  var isLunaBangumiPath = (pathname) => /^\/bangumi\/play\/(?:ep|ss)\d+\/?$/i.test(pathname);
+  var videoAttribute = "data-atelier-video";
+  var nativeAttribute = "data-atelier-native";
+  function showNativeArea(area) {
+    const html = document.documentElement, areas = new Set((html.getAttribute(nativeAttribute) ?? "").split(/\s+/).filter(Boolean));
+    if (areas.has(area)) return;
+    areas.add(area);
+    html.setAttribute(nativeAttribute, [...areas].join(" "));
+  }
+  var on3 = `html[${videoAttribute}=luna]`;
+  var unless = (area) => `${on3}:not([${nativeAttribute}~=${area}])`;
+  var videoHideCss = `
+${unless("head")} :is(#viewbox_report,.playlist-container--left>.video-info-container){display:none!important}
+${unless("info")} :is(#v_desc,#bgm-entry,.video-tag-container,#commentapp,.playlist-container--left>.video-desc-container,.plp-l #comment-module){display:none!important}
+${unless("info")} :is(#arc_toolbar_report,#playlistToolbar,.plp-l .toolbar){height:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;visibility:hidden!important}
+${unless("up")} :is(:is(.right-container-inner,.playlist-container--right)>.up-panel-container,.plp-l [class*=mediainfo_mediaInfoWrap]){display:none!important}
+${unless("pod")} :is(.rcmd-tab .video-pod,.plp-r [class*=PaginatedEpList_root]){display:none!important}
+${unless("list")} .playlist-container--right>.action-list-container{display:none!important}
+${unless("rec")} :is(.rcmd-tab>:not(.video-pod),.playlist-container--right>.recommend-list-container,.plp-r [class*=recommend_wrap]){display:none!important}
+${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danmukuBox),.right-bottom-banner,.video-card-ad-small,#slide_ad,.ad-floor-exp){display:none!important}
+`;
+  function prepareVideoLuna() {
+    if (typeof GM_getValue !== "function" || !isLunaVideoLocation() || !videoLunaEnabled()) return false;
+    document.documentElement.setAttribute(videoAttribute, "luna");
+    prepareLunaHeader();
+    if (!document.getElementById("atelier-video-hide")) {
+      const style = document.createElement("style");
+      style.id = "atelier-video-hide";
+      style.textContent = videoHideCss;
+      (document.head || document.documentElement).append(style);
+    }
+    return true;
+  }
+  function showNativePage() {
+    document.documentElement.setAttribute(videoAttribute, "native");
+  }
+
+  // src/modules/viewed/storage.ts
+  function groupViewedItems(values) {
+    const groups = {};
+    const seen = /* @__PURE__ */ new Set();
+    for (const value2 of values) {
+      const id = parseStoredViewedId(value2);
+      if (!id || seen.has(id)) {
+        continue;
+      }
+      seen.add(id);
+      const groupId = viewedGroup(id);
+      if (!groups[groupId]) {
+        groups[groupId] = [];
+      }
+      groups[groupId].push(id);
+    }
+    return groups;
+  }
+  function flattenViewedGroups(groups) {
+    const items = [];
+    const seen = /* @__PURE__ */ new Set();
+    for (const value2 of Object.values(groups)) {
+      if (!Array.isArray(value2)) {
+        continue;
+      }
+      for (const item of value2) {
+        const id = parseStoredViewedId(item);
+        if (!id || seen.has(id)) {
+          continue;
+        }
+        seen.add(id);
+        items.push(id);
+      }
+    }
+    return items;
+  }
+  function viewedGroupStorageKey(groupId) {
+    return `BiliViewed_${groupId}`;
+  }
+  function listViewedGroupKeys() {
+    if (typeof GM_listValues !== "function") {
+      return [];
+    }
+    return GM_listValues().filter((key7) => String(key7).startsWith("BiliViewed_"));
+  }
+  function readViewedGroup(groupId, fallback2 = null) {
+    return GM_getValue(viewedGroupStorageKey(groupId), fallback2);
+  }
+  var journal2;
+  var keysOf2 = (values) => new Set((Array.isArray(values) ? values : []).map(String).filter(isViewedId).map(viewedKey));
+  function writeViewedGroup(groupId, values) {
+    journal2?.(keysOf2(readViewedGroup(groupId, [])), keysOf2(values));
+    GM_setValue(viewedGroupStorageKey(groupId), values);
+  }
+  function putGroups(groups, mode2) {
+    if (mode2 === "overwrite") for (const key7 of listViewedGroupKeys()) GM_deleteValue(key7);
+    for (const [groupId, values] of Object.entries(groups)) GM_setValue(viewedGroupStorageKey(groupId), values);
+  }
+  function readViewedStorage() {
+    const groups = {};
+    for (const key7 of listViewedGroupKeys()) {
+      const groupId = String(key7).slice("BiliViewed_".length);
+      groups[groupId] = flattenViewedGroups({ [groupId]: readViewedGroup(groupId, []) });
+    }
+    return { items: flattenViewedGroups(groups), groups };
+  }
+  function writeViewedStorage(snapshot, mode2) {
+    const incomingItems = snapshot.items?.length ? snapshot.items : snapshot.groups ? flattenViewedGroups(snapshot.groups) : [];
+    const currentItems = mode2 === "append" ? readViewedStorage().items : [];
+    const groups = groupViewedItems(currentItems.concat(incomingItems));
+    journal2?.(keysOf2(readViewedStorage().items), keysOf2(flattenViewedGroups(groups)));
+    putGroups(groups, mode2);
+    return { items: flattenViewedGroups(groups), groups };
+  }
+  var viewedSyncStore = {
+    keys: () => keysOf2(readViewedStorage().items),
+    applySync(desired) {
+      const wanted = new Set([...desired].filter((key7) => key7.startsWith("v:")));
+      if (sameKeys(wanted, viewedSyncStore.keys())) return false;
+      const unsyncable = readViewedStorage().items.filter((id) => !isViewedId(id));
+      putGroups(groupViewedItems([...unsyncable, ...[...wanted].map((key7) => key7.slice(2))]), "overwrite");
+      return true;
+    },
+    setJournal(next) {
+      journal2 = next;
+    }
+  };
+  function isLegacyViewedExport(value2) {
+    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key7) => key7.startsWith("BiliViewed_"));
+  }
+  function normalizeLegacyViewedExport(value2) {
+    const groups = {};
+    for (const [key7, items] of Object.entries(value2)) {
+      if (!key7.startsWith("BiliViewed_") || !Array.isArray(items)) {
+        continue;
+      }
+      const groupId = key7.slice("BiliViewed_".length);
+      groups[groupId] = flattenViewedGroups({ [groupId]: items });
+    }
+    return { items: flattenViewedGroups(groups), groups };
+  }
+
+  // src/modules/viewed/marks.ts
+  var viewedMarksChanged = "atelier-viewed-marks-changed";
+  var groupOf = (id) => isViewedId(id) ? viewedGroup(id) : "";
+  function viewedLookup() {
+    const groups = /* @__PURE__ */ new Map();
+    return (id) => {
+      const group = groupOf(id);
+      if (!group) return false;
+      let set = groups.get(group);
+      if (!set) {
+        const values = readViewedGroup(group, []);
+        set = new Set(Array.isArray(values) ? values.map(String) : []);
+        groups.set(group, set);
+      }
+      return set.has(id);
+    };
+  }
+  var isViewedVideo = (id) => viewedLookup()(id);
+  function setViewedVideo(id, viewed2) {
+    const group = groupOf(id);
+    if (!group) return false;
+    const stored = readViewedGroup(group, null), values = Array.isArray(stored) ? stored.map(String) : [];
+    const present = values.includes(id);
+    if (present === viewed2) return false;
+    writeViewedGroup(group, viewed2 ? [id, ...values] : values.filter((value2) => value2 !== id));
+    window.dispatchEvent(new CustomEvent(viewedMarksChanged, { detail: { id, viewed: viewed2 } }));
+    return true;
+  }
+  function toggleViewedVideo(id) {
+    const viewed2 = !isViewedVideo(id), changed = setViewedVideo(id, viewed2);
+    showInfoLog((viewed2 ? "\u5DF2\u6807\u8BB0\u5DF2\u770B\uFF1A" : "\u5DF2\u6807\u8BB0\u672A\u770B\uFF1A") + id, "success");
+    sound("click");
+    return viewed2;
+  }
+
+  // src/modules/video-luna/ui.ts
+  function el2(tag, className = "", text4) {
+    const node4 = document.createElement(tag);
+    if (className) node4.className = className;
+    if (text4 !== void 0) node4.textContent = text4;
+    return node4;
+  }
+  function link2(className, text4, href, newTab2 = true) {
+    const node4 = el2("a", className, text4);
+    node4.href = href;
+    if (newTab2) {
+      node4.target = "_blank";
+      node4.rel = "noopener noreferrer";
+    }
+    return node4;
+  }
+  function xpWindow(options) {
+    const root2 = el2("section", `xp-window vl-window ${options.className}`);
+    root2.setAttribute("aria-label", options.label ?? options.title);
+    const caption2 = root2.appendChild(el2("header", "xp-caption"));
+    const icon2 = caption2.appendChild(el2("span", "vl-caption-icon"));
+    icon2.append(options.icon);
+    const title = caption2.appendChild(el2("h2", "xp-caption-title", options.title));
+    const body2 = root2.appendChild(el2("div", "vl-body"));
+    return { root: root2, caption: caption2, icon: icon2, title, body: body2 };
+  }
+  function captionButton(caption2, kind, label, action) {
+    const button5 = caption2.appendChild(el2("button", "xp-caption-button"));
+    button5.type = "button";
+    button5.dataset.kind = kind;
+    button5.title = label;
+    button5.setAttribute("aria-label", label);
+    button5.addEventListener("click", () => {
+      sound("click");
+      action();
+    });
+    return button5;
+  }
+  var foldKey2 = "BiliAtelier_VideoWindows";
+  var readFolded = (name, fallback2 = false) => {
+    const stored = typeof GM_getValue === "function" ? GM_getValue(foldKey2, {}) : {};
+    return typeof stored?.[name] === "boolean" ? stored[name] : fallback2;
+  };
+  var writeFolded = (name, folded) => {
+    if (typeof GM_setValue !== "function") return;
+    GM_setValue(foldKey2, { ...GM_getValue(foldKey2, {}) ?? {}, [name]: folded });
+  };
+  function foldable(window2, name) {
+    let folded = readFolded(name);
+    const toggle = () => {
+      folded = !folded;
+      sound(folded ? "minimize" : "restore");
+      writeFolded(name, folded);
+      paint2();
+    };
+    const button5 = captionButton(window2.caption, "minimize", "\u6700\u5C0F\u5316", toggle);
+    window2.caption.addEventListener("click", (event) => {
+      if (!event.target.closest(".xp-caption-button")) toggle();
+    });
+    const paint2 = () => {
+      window2.body.hidden = folded;
+      window2.root.toggleAttribute("data-folded", folded);
+      button5.dataset.kind = folded ? "restore" : "minimize";
+      button5.title = folded ? "\u8FD8\u539F" : "\u6700\u5C0F\u5316";
+      button5.setAttribute("aria-label", button5.title);
+      button5.setAttribute("aria-expanded", String(!folded));
+    };
+    paint2();
+    return button5;
+  }
+  function tool(label, icon2, title = "") {
+    const button5 = el2("button", "xp-tool");
+    button5.type = "button";
+    button5.addEventListener("click", () => sound("click"));
+    if (icon2) button5.append(icon2);
+    if (label) button5.append(el2("span", "vl-tool-label", label));
+    if (title) button5.title = title;
+    return button5;
+  }
+  var dropArrow = () => el2("span", "vl-drop");
+  function xpButton(label, action, className = "") {
+    const button5 = el2("button", `xp-button ${className}`.trim(), label);
+    button5.type = "button";
+    button5.addEventListener("click", () => {
+      sound("click");
+      action();
+    });
+    return button5;
+  }
+  var openMenuHost = null;
+  var openMenuAnchor = null;
+  function closeMenu() {
+    openMenuHost?.remove();
+    openMenuHost = null;
+    openMenuAnchor?.removeAttribute("data-menu-open");
+    openMenuAnchor?.setAttribute("aria-expanded", "false");
+    openMenuAnchor = null;
+  }
+  function swallowClick(target) {
+    const swallow = (event) => {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      done();
+    };
+    const done = () => {
+      target.removeEventListener("click", swallow, true);
+      window.clearTimeout(timer2);
+    };
+    target.addEventListener("click", swallow, true);
+    const timer2 = window.setTimeout(done, 600);
+  }
+  function openMenu(items, at) {
+    closeMenu();
+    const anchor = at instanceof HTMLElement ? at : null;
+    if (anchor) {
+      openMenuAnchor = anchor;
+      anchor.setAttribute("data-menu-open", "");
+      anchor.setAttribute("aria-expanded", "true");
+    }
+    const host = el2("div", "vl-menu-host");
+    host.setAttribute("data-bili-blocker-ui", "true");
+    const menu = host.appendChild(el2("div", "xp-menu vl-menu"));
+    menu.setAttribute("role", "menu");
+    const buttons2 = [];
+    for (const item of items) {
+      if (item === "separator") {
+        menu.append(el2("div", "xp-menu-separator"));
+        continue;
+      }
+      const button5 = menu.appendChild(el2("button", "xp-menu-item"));
+      button5.type = "button";
+      button5.setAttribute("role", item.checked === void 0 ? "menuitem" : item.radio ? "menuitemradio" : "menuitemcheckbox");
+      if (item.checked !== void 0) button5.setAttribute("aria-checked", String(item.checked));
+      button5.append(el2("span", "vl-menu-check", item.checked ? item.radio ? "\u2022" : "\u2713" : ""), el2("span", item.bold ? "vl-menu-default" : "", item.label));
+      button5.disabled = !!item.disabled;
+      if (item.title) button5.title = item.title;
+      button5.addEventListener("click", () => {
+        closeMenu();
+        sound("click");
+        item.action?.();
+      });
+      buttons2.push(button5);
+    }
+    (document.fullscreenElement ?? document.body).append(host);
+    openMenuHost = host;
+    observeCrispText(menu);
+    const rect = anchor?.getBoundingClientRect(), point = rect ? { x: rect.left, y: rect.bottom } : at;
+    const width = screenWidth(menu), height = screenHeight(menu);
+    placeFixed(menu, { left: Math.max(2, Math.min(point.x, innerWidth - width - 2)), top: point.y + height > innerHeight - 2 ? Math.max(2, (rect ? rect.top : point.y) - height) : point.y });
+    sound("menu");
+    const close = (event) => {
+      if (event.type === "pointerdown" && host.contains(event.target)) return;
+      if (event.type === "pointerdown" && anchor?.contains(event.target)) swallowClick(anchor);
+      closeMenu();
+      stop();
+    };
+    const key7 = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeMenu();
+        stop();
+      }
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        const live = buttons2.filter((button5) => !button5.disabled), index = live.indexOf(document.activeElement);
+        live[(index + (event.key === "ArrowUp" ? -1 : 1) + live.length) % live.length]?.focus();
+      }
+    };
+    const stop = () => {
+      document.removeEventListener("pointerdown", close, true);
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+      document.removeEventListener("keydown", key7, true);
+    };
+    window.setTimeout(() => {
+      document.addEventListener("pointerdown", close, true);
+      window.addEventListener("scroll", close, true);
+      window.addEventListener("resize", close);
+      document.addEventListener("keydown", key7, true);
+    }, 0);
+    buttons2.find((button5) => !button5.disabled)?.focus({ preventScroll: true });
+  }
+  function viewedButton(id, label = (viewed2) => viewed2 ? "\u5DF2\u770B" : "\u672A\u770B") {
+    const button5 = el2("button", "vl-viewed");
+    button5.type = "button";
+    button5.dataset.viewedId = id;
+    button5.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleViewedVideo(id);
+    });
+    const paint2 = () => {
+      const viewed2 = isViewedVideo(id);
+      button5.textContent = label(viewed2);
+      button5.setAttribute("aria-pressed", String(viewed2));
+      button5.classList.toggle("btnIsView", viewed2);
+    };
+    button5.atelierPaint = paint2;
+    paint2();
+    styleAtelierAction(button5);
+    return button5;
+  }
+  window.addEventListener(viewedMarksChanged, () => {
+    for (const button5 of document.querySelectorAll(".vl-viewed")) button5.atelierPaint?.();
+  });
+  function formatDuration(seconds2) {
+    const total = Math.max(0, Math.floor(Number(seconds2) || 0)), h = Math.floor(total / 3600), m = Math.floor(total % 3600 / 60), s = total % 60;
+    const two2 = (value2) => String(value2).padStart(2, "0");
+    return h ? `${h}:${two2(m)}:${two2(s)}` : `${two2(m)}:${two2(s)}`;
+  }
+  function formatDate(seconds2) {
+    const value2 = Number(seconds2);
+    if (!Number.isFinite(value2) || value2 <= 0) return "";
+    const date2 = new Date(value2 * 1e3), two2 = (n) => String(n).padStart(2, "0");
+    return `${date2.getFullYear()}-${two2(date2.getMonth() + 1)}-${two2(date2.getDate())} ${two2(date2.getHours())}:${two2(date2.getMinutes())}`;
+  }
+  function shortCount(value2) {
+    const number2 = Number(value2);
+    if (!Number.isFinite(number2) || number2 <= 0) return "0";
+    for (const [size, unit] of [[1e8, "\u4EBF"], [1e4, "\u4E07"]]) {
+      if (number2 >= size) {
+        const scaled = number2 / size;
+        return `${scaled >= 1e3 ? Math.round(scaled) : Number(scaled.toFixed(1))}${unit}`;
+      }
+    }
+    return String(Math.round(number2));
+  }
+  var weekday = (seconds2) => `\u5468${"\u65E5\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D"[new Date(seconds2 * 1e3).getDay()]}`;
+  var videoUrl = (bvid, p2) => `https://www.bilibili.com/video/${bvid}/${p2 && p2 > 1 ? `?p=${p2}` : ""}`;
+  function thumb(url, size) {
+    const value2 = typeof url === "string" ? url.replace(/^\/\//, "https://").replace(/^http:/, "https:") : "";
+    return /^https:\/\/[^/]*hdslb\.com\//.test(value2) && !value2.includes("@") ? `${value2}@${size}.webp` : value2;
+  }
+  function pixelIcon(parts2, label = "") {
+    const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("class", "vl-icon");
+    svg.setAttribute("width", "16");
+    svg.setAttribute("height", "16");
+    svg.setAttribute("viewBox", "0 0 16 16");
+    svg.setAttribute("shape-rendering", "crispEdges");
+    if (label) svg.setAttribute("aria-label", label);
+    else svg.setAttribute("aria-hidden", "true");
+    for (const [d, fill] of parts2) {
+      const path = svg.appendChild(document.createElementNS(ns, "path"));
+      path.setAttribute("d", d);
+      path.setAttribute("fill", fill === "ink" ? "currentColor" : fill);
+    }
+    return svg;
+  }
+  var iconParts = {
+    like: [["M6 1h2v5H6zM4 6h9v1H4zM3 7h11v6H3zM1 7h2v7H1z", "#2b5fb4"], ["M7 2h1v4H7zM4 8h9v4H4z", "#8db5ef"], ["M2 8h1v5H2z", "#173a78"]],
+    coin: [["M5 1h6v1H5zM3 2h10v1H3zM2 3h12v10H2zM3 13h10v1H3zM5 14h6v1H5z", "#a8740a"], ["M5 3h6v1H5zM4 4h8v8H4zM5 12h6v1H5z", "#f2c43a"], ["M7 5h2v6H7zM6 6h4v1H6zM6 9h4v1H6z", "#a8740a"]],
+    star: [["M7 1h2v3h-2zM6 4h4v2H6zM1 6h14v2H1zM3 8h10v2H3zM4 10h8v2H4zM3 12h4v2H3zM9 12h4v2H9zM2 14h3v1H2zM11 14h3v1h-3z", "#b07d0a"], ["M7 3h2v3H7zM3 7h10v1H3zM4 8h8v2H4zM5 10h6v2H5z", "#f6cf3e"]],
+    share: [["M9 1h1v1h1v1h1v1h1v1h1v1h-1v1h-1v1h-1v1h-1v1H9V8H7v1H5v1H4v2H3v2H2V9h1V7h1V6h2V5h3z", "#2f7d22"], ["M9 3h1v1h1v1h1v1h-1v1h-1v1H9V7H6v1H5v1H4V8h1V7h1V6h3z", "#86cf55"]],
+    more: [["M2 7h3v3H2zM7 7h3v3H7zM12 7h3v3h-3z", "ink"]],
+    bubble: [["M2 2h12v1H2zM1 3h14v7H1zM2 10h12v1H2zM4 11h3v1H4zM4 12h2v1H4zM4 13h1v1H4z", "#1f4f9c"], ["M2 3h12v7H2zM5 11h1v1H5z", "#ffffff"], ["M4 6h2v2H4zM7 6h2v2H7zM10 6h2v2h-2z", "#1f4f9c"]],
+    fontColor: [["M7 1h2v1H7zM6 2h4v1H6zM6 3h1v2H6zM9 3h1v2H9zM5 5h1v3H5zM10 5h1v3h-1zM6 6h4v1H6zM4 8h1v3H4zM11 8h1v3h-1zM3 10h2v1H3zM11 10h2v1h-2z", "ink"], ["M1 13h14v3H1z", "#e01818"]]
+  };
+  var icons = Object.fromEntries(Object.keys(iconParts).map((name) => [name, () => pixelIcon(iconParts[name])]));
+  function iconUrl(name, ink) {
+    const paths = iconParts[name].map(([d, fill]) => `<path d="${d}" fill="${fill === "ink" ? ink : fill}"/>`).join("");
+    return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" shape-rendering="crispEdges">${paths}</svg>`)}")`;
+  }
+
+  // src/modules/video-luna/layout.ts
+  var layoutKey = "BiliAtelier_VideoLayout";
+  function readSaved() {
+    const value2 = typeof GM_getValue === "function" ? GM_getValue(layoutKey, {}) : {};
+    return value2 && typeof value2 === "object" ? value2 : {};
+  }
+  var writeSaved = (saved) => {
+    if (typeof GM_setValue === "function") GM_setValue(layoutKey, saved);
+  };
+  var rightMin = 300;
+  var playerMin = 480;
+  var frameWidth = 4;
+  var playerHeight = (width) => Math.round(width * 9 / 16 + 46);
+  var playerWidth = (height) => (height - 46) * 16 / 9;
+  function columnWidths(native2, saved, total = native2.left + native2.right) {
+    if (total - rightMin < playerMin) return null;
+    const right = Math.round(Math.min(Math.max(saved || native2.right, rightMin), total - playerMin));
+    return Math.abs(total - native2.left - native2.right) < 0.5 && right === Math.round(native2.right) ? null : { left: total - right, right };
+  }
+  var contentLeast = (gap) => frameWidth + playerMin + gap + rightMin;
+  function blankTotal(width, blank, gap) {
+    const least = contentLeast(gap);
+    if (width < least) return null;
+    return width - 2 * Math.max(0, Math.min(blank, (width - least) / 2)) - frameWidth - gap;
+  }
+  var splitRight = (before, total) => Math.round(Math.min(Math.max(before.right + (total - before.left - before.right) / 2, rightMin), total - playerMin));
+  var cursors = { left: "ew", right: "ew", bottom: "ns", "bottom-left": "nesw", "bottom-right": "nwse" };
+  function hitEdge(rect, x, y, edges, unit = 1) {
+    const frame2 = 4 * unit, out = 2 * unit, corner = 16 * unit;
+    if (x < rect.left - out || x >= rect.right + out || y < rect.top || y >= rect.bottom + out) return null;
+    const left = x < rect.left + frame2, right = x >= rect.right - frame2, bottom = y >= rect.bottom - frame2;
+    const nearBottom = y >= rect.bottom - corner, nearLeft = x < rect.left + corner, nearRight = x >= rect.right - corner;
+    if (edges.includes("bottom-left") && (left && nearBottom || bottom && nearLeft)) return "bottom-left";
+    if (edges.includes("bottom-right") && (right && nearBottom || bottom && nearRight)) return "bottom-right";
+    if (bottom && edges.includes("bottom")) return "bottom";
+    if (left && edges.includes("left")) return "left";
+    if (right && edges.includes("right")) return "right";
+    return null;
+  }
+  var columnSelectors = { video: [".left-container", ".right-container"], list: [".playlist-container--left", ".playlist-container--right"] };
+  var containers = { video: ".video-container-v1", list: ".playlist-container", bangumi: ".main-container" };
+  var stickyColumns = { video: ".right-container-inner", list: ".playlist-container--right", bangumi: ".plp-r" };
+  var bottomGaps = { video: 0, list: 0, bangumi: 280 };
+  var on4 = `html[${videoAttribute}=luna]`;
+  function followTop(at, target, dy) {
+    if (Math.abs(at - target) < 0.5) return at;
+    const next = at > target ? Math.max(target, at - Math.max(dy, 0)) : Math.min(target, at - Math.min(dy, 0));
+    return Math.abs(next - target) < 0.5 ? null : next;
+  }
+  function placeColumn(kind) {
+    let column = null, width = -1, height = -1, hold = null, lastY = scrollY;
+    const set = (top) => {
+      hold = top;
+      const host = column?.parentElement;
+      if (top === null) host?.style.removeProperty("--vl-hold-top");
+      else host?.style.setProperty("--vl-hold-top", `${top / zoomOf(host)}px`);
+    };
+    const place2 = () => {
+      if (!column?.parentElement) return;
+      const header = document.getElementById("biliMainHeader")?.clientHeight || headerHeight();
+      column.parentElement.style.setProperty("--vl-stick", `${Math.min(header, innerHeight / zoomOf(column) - column.offsetHeight - bottomGaps[kind])}px`);
+    };
+    const free = (element2) => {
+      const held = hold;
+      set(null);
+      const top = element2.getBoundingClientRect().top;
+      set(held);
+      return top;
+    };
+    const sizes = typeof ResizeObserver === "function" ? new ResizeObserver((entries) => {
+      const rect = entries[entries.length - 1].contentRect, resized = rect.width !== width;
+      if (!column || !resized && rect.height === height) return;
+      width = rect.width;
+      height = rect.height;
+      const at = column.getBoundingClientRect().top;
+      place2();
+      if (resized) set(null);
+      else if (Math.abs(free(column) - at) > 0.5) set(at);
+    }) : null;
+    const watch = () => {
+      const next = document.querySelector(stickyColumns[kind]);
+      if (next === column) return;
+      set(null);
+      if (column) sizes?.unobserve(column);
+      column = next;
+      width = height = -1;
+      if (column) sizes?.observe(column);
+    };
+    watch();
+    window.addEventListener("scroll", () => {
+      const dy = scrollY - lastY;
+      lastY = scrollY;
+      watch();
+      if (hold === null || !column) return;
+      const at = column.getBoundingClientRect().top, next = followTop(at, free(column), dy);
+      if (next === null || next !== at) set(next);
+    }, { passive: true });
+    window.addEventListener("resize", () => {
+      set(null);
+      place2();
+    });
+  }
+  function setSizePageWorld(attribute2) {
+    const page = window, original = page.setSize;
+    if (typeof original !== "function") return;
+    if (original.atelierZoom) {
+      original();
+      return;
+    }
+    const sized2 = function(...args) {
+      const zoom = Number(document.documentElement.getAttribute(attribute2)) || 1;
+      if (zoom === 1) return original.apply(this, args);
+      const width = Object.getOwnPropertyDescriptor(window, "innerWidth"), height = Object.getOwnPropertyDescriptor(window, "innerHeight");
+      const across = innerWidth / zoom, down = innerHeight / zoom;
+      try {
+        Object.defineProperty(window, "innerWidth", { configurable: true, get: () => across });
+        Object.defineProperty(window, "innerHeight", { configurable: true, get: () => down });
+        return original.apply(this, args);
+      } finally {
+        if (width) Object.defineProperty(window, "innerWidth", width);
+        else delete page.innerWidth;
+        if (height) Object.defineProperty(window, "innerHeight", height);
+        else delete page.innerHeight;
+      }
+    };
+    sized2.atelierZoom = true;
+    page.setSize = sized2;
+    sized2();
+  }
+  var sized = `${on4}:not([data-atelier-screen=wide],[data-atelier-screen=web],[data-atelier-screen=full])`;
+  function startLayout(kind) {
+    const root2 = document.documentElement;
+    const zoom = () => zoomOf(document.body);
+    const style = document.createElement("style");
+    style.id = "atelier-video-layout";
+    (document.head || root2).append(style);
+    let saved = readSaved();
+    const grips = [], lists = /* @__PURE__ */ new Map();
+    const mode2 = () => root2.getAttribute("data-atelier-screen") || "normal";
+    const folded = (box) => box.hasAttribute("data-folded") || box.classList.contains("bui-collapse-wrap-folded");
+    let columns3 = null;
+    function native2() {
+      if (style.sheet) style.sheet.disabled = true;
+      try {
+        if (kind === "bangumi") {
+          const grid = document.querySelector(".plp-layout");
+          const tracks = grid ? getComputedStyle(grid).gridTemplateColumns.split(" ").map(parseFloat) : [];
+          return tracks.length === 3 && tracks.every((width) => width > 0) ? { left: tracks[0], gap: tracks[1], right: tracks[2] } : null;
+        }
+        const [left, right] = columnSelectors[kind].map((selector) => document.querySelector(selector)?.getBoundingClientRect());
+        if (!left?.width || !right?.width) return null;
+        const z = zoom();
+        return { left: left.width / z, right: z === 1 ? right.width : innerWidth / z > 1680 ? 411 : 350, gap: Math.max(0, right.left - left.right) / z };
+      } finally {
+        if (style.sheet) style.sheet.disabled = false;
+      }
+    }
+    function stage() {
+      const container = document.querySelector(containers[kind]), box = (kind === "bangumi" ? container?.parentElement : container)?.getBoundingClientRect();
+      return box?.width ? { left: box.left, right: box.right } : null;
+    }
+    function content() {
+      const [left, right] = kind === "bangumi" ? [".plp-layout", ".plp-layout"] : columnSelectors[kind];
+      const a = document.querySelector(left)?.getBoundingClientRect(), b = document.querySelector(right)?.getBoundingClientRect();
+      return a?.width && b?.width ? { left: a.left - frameWidth * zoom(), right: b.right } : null;
+    }
+    function total(c) {
+      const box = saved.blank === void 0 ? null : stage(), z = zoom();
+      return (box && blankTotal((box.right - box.left) / z, saved.blank / z, c.gap)) ?? c.left + c.right;
+    }
+    function danmakuChrome() {
+      const page = document.querySelector("#danmukuBox .bpx-player-wraplist"), list = document.querySelector("#danmukuBox .bpx-player-dm-wrap");
+      const chrome = parseFloat(page?.style.height ?? "") - parseFloat(list?.style.height ?? "");
+      return chrome > 0 && chrome < 200 ? chrome : 71;
+    }
+    const dm2 = `${on4} #danmukuBox[style*="--vl-dm-h:"]`, wide2 = `${on4}[data-atelier-screen=wide]`;
+    const zoomed = `${on4}[${pageZoomAttribute}]`, main = `.main-container:not([style*="--vl-main:"])`;
+    const avh = "calc(1vh / var(--atelier-zoom, 1))", avw = "calc(1vw / var(--atelier-zoom, 1))", across = (fixed, right = " + var(--right-bar-width)") => `width:calc(177.778 * ${avh} - ${fixed}px + 30px${right})!important`;
+    const bangumiZoom = `${zoomed}{--right-bar-width:350px;--danmu-bar-height:46px}
+${zoomed}[data-vl-viewport~=w1680]{--right-bar-width:411px;--danmu-bar-height:56px}
+${zoomed} ${main}{${across(470)};max-width:calc(100 * ${avw} - 80px)!important}
+${zoomed}[data-vl-viewport~=w1680] ${main}{${across(505)}}
+${zoomed}[data-vl-viewport~=w2560] ${main}{max-width:2480px!important}
+${zoomed} .home-container.wide ${main}{${across(650)}}
+${zoomed}[data-vl-viewport~=w1680] .home-container.wide ${main}{${across(735)}}
+${zoomed} .home-container.special.wide ${main}{${across(460, "")};max-width:calc(100 * ${avw} - 80px)!important}
+${zoomed}[data-vl-viewport~=w2221] .home-container.special.wide ${main}{max-width:2141px!important}`;
+    style.textContent = `${kind === "bangumi" ? bangumiZoom + "\n" : ""}${on4} :is(${containers.video},${containers.list})[style*="--vl-blank:"]{padding:0 0 0 ${frameWidth}px!important}
+${on4} ${containers.bangumi}[style*="--vl-main:"]{width:var(--vl-main)!important;max-width:none!important;min-width:0!important;padding:0 0 0 ${frameWidth}px!important}
+${wide2} #bilibili-player[style*="--vl-wide-w:"]{width:var(--vl-wide-w)!important;height:var(--vl-wide-h)!important}
+${wide2} #playerWrap[style*="--vl-wide-h:"]{height:var(--vl-wide-h)!important}
+${wide2} #danmukuBox[style*="--vl-wide-h:"]{margin-top:calc(var(--vl-wide-h) + 28px)!important}
+${wide2} #oldfanfollowEntry[style*="--vl-wide-h:"]{top:calc(var(--vl-wide-h) + 10px)!important}
+${on4} :is(${[...columnSelectors.video, ...columnSelectors.list].join(",")})[style*="--vl-col:"]{width:var(--vl-col)!important}
+${sized} #bilibili-player[style*="--vl-col:"]{width:var(--vl-col)!important;height:var(--vl-col-h)!important}
+${sized} #playerWrap[style*="--vl-col-h:"]{height:var(--vl-col-h)!important}
+${on4} .plp-layout[style*="--vl-grid:"]{grid-template-columns:var(--vl-grid)!important}
+${dm2} .bpx-player-wraplist{height:var(--vl-dm-h)!important}
+${dm2} :is(.bpx-player-dm-wrap,.bpx-player-dm-load-status){height:var(--vl-dm-list)!important}
+${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
+${on4} :is(${Object.values(stickyColumns).join(",")}){overflow-anchor:none}
+${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).scroll-sticky{top:var(--vl-hold-top,var(--vl-stick))!important}
+`;
+    const mark2 = (selector, values) => {
+      const element2 = document.querySelector(selector);
+      if (!element2) return;
+      for (const [name, value2] of Object.entries(values)) {
+        if (value2 === null) element2.style.removeProperty(name);
+        else if (element2.style.getPropertyValue(name) !== value2) element2.style.setProperty(name, value2);
+      }
+    };
+    function paint2() {
+      const all = columns3 ? total(columns3) : 0, sizes = columns3 && columnWidths(columns3, saved.right, all), px2 = (value2) => value2 ? `${value2}px` : null;
+      const widened = !!columns3 && !!sizes && Math.abs(all - columns3.left - columns3.right) >= 0.5;
+      if (kind === "bangumi") {
+        mark2(".plp-layout", { "--vl-grid": sizes ? `${sizes.left}px ${columns3.gap}px ${sizes.right}px` : null });
+        mark2(containers.bangumi, { "--vl-main": widened ? px2(all + columns3.gap) : null });
+      } else {
+        const held = !sizes && columns3 && zoom() !== 1 ? columns3.right : 0;
+        const [left, right] = columnSelectors[kind], height = px2(sizes ? playerHeight(sizes.left) : 0);
+        mark2(left, { "--vl-col": px2(sizes?.left) });
+        mark2(right, { "--vl-col": px2(sizes?.right ?? held) });
+        mark2("#bilibili-player", { "--vl-col": px2(sizes?.left), "--vl-col-h": height });
+        mark2("#playerWrap", { "--vl-col-h": height });
+        const across2 = widened ? all + columns3.gap : 0, high = px2(across2 ? playerHeight(across2) : 0);
+        mark2(containers[kind], { "--vl-blank": widened ? "1" : null });
+        mark2("#bilibili-player", { "--vl-wide-w": px2(across2), "--vl-wide-h": high });
+        for (const selector of ["#playerWrap", "#danmukuBox", "#oldfanfollowEntry"]) mark2(selector, { "--vl-wide-h": high });
+      }
+      const danmaku = saved.heights?.danmaku;
+      mark2("#danmukuBox", { "--vl-dm-h": px2(danmaku), "--vl-dm-list": px2(danmaku ? danmaku - danmakuChrome() : 0) });
+      for (const [name, rows] of lists) {
+        const element2 = rows(), height = saved.heights?.[name];
+        if (element2) element2.style.maxHeight = height ? `${height}px` : "";
+      }
+    }
+    function measureColumns() {
+      columns3 = native2();
+      paint2();
+    }
+    function save() {
+      writeSaved(saved);
+      notifyPageLayoutChanged();
+    }
+    const setHeight = (name, height) => {
+      const heights = { ...saved.heights };
+      if (height) heights[name] = Math.round(height);
+      else delete heights[name];
+      saved = { ...saved, heights };
+    };
+    function lineDrag(to) {
+      columns3 = native2();
+      const all = columns3 ? total(columns3) : 0;
+      if (!columns3 || all - rightMin < playerMin) return null;
+      const start = columnWidths(columns3, saved.right, all)?.right ?? columns3.right;
+      return {
+        move(dx, dy) {
+          const z = zoom(), right = Math.min(Math.max(all - to(dx / z, dy / z, all - start), rightMin), all - playerMin);
+          saved = { ...saved, right: Math.round(right) };
+          paint2();
+        },
+        end() {
+          if (saved.right === Math.round(columns3.right)) {
+            const { right, ...rest } = saved;
+            saved = rest;
+            paint2();
+          }
+          save();
+        }
+      };
+    }
+    function heightDrag(name, box, start, least, after) {
+      const z = zoom(), room = (innerHeight - headerScreenHeight() - box.getBoundingClientRect().height) / z;
+      return {
+        move(_dx, dy) {
+          setHeight(name, Math.min(Math.max(start + dy / z, least), Math.max(start + room, least)));
+          paint2();
+        },
+        end() {
+          save();
+          after?.();
+        }
+      };
+    }
+    const both = (line, height) => ({
+      move(dx, dy) {
+        line?.move(dx, dy);
+        height.move(dx, dy);
+      },
+      end() {
+        line?.end();
+        height.end();
+      }
+    });
+    const resetLine = () => {
+      const { right, ...rest } = saved;
+      saved = rest;
+      measureColumns();
+      save();
+    };
+    function setBlank(blank) {
+      columns3 = native2();
+      if (!columns3) return;
+      const before = columnWidths(columns3, saved.right, total(columns3)) ?? { left: columns3.left, right: columns3.right };
+      const { blank: _old, right: _right, ...rest } = saved;
+      saved = blank === void 0 ? rest : { ...rest, blank };
+      const right = splitRight(before, total(columns3));
+      if (blank !== void 0 || right !== Math.round(columns3.right)) saved = { ...saved, right };
+      paint2();
+      save();
+      window.dispatchEvent(new Event("resize"));
+    }
+    const add = (grip) => grips.push(grip);
+    const lineEdges = () => mode2() === "web" || mode2() === "full" ? [] : null;
+    let cursor = "";
+    const setCursor = (next) => {
+      if (next === cursor) return;
+      cursor = next;
+      if (next) root2.setAttribute("data-vl-resize", next);
+      else root2.removeAttribute("data-vl-resize");
+    };
+    const covered = (x, y, box) => {
+      const top = document.elementFromPoint?.(x, y);
+      return !!top && !box.contains(top) && !!top.closest(".bpx-player-container,.vl-menu-host,dialog,header.lh");
+    };
+    function hit(x, y) {
+      for (const grip of grips) {
+        const box = grip.box();
+        if (!box?.isConnected || folded(box)) continue;
+        const edges = grip.edges();
+        if (!edges.length) continue;
+        const rect = box.getBoundingClientRect();
+        if (!rect.width || !rect.height) continue;
+        const inside2 = x >= rect.left && x < rect.right && y >= rect.top && y < rect.bottom;
+        const edge = grip.whole ? inside2 && edges.includes(grip.whole) ? grip.whole : null : hitEdge(rect, x, y, edges, zoom());
+        if (edge && !covered(x, y, box)) return { grip, edge };
+      }
+      return null;
+    }
+    let dragging = false, hover = null, hoverFrame = 0;
+    window.addEventListener("pointermove", (event) => {
+      if (dragging) return;
+      hover = event;
+      hoverFrame ||= requestAnimationFrame(() => {
+        hoverFrame = 0;
+        const found = hover && hover.pointerType !== "touch" ? hit(hover.clientX, hover.clientY) : null;
+        setCursor(found ? cursors[found.edge] : "");
+      });
+    }, { passive: true });
+    window.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || dragging) return;
+      const found = hit(event.clientX, event.clientY), drag = found?.grip.drag(found.edge);
+      if (!found || !drag) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const sheet = document.body.appendChild(el2("div", "vl-resize-sheet"));
+      sheet.setAttribute("data-bili-blocker-ui", "true");
+      dragging = true;
+      setCursor(cursors[found.edge]);
+      root2.setAttribute("data-vl-resizing", "");
+      const x = event.clientX, y = event.clientY;
+      let moved2 = false, last = [0, 0], frame2 = 0;
+      const move = (next) => {
+        last = [next.clientX - x, next.clientY - y];
+        if (last[0] || last[1]) moved2 = true;
+        frame2 ||= requestAnimationFrame(() => {
+          frame2 = 0;
+          drag.move(...last);
+        });
+      };
+      const finish = () => {
+        window.removeEventListener("pointermove", move, true);
+        window.removeEventListener("pointerup", finish, true);
+        window.removeEventListener("pointercancel", finish, true);
+        window.removeEventListener("blur", finish);
+        cancelAnimationFrame(frame2);
+        if (moved2) {
+          drag.move(...last);
+          drag.end();
+        }
+        sheet.remove();
+        dragging = false;
+        root2.removeAttribute("data-vl-resizing");
+        setCursor("");
+      };
+      window.addEventListener("pointermove", move, true);
+      window.addEventListener("pointerup", finish, true);
+      window.addEventListener("pointercancel", finish, true);
+      window.addEventListener("blur", finish);
+    }, true);
+    window.addEventListener("dblclick", (event) => {
+      const found = hit(event.clientX, event.clientY);
+      if (!found) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      found.grip.reset(found.edge);
+    }, true);
+    let resizeFrame = 0;
+    const remeasure = () => {
+      resizeFrame ||= requestAnimationFrame(() => {
+        resizeFrame = 0;
+        measureColumns();
+      });
+    };
+    window.addEventListener("resize", () => {
+      markViewport();
+      remeasure();
+    });
+    window.addEventListener(zoomChanged, () => {
+      markViewport();
+      remeasure();
+    });
+    const sizeStyle = document.getElementById("setSizeStyle");
+    if (sizeStyle) new MutationObserver(remeasure).observe(sizeStyle, { childList: true, characterData: true, subtree: true });
+    registerPageLayout({
+      isDefault: () => !saved.right && saved.blank === void 0 && !Object.keys(saved.heights ?? {}).length,
+      reset() {
+        saved = {};
+        measureColumns();
+        save();
+        window.dispatchEvent(new Event("resize"));
+      }
+    });
+    function markViewport() {
+      const width = innerWidth / zoom(), marks = [1680, 2221, 2560].filter((at) => width >= at).map((at) => `w${at}`).join(" ");
+      if (root2.getAttribute("data-vl-viewport") !== marks) root2.setAttribute("data-vl-viewport", marks);
+    }
+    markViewport();
+    if (kind !== "bangumi") injectPageScript(`(${setSizePageWorld.toString()})(${JSON.stringify(pageZoomAttribute)});`);
+    measureColumns();
+    placeColumn(kind);
+    startSideBounds({
+      measure() {
+        const box = stage(), edges = content();
+        if (!columns3 || !box || !edges || mode2() === "web" || mode2() === "full") return null;
+        return { stage: box, content: edges, least: contentLeast(columns3.gap) * zoom() };
+      },
+      commit: (blank) => setBlank(blank),
+      reset: () => setBlank()
+    });
+    return {
+      /** Bilibili resized its columns (a new mode): measure them again. */
+      measure: measureColumns,
+      /** The player window's frame: its right and bottom edges size the player,
+       * keeping Bilibili's 16:9. Only in normal mode. */
+      player(frame2, grip) {
+        const drag = (edge) => lineDrag((dx, dy, left) => {
+          const across2 = left + dx, down = playerWidth(playerHeight(left) + dy);
+          if (edge === "right") return across2;
+          if (edge === "bottom") return down;
+          return Math.abs(across2 - left) >= Math.abs(down - left) ? across2 : down;
+        });
+        const edges = () => mode2() === "normal" ? ["right", "bottom", "bottom-right"] : [];
+        add({ box: frame2, edges, drag, reset: resetLine });
+        if (grip) add({ box: () => grip, edges, drag, reset: resetLine, whole: "bottom-right" });
+      },
+      /** A window along the line between the columns, on its `side`. */
+      line(box, side) {
+        add({ box: () => box, edges: () => lineEdges() ?? [side], drag: () => lineDrag((dx, _dy, left) => left + dx), reset: resetLine });
+      },
+      /** A list window in the right column: its bottom edge sets how tall its
+       * list may grow (three rows of 22 px at least, with the header if the
+       * header scrolls with them), its left edge is the line. */
+      list(name, box, rows) {
+        lists.set(name, rows);
+        paint2();
+        const height = () => {
+          const element2 = rows();
+          if (!element2) return null;
+          const head = element2.querySelector(":scope > .vl-lv-head")?.offsetHeight ?? 0;
+          return heightDrag(name, box, element2.getBoundingClientRect().height / zoom(), head + 66);
+        };
+        add({
+          box: () => box,
+          edges: () => lineEdges() ?? ["left", "bottom", "bottom-left"],
+          drag: (edge) => {
+            const line = edge === "bottom" ? null : lineDrag((dx, _dy, left) => left + dx), list = edge === "left" ? null : height();
+            return list ? both(line, list) : line;
+          },
+          reset: (edge) => {
+            if (edge !== "left") {
+              setHeight(name);
+              paint2();
+              save();
+            }
+            if (edge !== "bottom") resetLine();
+          }
+        });
+      },
+      /** Bilibili's 弹幕 window: the same, on the player's tab page; its
+       * virtual list draws rows for a new height on the next resize. */
+      danmaku() {
+        const box = () => document.querySelector("#danmukuBox .bui-collapse-wrap");
+        const refill = () => window.dispatchEvent(new Event("resize"));
+        const height = () => {
+          const page = document.querySelector("#danmukuBox .bpx-player-wraplist"), wrap = box();
+          if (!page || !wrap) return null;
+          return heightDrag("danmaku", wrap, parseFloat(getComputedStyle(page).height) || page.getBoundingClientRect().height / zoom(), danmakuChrome() + 72, refill);
+        };
+        add({
+          box,
+          edges: () => lineEdges() ?? ["left", "bottom", "bottom-left"],
+          drag: (edge) => {
+            const line = edge === "bottom" ? null : lineDrag((dx, _dy, left) => left + dx), list = edge === "left" ? null : height();
+            return list ? both(line, list) : line;
+          },
+          reset: (edge) => {
+            if (edge !== "left") {
+              setHeight("danmaku");
+              paint2();
+              save();
+              refill();
+            }
+            if (edge !== "bottom") resetLine();
+          }
+        });
+      }
+    };
+  }
+
+  // src/modules/local-following/feed-layout.ts
+  var key4 = "BiliAtelier_FeedLayout";
+  var feedLeftMin = 200;
+  var feedMainMin = 480;
+  function read2() {
+    const value2 = typeof GM_getValue === "function" ? GM_getValue(key4, {}) : {};
+    const saved = {};
+    if (Number.isFinite(value2?.blank)) saved.blank = Math.max(0, value2.blank);
+    if (Number.isFinite(value2?.left)) saved.left = Math.max(feedLeftMin, value2.left);
+    return saved;
+  }
+  var write = (saved) => {
+    if (typeof GM_setValue === "function") GM_setValue(key4, saved);
+  };
+  function feedColumns(native2, saved, stage, zoom = 1) {
+    const fixed = native2.right + 2 * native2.gap, want = Math.max(saved.left ?? native2.left, feedLeftMin);
+    let content = native2.left + native2.main + fixed;
+    if (saved.blank !== void 0) content = stage - 2 * Math.max(0, Math.min(saved.blank / zoom, (stage - want - feedMainMin - fixed) / 2));
+    const most = content - fixed - feedMainMin;
+    if (most < feedLeftMin) return null;
+    const left = Math.round(Math.min(want, most));
+    if (saved.blank === void 0 && left === Math.round(native2.left)) return null;
+    return { left, main: +(content - fixed - left).toFixed(2) };
+  }
+  var on5 = "html[data-atelier-feed=drawn]";
+  var resizeAttribute = "data-alf-resize";
+  var feedLayoutCss = `
+:is(html[${resizeAttribute}],html[${resizeAttribute}] *){cursor:ew-resize!important}
+html[${resizeAttribute}=drag] *{user-select:none!important}
+.alf-resize-sheet{position:fixed;inset:0;z-index:2147483647}
+`;
+  var covers2 = "dialog,[role=dialog],[role=menu],header.lh,.vl-menu-host,.xp-tooltip";
+  function startFeedLayout() {
+    const root2 = document.documentElement;
+    let saved = read2(), native2 = null;
+    const style = document.createElement("style");
+    style.id = "atelier-feed-layout";
+    style.textContent = `${on5} .bili-dyn-home--member>aside.left[style*="--alf-left:"]{width:var(--alf-left)!important;flex:none!important;min-width:0!important}
+${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!important;flex:none!important;min-width:0!important;max-width:none!important}`;
+    (document.head || root2).append(style);
+    const zoom = () => zoomOf(document.body);
+    const home = () => document.querySelector(".bili-dyn-home--member");
+    const part = (selector) => document.querySelector(`.bili-dyn-home--member>${selector}`);
+    const drawn = () => root2.getAttribute("data-atelier-feed") === "drawn";
+    function measure() {
+      if (style.sheet) style.sheet.disabled = true;
+      try {
+        const [left, main, right] = ["aside.left", "main", "aside.right"].map((selector) => part(selector)?.getBoundingClientRect());
+        const z = zoom();
+        native2 = left?.width && main?.width && right?.width ? { left: left.width / z, main: main.width / z, right: right.width / z, gap: Math.max(0, main.left - left.right) / z } : null;
+      } finally {
+        if (style.sheet) style.sheet.disabled = false;
+      }
+    }
+    function stage() {
+      const row = home();
+      if (!row) return 0;
+      const css = getComputedStyle(row);
+      return row.clientWidth - (parseFloat(css.paddingLeft) || 0) - (parseFloat(css.paddingRight) || 0);
+    }
+    const sizes = () => native2 ? feedColumns(native2, saved, stage(), zoom()) : null;
+    function mark2(element2, name, value2) {
+      if (!element2) return;
+      const next = value2 === void 0 ? "" : `${value2}px`;
+      if (element2.style.getPropertyValue(name) === next) return;
+      if (next) element2.style.setProperty(name, next);
+      else element2.style.removeProperty(name);
+    }
+    function paint2() {
+      const now = sizes();
+      mark2(part("aside.left"), "--alf-left", now?.left);
+      mark2(part("main"), "--alf-main", now?.main);
+    }
+    const save = () => {
+      write(saved);
+      notifyPageLayoutChanged();
+    };
+    const relayout = () => {
+      measure();
+      paint2();
+    };
+    startSideBounds({
+      measure() {
+        const row = home(), left = part("aside.left"), right = part("aside.right");
+        if (!drawn() || !row || !left || !right) return null;
+        measure();
+        if (!native2) return null;
+        const box = row.getBoundingClientRect(), css = getComputedStyle(row), z = zoom();
+        const current4 = sizes()?.left ?? native2.left;
+        return {
+          stage: { left: box.left + (parseFloat(css.paddingLeft) || 0) * z, right: box.right - (parseFloat(css.paddingRight) || 0) * z },
+          content: { left: left.getBoundingClientRect().left, right: right.getBoundingClientRect().right },
+          least: (current4 + feedMainMin + native2.right + 2 * native2.gap) * z
+        };
+      },
+      commit: (blank) => {
+        saved = { ...saved, blank };
+        paint2();
+        save();
+      },
+      reset: () => {
+        const { blank: _blank, ...rest } = saved;
+        saved = rest;
+        paint2();
+        save();
+      }
+    });
+    const grips = () => [
+      [document.querySelector("aside.left .alf-me"), "right"],
+      [document.querySelector("aside.left .atelier-follow-panel"), "right"],
+      [document.getElementById("atelier-feed-root"), "left"]
+    ];
+    function hit(x, y) {
+      if (!drawn()) return false;
+      for (const [box, side] of grips()) {
+        if (!box?.isConnected) continue;
+        const rect = box.getBoundingClientRect();
+        if (!rect.width || !rect.height || !hitEdge(rect, x, y, [side], zoom())) continue;
+        const top = document.elementFromPoint?.(x, y);
+        if (top && !box.contains(top) && top.closest(covers2)) continue;
+        return true;
+      }
+      return false;
+    }
+    const setState = (state2) => {
+      if (!state2) root2.removeAttribute(resizeAttribute);
+      else if (root2.getAttribute(resizeAttribute) !== state2) root2.setAttribute(resizeAttribute, state2);
+    };
+    let dragging = false, hover = null, frame2 = 0;
+    window.addEventListener("pointermove", (event) => {
+      if (dragging) return;
+      hover = event;
+      frame2 ||= requestAnimationFrame(() => {
+        frame2 = 0;
+        const over = !!hover && hover.pointerType !== "touch" && !hover.buttons && hit(hover.clientX, hover.clientY);
+        if (over) setState("hover");
+        else if (root2.getAttribute(resizeAttribute) === "hover") setState("");
+      });
+    }, { passive: true });
+    window.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || dragging || !hit(event.clientX, event.clientY)) return;
+      measure();
+      if (!native2) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const now = sizes(), start = now?.left ?? native2.left, content = now ? now.left + now.main : native2.left + native2.main;
+      const most = content - feedMainMin, x = event.clientX;
+      const sheet = document.body.appendChild(document.createElement("div"));
+      sheet.className = "alf-resize-sheet";
+      sheet.setAttribute("data-bili-blocker-ui", "true");
+      dragging = true;
+      setState("drag");
+      let last = x, moveFrame = 0;
+      const apply = () => {
+        moveFrame = 0;
+        saved = { ...saved, left: Math.round(Math.min(Math.max(start + (last - x) / zoom(), feedLeftMin), Math.max(feedLeftMin, most))) };
+        paint2();
+      };
+      const move = (next) => {
+        last = next.clientX;
+        moveFrame ||= requestAnimationFrame(apply);
+      };
+      const finish = () => {
+        window.removeEventListener("pointermove", move, true);
+        window.removeEventListener("pointerup", finish, true);
+        window.removeEventListener("pointercancel", finish, true);
+        window.removeEventListener("blur", finish);
+        cancelAnimationFrame(moveFrame);
+        sheet.remove();
+        dragging = false;
+        setState("");
+        if (last !== x) {
+          apply();
+          if (saved.blank === void 0 && native2 && saved.left === Math.round(native2.left)) {
+            const { left: _left, ...rest } = saved;
+            saved = rest;
+            paint2();
+          }
+          save();
+        }
+      };
+      window.addEventListener("pointermove", move, true);
+      window.addEventListener("pointerup", finish, true);
+      window.addEventListener("pointercancel", finish, true);
+      window.addEventListener("blur", finish);
+    }, true);
+    window.addEventListener("dblclick", (event) => {
+      if (!hit(event.clientX, event.clientY)) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const { left: _left, ...rest } = saved;
+      saved = rest;
+      paint2();
+      save();
+    }, true);
+    let resizeFrame = 0;
+    const later = () => {
+      resizeFrame ||= requestAnimationFrame(() => {
+        resizeFrame = 0;
+        relayout();
+      });
+    };
+    window.addEventListener("resize", later);
+    window.addEventListener(zoomChanged, later);
+    registerPageLayout({
+      isDefault: () => saved.blank === void 0 && saved.left === void 0,
+      reset() {
+        saved = {};
+        paint2();
+        save();
+      }
+    });
+    relayout();
+    return { relayout };
+  }
 
   // src/ui/window-drag.ts
   function enableWindowDrag(panel, caption2, signal) {
@@ -11104,11 +13393,11 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
   // src/modules/local-following/groups-window.ts
   var windowClass = "atelier-groups-window";
   var names3 = new Intl.Collator("zh-CN-u-co-pinyin", { sensitivity: "base", numeric: true });
-  var current = null;
+  var current2 = null;
   function openLocalFollowGroups(options = {}) {
     sound("open");
-    if (current) {
-      current.focus(options.group, options.search);
+    if (current2) {
+      current2.focus(options.group, options.search);
       return;
     }
     ensureLunaTheme();
@@ -11163,7 +13452,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       }
     }
     const cell = (row, column) => table.querySelector(`[data-row="${row}"][data-column="${column}"]`);
-    const byKey = (key6) => [...table.querySelectorAll("[data-key]")].find((node4) => node4.dataset.key === key6);
+    const byKey = (key7) => [...table.querySelectorAll("[data-key]")].find((node4) => node4.dataset.key === key7);
     const header = (group) => byKey(`group:${group}`);
     function focusCell(target) {
       if (!target) return;
@@ -11366,7 +13655,7 @@ UID\uFF1A${account.uid}`;
       events.abort();
       cleanup();
       panel.remove();
-      current = null;
+      current2 = null;
     }
     document.body.append(panel);
     enableWindowDrag(panel, caption2, events.signal);
@@ -11374,7 +13663,7 @@ UID\uFF1A${account.uid}`;
     render2();
     if (focusGroup) reveal(focusGroup);
     (header(focusGroup) ?? search).focus();
-    current = {
+    current2 = {
       focus: (group, query) => {
         if (query !== void 0) search.value = query;
         panel.parentElement?.append(panel);
@@ -11426,10 +13715,10 @@ UID\uFF1A${account.uid}`;
       function choose(id) {
         chosen = id;
         for (const option of options) {
-          const on5 = option.dataset.icon === String(id);
-          option.setAttribute("aria-selected", String(on5));
-          option.tabIndex = on5 ? 0 : -1;
-          if (on5) {
+          const on7 = option.dataset.icon === String(id);
+          option.setAttribute("aria-selected", String(on7));
+          option.tabIndex = on7 ? 0 : -1;
+          if (on7) {
             option.focus();
             option.scrollIntoView?.({ block: "nearest", inline: "nearest" });
           }
@@ -11529,869 +13818,6 @@ ${w2} .xp-status{flex:none}
 .agw-picker .agw-icon[aria-selected=true]>*{background-color:var(--xp-highlight);outline:1px dotted var(--xp-highlight-xor,var(--xp-ink));outline-offset:1px}
 `);
     (document.head || document.documentElement).append(style);
-  }
-
-  // src/ui/page-mode.ts
-  var pageModeChanged = "atelier-page-mode-changed";
-  var mode = null;
-  function registerPageMode(next) {
-    mode = next;
-    window.dispatchEvent(new Event(pageModeChanged));
-  }
-  var currentPageMode = () => mode;
-  var notifyPageModeChanged = () => window.dispatchEvent(new Event(pageModeChanged));
-
-  // src/modules/luna-header/bridge.ts
-  function startHeaderBridge() {
-    const relay = startPageRelay("header", endpoints.header);
-    return async (url) => {
-      const stop = new AbortController(), timer2 = window.setTimeout(() => stop.abort(), 1e4);
-      try {
-        const body2 = await relay.read(url, stop.signal);
-        if (body2?.code !== 0) throw new Error(typeof body2?.message === "string" && body2.message ? body2.message : "\u8BFB\u53D6\u5931\u8D25");
-        return body2.data;
-      } catch (error) {
-        throw stop.signal.aborted ? new Error("\u8BFB\u53D6\u8D85\u65F6") : error;
-      } finally {
-        window.clearTimeout(timer2);
-      }
-    };
-  }
-
-  // src/ui/assets/xp-icons/ie-back.png
-  var ie_back_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAEWklEQVR42rWWXWjVZRzHP+fstM3N7ZyW5uYEZ6XuomyRSEUYQlcVpCFSSbjoBcpgIAR5EdpVGF006DamUCDShXaREljJQiWGzjdyuvSsvbiXs5fz9n95/s/z+3Vx5tG1aRr0u/v/nj/fz/M8v+/veR74nyN219FjtADtOF7A0gakYhZw9OJIYzkCHNa3mLk/QEl4T11FXfvG+udprV5FKlHLkopqJoJhBgrXuJYf4GJ2lEzRn0Hp1HfZe2+AY2wGut5Y9npqR+N2xBbIR+PkzDjZcJS8mSBnxjHOA2DEL/Lb8AgZ3++NhWySXXNXE/uHeHtdvK7ri9Wf81jlcgrRJFlzg5yZIBuOUogmKZjMgov+OT1IX2a6l5BNsvsWpKL8x4+04Tj69ZovaU4kmQ6HmAoHmQwGmQmGieF4ZeWHrFjcytVszzzAqlSSvGcaJ4vBM3qcA/MB2zj6XvP2xidqWpgOh5gM/2LaH2LKHyBZ+RC7njxAS/06VifXczXbw1Q4Mh/SkCQ9lmvxn7Pn9FcuA8QBOEL70kRD28b6xxnz+hktXmG82M+E/ydLqpvpWPcNixJ1ZaGFxAEidTz96FIwdMV3kyoDYoaOlx98ljGvn3Gvnwn/GjkzzvKa1fPEv73yKZPBXICg+GoJ1JGsryJZU5mKGTYDxGOHSCG0NSXiTPjXyfhpjPNYUbt2QfHTYz+UvxUw6vAkIhSL7yJCtTQvqwXhVYAEEW1LH6ilGI7gNAJYUHyo2EdDdTMvrfygnLPqEEBUODd9irNTJzHiWFSbAENLCSBQqbG7it/Mr6hde8em98RyKtONUYdUK0BbCRDO8dJ/DqeCLxaHEMUdBKV8AgdEzNmKzvPvzFvFmcxxBgp/YFVQwKogKKKKRTgzdZJALZE4CjMRRKVmS2BJD+cKc2azEKQ1tYGD17+iP3+JUBxWhUgFow6rSqgWp4rRWYBHL0Bcd5KORaQznj8HMlC8zL5zO/BsHoCaRB17nvqOppo1s84p2TIQhy8RRhxFMYRq8W5YsJy41WgRh88PZ8rWC9TiS8TV/EX2nH2Tos0BUJuoZ9/6QySrmjDqyrb01OKrJVSh6Fv8PoeG7L8FEDr7RqZnxvIenhiMOHyxBOK4nL3Axz3bKMxCFifqebFpK4FYArV4s7P3xBKKo9hj0YD9cpR0GSC7SWPp/OXCEAUTlRvHm53hpdx5Pvr9NfJRlnyU5fRkN0WJbtsiixFHYdAQ9MgMRT5b8LiOf0JXqqayff36hyFBuYhOleC2IpYKK4TiEJRAHHZcMN8DIVukm8PzT1MgvoEToe9aM2N+a1UyAVUQiiNUS6SCrxEWIRBXhodiic4q0U9AyNvSzcF/vTIrdrIX6GhorEqlHqlEk6VGMipEMmvLwBL1K+40aI40sEW6S9a8p0u/4n1aMHRg2RzXWEsiFUPCks2sJ+gIIPQCndJdcsz9vypuwrbSpgEp3Gyi1Je90n3n18TN+BtKItHNDFrr8wAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/xp-icons/ie-forward.png
-  var ie_forward_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAETklEQVR42rWWz2+URRjHP7tddlu30kWo4lpaorTFiy6EqokXNGIQBarRRE0IVA82QWlI4MDBUK6e9A8w1ES9iBE0KokHNHigUKWUYCwt7UoJdHcL7ru/3l8z83jY7nbXtkZinGTyJjPzfD/PzDzPMy/8zy3wj7OniQG9CLvxWY+QQENAkUUYxeMUcFL2kLx7wGkGgYGuxq7Y87FniIdXEw0AxuWKNcZsKcVEfobpXA7X10Nojsk7i0GBZbw+03VPV+LgugNsCMfJ+WnyXpqcl8FyZyn4tyl4cwC4RnMhk2IsPZdF0ycHOLk84DQxhDMvrXkxcXjde+S8eWE/jeWmKHhzWO4sWvxFfk1bOc5MzeD6us8cYmhpwLdc3L7qucTBjn7yXhrLu0XOy5B3M1juLZ5t28PqSJwTUx9gq/wiyFzR5ovRiSywyRwpH1ewOnuKwYdXtCf6H3qD2dI4qdIkqeI10sVJMvY11jVvZEd7P08+sIuBxz6mKXTvIsCaaBNPd8RjuByvjAXnxWMIA6/fv52MPUWmNEW6NEnGniLnpTFi6jxui3YvCTEIG+ItNIdWbA0eobcKCHj0doc7YmtDEWaLV8nY08zZSTxdqhrfKI7z6dX3l4QI4IqmZHw80WzsWEVAsXdhB8LuzsbVZEpl7ysR8vd2LvX1kpBAsBFPFI4p9/vWRECVdxACwCPRZBzuODMAdLZsoTPWs2yK3CiO0xbtrkIOPz7E0V/fxDMWtih0g9AYasDZr7eWAZr1LaGFgOqM9bCjvf9fl4OO5kc5uukzDo28hudncUUTbmrAKen5I/IhEmz4TzWntamNlZEHcUTjisZ4AsXKESmyN4vFWDwaBWAie4HvaoxFBIVBACWG9uhGnmjdVp0vqBzvnn+F33OXcUWhRTBKQC8ARl2lt1YMJqwRJqyR8pQYPNFoDK7RtEW7eWHz3jrx/edf5oo1hi8aJQZHFKXrCgzJSpj+NP2nVbdlQXBE4YjCFUVJ+7RFuzm2+XOioZVV8f7hXi5lL5bXiMIWRf66D4qkPjEPQDOUTOVwlS5fSSWmTfnrGE082s1gjXjet3j73E4uW6MLOWA0Ja0oTCjE5pNqHpjDJF1X/3hpJlMWFI1jao18elq30VwrPryLK7kxijXrbaNw5jTuuMkCH9bXIkXfL5Pp7I07BWzt44rCNuXuiGb49lkKKkfet3hreCdj1mg1c0u6/LUdReEHBSWOme/JLqqmwSPsCweCx5/aspZIcxCF4BqNRvCMrrtEg+AYjRbBE41na7wvQdIMmbP0VTTrgl9+ZlR65I+bM8VeCUA4FsQXg2N8fAy26LKYGByjUSI4RuGnDf43IJl68WWfzIb9JICvwpGG9a2PNNIYD6JCBiW1O1J4aYO+CPo3ssBH5iyDd/XoN+xjH4YBXBLhliCmHHEYY9C3gCJJ4OS8ePLu/yoqoFeJoUmIMz9gA5rkcqK17S864MIGMpaUkwAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/xp-icons/ie-home.png
-  var ie_home_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAEMklEQVR42p2WTWgUdxjGf7uzM7O7EzebxDTFWhu7aqUeuq0BBWlZLb0UW7cIvVRo2ktOevFUEHvwJoUighjBKq1VKIJCqRT6kY0XSxUbaaW0IbBJqZov3LizXzP/jx5mnWS7SbUOvKf/8Hve55l35p0IT3gdhFwZckAJKJyCseXui/0XRA9vTZNIDGJZJRynEHnr6+LDs00B/OPtb2To7usonDp3a+f/EtDDW9NY1i9YVj+JBMTj6Kv7iiSTl5Fy9MvdFzors9VHOo2sCE8mRzDNLI4D8TgkEmDboDVUKlCrMf/bXeQdD29OFZ59XAf69LYstn0G286SSPCwe2wbpAzhVKv09MXQKcHMhLGig+gy8BHi8SzJJGHZNvg+uG4gUC4H5ayj0p/HTSVyNz7aNbicQCitz+eyxGIjJJNp4vFFuGlCoxGAKxWoVoNKrUfvHkau30Vpeo57E1P5/EubJ7+6OT7WJqDP57JEIgE8kQjAjgOGAfV6GAmVCrguIrUBdg9TjyYRUmFltlGamcedncvvfTU3efHa9VDEaIMnEgE8Elnsdkn3jVWbiL19MoQ3fIVQmo7NA5TnSlTdRj7/+p7JS6PfjQXPIBbL4ThpkknC7rUOwLVaSyw15wWs/El8w0EqjSc0Umt8qZBKs/bNd7HWbETaPWc+++TiYDimX1y5rveljgfTolRr1tUqulanrLpw3vsckejDCztXeCJw4EmFJzWNus/4yA2qjTjK7NgZBfCjqzn3YD91z1iclGbJaoMF1UVy74lHwoXSSCPK2tdeoVRTJSAdjumq/gwXjMNMVtYGIq6LqHksyC469p5AdmUeCfeaUQlgfHx8bGho4HIooDX0PdfN92sOczWyh0ZNMl1P89OWo9CzAV8qfKGamWvu3b3P77enuDbyK1e/vYmvgjNPKqRe5k1WWuN5iu4ek6L1IT9P70MDmV6Lui/xhMJXutm54vTxb0LI0+t6AwdLXLUJSKGJKPA8hRGL0PuUhZQaIxppg3tCtX5eoAXuK72MgyZcKhC+RkqNEBrPUGF3ckmXLQJah/EEIrr1W+RPzr9TnSmjNPi+CuHC1yj5MNfFfJcCQgdLzqT+l8DQ0MBl9887HyzcmkSKAC5lUL7QLfk2hEI0AdFoFNu2sew4QhGetTkAOHBgx9nqXzMvL9z4oyQaAuE34bId7kuF4zh0dnaSSqVIOg4NoXDvu/x9e4qJH8dortL2hXP06A9ZEbfOWBszWWXadMUj7Hg+Rl2olpxHzl3DNE1M08SwYriuW6yWKwXf90allIVjx94vrrjRjhy5kva1HrFe3JLtWb2K7RkDqTSzMw94MF/Br2imi7NFwzAKpmmOxmKxwtDQQPGxVybAoUOX0r7vf9qx7pnBuHSZmrhTNA2r0N3dPdrb27si8P//nhw8n9u//2z/kwL+AfLt8lEOBF6DAAAAAElFTkSuQmCC";
-
-  // src/ui/assets/xp-icons/ie-media.png
-  var ie_media_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAEjklEQVR42u2VS2xUZRTHfzP3zsxt59FpS6klPCaGhISHlPgKIYYmRmJikApi4kKdMS6AxEAXGt1Y3UEkQqIQ6aZlYUIaFrAiIJEqaCxpw9AGCI8OxdLXtDNz7537nHtnrouhFFAwxIUbT/LlW3zfOb/zPznfd+B/+wfzPe5gwPOSU9rwlv7xSmtT7bXEjyNvEBIGRj2vKR0QVx89tsF3Yu7uoUOGd/nyacbG/lh36tTu9BMBA57XNjx9q3vWOJ6AILFQEdmeIqtnuF0YI1MocHu0i4XRjelyJJbKvONLzwGGhn6WRTHUceHCvp65eP5Hsz5+5YdzmcLnibjk0BReS1xaT1PNy0SDjcRCIQKCgGYt5ubNXOv0jYlLHPGSc/6CEIxHIi3d27f3HvgLYMDz2noud3RP6fvx+QQCfolnwi7N4RAxaSVB4VkAypWl+CUbRBFdOQuzH3fPxYhGFxGNthCJtOxJpX7pfgjQN9rbfeHOMfRSCcvVmNZN8laMGe06DYEK0eALOJUdaM4epNozVafwXtC/Yx7QQiSyCPDQ9Wxy8+Yj7eJcabbsG0qElixnRrpLfU0W0X+JUr6E4J8i47tKqXwQywXZhKLZD/XboTgO5fkSh8PNafBaNW0Sw5hBUcYPiADnhtQt49NBguUviETeZ6SQw3RswsFJACpeklIZxlTIGR7oCyBwDSoquPOAYDDSIcujbYYx06kodzHNfEIEuHit2EqpRNmUmC0KuOUiqm0T8PuBjwgKO8iZMJKHsm6AmwZHhVIMSpX7gGJxgt7et7/csOHTtZYltwNpEaBimAlsm7LexPTtb7CWJQn41yH4G4EAsgWGXQHDAP0q0FnN3FbBmVegaVXFliV3AO1AhwgwK5dkFCWOIFDmOfL2aag/ihCaQgycwTEVUPeA60K5D4QrYAA2SJX4AwomH+z61OBgV58IEFsQSVMstuHzgeeBWw/GJ5TD5yjHdoLTB+4t0HeC9TqUNTBGCEgnSND2UIkABge7RoEeABGgZeXSk2Klv81VFHAciEZBksC5l10Fgu4ZEvYaVgW3EvVvxQk4yMVXMJh44l8kAmQK9Cxes6xztP96HNcF24ZAAEJNYL5FY/gK70YOs2vXeiSplrExyOVAll9kePh3RFHEsqy/BfgBzr7mk0OrVnwVjNZCsQiqWl25HJRusFU4zHtvvsrChbUIQpXt91dXXV0Ds7MT6Hrh8QoArn8YP1j/vbm24adfk9r4OJqqgiDwkvcBK5c8z+QkVO51pKpWK6nrJo5j4zg2plnE7xcfDwAo7KhJ1X5r31meyXQ25nJolkWipgHX9dC0ahMJQnXXdVCUHLpeIJ+fwLb1p5gHe/OJulyus0nT2ld4bnx1XYjm5sWEwxEEIYBlaShKDkWZQZanyOXGyGYznD+/3/dEBffts4ZRBVIKpG4lf2tdYE7vdpxiUpLC968YhoJhqMjyFKqaxTDUg0810R61bdt6LkUi4dZQSLr3WjVUNYuqZtG0Qs/Fi4dT/woAsGnT10nXtTaCk3DdErqeTwMnBwe7+v6zqf8nWqE9uupXsisAAAAASUVORK5CYII=";
-
-  // src/ui/assets/xp-icons/ie-history.png
-  var ie_history_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAFjUlEQVR42sWVW2wU5xXHf55d787OenfGewHba8eLHYMTCgwYpMZt1E1bKbeWGkWK+pDWpg+18kDBrlBAAmH60PBQVVQtsXZUCQdVSpTSikhEKFHBjotqcjFZIAZfCuza2Lv4wq4ve9+Z6YNJRVqkoFZVz/PR73++c75z/vA/jrJHTTxx4kQQUA3DUE3TxDCMqGEYke7u7sh/JRAOhztkWd5bVVWl1tbWks/nMQyDXC5HMpkkkUik4vH4bwzDOH7w4MHUIwuEw2FVUZSTqqqqDQ0NJBIJZmZmyGQyFItFSqUSLpcLl8tFMpnkxo0bqYWFhd2HDx8+85UC4XBYDQQC/U3bmpTev/ZyYfQCk4VxLGUCetZBg/9p1DWtfKP+BXLT1/GL4PF4mJqaIhaL7e7p6en7gmV5CDzo8/mGblfcVtrf+jE3hE/wbDSoC7ixW60U8jmiiRE+jX3A9eTf+O5z3ehWP3euX8bn9WCxWNpUVY0NDg5GHvqCU6dO9Z/Lngu9O30a73qJNbKT2dEVGsu20d7aTmh9iKCRR/dv4PWhPpSKIOsqW0in0kTff4tA1RomJydTS0tLW48dOxYV/qX60NDKUOjd6dP4n1yFT19donvrUfp/3k/HUx0EvUFW/BuYAJ5/qgO/WcOxV3YyeWua+m+3EY/HkWVZMU3zCMCXBO5k7uzVRsN41jvwSBKibqXZvp1939lHAVgE4sAMUASmxsc5sbeTuk0hmja2UFm7DjGwDkGw4HZXdnR1dSlfErg4f7FNXmfH45LwOBws3c3R3tpOAZgH0kD2fu7t8XF+3dlJ7ddCvPDqEXyVsFYET0Mz+byBLPsAQsIDi6ROrExQ2yDjlyQ8oogNK0FvkCxgAnkgHo/z8cAAv+rsxKFUs3PPERQFkhmoc4K3cSPp9AqVlQFM01T/KWCaprIozaHY7cg2G7IoUla2Ck4Bmftt6evpYT4SIbO8TG1zC5FzGpf/cpZ0FsS7UbYe3YXbXo4kyei6jpWfchIIvjbymmL3Cvgcq/2322w0Nq7lJ327qfYG0YHvt7aztLzM+Pg4Lm8Nc7Fx5mLgrVumYcf3EABHNoVVdCCKMqZpYgU+dHpsHdtCPrz34VaLBYfDwYb1XtQtjczNr3D2jwm+uaWN5iPPcmVojJd/1EJNrQtBgHQGqp0gVAe5+dt+Zl7/JU3NDgzDwMIwkeKTulJuCl9vbvRjs1pxOp04JSd2ux0TAa33Er9oP42nIoijwsVjTUEqXHYAMlkwTdjgAZ8drs4tkIstUF4ucevWZ2+uzkCj6+ZociB6cxFJkhBFEbvdjugQ6e09z892hqn3qRTykElDLge6vgo3DPBL0OiG2SLELg/R1LSDqakRdF0fePCb7rp0aSqytFjCIToQHSLvvPMxP1APo9a3kb4PLulQKKy25Qv40zVQMiCazZAam0GWq0kkogOapj2wyRqpbLa4+09//ixlYmFo6CaO5e20te5jrRNsZasVp9OQL4Bih+1V8Ezt6r0ZKcKFN/vYuvl5rl0bIJmcOfrvx26YRG5jcezq1akf3psweUl6EVd1I7rNRcAFm/yw5fMzbNZeJfhKBx47LBfh80yGwbf/wKbHnkEQrJw///vjmqaFH3pNGWa0YrMc29O0p63eV0ds+CKL8zOU+Wq4qztIp3MY9+5ye9tz/H05Q+TapwyfPkvLEy8iCFbee+945I03frfrKw3n0KFDHS6X66Tb7cYwTHK5EkWhDKskUSjkkWxOsvdWePzxHQQCTzA29hFXrrzfl8ksdmmalnokyzxw4EBQEISTbndlyOutQlECWK0ioihjsZRTKsHsbJSRkcHo4uJsl6ZpZ/4j09+/f3+wVCq1mab5LUmSFadTYXp6AtM0P9R1/YymaRH+X/EP/opL/0KNX2gAAAAASUVORK5CYII=";
-
-  // src/ui/assets/xp-icons/ie-mail.png
-  var ie_mail_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADwElEQVR42p2W30/bVhTHP4ndBFKSeXgDEjUiBZp1U9kosG5tNQlt0vYypEn7B7qnvHZ/wv4C9spT/4I90fel3TSkqZVYKZvGoJgFwWAJxCRxbOdeew92Mn4EGLvSkY+v7/187znn+toRLtHm559NAFp4u1QoTFcvmhO5BPgRMHHi0bfAN+cJRf4j/PtMuqbdnSyhpyywfVZf6fy0MowrFAP4qlCYLl5aoA3P36hoMx9sgACaXnj1cW2F4m8jGAf9Z0YTuRA+WtFmPtwA1wfHB5fwGpoPRjlFsfQWrlRPRRM5Fz4Swh3/CDQUED54PrgueB61hsqT3VtsN4NoCoXprwHULvAHb8eX5saGmtqAto741ceP93GlLxOkxvbAA6SElmCnlsKxoeKkiPlOG/MQOC0wP//sAfBIG9JJf/ZFp9/d+hnbPsSprhNVeymXa2zvNjDMNI4yiFAHycTK4HmnsqEegT8E5vTXLXL9e8cGxa7dAaBn7BPAIYnkOoL7uNR2VmhZG9jGCk/X3keNK8TiSmdu9AhnDqBykMCM3OhSmRbQJMxTaC2S6WH6hsZY/PtjrHiGO7N5epLx0xF0VntFUhcQVDMGyND3QpG27wASt2Gy8LiOaSd5bzaPqieQ3VIE8NGno/xpVHn6osJa+TlTk9dIZ/pDEQecV+zseJT3DnFdheRVl+XVJGYzyfhsnriewAnluwpE4gq3Z3IMjw/wcnGLhcd75Ee3mJrweblc5/eNFG4rRl8yQyIZp7pm4bqSd77MEw3hZxaZMMNNoEdPcPvzPLtGlbXFEqvfucRiCSbvZ8nmNJSYggQqFYsfFlbZXd4jcy+HlCAEiBZdi9wpYzPMcCqnMXRrEICpmRyZvI4TU6gDdUDVE4zdy1JZrbD5Y4lDE8wqCHlGBK0Q7IVmVSxKz7e5Pj7AazmNeliNo5bM6+QAo2jgKAkib+hIcY6AIHhfhIDN4ia9yTjDd7M0QqBowyWdlKiDOv3vSvZfGNAQx0I4JuDY4B+CFFD5pYRTc7g5m6d2AthqBWOkBLcV9PkDA6iDFmJrC6LR7gKNBtgq2H9VMf8ICuf1JjDN00ApA6G2LyV46SzYAkyzu0CtDrgu7rLB1ayO8qbOwX4QcVdgSwanaaMBtRo0m4GdtU2dhoS1daI9cdSRLPsH/wI9LwTadgCzrMCczu5fAorAk9DvclSUSgHtZp7DehRfiABSrwerbDaDMILWhhXP+wE4LuC6oGl4e+UAZlntI7h6dHVnfX8vFgCoVgGME8Al/mf7BzZkFAP6qHjgAAAAAElFTkSuQmCC";
-
-  // src/ui/assets/xp-icons/ie-new-window.png
-  var ie_new_window_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAB3UlEQVR42u2Vu0scURTGf3d3UuwSksEijQg+AmEDWdYqbfQP0EJsfYCkCAlYJI2IeZCUYat0Ae1F2MLCQtRCRSTBkCbBJgupfIyMMejO7Ny5KWZnZzY77si6NuKF4XLmzHzfOec791y4WTFLAPD0y9itZCJ/J63prQAtS8Wf03IR6PMJ1BUlMKcBoGmg3209/KEx5hEIgfrQ2UQpwHHBdit7xRYVf8crg4T3ZbmpABMiWlRbBrbW6qrYEqQLUlyCwCiZ9C/28f3oW8373SGvV2w3lGUzBOmkztbgTn30YT3ciAzmNg3G5/cbgs8O36P/UZLsQledz6mAWg4ILYLg7YoJ6VRDgpllk88HExzbZp3PcrxdqkDoGoLOlOTXdE9kZMcWnJVhqPCSjb21qm/0/iTPHuQZWe9FqkBocdEuCoMXigW2Sx8ByOg5prJ5cm1PkAo+PV6t/iPVORo0Av9pFpn6Og7Ai4dveJ557bWk8kqT1vSqbYc0SFwE/MSGpd8Fum/n6N5brgP3a+6D+6f6XIL/wf9aMNA+ybvsKik64sGdoKNqCMwzGXsGTkoyFty3IzXoff+jIUFbKh7ckiCiRsXOdIZdI2bOqKDfAZTynpqBJzyS8I12VRfONVj/AN4eEie/VWhyAAAAAElFTkSuQmCC";
-
-  // src/ui/assets/xp-icons/ie-notes.png
-  var ie_notes_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABHElEQVR42r2VrU4DQRSFv+liKmqbNFiCw60iCOp5CdQqNM8CQfAM1IEBD0kTREMlEAIV0M1mfzo7O4PYbDdZRSZ7uXLE/eaec24uCJcCeJkdu74bJx/3hBFqp3nYP7kDTG+Ap8shADXAWXApKN27RC3AZhDkQgAskAKx9ASFFKACmwKJ4AQuEwTg6hTx0ztg0EqkRTa5lchsQGvBmBoNxkhN4MAasFYwpmYDZSkpUSHogbNQSXqAg8pA4OfB2+KWPPn6gweq8gLk8ScMdxlNDjE6ZvV8BbDu7EFRp8mnnGU02WN8cMRydt40n3Y8KEENPAFgsleWN2dk3+9rYBpGzDselEDgCXCsFg/bnzfNt0f/8YK+jv5pGHHNf9YvrHePiIYee0EAAAAASUVORK5CYII=";
-
-  // src/ui/assets/xp-icons/ie-go-16.png
-  var ie_go_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACdklEQVR42qWTy0tUcRTHP/fecZrRzCERe5hMQVhBNVa73i16QVB/QDUrMYpULGpRSESLdrVqFbWLgihbhLVpwkXRc0ijh1I6KflAZ7x65869v8dtMTQ0hBB0lge+n+/hnPOF/yzjr04PcSCJZicFIADDI42kOzhGan5ADzGg60Dtvvb9NdupMyNMut+YLoyQmfvOR3uC/smplCtkR3CCdDmgh1gsVPOsfXlrYn10ZVHojjDlDlFQcyWPWeHzZGA4Nznn7tZnihATgICuzmUtibhVxbD9jr7JHkbn+tnTcLRs3OqKMIeaVsUiwnpgXiJWBNwnvm1Bc/viQJGx02Ts9wC0rLvGwcZWzm+6VwYJWyZb4vVxwyX5e4Lk2kgtw/ZbxvODCO0B8Hj4Bq6cpaGqqQQRgSanCiytj1IZDh0HMA2XnVGVxRHZMqcR5wuPMzcAaKhq4lzzXSoME1dLpqVH2LASACEkqECwumYLbRtuznvvFQvX0Nl8h5YXe8lrSWSRRRHg/vvTfLb7yCkPESicCVEEGD7pWc/fNTDzhlO9Gxn0pgFYbEXZseQIrWuvAvBo9A6X+06T14JZJSjk1FBxiYLuL+PZ0pJqQ1EAti45XCa++OEkU9LFVj7OqMDP6BSAqc+Q6s9MpcYcB1sVcLVEB7C/4XhJfDbdSlZ6uFoyIz3slyKHzyUAC0Bv1s/Hp/PJmroFEc9Q5LXkZ2GMdPY1Vz5doBBIHCVwlMB/GqC/ckKnirkoZcE6SaIibN5a1lSZqG6sIK8lrpb4WuFogfwRoF6R0xk6dC+3502jlSRpBkZbqNJIaAHK1wRZhoIcD4HrupehPwW/AFKOOnUF2JcnAAAAAElFTkSuQmCC";
-
-  // src/ui/assets/xp-icons/ie-favorites-16.png
-  var ie_favorites_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB+ElEQVR42q2RW0jTcRTHP2sby60NpwmxFs0L5S0cSUQiYQ+9JfgiFETs6R8+hEYvEUF7jJIW0YVfL92gRj1oYReIaFkjMVfipTKnjiJnIf3H1NFydXqpcJGLpPN4vt/z4Zzzhb/UwAVEaeQvpi/LNRw8XNZmr2rHusIUWBJgTbEj4ClbicttaVgSAICZexQ55zxKw/NPAKXhBSBxB5fbAvDHLQwAnUe3BGxOt9dqGssy1e08Da/rwV7BlXOjodLq6iw9bajqNACEVdlEXeNuD44qsBVDxgGZWfh4FvQgODfBqkNgLodUL8xFQb4RunkLE8BQJLrta8p/pLISX2H5Vli+GmZeQXIY8txgWwumEZh/Bp8eEB98wuNH6f5Egv2/393Qc4YX6admkcFCkecWkVi9yOxBEVGSHN8j908U6EqjLefjuy826/K2TWTYJfJhl0jmpMiX49J3tUJ+PXexFJRGk3fHsXySt8HqgbwNYKyB1DvWrQegKSegpLa51U4IJEFs/DM32lUo/gYwb8duek9JqbGVHNl7JkceirzcKAPXikRp+H/0fWN913XRO2QyVCNKw7cYwJ8cOyXdAXSlZa+qNLzh4L4JmY/J5QPWjp9940JTYy39Q+G76elpWvaep2eh1hVhanNB76V4tD+tx0dVV4Qp/kd9B558zOMZgZROAAAAAElFTkSuQmCC";
-
-  // src/ui/assets/xp-icons/views.png
-  var views_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABuElEQVR42u2VsUscQRjFf7fZFTQW9smBjY2FCLGKWBxcIWEDpgtoYTXWKWzSSBqLNOmvskwVSdjY2QTS5Zr8B3JF4NCgeMux485NitmdmT2S3F64dD5Y+PaxfO+b973dhXtMQAPxbR04BZZn2PcaeEVn4yQAjmbcHGAJeAcQEkU7LMxDFM1W4vJqyQgA+u3KP/XIcshHkClQ2tyXaB5eARD87yWH40Sn07W1EE9s/fCoZ+vBmyZgpl88aVi+91JPFqgDWViRqSqvRsxGIC8aqbGBpaoh4NviIy1s+TmsTt7fMyr9FGSdEyRJYus4jm398VNCOfBmO7ZWfT1P0Bo0sLoZTxbwm/pxbG/HNo7lDoZ3sLYVI5WxrZZFvPYEjt3Ui087lr44F2YXGtIPLkX5sylTpAsb8tHvUzQ+sZw2RdJ7Uysp0tU0TRfTY7PkVALeZ6D/xdjy49ZNLhVQ2HKTAarWm+y8frEn7Ek+v3f8xnNh6+9njn/UEn8X0MDuviBTJiGl17fSNZXKnUBpeNwSSAXaS5ePYHyhJeZC1yRswEIEYQBzDxw/kO75kTZceVVO0Djo3v/b/4hfZb7EzJo6c74AAAAASUVORK5CYII=";
-
-  // src/ui/page-layout.ts
-  var pageLayoutChanged = "atelier-page-layout-changed";
-  var layout = null;
-  function registerPageLayout(next) {
-    layout = next;
-    notifyPageLayoutChanged();
-  }
-  var currentPageLayout = () => layout;
-  var notifyPageLayoutChanged = () => window.dispatchEvent(new Event(pageLayoutChanged));
-
-  // src/modules/luna-header/menu.ts
-  function node3(tag, className = "", text4) {
-    const element2 = document.createElement(tag);
-    if (className) element2.className = className;
-    if (text4 !== void 0) element2.textContent = text4;
-    return element2;
-  }
-  var hoverDelay = 250;
-  var MenuChain = class {
-    constructor(host) {
-      this.host = host;
-      this.panels = [];
-      this.timer = 0;
-      document.addEventListener("pointerdown", (event) => {
-        if (this.panels.length && !event.composedPath().some((target) => this.panels.includes(target)) && !event.target?.closest?.("[data-menu-anchor]")) this.close();
-      }, true);
-      document.addEventListener("keydown", (event) => this.key(event), true);
-      window.addEventListener("resize", () => this.close());
-      window.addEventListener("blur", () => this.close());
-    }
-    get isOpen() {
-      return this.panels.length > 0;
-    }
-    /** Opens a top menu under (or, right aligned, ending at) an anchor. */
-    open(items, anchor, options = {}) {
-      this.close();
-      this.onClose = options.onClose;
-      const rect = anchor.getBoundingClientRect();
-      const panel = this.panel(items, 0, options.focus ?? false);
-      this.place(panel, () => ({ x: options.align === "right" ? rect.right - screenWidth(panel) : rect.left, y: rect.bottom }));
-      sound("menu");
-    }
-    close() {
-      window.clearTimeout(this.timer);
-      if (!this.panels.length) return;
-      for (const panel of this.panels) panel.remove();
-      this.panels = [];
-      const done = this.onClose;
-      this.onClose = void 0;
-      done?.();
-    }
-    place(panel, at) {
-      const { x, y } = at();
-      placeFixed(panel, { left: Math.max(2, Math.min(x, innerWidth - screenWidth(panel) - 2)), top: Math.max(2, Math.min(y, innerHeight - screenHeight(panel) - 2)) });
-    }
-    panel(source, depth, focus) {
-      const panel = node3("div", "xp-menu lh-pop");
-      panel.setAttribute("role", "menu");
-      panel.setAttribute("data-bili-blocker-ui", "true");
-      for (const old of this.panels.splice(depth)) old.remove();
-      this.panels[depth] = panel;
-      this.host.append(panel);
-      observeCrispText(panel);
-      const fill = (items) => {
-        panel.replaceChildren(...items.map((item) => item === "-" ? node3("div", "xp-menu-separator") : this.row(item, panel, depth)));
-        if (!items.length) panel.append(this.row({ label: "\uFF08\u7A7A\uFF09", disabled: true }, panel, depth));
-        if (focus) this.rows(panel)[0]?.focus({ preventScroll: true });
-      };
-      if (source instanceof Promise) {
-        panel.append(this.row({ label: "\u6B63\u5728\u8BFB\u53D6\u2026", disabled: true }, panel, depth));
-        source.then(
-          (items) => {
-            if (panel.isConnected) {
-              const before = panel.getBoundingClientRect();
-              fill(items);
-              this.place(panel, () => ({ x: before.left, y: before.top }));
-            }
-          },
-          (error) => {
-            if (panel.isConnected) fill([{ label: `\u8BFB\u53D6\u5931\u8D25\uFF1A${error instanceof Error ? error.message : error}`, disabled: true }]);
-          }
-        );
-      } else fill(source);
-      return panel;
-    }
-    row(item, panel, depth) {
-      const row = item.href && !item.disabled ? node3("a", "xp-menu-item lh-item") : node3("button", "xp-menu-item lh-item");
-      if (row instanceof HTMLAnchorElement) {
-        row.href = item.href;
-        row.target = "_blank";
-        row.rel = "noopener noreferrer";
-      } else row.type = "button";
-      row.setAttribute("role", item.checked === void 0 ? "menuitem" : "menuitemcheckbox");
-      if (item.checked !== void 0) row.setAttribute("aria-checked", String(item.checked));
-      row.append(node3("span", "lh-check", item.checked ? "\u2713" : ""));
-      const glyph = row.appendChild(node3("span", "lh-item-icon"));
-      if (typeof item.icon === "string") {
-        const image6 = glyph.appendChild(node3("img"));
-        image6.src = item.icon;
-        image6.alt = "";
-      } else if (item.icon) glyph.append(item.icon);
-      row.append(node3("span", item.bold || item.count ? "lh-item-label lh-bold" : "lh-item-label", item.label));
-      if (item.count) row.append(node3("span", "lh-count", `(${item.count > 99 ? "99+" : item.count})`));
-      if (item.note) row.append(node3("span", "lh-item-note", item.note));
-      if (item.items) {
-        row.append(node3("span", "lh-sub"));
-        row.setAttribute("aria-haspopup", "menu");
-      }
-      if (item.title) row.title = item.title;
-      if (item.disabled) {
-        row.setAttribute("aria-disabled", "true");
-        if (row instanceof HTMLButtonElement) row.disabled = true;
-      }
-      const openSub = (focus) => {
-        if (!item.items || item.disabled) return;
-        if (row.dataset.open !== void 0 && this.panels[depth + 1]) return;
-        for (const sibling of panel.querySelectorAll("[data-open]")) delete sibling.dataset.open;
-        row.dataset.open = "";
-        const sub = this.panel(item.items(), depth + 1, focus);
-        const rect = row.getBoundingClientRect();
-        const width2 = screenWidth(sub), lap = 3 * zoomOf(sub);
-        this.place(sub, () => ({ x: rect.right + width2 > innerWidth ? rect.left - width2 + lap : rect.right - lap, y: rect.top - lap }));
-      };
-      row.addEventListener("pointerenter", () => {
-        window.clearTimeout(this.timer);
-        if (item.items) this.timer = window.setTimeout(() => openSub(false), hoverDelay);
-        else this.timer = window.setTimeout(() => {
-          for (const panelBelow of this.panels.splice(depth + 1)) panelBelow.remove();
-          for (const open of panel.querySelectorAll("[data-open]")) delete open.dataset.open;
-        }, hoverDelay);
-      });
-      row.addEventListener("click", (event) => {
-        if (item.disabled) {
-          event.preventDefault();
-          return;
-        }
-        if (item.items) {
-          event.preventDefault();
-          window.clearTimeout(this.timer);
-          openSub(true);
-          return;
-        }
-        sound("click");
-        if (!item.href) {
-          event.preventDefault();
-          item.action?.();
-        }
-        this.close();
-      });
-      row.atelierOpenSub = openSub;
-      return row;
-    }
-    rows(panel) {
-      return [...panel.querySelectorAll(".lh-item:not([aria-disabled=true])")];
-    }
-    key(event) {
-      if (!this.panels.length) return;
-      const panel = this.panels.find((each) => each.contains(document.activeElement)) ?? this.panels[this.panels.length - 1];
-      const rows = this.rows(panel), index = rows.indexOf(document.activeElement);
-      if (event.key === "Escape") {
-        event.preventDefault();
-        event.stopPropagation();
-        if (this.panels.length > 1 && panel !== this.panels[0]) {
-          this.panels.pop()?.remove();
-          this.rows(this.panels[this.panels.length - 1]).find((row) => row.dataset.open !== void 0)?.focus();
-        } else this.close();
-      } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-        event.preventDefault();
-        rows[(index + (event.key === "ArrowUp" ? -1 : 1) + rows.length) % rows.length]?.focus();
-      } else if (event.key === "ArrowRight" && index >= 0 && rows[index].atelierOpenSub && rows[index].getAttribute("aria-haspopup")) {
-        event.preventDefault();
-        rows[index].atelierOpenSub(true);
-      } else if (event.key === "ArrowLeft" && panel !== this.panels[0]) {
-        event.preventDefault();
-        const depth = this.panels.indexOf(panel);
-        for (const below of this.panels.splice(depth)) below.remove();
-        this.rows(this.panels[this.panels.length - 1]).find((row) => row.dataset.open !== void 0)?.focus();
-      }
-    }
-  };
-
-  // src/modules/luna-header/unread.ts
-  var UnreadNumber = 1;
-  var RedDot = 2;
-  var NoReminder = 3;
-  var number = (value2) => Math.max(0, Number(value2) || 0);
-  function unreadBadge(feed, single, setting) {
-    const notify3 = [UnreadNumber, RedDot, NoReminder].includes(Number(setting?.msg_notify)) ? Number(setting.msg_notify) : UnreadNumber;
-    const folded = Number(setting?.show_unfollowed_msg) === 1;
-    const people2 = number(single?.follow_unread) + (folded ? 0 : number(single?.unfollow_unread));
-    const services = number(single?.biz_msg_follow_unread) + (folded ? 0 : number(single?.biz_msg_unfollow_unread));
-    const entries = {
-      reply: { count: number(feed?.reply), dot: false },
-      at: { count: number(feed?.at), dot: false },
-      like: { count: number(feed?.like), dot: false },
-      // 系统通知 the account chose to see as a dot.
-      system: { count: number(feed?.sys_msg), dot: Number(feed?.sys_msg_style) === 1 },
-      // Messages from people are counted; from service accounts only a dot.
-      whisper: people2 > 0 ? { count: people2, dot: false } : { count: services, dot: true }
-    };
-    let numbers = 0, dots = 0;
-    for (const entry of Object.values(entries)) if (entry.dot) dots += entry.count;
-    else numbers += entry.count;
-    if (notify3 === NoReminder) {
-      for (const entry of Object.values(entries)) entry.count = 0;
-      return { count: 0, dot: false, entries };
-    }
-    if (notify3 === RedDot) return { count: 0, dot: numbers > 0, entries };
-    return numbers === 0 && dots > 0 ? { count: 0, dot: true, entries } : { count: numbers, dot: false, entries };
-  }
-  function dynamicOffsets(cookie, mid) {
-    const read3 = (name) => {
-      const value2 = new RegExp(`(?:^|;\\s*)${name}_${mid}=([^;]*)`).exec(cookie)?.[1] ?? "";
-      return value2 && value2 !== "undefined" ? decodeURIComponent(value2) : "";
-    };
-    const offsets = { all: read3("bp_t_offset"), video: read3("bp_video_offset"), article: read3("bp_article_offset") };
-    return { ...offsets, first: !offsets.all && !offsets.video && !offsets.article };
-  }
-
-  // src/modules/luna-header/header.ts
-  var api2 = "https://api.bilibili.com";
-  var vc = "https://api.vc.bilibili.com";
-  function el(tag, className = "", text4) {
-    const element2 = document.createElement(tag);
-    if (className) element2.className = className;
-    if (text4 !== void 0) element2.textContent = text4;
-    return element2;
-  }
-  var image3 = (src, size = 24) => {
-    const node4 = el("img", "lh-icon");
-    node4.src = src;
-    node4.width = node4.height = size;
-    node4.alt = "";
-    node4.draggable = false;
-    return node4;
-  };
-  var titled = (label, key6) => {
-    const span = el("span");
-    span.append(label + "(", el("u", "", key6), ")");
-    return span;
-  };
-  var newTab = (href) => window.open(href, "_blank", "noopener");
-  var video = () => shellIcon(224, 16);
-  function when(seconds2) {
-    const value2 = Number(seconds2) * 1e3;
-    if (!Number.isFinite(value2) || value2 <= 0) return "";
-    const date2 = new Date(value2), today = /* @__PURE__ */ new Date(), day = 864e5;
-    const start = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
-    return value2 >= start ? "\u4ECA\u5929" : value2 >= start - day ? "\u6628\u5929" : `${date2.getMonth() + 1}-${date2.getDate()}`;
-  }
-  function openBiliLogin() {
-    const native2 = document.querySelector(".header-avatar-unlogin-wrap,.header-login-entry");
-    if (native2) native2.click();
-    else location.href = `https://passport.bilibili.com/login?gourl=${encodeURIComponent(location.href)}`;
-  }
-  function createLunaHeader(options) {
-    const { read: read3 } = options;
-    const loggedIn = biliLoggedIn();
-    const header = el("header", "lh");
-    header.setAttribute("data-bili-blocker-ui", "true");
-    header.setAttribute("aria-label", "Bili Atelier \u9876\u680F");
-    const chain = new MenuChain(header);
-    let me = { mid: document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1] ?? "", name: "", face: "", level: 0 };
-    const bar = header.appendChild(el("div", "lh-band lh-menubar"));
-    bar.setAttribute("role", "menubar");
-    const menus = bar.appendChild(el("nav", "lh-menus"));
-    let active2 = null;
-    const openFrom = (anchor, items, align = "left", focus = false) => {
-      active2?.removeAttribute("data-open");
-      active2 = anchor;
-      anchor.setAttribute("data-open", "");
-      chain.open(items(), anchor, { align, focus, onClose: () => {
-        anchor.removeAttribute("data-open");
-        if (active2 === anchor) active2 = null;
-      } });
-    };
-    const toggleFrom = (anchor, items, align = "left") => {
-      if (active2 === anchor && chain.isOpen) chain.close();
-      else openFrom(anchor, items, align);
-    };
-    const openers = {};
-    const menu = (id, label2, key6, items) => {
-      const button6 = menus.appendChild(el("button", "lh-menu-title"));
-      button6.type = "button";
-      button6.append(titled(label2, key6));
-      button6.setAttribute("data-menu-anchor", "");
-      button6.setAttribute("aria-haspopup", "menu");
-      button6.addEventListener("click", () => toggleFrom(button6, items));
-      button6.addEventListener("pointerenter", () => {
-        if (chain.isOpen && active2 && active2 !== button6 && active2.classList.contains("lh-menu-title")) openFrom(button6, items);
-      });
-      openers[key6.toLowerCase()] = () => openFrom(button6, items, "left", true);
-      return button6;
-    };
-    const brand = bar.appendChild(el("div", "lh-brand"));
-    const channels = [
-      { label: "\u9996\u9875", href: "https://www.bilibili.com/" },
-      "-",
-      { label: "\u756A\u5267", href: "https://www.bilibili.com/anime/" },
-      { label: "\u76F4\u64AD", href: "https://live.bilibili.com/" },
-      { label: "\u6E38\u620F\u4E2D\u5FC3", href: "https://game.bilibili.com/platform" },
-      { label: "\u4F1A\u5458\u8D2D", href: "https://show.bilibili.com/platform/home.html?msource=pc_web" },
-      { label: "\u6F2B\u753B", href: "https://manga.bilibili.com/" },
-      { label: "\u8D5B\u4E8B", href: "https://www.bilibili.com/match/home/" },
-      "-",
-      { label: "\u5168\u90E8\u5206\u533A", items: () => [
-        ["\u52A8\u753B", "douga"],
-        ["\u756A\u5267", "anime"],
-        ["\u56FD\u521B", "guochuang"],
-        ["\u97F3\u4E50", "music"],
-        ["\u821E\u8E48", "dance"],
-        ["\u6E38\u620F", "game"],
-        ["\u77E5\u8BC6", "knowledge"],
-        ["\u79D1\u6280", "tech"],
-        ["\u8FD0\u52A8", "sports"],
-        ["\u6C7D\u8F66", "car"],
-        ["\u751F\u6D3B", "life"],
-        ["\u7F8E\u98DF", "food"],
-        ["\u52A8\u7269\u5708", "animal"],
-        ["\u9B3C\u755C", "kichiku"],
-        ["\u65F6\u5C1A", "fashion"],
-        ["\u8D44\u8BAF", "information"],
-        ["\u5A31\u4E50", "ent"],
-        ["\u5F71\u89C6", "cinephile"],
-        ["\u7EAA\u5F55\u7247", "documentary"],
-        ["\u7535\u5F71", "movie"],
-        ["\u7535\u89C6\u5267", "tv"]
-      ].map(([label2, slug]) => ({ label: label2, href: `https://www.bilibili.com/c/${slug}/` })) },
-      "-",
-      { label: "\u4E0B\u8F7D\u5BA2\u6237\u7AEF", href: "https://app.bilibili.com/" }
-    ];
-    menu("channel", "\u9891\u9053", "C", () => channels);
-    menu("favorites", "\u6536\u85CF", "A", () => loggedIn ? favorites2() : [{ label: "\u767B\u5F55\u540E\u67E5\u770B\u6536\u85CF\u5939", action: openBiliLogin }]);
-    menu("view", "\u67E5\u770B", "V", () => {
-      const mode2 = currentPageMode(), wide2 = document.documentElement.getAttribute("data-atelier-screen") === "wide";
-      return [
-        { label: "\u591C\u95F4\u6A21\u5F0F", checked: loggedIn && biliTheme() === "dark", disabled: !loggedIn, title: loggedIn ? "" : "\u767B\u5F55\u540E\u53EF\u7528", action: toggleBiliNight },
-        ...mode2 ? [{ label: mode2.native() ? "Luna \u9875\u9762" : "\u539F\u751F\u9875\u9762", action: () => mode2.setNative(!mode2.native()) }] : [],
-        ...options.page === "video" ? ["-", { label: "\u5BBD\u5C4F", checked: wide2, action: () => document.querySelector(".bpx-player-ctrl-wide")?.click() }] : []
-      ];
-    });
-    menu("tools", "\u5DE5\u5177", "T", () => [
-      ...atelierAreas.map((area) => ({ label: area.label, icon: atelierIcons[area.id], bold: area.id === "settings", action: () => openAtelier(area.id) })),
-      "-",
-      { label: "\u4E34\u65F6\u663E\u793A\u88AB\u5C4F\u853D\u9879", checked: isShowingBlocked(), action: toggleBlockedVisibility }
-    ]);
-    async function favorites2() {
-      const groups = await read3(`${api2}/x/v3/fav/folder/list4navigate`);
-      const folders = (Array.isArray(groups) ? groups : []).flatMap((group) => Array.isArray(group?.mediaListResponse?.list) ? group.mediaListResponse.list : []);
-      return [
-        { label: "\u6253\u5F00\u6211\u7684\u6536\u85CF\u5939", icon: ie_favorites_16_default, href: `https://space.bilibili.com/${me.mid}/favlist` },
-        "-",
-        ...folders.slice(0, 30).map((folder) => ({
-          label: String(folder?.title ?? ""),
-          icon: shellFolderImages[16],
-          note: String(Number(folder?.media_count) || 0),
-          items: () => folderItems(Number(folder?.id), Number(folder?.media_count) || 0)
-        }))
-      ];
-    }
-    async function folderItems(id, total) {
-      const data = await read3(`${api2}/x/v3/fav/resource/list4navigate?platform=web&media_id=${id}`);
-      const medias = Array.isArray(data?.medias) ? data.medias : Array.isArray(data) ? data : [];
-      return [
-        ...medias.slice(0, 10).map((media2) => ({ label: String(media2?.title ?? ""), icon: video(), href: media2?.bvid ? `https://www.bilibili.com/video/${media2.bvid}/` : String(media2?.link ?? `https://www.bilibili.com/`) })),
-        "-",
-        { label: `\u6253\u5F00\u8FD9\u4E2A\u6536\u85CF\u5939\uFF08\u5171 ${total} \u4E2A\uFF09`, href: `https://space.bilibili.com/${me.mid}/favlist?fid=${id}` }
-      ];
-    }
-    const toolbar = header.appendChild(el("div", "lh-band lh-toolbar xp-toolbar"));
-    toolbar.setAttribute("role", "toolbar");
-    toolbar.setAttribute("aria-label", "\u6807\u51C6\u6309\u94AE");
-    const label = (text4) => el("span", "lh-tool-label", text4);
-    const button5 = (icon2, text4, action, showText = true) => {
-      const control = toolbar.appendChild(el("button", "xp-tool lh-tool"));
-      control.type = "button";
-      control.append(image3(icon2));
-      if (showText) control.append(label(text4));
-      else control.title = text4;
-      control.setAttribute("aria-label", text4);
-      control.addEventListener("click", action);
-      return control;
-    };
-    const link3 = (icon2, text4, href) => {
-      const control = toolbar.appendChild(el("a", "xp-tool lh-tool"));
-      control.href = href;
-      control.target = "_blank";
-      control.rel = "noopener noreferrer";
-      control.append(image3(icon2), label(text4));
-      return control;
-    };
-    const split = (main, text4, items) => {
-      const arrow = toolbar.appendChild(el("button", "xp-tool lh-split"));
-      arrow.type = "button";
-      arrow.setAttribute("aria-label", `${text4}\u5217\u8868`);
-      arrow.setAttribute("data-menu-anchor", "");
-      arrow.append(el("span", "lh-drop"));
-      arrow.addEventListener("click", () => {
-        if (!loggedIn) {
-          openBiliLogin();
-          return;
-        }
-        toggleFrom(arrow, items);
-      });
-      main.classList.add("lh-split-main");
-    };
-    const separator = () => toolbar.appendChild(el("span", "xp-tool-separator"));
-    button5(ie_back_default, "\u540E\u9000", () => history.back());
-    button5(ie_forward_default, "\u524D\u8FDB", () => history.forward(), false);
-    separator();
-    link3(ie_home_default, "\u9996\u9875", "https://www.bilibili.com/");
-    const dynamic = link3(ie_media_default, "\u52A8\u6001", "https://t.bilibili.com/");
-    const messages2 = button5(ie_mail_default, "\u6D88\u606F", () => {
-      if (!loggedIn) {
-        openBiliLogin();
-        return;
-      }
-      toggleFrom(messages2, () => refreshCounts(true).then(messageItems, messageItems));
-    });
-    messages2.setAttribute("data-menu-anchor", "");
-    messages2.setAttribute("aria-haspopup", "menu");
-    split(link3(ie_history_default, "\u5386\u53F2", "https://www.bilibili.com/history"), "\u5386\u53F2", historyItems);
-    split(link3(ie_notes_default, "\u7A0D\u540E\u518D\u770B", "https://www.bilibili.com/watchlater/#/list"), "\u7A0D\u540E\u518D\u770B", laterItems);
-    separator();
-    link3(ie_new_window_default, "\u6295\u7A3F", "https://member.bilibili.com/platform/upload/video/frame");
-    if (options.page === "video" || options.page === "history") {
-      const line = separator();
-      const reset = button5(views_default, "\u91CD\u7F6E\u5E03\u5C40", async () => {
-        const layout2 = currentPageLayout();
-        if (!layout2 || layout2.isDefault()) return;
-        if (await atelierDialog({ title: "\u91CD\u7F6E\u5E03\u5C40", message: "\u8981\u628A\u8FD9\u4E9B\u7A97\u53E3\u7684\u5927\u5C0F\u90FD\u6062\u590D\u6210\u9ED8\u8BA4\u503C\u5417\uFF1F", confirmLabel: "\u662F", cancelLabel: "\u5426" }) === null) return;
-        layout2.reset();
-      });
-      const paintReset = () => {
-        const layout2 = currentPageLayout();
-        line.hidden = reset.hidden = !layout2;
-        reset.disabled = !layout2 || layout2.isDefault();
-      };
-      paintReset();
-      window.addEventListener(pageLayoutChanged, paintReset);
-    }
-    let unread = unreadBadge(null, null, null);
-    const entry = (label2, kind, href) => {
-      const { count: count2, dot } = unread.entries[kind];
-      return { label: label2, href, ...dot ? { bold: count2 > 0 } : { count: count2 } };
-    };
-    function messageItems() {
-      return [
-        entry("\u56DE\u590D\u6211\u7684", "reply", "https://message.bilibili.com/#/reply"),
-        entry("@ \u6211\u7684", "at", "https://message.bilibili.com/#/at"),
-        entry("\u6536\u5230\u7684\u8D5E", "like", "https://message.bilibili.com/#/love"),
-        entry("\u7CFB\u7EDF\u901A\u77E5", "system", "https://message.bilibili.com/#/system"),
-        entry("\u6211\u7684\u6D88\u606F", "whisper", "https://message.bilibili.com/#/whisper"),
-        "-",
-        { label: "\u6253\u5F00\u6D88\u606F\u4E2D\u5FC3", href: "https://message.bilibili.com/" }
-      ];
-    }
-    async function historyItems() {
-      const data = await read3(`${api2}/x/web-interface/history/cursor?ps=10&type=archive`);
-      const list2 = Array.isArray(data?.list) ? data.list : [];
-      return [
-        ...list2.slice(0, 10).map((item) => {
-          const bvid = item?.history?.bvid, page = Number(item?.history?.page) || 1;
-          const href = typeof item?.uri === "string" && /^https?:\/\//.test(item.uri) ? item.uri : bvid ? `https://www.bilibili.com/video/${bvid}/${page > 1 ? `?p=${page}` : ""}` : "https://www.bilibili.com/history";
-          return { label: String(item?.title ?? ""), icon: video(), note: when(item?.view_at), href };
-        }),
-        ...list2.length ? ["-"] : [],
-        { label: "\u67E5\u770B\u5168\u90E8\u5386\u53F2\u8BB0\u5F55", href: "https://www.bilibili.com/history" }
-      ];
-    }
-    async function laterItems() {
-      const data = await read3(`${api2}/x/v2/history/toview/web`);
-      const list2 = Array.isArray(data?.list) ? data.list : [], total = Number(data?.count) || list2.length;
-      return [
-        ...list2.slice(0, 10).map((item) => ({ label: String(item?.title ?? ""), icon: video(), href: `https://www.bilibili.com/list/watchlater?bvid=${encodeURIComponent(String(item?.bvid ?? ""))}&oid=${Number(item?.aid) || ""}` })),
-        ...list2.length ? ["-"] : [],
-        { label: `\u67E5\u770B\u5168\u90E8\u7A0D\u540E\u518D\u770B\uFF08\u5171 ${total} \u4E2A\uFF09`, href: "https://www.bilibili.com/watchlater/#/list" }
-      ];
-    }
-    const paintCount = (control, text4, count2, dot = false) => {
-      const target = control.querySelector(".lh-tool-label");
-      target.replaceChildren(text4);
-      target.classList.toggle("lh-bold", count2 > 0 || dot);
-      if (count2 > 0 && !dot) target.append(el("span", "lh-count", ` (${count2 > 99 ? "99+" : count2})`));
-    };
-    const address = header.appendChild(el("form", "lh-band lh-address"));
-    address.setAttribute("role", "search");
-    const fieldLabel = address.appendChild(el("label", "lh-address-label"));
-    fieldLabel.append(titled("\u641C\u7D22", "D"));
-    const combo = address.appendChild(el("div", "lh-combo"));
-    const field = combo.appendChild(el("input", "lh-search"));
-    field.type = "search";
-    field.name = "keyword";
-    field.autocomplete = "off";
-    field.placeholder = "\u641C\u7D22\u89C6\u9891\u3001UP \u4E3B\u6216\u756A\u5267";
-    field.id = `lh-search-${crypto.randomUUID()}`;
-    fieldLabel.htmlFor = field.id;
-    const dropdown = combo.appendChild(el("button", "lh-combo-button"));
-    dropdown.type = "button";
-    dropdown.tabIndex = -1;
-    dropdown.setAttribute("aria-label", "\u641C\u7D22\u5EFA\u8BAE");
-    const go = address.appendChild(el("button", "xp-tool lh-go"));
-    go.type = "submit";
-    go.append(image3(ie_go_16_default, 16), el("span", "", "\u8F6C\u5230"));
-    const list = el("div", "lh-autocomplete");
-    list.hidden = true;
-    list.setAttribute("role", "listbox");
-    header.append(list);
-    let suggestions = [], pick = -1, ticket = 0, suggestTimer = 0;
-    const search = (keyword) => {
-      hideList();
-      newTab(keyword.trim() ? `https://search.bilibili.com/all?keyword=${encodeURIComponent(keyword.trim())}` : "https://search.bilibili.com/");
-    };
-    address.addEventListener("submit", (event) => {
-      event.preventDefault();
-      sound("click");
-      search(pick >= 0 ? suggestions[pick] : field.value);
-    });
-    const hideList = () => {
-      list.hidden = true;
-      pick = -1;
-    };
-    const showList = () => {
-      list.replaceChildren(...suggestions.map((text4, index) => {
-        const row = el("div", index === pick ? "lh-suggest lh-hot" : "lh-suggest", text4);
-        row.setAttribute("role", "option");
-        row.addEventListener("pointerdown", (event) => {
-          event.preventDefault();
-          field.value = text4;
-          search(text4);
-        });
-        return row;
-      }));
-      list.hidden = !suggestions.length;
-      const rect = combo.getBoundingClientRect();
-      placeFixed(list, { left: rect.left, top: rect.bottom, width: rect.width });
-    };
-    const suggest = () => {
-      const term = field.value.trim(), mine = ++ticket;
-      if (!term) {
-        suggestions = [];
-        hideList();
-        return;
-      }
-      read3(`${api2}/x/web-interface/suggest?term=${encodeURIComponent(term)}&main_ver=v1`).then((data) => {
-        if (mine !== ticket) return;
-        suggestions = (Array.isArray(data?.result?.tag) ? data.result.tag : []).map((tag) => String(tag?.value ?? "")).filter(Boolean).slice(0, 10);
-        pick = -1;
-        showList();
-      }, () => {
-        if (mine === ticket) hideList();
-      });
-    };
-    field.addEventListener("input", () => {
-      window.clearTimeout(suggestTimer);
-      suggestTimer = window.setTimeout(suggest, 150);
-    });
-    field.addEventListener("keydown", (event) => {
-      if (list.hidden || !suggestions.length) return;
-      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-        event.preventDefault();
-        const next = pick + (event.key === "ArrowUp" ? -1 : 1);
-        pick = next >= suggestions.length ? -1 : next < -1 ? suggestions.length - 1 : next;
-        showList();
-      } else if (event.key === "Escape") {
-        event.preventDefault();
-        hideList();
-      }
-    });
-    field.addEventListener("blur", () => window.setTimeout(hideList, 100));
-    dropdown.addEventListener("pointerdown", (event) => {
-      event.preventDefault();
-      if (list.hidden) {
-        field.focus();
-        suggest();
-      } else hideList();
-    });
-    go.addEventListener("pointerdown", () => hideList());
-    function paintBrand() {
-      brand.replaceChildren();
-      if (!loggedIn) {
-        const login = brand.appendChild(el("button", "xp-button lh-login", "\u767B\u5F55"));
-        login.type = "button";
-        login.addEventListener("click", () => {
-          sound("click");
-          openBiliLogin();
-        });
-        brand.classList.add("lh-brand-guest");
-        return;
-      }
-      const face = brand.appendChild(el("button", "lh-face-button"));
-      face.type = "button";
-      face.title = me.name || "\u6211\u7684\u8D26\u53F7";
-      face.setAttribute("aria-label", "\u8D26\u53F7\u83DC\u5355");
-      face.setAttribute("data-menu-anchor", "");
-      const picture = face.appendChild(el("img", "lh-face"));
-      picture.alt = "";
-      picture.referrerPolicy = "no-referrer";
-      if (me.face) picture.src = me.face.replace(/^http:/, "https:") + (/hdslb\.com\//.test(me.face) && !me.face.includes("@") ? "@48w_48h_1c.webp" : "");
-      face.addEventListener("click", () => toggleFrom(face, () => [
-        { label: me.name || "\u6211\u7684\u8D26\u53F7", bold: true, note: me.level ? `Lv${me.level}` : "", href: `https://space.bilibili.com/${me.mid}` },
-        "-",
-        { label: "\u4E2A\u4EBA\u7A7A\u95F4", href: `https://space.bilibili.com/${me.mid}` },
-        { label: "\u6295\u7A3F\u7BA1\u7406", href: "https://member.bilibili.com/platform/upload-manager/article" },
-        { label: "\u6211\u7684\u6536\u85CF", href: `https://space.bilibili.com/${me.mid}/favlist` },
-        { label: "B\u5E01\u94B1\u5305", href: "https://pay.bilibili.com/pay-v2-web/bcoin_index" },
-        { label: "\u8D26\u53F7\u8BBE\u7F6E", href: "https://account.bilibili.com/account/home" }
-      ], "right"));
-    }
-    paintBrand();
-    header.addEventListener("keydown", (event) => {
-      if (!event.altKey || event.ctrlKey || event.metaKey) return;
-      const key6 = event.key.toLowerCase();
-      if (key6 === "d") {
-        event.preventDefault();
-        field.focus();
-        field.select();
-        return;
-      }
-      if (openers[key6]) {
-        event.preventDefault();
-        openers[key6]();
-      }
-    });
-    let lastCounts = 0;
-    async function refreshCounts(force = false) {
-      if (!loggedIn || !force && Date.now() - lastCounts < 6e4) return;
-      lastCounts = Date.now();
-      const seen = dynamicOffsets(document.cookie, me.mid);
-      const [setting, feed, single, entrance] = await Promise.allSettled([
-        read3(`${vc}/link_setting/v1/link_setting/get?build=0&mobi_app=web&msg_notify=1&show_unfollowed_msg=1`),
-        read3(`${vc}/x/im/web/msgfeed/unread?build=0&mobi_app=web`),
-        read3(`${vc}/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0`),
-        read3(`${api2}/x/web-interface/dynamic/entrance?alltype_offset=${encodeURIComponent(seen.all)}&video_offset=${encodeURIComponent(seen.video)}&article_offset=${encodeURIComponent(seen.article)}`)
-      ]);
-      if (feed.status === "fulfilled" && single.status === "fulfilled") {
-        unread = unreadBadge(feed.value, single.value, setting.status === "fulfilled" ? setting.value : null);
-        paintCount(messages2, "\u6D88\u606F", unread.count, unread.dot);
-      }
-      if (entrance.status === "fulfilled") {
-        const count2 = Math.max(0, Number(entrance.value?.update_info?.item?.count) || 0);
-        paintCount(dynamic, "\u52A8\u6001", count2, seen.first && count2 > 0);
-      }
-    }
-    async function loadAccount() {
-      if (!loggedIn) return;
-      try {
-        const data = await read3(`${api2}/x/web-interface/nav`);
-        if (data?.isLogin) {
-          me = { mid: String(data.mid ?? me.mid), name: String(data.uname ?? ""), face: String(data.face ?? ""), level: Number(data.level_info?.current_level) || 0 };
-          paintBrand();
-        }
-      } catch {
-      }
-    }
-    void loadAccount();
-    void refreshCounts(true);
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") void refreshCounts();
-    });
-    window.setInterval(() => {
-      if (document.visibilityState === "visible") void refreshCounts();
-    }, 6e4);
-    return { element: header, close: () => {
-      chain.close();
-      hideList();
-    } };
-  }
-
-  // src/modules/luna-header/styles.ts
-  var lunaHeaderAttribute = "data-luna-header";
-  var on = `html[${lunaHeaderAttribute}]`;
-  var lunaHeaderHideCss = `
-${on} :is(#biliMainHeader,#bili-header-container){height:var(${headerHeightVar},88px)!important;min-height:0!important}
-${on} :is(#biliMainHeader,#bili-header-container) .bili-header{visibility:hidden!important}
-`;
-  var lunaHeaderCss = `
-.lh{position:fixed;top:0;left:0;right:0;z-index:1002;display:flex;flex-direction:column;${xpFont};color:var(--xp-ink);text-align:left;background:var(--xp-face);border-bottom:1px solid var(--xp-shadow3d);box-shadow:0 1px var(--xp-light3d),0 2px 3px #0002;user-select:none}
-.lh *{box-sizing:border-box}
-.lh [hidden]{display:none!important}
-.lh-band{display:flex;align-items:center;min-width:0;margin:0;border-top:1px solid var(--xp-light3d);border-bottom:1px solid var(--xp-shadow3d)}
-.lh-band:first-child{border-top:0}
-.lh-menubar{height:22px;padding:0 0 0 2px}
-.lh-menus{display:flex;align-items:center;flex:1;min-width:0}
-.lh-menu-title{${xpFont};color:var(--xp-ink);height:20px;padding:0 7px;margin:0;border:0;border-radius:0;background:transparent;cursor:default}
-.lh-menu-title:hover,.lh-menu-title[data-open]{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
-.lh u{text-decoration:underline}
-.lh-brand{flex:none;align-self:stretch;display:flex;align-items:center;justify-content:center;width:42px;border-left:1px solid var(--xp-shadow3d);box-shadow:inset 1px 0 var(--xp-light3d);background:var(--xp-window)}
-.lh-brand-guest{width:auto;padding:0 3px;background:var(--xp-face)}
-.lh-face-button{display:flex;align-items:center;justify-content:center;width:100%;height:100%;padding:0;margin:0;border:0;background:transparent;cursor:default}
-.lh-face-button[data-open]{background:var(--xp-highlight)}
-.lh-face{display:block;width:20px;height:20px;border:1px solid var(--xp-edge);object-fit:cover;background:var(--xp-face)}
-.lh-login{min-height:19px!important;padding:0 6px!important}
-.lh-toolbar{gap:1px;padding:2px 4px;border-width:1px 0;flex-wrap:nowrap;overflow:hidden}
-.lh-tool{gap:4px;min-height:36px;padding:2px 6px 2px 4px;color:var(--xp-ink)!important;text-decoration:none!important}
-.lh-tool:disabled{color:var(--xp-graytext)!important}
-.lh-tool:disabled .lh-icon{filter:grayscale(1);opacity:.5}
-.lh-tool[data-open],.lh-split[data-open]{border-image-source:var(--xp-tool-2)}
-.lh-split-main{padding-right:4px}
-.lh-split{min-height:36px;padding:0 3px;margin-left:-1px}
-.lh-icon{flex:none;image-rendering:pixelated}
-.lh-bold{font-weight:bold}
-.lh-count{color:var(--xp-task-link);font-weight:bold}
-.lh-drop{display:block;width:0;height:0;border:3px solid transparent;border-top-color:currentColor;border-bottom:0}
-.lh-address{gap:4px;height:26px;padding:0 4px}
-.lh-address-label{flex:none;padding:0 2px 0 3px;color:var(--xp-muted)}
-.lh-combo{position:relative;flex:1;min-width:0;display:flex;height:21px;background:var(--xp-window);border:1px solid var(--xp-edge)}
-.lh-search{flex:1;min-width:0;height:19px;padding:0 3px;margin:0;border:0;border-radius:0;outline:0;background:transparent;box-shadow:none;${xpFont};color:var(--xp-ink)}
-.lh-search::-webkit-search-cancel-button{display:none}
-.lh-search::placeholder{color:var(--xp-graytext)}
-.lh-combo-button{flex:none;width:var(--xp-combo-w,15px);height:19px;padding:0;margin:0;border:0;background:var(--xp-combo-0) center/100% 100% no-repeat;image-rendering:pixelated;cursor:default}
-.lh-combo-button:hover{background-image:var(--xp-combo-1)}
-.lh-go{gap:3px;min-height:21px;padding:0 6px 0 3px}
-.lh-pop{position:fixed;z-index:1003;min-width:180px;max-height:calc(100vh - 8px);overflow:auto}
-.lh-item{gap:4px!important;padding-right:10px!important;text-decoration:none!important}
-a.lh-item{color:var(--xp-ink)}
-.lh-item[data-open]{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
-.lh-item[aria-disabled=true]{color:var(--xp-graytext)!important;background:transparent!important}
-.lh-check{flex:none;width:12px;text-align:center}
-.lh-item-icon{flex:none;display:inline-flex;width:16px;height:16px}.lh-item-icon img{width:16px;height:16px;image-rendering:pixelated}
-.lh-item-label{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px}
-.lh-item .lh-count{margin-left:6px}
-.lh-item-note{flex:none;margin-left:18px;color:var(--xp-muted)}
-.lh-item:is(:hover,:focus,[data-open]) :is(.lh-count,.lh-item-note){color:inherit}
-.lh-sub{flex:none;width:0;height:0;margin-left:12px;border:4px solid transparent;border-left-color:currentColor;border-right:0}
-.lh-autocomplete{position:fixed;z-index:1003;background:var(--xp-window);border:1px solid var(--xp-ink);box-shadow:2px 2px 2px #0005}
-.lh-suggest{padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:default}
-.lh-suggest:hover,.lh-hot{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
-`;
-
-  // src/modules/luna-header/runtime.ts
-  var giveUpMs = 1e4;
-  function prepareLunaHeader() {
-    document.documentElement.setAttribute(lunaHeaderAttribute, "");
-    if (document.getElementById("atelier-header-hide")) return;
-    const style = document.createElement("style");
-    style.id = "atelier-header-hide";
-    style.textContent = lunaHeaderHideCss;
-    (document.head || document.documentElement).append(style);
-  }
-  var current2 = null;
-  var read = null;
-  function mountLunaHeader(page) {
-    if (current2) return;
-    prepareLunaHeader();
-    zoomWholePage();
-    const root2 = document.documentElement;
-    const fail = (error) => {
-      current2?.element.remove();
-      current2 = null;
-      zoomWholePage(false);
-      root2.removeAttribute(lunaHeaderAttribute);
-      root2.style.removeProperty(headerHeightVar);
-      warnLog("Luna \u9876\u680F\u6CA1\u80FD\u753B\u51FA\u6765\uFF0C\u5DF2\u6062\u590D B \u7AD9\u539F\u6765\u7684\u9876\u680F", error);
-    };
-    const timer2 = window.setTimeout(() => {
-      if (!current2?.element.isConnected) fail();
-    }, giveUpMs);
-    const attach = () => {
-      if (!document.body) {
-        window.setTimeout(attach, 50);
-        return;
-      }
-      try {
-        ensureAppearance();
-        if (!document.getElementById("atelier-luna-header")) {
-          const style = document.createElement("style");
-          style.id = "atelier-luna-header";
-          setZoomedCss(style, lunaHeaderCss);
-          (document.head || document.documentElement).append(style);
-        }
-        read ??= startHeaderBridge();
-        current2 = createLunaHeader({ page, read });
-        document.body.append(current2.element);
-        observeCrispText(current2.element);
-        window.clearTimeout(timer2);
-        const measure = () => {
-          const height = current2?.element.offsetHeight ?? 0;
-          if (height > 0) root2.style.setProperty(headerHeightVar, `${height}px`);
-        };
-        measure();
-        if (typeof ResizeObserver === "function") new ResizeObserver(measure).observe(current2.element);
-        if (page === "feed") followStickyPanels();
-      } catch (error) {
-        window.clearTimeout(timer2);
-        fail(error);
-      }
-    };
-    attach();
-  }
-  function followStickyPanels() {
-    const fix = () => {
-      for (const element2 of document.querySelectorAll("aside > *, aside > * > *")) {
-        if (element2.dataset.atelierSticky !== void 0) continue;
-        const style = getComputedStyle(element2);
-        if (style.position !== "sticky" || style.top !== "72px") continue;
-        element2.dataset.atelierSticky = "";
-        element2.style.setProperty("top", `calc(var(${headerHeightVar}, 64px) + 8px)`, "important");
-      }
-    };
-    for (const delay of [500, 2e3, 6e3]) window.setTimeout(fix, delay);
   }
 
   // src/modules/local-following/feed-page.ts
@@ -12553,9 +13979,11 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     loadMore.textContent = "\u52A0\u8F7D\u66F4\u591A";
     loadMore.addEventListener("click", () => void load(false));
     const quick = createQuickWindow({ identity, list, feedWindow: root2, loggedIn });
-    root2.append(quick.element);
+    quick.element.addEventListener("click", (event) => {
+      if (event.target.closest?.("button:not(:disabled)")) sound("click");
+    });
     const style = document.createElement("style");
-    setZoomedCss(style, pageCss + dynamicCardCss + commentAreaCss + followPanelCss + quickWindowCss);
+    setZoomedCss(style, pageCss + dynamicCardCss + commentAreaCss + followPanelCss + quickWindowCss + feedColumnsCss + feedLayoutCss);
     (document.head || document.documentElement).append(style);
     let followings = parseFollowingsCopy(GM_getValue(followingsKey, null));
     const inGroup = () => localFollowSnapshot().accounts.filter((account) => !prefs.group || (prefs.group === "ungrouped" ? !account.groupIds.length : account.groupIds.includes(prefs.group)));
@@ -12716,14 +14144,14 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       }
     }
     async function like(card3, raw, control) {
-      const on5 = control.getAttribute("aria-pressed") !== "true", before = Number(control.dataset.count) || 0;
-      control.setAttribute("aria-pressed", String(on5));
-      label(control, before + (on5 ? 1 : -1));
+      const on7 = control.getAttribute("aria-pressed") !== "true", before = Number(control.dataset.count) || 0;
+      control.setAttribute("aria-pressed", String(on7));
+      label(control, before + (on7 ? 1 : -1));
       control.disabled = true;
       try {
-        await interactions.like(String(raw.id_str), on5);
+        await interactions.like(String(raw.id_str), on7);
       } catch (error) {
-        control.setAttribute("aria-pressed", String(!on5));
+        control.setAttribute("aria-pressed", String(!on7));
         label(control, before);
         note2(card3, failure4(error));
       } finally {
@@ -12954,6 +14382,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       refreshLiveOnce();
       void reload();
     }
+    let quickText = null, layout2 = null;
     function mount() {
       if (!root2.isConnected) {
         const tabsBar = document.querySelector(".bili-dyn-list-tabs"), native2 = document.querySelector(".bili-dyn-list");
@@ -12972,6 +14401,9 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
         apply();
       }
       if (drawn()) panel.mount();
+      mountFeedColumns(quick.element);
+      if (!quickText && quick.element.isConnected) quickText = observeCrispText(quick.element);
+      if (!layout2 && loggedIn && document.querySelector(".bili-dyn-home--member")) layout2 = startFeedLayout();
     }
     new MutationObserver(mount).observe(document.documentElement, { childList: true, subtree: true });
     window.addEventListener(localFollowChangedEvent, () => {
@@ -13673,108 +15105,6 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     pending: localFollowPending
   };
 
-  // src/modules/viewed/storage.ts
-  function groupViewedItems(values) {
-    const groups = {};
-    const seen = /* @__PURE__ */ new Set();
-    for (const value2 of values) {
-      const id = parseStoredViewedId(value2);
-      if (!id || seen.has(id)) {
-        continue;
-      }
-      seen.add(id);
-      const groupId = viewedGroup(id);
-      if (!groups[groupId]) {
-        groups[groupId] = [];
-      }
-      groups[groupId].push(id);
-    }
-    return groups;
-  }
-  function flattenViewedGroups(groups) {
-    const items = [];
-    const seen = /* @__PURE__ */ new Set();
-    for (const value2 of Object.values(groups)) {
-      if (!Array.isArray(value2)) {
-        continue;
-      }
-      for (const item of value2) {
-        const id = parseStoredViewedId(item);
-        if (!id || seen.has(id)) {
-          continue;
-        }
-        seen.add(id);
-        items.push(id);
-      }
-    }
-    return items;
-  }
-  function viewedGroupStorageKey(groupId) {
-    return `BiliViewed_${groupId}`;
-  }
-  function listViewedGroupKeys() {
-    if (typeof GM_listValues !== "function") {
-      return [];
-    }
-    return GM_listValues().filter((key6) => String(key6).startsWith("BiliViewed_"));
-  }
-  function readViewedGroup(groupId, fallback2 = null) {
-    return GM_getValue(viewedGroupStorageKey(groupId), fallback2);
-  }
-  var journal2;
-  var keysOf2 = (values) => new Set((Array.isArray(values) ? values : []).map(String).filter(isViewedId).map(viewedKey));
-  function writeViewedGroup(groupId, values) {
-    journal2?.(keysOf2(readViewedGroup(groupId, [])), keysOf2(values));
-    GM_setValue(viewedGroupStorageKey(groupId), values);
-  }
-  function putGroups(groups, mode2) {
-    if (mode2 === "overwrite") for (const key6 of listViewedGroupKeys()) GM_deleteValue(key6);
-    for (const [groupId, values] of Object.entries(groups)) GM_setValue(viewedGroupStorageKey(groupId), values);
-  }
-  function readViewedStorage() {
-    const groups = {};
-    for (const key6 of listViewedGroupKeys()) {
-      const groupId = String(key6).slice("BiliViewed_".length);
-      groups[groupId] = flattenViewedGroups({ [groupId]: readViewedGroup(groupId, []) });
-    }
-    return { items: flattenViewedGroups(groups), groups };
-  }
-  function writeViewedStorage(snapshot, mode2) {
-    const incomingItems = snapshot.items?.length ? snapshot.items : snapshot.groups ? flattenViewedGroups(snapshot.groups) : [];
-    const currentItems = mode2 === "append" ? readViewedStorage().items : [];
-    const groups = groupViewedItems(currentItems.concat(incomingItems));
-    journal2?.(keysOf2(readViewedStorage().items), keysOf2(flattenViewedGroups(groups)));
-    putGroups(groups, mode2);
-    return { items: flattenViewedGroups(groups), groups };
-  }
-  var viewedSyncStore = {
-    keys: () => keysOf2(readViewedStorage().items),
-    applySync(desired) {
-      const wanted = new Set([...desired].filter((key6) => key6.startsWith("v:")));
-      if (sameKeys(wanted, viewedSyncStore.keys())) return false;
-      const unsyncable = readViewedStorage().items.filter((id) => !isViewedId(id));
-      putGroups(groupViewedItems([...unsyncable, ...[...wanted].map((key6) => key6.slice(2))]), "overwrite");
-      return true;
-    },
-    setJournal(next) {
-      journal2 = next;
-    }
-  };
-  function isLegacyViewedExport(value2) {
-    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key6) => key6.startsWith("BiliViewed_"));
-  }
-  function normalizeLegacyViewedExport(value2) {
-    const groups = {};
-    for (const [key6, items] of Object.entries(value2)) {
-      if (!key6.startsWith("BiliViewed_") || !Array.isArray(items)) {
-        continue;
-      }
-      const groupId = key6.slice("BiliViewed_".length);
-      groups[groupId] = flattenViewedGroups({ [groupId]: items });
-    }
-    return { items: flattenViewedGroups(groups), groups };
-  }
-
   // src/core/data-package.ts
   var atelierDataSchema = "bili-atelier-data";
   var atelierDataVersion = 1;
@@ -13782,11 +15112,11 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   function splitLegacyBlockerExport(value2) {
     const rules = {};
     const legacySettings = {};
-    for (const [key6, data] of Object.entries(value2)) {
-      if (ruleKeySet.has(key6) && Array.isArray(data)) {
-        rules[key6] = data;
-      } else if (!key6.startsWith("BiliViewed_")) {
-        legacySettings[key6] = data;
+    for (const [key7, data] of Object.entries(value2)) {
+      if (ruleKeySet.has(key7) && Array.isArray(data)) {
+        rules[key7] = data;
+      } else if (!key7.startsWith("BiliViewed_")) {
+        legacySettings[key7] = data;
       }
     }
     return { rules, legacySettings };
@@ -13854,7 +15184,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   }
 
   // src/modules/sync/protocol.ts
-  var seedId = (key6) => `seed:${key6}`;
+  var seedId = (key7) => `seed:${key7}`;
   function batch(operations) {
     return { schema: "bili-atelier-sync", version: 1, operations };
   }
@@ -13903,15 +15233,15 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     return result;
   }
   function materialize(operations) {
-    return new Set([...frontier(operations)].filter(([, ops]) => ops.every((o) => o.present)).map(([key6]) => key6));
+    return new Set([...frontier(operations)].filter(([, ops]) => ops.every((o) => o.present)).map(([key7]) => key7));
   }
   function changes(before, after, known2, uuid2) {
     const heads = frontier(known2);
-    return [.../* @__PURE__ */ new Set([...before, ...after])].filter((k) => validKey(k) && before.has(k) !== after.has(k)).map((key6) => ({
+    return [.../* @__PURE__ */ new Set([...before, ...after])].filter((k) => validKey(k) && before.has(k) !== after.has(k)).map((key7) => ({
       id: uuid2(),
-      key: key6,
-      present: after.has(key6),
-      parents: [.../* @__PURE__ */ new Set([seedId(key6), ...(heads.get(key6) || []).map((o) => o.id)])]
+      key: key7,
+      present: after.has(key7),
+      parents: [.../* @__PURE__ */ new Set([seedId(key7), ...(heads.get(key7) || []).map((o) => o.id)])]
     }));
   }
 
@@ -13944,7 +15274,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     if (!GM_getValue(`${prefix2}initialized`, false)) {
       if (!viewedJournalBackup()) GM_setValue(`${prefix2}backup`, exportAtelierDataPackage());
       const keys = new Set(stores.flatMap((store) => [...store.keys()]));
-      saveOperations([...keys].map((key6) => ({ id: seedId(key6), key: key6, present: true, parents: [] })));
+      saveOperations([...keys].map((key7) => ({ id: seedId(key7), key: key7, present: true, parents: [] })));
       GM_setValue(`${prefix2}initialized`, true);
     }
     applyViewedJournal();
@@ -14142,17 +15472,17 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     const fields2 = /* @__PURE__ */ new Map();
     const cleanupPixels = observeCrispText(root2);
     const c = getConfig();
-    for (const [key6, label, value2] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
+    for (const [key7, label, value2] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
       const row = document.createElement("label");
       row.textContent = label;
       const input = document.createElement("input");
-      input.name = key6;
-      input.type = key6 === "applicationKey" ? "password" : "text";
+      input.name = key7;
+      input.type = key7 === "applicationKey" ? "password" : "text";
       input.autocomplete = "off";
       input.spellcheck = false;
       input.value = value2;
       input.addEventListener("input", () => hideSecrets());
-      fields2.set(key6, input);
+      fields2.set(key7, input);
       row.append(input);
       root2.querySelector(".fields").append(row);
     }
@@ -14279,99 +15609,6 @@ ${message}` : ""}`;
     };
   }
 
-  // src/modules/video-luna/prefs.ts
-  var key3 = "BiliAtelier_VideoLuna";
-  function videoLunaEnabled() {
-    const stored = typeof GM_getValue === "function" ? GM_getValue(key3, null) : null;
-    return stored?.enabled !== false;
-  }
-  function setVideoLunaEnabled(enabled) {
-    if (typeof GM_setValue === "function") GM_setValue(key3, { enabled });
-  }
-  var coverKey = "BiliAtelier_VideoCover";
-  var videoCoverChanged = "atelier-video-cover-changed";
-  function videoCoverEnabled() {
-    const stored = typeof GM_getValue === "function" ? GM_getValue(coverKey, null) : null;
-    return stored?.enabled !== false;
-  }
-  function setVideoCoverEnabled(enabled) {
-    if (typeof GM_setValue === "function") GM_setValue(coverKey, { enabled });
-    window.dispatchEvent(new Event(videoCoverChanged));
-  }
-  var isLunaVideoLocation = (where = location) => where.hostname === "www.bilibili.com" && (/^\/video\/(?:BV|av)/i.test(where.pathname) || isLunaListPath(where.pathname) || isLunaBangumiPath(where.pathname));
-  var isLunaListPath = (pathname) => /^\/list\/(?:ml\d+|watchlater|\d+)\/?$/i.test(pathname);
-  var isLunaBangumiPath = (pathname) => /^\/bangumi\/play\/(?:ep|ss)\d+\/?$/i.test(pathname);
-  var videoAttribute = "data-atelier-video";
-  var nativeAttribute = "data-atelier-native";
-  function showNativeArea(area) {
-    const html = document.documentElement, areas = new Set((html.getAttribute(nativeAttribute) ?? "").split(/\s+/).filter(Boolean));
-    if (areas.has(area)) return;
-    areas.add(area);
-    html.setAttribute(nativeAttribute, [...areas].join(" "));
-  }
-  var on2 = `html[${videoAttribute}=luna]`;
-  var unless = (area) => `${on2}:not([${nativeAttribute}~=${area}])`;
-  var videoHideCss = `
-${unless("head")} :is(#viewbox_report,.playlist-container--left>.video-info-container){display:none!important}
-${unless("info")} :is(#v_desc,#bgm-entry,.video-tag-container,#commentapp,.playlist-container--left>.video-desc-container,.plp-l #comment-module){display:none!important}
-${unless("info")} :is(#arc_toolbar_report,#playlistToolbar,.plp-l .toolbar){height:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;visibility:hidden!important}
-${unless("up")} :is(:is(.right-container-inner,.playlist-container--right)>.up-panel-container,.plp-l [class*=mediainfo_mediaInfoWrap]){display:none!important}
-${unless("pod")} :is(.rcmd-tab .video-pod,.plp-r [class*=PaginatedEpList_root]){display:none!important}
-${unless("list")} .playlist-container--right>.action-list-container{display:none!important}
-${unless("rec")} :is(.rcmd-tab>:not(.video-pod),.playlist-container--right>.recommend-list-container,.plp-r [class*=recommend_wrap]){display:none!important}
-${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danmukuBox),.right-bottom-banner,.video-card-ad-small,#slide_ad,.ad-floor-exp){display:none!important}
-`;
-  function prepareVideoLuna() {
-    if (typeof GM_getValue !== "function" || !isLunaVideoLocation() || !videoLunaEnabled()) return false;
-    document.documentElement.setAttribute(videoAttribute, "luna");
-    prepareLunaHeader();
-    if (!document.getElementById("atelier-video-hide")) {
-      const style = document.createElement("style");
-      style.id = "atelier-video-hide";
-      style.textContent = videoHideCss;
-      (document.head || document.documentElement).append(style);
-    }
-    return true;
-  }
-  function showNativePage() {
-    document.documentElement.setAttribute(videoAttribute, "native");
-  }
-
-  // src/modules/viewed/marks.ts
-  var viewedMarksChanged = "atelier-viewed-marks-changed";
-  var groupOf = (id) => isViewedId(id) ? viewedGroup(id) : "";
-  function viewedLookup() {
-    const groups = /* @__PURE__ */ new Map();
-    return (id) => {
-      const group = groupOf(id);
-      if (!group) return false;
-      let set = groups.get(group);
-      if (!set) {
-        const values = readViewedGroup(group, []);
-        set = new Set(Array.isArray(values) ? values.map(String) : []);
-        groups.set(group, set);
-      }
-      return set.has(id);
-    };
-  }
-  var isViewedVideo = (id) => viewedLookup()(id);
-  function setViewedVideo(id, viewed2) {
-    const group = groupOf(id);
-    if (!group) return false;
-    const stored = readViewedGroup(group, null), values = Array.isArray(stored) ? stored.map(String) : [];
-    const present = values.includes(id);
-    if (present === viewed2) return false;
-    writeViewedGroup(group, viewed2 ? [id, ...values] : values.filter((value2) => value2 !== id));
-    window.dispatchEvent(new CustomEvent(viewedMarksChanged, { detail: { id, viewed: viewed2 } }));
-    return true;
-  }
-  function toggleViewedVideo(id) {
-    const viewed2 = !isViewedVideo(id), changed = setViewedVideo(id, viewed2);
-    showInfoLog((viewed2 ? "\u5DF2\u6807\u8BB0\u5DF2\u770B\uFF1A" : "\u5DF2\u6807\u8BB0\u672A\u770B\uFF1A") + id, "success");
-    sound("click");
-    return viewed2;
-  }
-
   // src/modules/video-luna/actions.ts
   function ok2(raw) {
     if (!raw || raw.code !== 0) throw new BiliActionError(typeof raw?.message === "string" && raw.message ? raw.message : "\u64CD\u4F5C\u5931\u8D25", Number(raw?.code) || 0);
@@ -14383,9 +15620,9 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
   };
   var api3 = "https://api.bilibili.com";
   var VideoActions = class {
-    constructor(read3, write2) {
-      this.read = read3;
-      this.write = write2;
+    constructor(read4, write3) {
+      this.read = read4;
+      this.write = write3;
     }
     get(path) {
       return this.read(api3 + path, new AbortController().signal).then(ok2, (error) => {
@@ -14403,8 +15640,21 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     async coins() {
       return Number((await this.get("/x/web-interface/nav")).money) || 0;
     }
-    like(aid, on5) {
-      return this.send("like", { aid, like: on5 ? 1 : 2 });
+    /** When each video went up (Unix seconds), by aid: Bilibili's batch read
+     * of archives, 40 a request. Videos it does not know are left out. */
+    async published(aids) {
+      const times = /* @__PURE__ */ new Map();
+      for (let at = 0; at < aids.length; at += 40) {
+        const data = await this.get(`/x/v3/fav/resource/infos?resources=${aids.slice(at, at + 40).map((aid) => `${aid}:2`).join(",")}`);
+        for (const item of Array.isArray(data) ? data : []) {
+          const aid = Number(item?.id), time2 = Number(item?.pubtime);
+          if (aid > 0 && time2 > 0) times.set(aid, time2);
+        }
+      }
+      return times;
+    }
+    like(aid, on7) {
+      return this.send("like", { aid, like: on7 ? 1 : 2 });
     }
     /** 一键三连: Bilibili answers which of the three went through. */
     async triple(aid) {
@@ -14454,8 +15704,8 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     watchLater(aid) {
       return this.send("watchlater", { aid });
     }
-    season(id, on5) {
-      return this.send(on5 ? "season-fav" : "season-unfav", { platform: "web", season_id: id });
+    season(id, on7) {
+      return this.send(on7 ? "season-fav" : "season-unfav", { platform: "web", season_id: id });
     }
     /** A 番剧 season: every episode, its sections, its other seasons, and the
      * viewer's 追番 and progress (`user_status`). */
@@ -14480,8 +15730,8 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       return pgcOk(await this.write(op, { query: Object.fromEntries(Object.entries(query).map(([name, value2]) => [name, String(value2)])) }));
     }
     /** 追番 / 追剧, or not. */
-    followSeason(seasonId, on5) {
-      return this.pgc(on5 ? "pgc-follow-add" : "pgc-follow-del", { season_id: seasonId });
+    followSeason(seasonId, on7) {
+      return this.pgc(on7 ? "pgc-follow-add" : "pgc-follow-del", { season_id: seasonId });
     }
     /** 1 想看, 2 在看, 3 看过. */
     followStatus(seasonId, status2) {
@@ -14592,8 +15842,8 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     let client = null;
     const queryClient = () => {
       if (client) return client;
-      const root2 = document.getElementById("__next"), key6 = root2 && Object.keys(root2).find((name) => name.startsWith("__reactContainer"));
-      const stack = key6 ? [root2[key6]] : [];
+      const root2 = document.getElementById("__next"), key7 = root2 && Object.keys(root2).find((name) => name.startsWith("__reactContainer"));
+      const stack = key7 ? [root2[key7]] : [];
       for (let seen = 0; stack.length && seen < 2e4; seen++) {
         const fiber = stack.pop();
         if (!fiber) continue;
@@ -14616,7 +15866,7 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       const queries = cache.getAll().filter((query) => query.state?.status === "success");
       const data = (name, match) => queries.find((query) => query.queryKey?.[0] === name && match(query.state.data, query.queryKey[1]))?.state.data;
       const seasonId = Number(manifest?.seasonId) || 0;
-      const season = data("pgc/view/web/simple/season", (value2, key6) => seasonId ? Number(value2?.season_id) === seasonId : key6?.ep_id === epId);
+      const season = data("pgc/view/web/simple/season", (value2, key7) => seasonId ? Number(value2?.season_id) === seasonId : key7?.ep_id === epId);
       if (!epId || !season) return;
       const sid = Number(season.season_id);
       const next = clone({
@@ -14626,9 +15876,9 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
         aid: Number(manifest?.aid) || 0,
         cid: Number(manifest?.cid) || 0,
         season,
-        episode: data("pgc/season/episode/web/info", (_value, key6) => Number(key6) === epId) ?? null,
-        related: data("/pgc/season/web/related/recommend", (_value, key6) => Number(key6) === sid)?.season ?? [],
-        rating: data("pgc/review/user", (_value, key6) => Number(key6) === Number(season.media_id)) ?? null
+        episode: data("pgc/season/episode/web/info", (_value, key7) => Number(key7) === epId) ?? null,
+        related: data("/pgc/season/web/related/recommend", (_value, key7) => Number(key7) === sid)?.season ?? [],
+        rating: data("pgc/review/user", (_value, key7) => Number(key7) === Number(season.media_id)) ?? null
       });
       const text4 = JSON.stringify(next);
       if (text4 === signature) return;
@@ -14719,7 +15969,7 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
         post({ kind: "command-result", id: data.id, ok: true });
       } else if (data.kind === "list") {
         const list = actionList(), done = (ok4) => post({ kind: "command-result", id: data.id, ok: ok4 });
-        const has = (key6) => (Array.isArray(list?.visibleResourceList) ? list.visibleResourceList : []).some((item) => `${item.type}_${item.oid}` === key6);
+        const has = (key7) => (Array.isArray(list?.visibleResourceList) ? list.visibleResourceList : []).some((item) => `${item.type}_${item.oid}` === key7);
         if (!list) {
           done(false);
           return;
@@ -14736,15 +15986,15 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
             const was = !!list.isFaved;
             Promise.resolve(list.handleCollect()).then(() => done(!!list.isFaved !== was), () => done(false));
           } else if (data.op === "remove") {
-            const key6 = String(data.key ?? "");
-            const wrap = [...document.querySelectorAll(".action-list-item-wrap")].find((node4) => node4.getAttribute("data-index") === key6);
+            const key7 = String(data.key ?? "");
+            const wrap = [...document.querySelectorAll(".action-list-item-wrap")].find((node4) => node4.getAttribute("data-index") === key7);
             const item = wrap?.querySelector(".action-list-item")?.__vue__;
             if (!item || typeof item.itemDelete !== "function") {
               done(false);
               return;
             }
             const started7 = Date.now(), wait = () => {
-              if (!has(key6)) done(true);
+              if (!has(key7)) done(true);
               else if (Date.now() - started7 > 3e3) done(false);
               else window.setTimeout(wait, 100);
             };
@@ -14818,270 +16068,6 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     return error instanceof BiliActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u7535\u89C6\u83DC\u5355\u5207\u5230\u539F\u751F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
   }
   var note = (message, tone = "info") => showInfoLog(message, tone);
-
-  // src/modules/video-luna/ui.ts
-  function el2(tag, className = "", text4) {
-    const node4 = document.createElement(tag);
-    if (className) node4.className = className;
-    if (text4 !== void 0) node4.textContent = text4;
-    return node4;
-  }
-  function link2(className, text4, href, newTab2 = true) {
-    const node4 = el2("a", className, text4);
-    node4.href = href;
-    if (newTab2) {
-      node4.target = "_blank";
-      node4.rel = "noopener noreferrer";
-    }
-    return node4;
-  }
-  function xpWindow(options) {
-    const root2 = el2("section", `xp-window vl-window ${options.className}`);
-    root2.setAttribute("aria-label", options.label ?? options.title);
-    const caption2 = root2.appendChild(el2("header", "xp-caption"));
-    const icon2 = caption2.appendChild(el2("span", "vl-caption-icon"));
-    icon2.append(options.icon);
-    const title = caption2.appendChild(el2("h2", "xp-caption-title", options.title));
-    const body2 = root2.appendChild(el2("div", "vl-body"));
-    return { root: root2, caption: caption2, icon: icon2, title, body: body2 };
-  }
-  function captionButton(caption2, kind, label, action) {
-    const button5 = caption2.appendChild(el2("button", "xp-caption-button"));
-    button5.type = "button";
-    button5.dataset.kind = kind;
-    button5.title = label;
-    button5.setAttribute("aria-label", label);
-    button5.addEventListener("click", () => {
-      sound("click");
-      action();
-    });
-    return button5;
-  }
-  var foldKey = "BiliAtelier_VideoWindows";
-  var readFolded = (name, fallback2 = false) => {
-    const stored = typeof GM_getValue === "function" ? GM_getValue(foldKey, {}) : {};
-    return typeof stored?.[name] === "boolean" ? stored[name] : fallback2;
-  };
-  var writeFolded = (name, folded) => {
-    if (typeof GM_setValue !== "function") return;
-    GM_setValue(foldKey, { ...GM_getValue(foldKey, {}) ?? {}, [name]: folded });
-  };
-  function foldable(window2, name) {
-    let folded = readFolded(name);
-    const toggle = () => {
-      folded = !folded;
-      sound(folded ? "minimize" : "restore");
-      writeFolded(name, folded);
-      paint2();
-    };
-    const button5 = captionButton(window2.caption, "minimize", "\u6700\u5C0F\u5316", toggle);
-    window2.caption.addEventListener("click", (event) => {
-      if (!event.target.closest(".xp-caption-button")) toggle();
-    });
-    const paint2 = () => {
-      window2.body.hidden = folded;
-      window2.root.toggleAttribute("data-folded", folded);
-      button5.dataset.kind = folded ? "restore" : "minimize";
-      button5.title = folded ? "\u8FD8\u539F" : "\u6700\u5C0F\u5316";
-      button5.setAttribute("aria-label", button5.title);
-      button5.setAttribute("aria-expanded", String(!folded));
-    };
-    paint2();
-    return button5;
-  }
-  function tool(label, icon2, title = "") {
-    const button5 = el2("button", "xp-tool");
-    button5.type = "button";
-    button5.addEventListener("click", () => sound("click"));
-    if (icon2) button5.append(icon2);
-    if (label) button5.append(el2("span", "vl-tool-label", label));
-    if (title) button5.title = title;
-    return button5;
-  }
-  var dropArrow = () => el2("span", "vl-drop");
-  function xpButton(label, action, className = "") {
-    const button5 = el2("button", `xp-button ${className}`.trim(), label);
-    button5.type = "button";
-    button5.addEventListener("click", () => {
-      sound("click");
-      action();
-    });
-    return button5;
-  }
-  var openMenuHost = null;
-  var openMenuAnchor = null;
-  function closeMenu() {
-    openMenuHost?.remove();
-    openMenuHost = null;
-    openMenuAnchor?.removeAttribute("data-menu-open");
-    openMenuAnchor?.setAttribute("aria-expanded", "false");
-    openMenuAnchor = null;
-  }
-  function swallowClick(target) {
-    const swallow = (event) => {
-      event.stopImmediatePropagation();
-      event.preventDefault();
-      done();
-    };
-    const done = () => {
-      target.removeEventListener("click", swallow, true);
-      window.clearTimeout(timer2);
-    };
-    target.addEventListener("click", swallow, true);
-    const timer2 = window.setTimeout(done, 600);
-  }
-  function openMenu(items, at) {
-    closeMenu();
-    const anchor = at instanceof HTMLElement ? at : null;
-    if (anchor) {
-      openMenuAnchor = anchor;
-      anchor.setAttribute("data-menu-open", "");
-      anchor.setAttribute("aria-expanded", "true");
-    }
-    const host = el2("div", "vl-menu-host");
-    host.setAttribute("data-bili-blocker-ui", "true");
-    const menu = host.appendChild(el2("div", "xp-menu vl-menu"));
-    menu.setAttribute("role", "menu");
-    const buttons2 = [];
-    for (const item of items) {
-      if (item === "separator") {
-        menu.append(el2("div", "xp-menu-separator"));
-        continue;
-      }
-      const button5 = menu.appendChild(el2("button", "xp-menu-item"));
-      button5.type = "button";
-      button5.setAttribute("role", item.checked === void 0 ? "menuitem" : item.radio ? "menuitemradio" : "menuitemcheckbox");
-      if (item.checked !== void 0) button5.setAttribute("aria-checked", String(item.checked));
-      button5.append(el2("span", "vl-menu-check", item.checked ? item.radio ? "\u2022" : "\u2713" : ""), el2("span", item.bold ? "vl-menu-default" : "", item.label));
-      button5.disabled = !!item.disabled;
-      if (item.title) button5.title = item.title;
-      button5.addEventListener("click", () => {
-        closeMenu();
-        sound("click");
-        item.action?.();
-      });
-      buttons2.push(button5);
-    }
-    (document.fullscreenElement ?? document.body).append(host);
-    openMenuHost = host;
-    observeCrispText(menu);
-    const rect = anchor?.getBoundingClientRect(), point = rect ? { x: rect.left, y: rect.bottom } : at;
-    const width2 = screenWidth(menu), height = screenHeight(menu);
-    placeFixed(menu, { left: Math.max(2, Math.min(point.x, innerWidth - width2 - 2)), top: point.y + height > innerHeight - 2 ? Math.max(2, (rect ? rect.top : point.y) - height) : point.y });
-    sound("menu");
-    const close = (event) => {
-      if (event.type === "pointerdown" && host.contains(event.target)) return;
-      if (event.type === "pointerdown" && anchor?.contains(event.target)) swallowClick(anchor);
-      closeMenu();
-      stop();
-    };
-    const key6 = (event) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        closeMenu();
-        stop();
-      }
-      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-        event.preventDefault();
-        const live = buttons2.filter((button5) => !button5.disabled), index = live.indexOf(document.activeElement);
-        live[(index + (event.key === "ArrowUp" ? -1 : 1) + live.length) % live.length]?.focus();
-      }
-    };
-    const stop = () => {
-      document.removeEventListener("pointerdown", close, true);
-      window.removeEventListener("scroll", close, true);
-      window.removeEventListener("resize", close);
-      document.removeEventListener("keydown", key6, true);
-    };
-    window.setTimeout(() => {
-      document.addEventListener("pointerdown", close, true);
-      window.addEventListener("scroll", close, true);
-      window.addEventListener("resize", close);
-      document.addEventListener("keydown", key6, true);
-    }, 0);
-    buttons2.find((button5) => !button5.disabled)?.focus({ preventScroll: true });
-  }
-  function viewedButton(id, label = (viewed2) => viewed2 ? "\u5DF2\u770B" : "\u672A\u770B") {
-    const button5 = el2("button", "vl-viewed");
-    button5.type = "button";
-    button5.dataset.viewedId = id;
-    button5.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      toggleViewedVideo(id);
-    });
-    const paint2 = () => {
-      const viewed2 = isViewedVideo(id);
-      button5.textContent = label(viewed2);
-      button5.setAttribute("aria-pressed", String(viewed2));
-      button5.classList.toggle("btnIsView", viewed2);
-    };
-    button5.atelierPaint = paint2;
-    paint2();
-    styleAtelierAction(button5);
-    return button5;
-  }
-  window.addEventListener(viewedMarksChanged, () => {
-    for (const button5 of document.querySelectorAll(".vl-viewed")) button5.atelierPaint?.();
-  });
-  function formatDuration(seconds2) {
-    const total = Math.max(0, Math.floor(Number(seconds2) || 0)), h = Math.floor(total / 3600), m = Math.floor(total % 3600 / 60), s = total % 60;
-    const two2 = (value2) => String(value2).padStart(2, "0");
-    return h ? `${h}:${two2(m)}:${two2(s)}` : `${two2(m)}:${two2(s)}`;
-  }
-  function formatDate(seconds2) {
-    const value2 = Number(seconds2);
-    if (!Number.isFinite(value2) || value2 <= 0) return "";
-    const date2 = new Date(value2 * 1e3), two2 = (n) => String(n).padStart(2, "0");
-    return `${date2.getFullYear()}-${two2(date2.getMonth() + 1)}-${two2(date2.getDate())} ${two2(date2.getHours())}:${two2(date2.getMinutes())}`;
-  }
-  function shortCount(value2) {
-    const number2 = Number(value2);
-    if (!Number.isFinite(number2) || number2 <= 0) return "0";
-    for (const [size, unit] of [[1e8, "\u4EBF"], [1e4, "\u4E07"]]) {
-      if (number2 >= size) {
-        const scaled = number2 / size;
-        return `${scaled >= 1e3 ? Math.round(scaled) : Number(scaled.toFixed(1))}${unit}`;
-      }
-    }
-    return String(Math.round(number2));
-  }
-  var weekday = (seconds2) => `\u5468${"\u65E5\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D"[new Date(seconds2 * 1e3).getDay()]}`;
-  var videoUrl = (bvid, p2) => `https://www.bilibili.com/video/${bvid}/${p2 && p2 > 1 ? `?p=${p2}` : ""}`;
-  function thumb(url, size) {
-    const value2 = typeof url === "string" ? url.replace(/^\/\//, "https://").replace(/^http:/, "https:") : "";
-    return /^https:\/\/[^/]*hdslb\.com\//.test(value2) && !value2.includes("@") ? `${value2}@${size}.webp` : value2;
-  }
-  function pixelIcon(parts2, label = "") {
-    const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
-    svg.setAttribute("class", "vl-icon");
-    svg.setAttribute("width", "16");
-    svg.setAttribute("height", "16");
-    svg.setAttribute("viewBox", "0 0 16 16");
-    svg.setAttribute("shape-rendering", "crispEdges");
-    if (label) svg.setAttribute("aria-label", label);
-    else svg.setAttribute("aria-hidden", "true");
-    for (const [d, fill] of parts2) {
-      const path = svg.appendChild(document.createElementNS(ns, "path"));
-      path.setAttribute("d", d);
-      path.setAttribute("fill", fill === "ink" ? "currentColor" : fill);
-    }
-    return svg;
-  }
-  var iconParts = {
-    like: [["M6 1h2v5H6zM4 6h9v1H4zM3 7h11v6H3zM1 7h2v7H1z", "#2b5fb4"], ["M7 2h1v4H7zM4 8h9v4H4z", "#8db5ef"], ["M2 8h1v5H2z", "#173a78"]],
-    coin: [["M5 1h6v1H5zM3 2h10v1H3zM2 3h12v10H2zM3 13h10v1H3zM5 14h6v1H5z", "#a8740a"], ["M5 3h6v1H5zM4 4h8v8H4zM5 12h6v1H5z", "#f2c43a"], ["M7 5h2v6H7zM6 6h4v1H6zM6 9h4v1H6z", "#a8740a"]],
-    star: [["M7 1h2v3h-2zM6 4h4v2H6zM1 6h14v2H1zM3 8h10v2H3zM4 10h8v2H4zM3 12h4v2H3zM9 12h4v2H9zM2 14h3v1H2zM11 14h3v1h-3z", "#b07d0a"], ["M7 3h2v3H7zM3 7h10v1H3zM4 8h8v2H4zM5 10h6v2H5z", "#f6cf3e"]],
-    share: [["M9 1h1v1h1v1h1v1h1v1h1v1h-1v1h-1v1h-1v1h-1v1H9V8H7v1H5v1H4v2H3v2H2V9h1V7h1V6h2V5h3z", "#2f7d22"], ["M9 3h1v1h1v1h1v1h-1v1h-1v1H9V7H6v1H5v1H4V8h1V7h1V6h3z", "#86cf55"]],
-    more: [["M2 7h3v3H2zM7 7h3v3H7zM12 7h3v3h-3z", "ink"]],
-    bubble: [["M2 2h12v1H2zM1 3h14v7H1zM2 10h12v1H2zM4 11h3v1H4zM4 12h2v1H4zM4 13h1v1H4z", "#1f4f9c"], ["M2 3h12v7H2zM5 11h1v1H5z", "#ffffff"], ["M4 6h2v2H4zM7 6h2v2H7zM10 6h2v2h-2z", "#1f4f9c"]],
-    fontColor: [["M7 1h2v1H7zM6 2h4v1H6zM6 3h1v2H6zM9 3h1v2H9zM5 5h1v3H5zM10 5h1v3h-1zM6 6h4v1H6zM4 8h1v3H4zM11 8h1v3h-1zM3 10h2v1H3zM11 10h2v1h-2z", "ink"], ["M1 13h14v3H1z", "#e01818"]]
-  };
-  var icons = Object.fromEntries(Object.keys(iconParts).map((name) => [name, () => pixelIcon(iconParts[name])]));
-  function iconUrl(name, ink) {
-    const paths = iconParts[name].map(([d, fill]) => `<path d="${d}" fill="${fill === "ink" ? ink : fill}"/>`).join("");
-    return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" shape-rendering="crispEdges">${paths}</svg>`)}")`;
-  }
 
   // src/modules/video-luna/dialog.ts
   function videoDialog(options) {
@@ -15260,12 +16246,12 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       void toggleLike();
     });
     async function toggleLike() {
-      const on5 = !mine.like, before = { ...mine }, beforeCounts = { ...counts };
-      mine.like = on5;
-      counts.like += on5 ? 1 : -1;
+      const on7 = !mine.like, before = { ...mine }, beforeCounts = { ...counts };
+      mine.like = on7;
+      counts.like += on7 ? 1 : -1;
       paint2();
       try {
-        await context.actions.like(aid(), on5);
+        await context.actions.like(aid(), on7);
       } catch (error) {
         mine = before;
         counts = beforeCounts;
@@ -15431,8 +16417,8 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     return {
       element: win.root,
       render(next) {
-        const bangumi = next.kind === "bangumi", key6 = (value2) => value2 ? value2.kind === "bangumi" ? `ep${value2.epId}` : value2.bvid : "";
-        const switched = key6(next) !== key6(state2);
+        const bangumi = next.kind === "bangumi", key7 = (value2) => value2 ? value2.kind === "bangumi" ? `ep${value2.epId}` : value2.bvid : "";
+        const switched = key7(next) !== key7(state2);
         state2 = next;
         const video2 = next.videoData ?? {}, stat = video2.stat ?? {};
         if (switched) {
@@ -15748,9 +16734,9 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
         check2.setAttribute("aria-label", viewedText.textContent);
         paintViewed();
       },
-      setWide(on5) {
-        wide2.dataset.kind = on5 ? "restore" : "maximize";
-        wide2.title = on5 ? "\u9000\u51FA\u5BBD\u5C4F" : "\u5BBD\u5C4F";
+      setWide(on7) {
+        wide2.dataset.kind = on7 ? "restore" : "maximize";
+        wide2.title = on7 ? "\u9000\u51FA\u5BBD\u5C4F" : "\u5BBD\u5C4F";
         wide2.setAttribute("aria-label", wide2.title);
       }
     };
@@ -15775,13 +16761,13 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     const sections = () => Array.isArray(season?.sections) ? season.sections.filter((part) => Array.isArray(part?.episodes) && part.episodes.length) : [];
     async function toggleSubscribe() {
       if (!season?.id) return;
-      const on5 = !subscribed;
+      const on7 = !subscribed;
       subscribe.disabled = true;
       try {
-        await context.actions.season(Number(season.id), on5);
-        subscribed = on5;
+        await context.actions.season(Number(season.id), on7);
+        subscribed = on7;
         paintSubscribe();
-        note(on5 ? "\u5DF2\u8BA2\u9605\u5408\u96C6" : "\u5DF2\u53D6\u6D88\u8BA2\u9605", "success");
+        note(on7 ? "\u5DF2\u8BA2\u9605\u5408\u96C6" : "\u5DF2\u53D6\u6D88\u8BA2\u9605", "success");
       } catch (error) {
         note(failure2(error), "error");
       } finally {
@@ -16187,9 +17173,9 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       if (at < 0) return;
       const ends = [[false, at >= size - 3 && !list.tail], [true, at <= 2 && !list.head]];
       for (const [ahead, wanted] of ends) {
-        const key6 = `${state2.bvid}|${ahead}|${size}`;
-        if (!wanted || tried.has(key6)) continue;
-        tried.add(key6);
+        const key7 = `${state2.bvid}|${ahead}|${size}`;
+        if (!wanted || tried.has(key7)) continue;
+        tried.add(key7);
         void more(ahead);
         return;
       }
@@ -16339,12 +17325,12 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     let visible = [];
     const loaded = /* @__PURE__ */ new Map();
     const seasonOf = (id) => id === Number(state2?.seasonId) && state2?.bangumi?.full ? Promise.resolve(state2.bangumi.full) : loaded.get(id) ?? (() => {
-      const read3 = context.actions.bangumiSeason(id).catch((error) => {
+      const read4 = context.actions.bangumiSeason(id).catch((error) => {
         loaded.delete(id);
         throw error;
       });
-      loaded.set(id, read3);
-      return read3;
+      loaded.set(id, read4);
+      return read4;
     })();
     const counted = /* @__PURE__ */ new Map();
     let data = null;
@@ -16601,675 +17587,6 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     };
   }
 
-  // src/ui/side-bounds.ts
-  var inside = 4;
-  var outside = 2;
-  var blankOf = (m) => (m.content.left - m.stage.left + (m.stage.right - m.content.right)) / 2;
-  var blankMax = (m) => Math.max(0, (m.stage.right - m.stage.left - m.least) / 2);
-  function dragBlank(start, dx, side, max) {
-    return Math.round(Math.min(Math.max(start + (side === "left" ? dx : -dx), 0), max));
-  }
-  function hitBound(m, x, y, top, bottom, unit = 1) {
-    if (y < top || y >= bottom) return null;
-    if (x >= m.content.left - outside * unit && x < m.content.left + inside * unit) return "left";
-    if (x >= m.content.right - inside * unit && x < m.content.right + outside * unit) return "right";
-    return null;
-  }
-  var attribute = "data-atelier-bounds";
-  var sideBoundsCss = `
-.atelier-bound-bar{position:fixed;z-index:2147483646;width:${inside}px;margin:0;padding:0;border:0;pointer-events:none;background:repeating-conic-gradient(#fff 0 25%,#000 0 50%) 0 0/2px 2px;mix-blend-mode:difference}
-:is(html[${attribute}],html[${attribute}] *){cursor:ew-resize!important}
-html[${attribute}=drag] *{user-select:none!important}
-.atelier-bound-sheet{position:fixed;inset:0;z-index:2147483647}
-`;
-  var covers = "dialog,[role=dialog],[role=menu],header.lh,.vl-menu-host,.xp-tooltip";
-  function startSideBounds(host) {
-    const root2 = document.documentElement;
-    if (!document.getElementById("atelier-side-bounds")) {
-      const style = document.createElement("style");
-      style.id = "atelier-side-bounds";
-      style.textContent = sideBoundsCss;
-      (document.head || root2).append(style);
-    }
-    const bars = [0, 1].map(() => {
-      const bar = document.createElement("div");
-      bar.className = "atelier-bound-bar";
-      bar.setAttribute("aria-hidden", "true");
-      bar.setAttribute("data-bili-blocker-ui", "true");
-      return bar;
-    });
-    const show = (left, right) => {
-      const top = headerScreenHeight(), height = Math.max(0, innerHeight - top);
-      const dot = currentPixelScale().scale ? 1 : 1 / (window.devicePixelRatio || 1), tile = `${2 * dot}px`;
-      bars.forEach((bar, index) => {
-        if (!bar.isConnected) document.body.append(bar);
-        bar.style.backgroundSize = `${tile} ${tile}`;
-        placeFixed(bar, { left: index ? right - inside * zoomOf(bar) : left, top, height });
-      });
-    };
-    const hide = () => {
-      for (const bar of bars) bar.remove();
-    };
-    const setState = (state2) => {
-      if (state2) {
-        if (root2.getAttribute(attribute) !== state2) root2.setAttribute(attribute, state2);
-      } else root2.removeAttribute(attribute);
-    };
-    const covered = (x, y) => !!document.elementFromPoint?.(x, y)?.closest(covers);
-    function hit(x, y) {
-      const m = host.measure();
-      if (!m) return null;
-      const side = hitBound(m, x, y, headerScreenHeight(), innerHeight, zoomOf(document.body));
-      return side && !covered(x, y) ? { m, side } : null;
-    }
-    let dragging = false, hover = null, frame2 = 0;
-    const repaintHover = () => {
-      frame2 = 0;
-      if (dragging) return;
-      const found = hover && hover.pointerType !== "touch" && !hover.buttons ? hit(hover.clientX, hover.clientY) : null;
-      if (found) {
-        show(found.m.content.left, found.m.content.right);
-        setState("hover");
-      } else if (root2.getAttribute(attribute) === "hover") {
-        hide();
-        setState("");
-      }
-    };
-    window.addEventListener("pointermove", (event) => {
-      hover = event;
-      frame2 ||= requestAnimationFrame(repaintHover);
-    }, { passive: true });
-    document.addEventListener("pointerleave", () => {
-      hover = null;
-      frame2 ||= requestAnimationFrame(repaintHover);
-    });
-    window.addEventListener("scroll", () => {
-      if (hover) frame2 ||= requestAnimationFrame(repaintHover);
-    }, { passive: true });
-    window.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0 || dragging) return;
-      const found = hit(event.clientX, event.clientY);
-      if (!found) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      const { m, side } = found, start = blankOf(m), max = blankMax(m), x = event.clientX;
-      const sheet = document.body.appendChild(document.createElement("div"));
-      sheet.className = "atelier-bound-sheet";
-      sheet.setAttribute("data-bili-blocker-ui", "true");
-      dragging = true;
-      setState("drag");
-      let blank = Math.round(start), moveFrame = 0, last = x;
-      const place2 = () => {
-        moveFrame = 0;
-        blank = dragBlank(start, last - x, side, max);
-        show(m.stage.left + blank, m.stage.right - blank);
-      };
-      show(m.content.left, m.content.right);
-      const move = (next) => {
-        last = next.clientX;
-        moveFrame ||= requestAnimationFrame(place2);
-      };
-      const finish = (apply) => {
-        window.removeEventListener("pointermove", move, true);
-        window.removeEventListener("pointerup", up, true);
-        window.removeEventListener("pointercancel", cancel, true);
-        window.removeEventListener("blur", cancel);
-        window.removeEventListener("keydown", key6, true);
-        cancelAnimationFrame(moveFrame);
-        sheet.remove();
-        hide();
-        dragging = false;
-        setState("");
-        if (apply) {
-          blank = dragBlank(start, last - x, side, max);
-          if (Math.abs(blank - start) >= 1) host.commit(blank);
-        }
-        frame2 ||= requestAnimationFrame(repaintHover);
-      };
-      const up = () => finish(true), cancel = () => finish(false);
-      const key6 = (next) => {
-        if (next.key === "Escape") {
-          next.preventDefault();
-          next.stopImmediatePropagation();
-          cancel();
-        }
-      };
-      window.addEventListener("pointermove", move, true);
-      window.addEventListener("pointerup", up, true);
-      window.addEventListener("pointercancel", cancel, true);
-      window.addEventListener("blur", cancel);
-      window.addEventListener("keydown", key6, true);
-    }, true);
-    window.addEventListener("dblclick", (event) => {
-      if (!hit(event.clientX, event.clientY)) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      hide();
-      setState("");
-      host.reset();
-    }, true);
-  }
-
-  // src/modules/video-luna/layout.ts
-  var layoutKey = "BiliAtelier_VideoLayout";
-  function readSaved() {
-    const value2 = typeof GM_getValue === "function" ? GM_getValue(layoutKey, {}) : {};
-    return value2 && typeof value2 === "object" ? value2 : {};
-  }
-  var writeSaved = (saved) => {
-    if (typeof GM_setValue === "function") GM_setValue(layoutKey, saved);
-  };
-  var rightMin = 300;
-  var playerMin = 480;
-  var frameWidth = 4;
-  var playerHeight = (width2) => Math.round(width2 * 9 / 16 + 46);
-  var playerWidth = (height) => (height - 46) * 16 / 9;
-  function columnWidths(native2, saved, total = native2.left + native2.right) {
-    if (total - rightMin < playerMin) return null;
-    const right = Math.round(Math.min(Math.max(saved || native2.right, rightMin), total - playerMin));
-    return Math.abs(total - native2.left - native2.right) < 0.5 && right === Math.round(native2.right) ? null : { left: total - right, right };
-  }
-  var contentLeast = (gap2) => frameWidth + playerMin + gap2 + rightMin;
-  function blankTotal(width2, blank, gap2) {
-    const least = contentLeast(gap2);
-    if (width2 < least) return null;
-    return width2 - 2 * Math.max(0, Math.min(blank, (width2 - least) / 2)) - frameWidth - gap2;
-  }
-  var splitRight = (before, total) => Math.round(Math.min(Math.max(before.right + (total - before.left - before.right) / 2, rightMin), total - playerMin));
-  var cursors = { left: "ew", right: "ew", bottom: "ns", "bottom-left": "nesw", "bottom-right": "nwse" };
-  function hitEdge(rect, x, y, edges, unit = 1) {
-    const frame2 = 4 * unit, out = 2 * unit, corner = 16 * unit;
-    if (x < rect.left - out || x >= rect.right + out || y < rect.top || y >= rect.bottom + out) return null;
-    const left = x < rect.left + frame2, right = x >= rect.right - frame2, bottom = y >= rect.bottom - frame2;
-    const nearBottom = y >= rect.bottom - corner, nearLeft = x < rect.left + corner, nearRight = x >= rect.right - corner;
-    if (edges.includes("bottom-left") && (left && nearBottom || bottom && nearLeft)) return "bottom-left";
-    if (edges.includes("bottom-right") && (right && nearBottom || bottom && nearRight)) return "bottom-right";
-    if (bottom && edges.includes("bottom")) return "bottom";
-    if (left && edges.includes("left")) return "left";
-    if (right && edges.includes("right")) return "right";
-    return null;
-  }
-  var columnSelectors = { video: [".left-container", ".right-container"], list: [".playlist-container--left", ".playlist-container--right"] };
-  var containers = { video: ".video-container-v1", list: ".playlist-container", bangumi: ".main-container" };
-  var stickyColumns = { video: ".right-container-inner", list: ".playlist-container--right", bangumi: ".plp-r" };
-  var bottomGaps = { video: 0, list: 0, bangumi: 280 };
-  var on3 = `html[${videoAttribute}=luna]`;
-  function followTop(at, target, dy) {
-    if (Math.abs(at - target) < 0.5) return at;
-    const next = at > target ? Math.max(target, at - Math.max(dy, 0)) : Math.min(target, at - Math.min(dy, 0));
-    return Math.abs(next - target) < 0.5 ? null : next;
-  }
-  function placeColumn(kind) {
-    let column = null, width2 = -1, height = -1, hold = null, lastY = scrollY;
-    const set = (top) => {
-      hold = top;
-      const host = column?.parentElement;
-      if (top === null) host?.style.removeProperty("--vl-hold-top");
-      else host?.style.setProperty("--vl-hold-top", `${top / zoomOf(host)}px`);
-    };
-    const place2 = () => {
-      if (!column?.parentElement) return;
-      const header = document.getElementById("biliMainHeader")?.clientHeight || headerHeight();
-      column.parentElement.style.setProperty("--vl-stick", `${Math.min(header, innerHeight / zoomOf(column) - column.offsetHeight - bottomGaps[kind])}px`);
-    };
-    const free = (element2) => {
-      const held = hold;
-      set(null);
-      const top = element2.getBoundingClientRect().top;
-      set(held);
-      return top;
-    };
-    const sizes = typeof ResizeObserver === "function" ? new ResizeObserver((entries) => {
-      const rect = entries[entries.length - 1].contentRect, resized = rect.width !== width2;
-      if (!column || !resized && rect.height === height) return;
-      width2 = rect.width;
-      height = rect.height;
-      const at = column.getBoundingClientRect().top;
-      place2();
-      if (resized) set(null);
-      else if (Math.abs(free(column) - at) > 0.5) set(at);
-    }) : null;
-    const watch = () => {
-      const next = document.querySelector(stickyColumns[kind]);
-      if (next === column) return;
-      set(null);
-      if (column) sizes?.unobserve(column);
-      column = next;
-      width2 = height = -1;
-      if (column) sizes?.observe(column);
-    };
-    watch();
-    window.addEventListener("scroll", () => {
-      const dy = scrollY - lastY;
-      lastY = scrollY;
-      watch();
-      if (hold === null || !column) return;
-      const at = column.getBoundingClientRect().top, next = followTop(at, free(column), dy);
-      if (next === null || next !== at) set(next);
-    }, { passive: true });
-    window.addEventListener("resize", () => {
-      set(null);
-      place2();
-    });
-  }
-  function setSizePageWorld(attribute2) {
-    const page = window, original = page.setSize;
-    if (typeof original !== "function") return;
-    if (original.atelierZoom) {
-      original();
-      return;
-    }
-    const sized2 = function(...args) {
-      const zoom = Number(document.documentElement.getAttribute(attribute2)) || 1;
-      if (zoom === 1) return original.apply(this, args);
-      const width2 = Object.getOwnPropertyDescriptor(window, "innerWidth"), height = Object.getOwnPropertyDescriptor(window, "innerHeight");
-      const across = innerWidth / zoom, down = innerHeight / zoom;
-      try {
-        Object.defineProperty(window, "innerWidth", { configurable: true, get: () => across });
-        Object.defineProperty(window, "innerHeight", { configurable: true, get: () => down });
-        return original.apply(this, args);
-      } finally {
-        if (width2) Object.defineProperty(window, "innerWidth", width2);
-        else delete page.innerWidth;
-        if (height) Object.defineProperty(window, "innerHeight", height);
-        else delete page.innerHeight;
-      }
-    };
-    sized2.atelierZoom = true;
-    page.setSize = sized2;
-    sized2();
-  }
-  var sized = `${on3}:not([data-atelier-screen=wide],[data-atelier-screen=web],[data-atelier-screen=full])`;
-  function startLayout(kind) {
-    const root2 = document.documentElement;
-    const zoom = () => zoomOf(document.body);
-    const style = document.createElement("style");
-    style.id = "atelier-video-layout";
-    (document.head || root2).append(style);
-    let saved = readSaved();
-    const grips = [], lists = /* @__PURE__ */ new Map();
-    const mode2 = () => root2.getAttribute("data-atelier-screen") || "normal";
-    const folded = (box) => box.hasAttribute("data-folded") || box.classList.contains("bui-collapse-wrap-folded");
-    let columns3 = null;
-    function native2() {
-      if (style.sheet) style.sheet.disabled = true;
-      try {
-        if (kind === "bangumi") {
-          const grid = document.querySelector(".plp-layout");
-          const tracks = grid ? getComputedStyle(grid).gridTemplateColumns.split(" ").map(parseFloat) : [];
-          return tracks.length === 3 && tracks.every((width2) => width2 > 0) ? { left: tracks[0], gap: tracks[1], right: tracks[2] } : null;
-        }
-        const [left, right] = columnSelectors[kind].map((selector) => document.querySelector(selector)?.getBoundingClientRect());
-        if (!left?.width || !right?.width) return null;
-        const z = zoom();
-        return { left: left.width / z, right: z === 1 ? right.width : innerWidth / z > 1680 ? 411 : 350, gap: Math.max(0, right.left - left.right) / z };
-      } finally {
-        if (style.sheet) style.sheet.disabled = false;
-      }
-    }
-    function stage() {
-      const container = document.querySelector(containers[kind]), box = (kind === "bangumi" ? container?.parentElement : container)?.getBoundingClientRect();
-      return box?.width ? { left: box.left, right: box.right } : null;
-    }
-    function content() {
-      const [left, right] = kind === "bangumi" ? [".plp-layout", ".plp-layout"] : columnSelectors[kind];
-      const a = document.querySelector(left)?.getBoundingClientRect(), b = document.querySelector(right)?.getBoundingClientRect();
-      return a?.width && b?.width ? { left: a.left - frameWidth * zoom(), right: b.right } : null;
-    }
-    function total(c) {
-      const box = saved.blank === void 0 ? null : stage(), z = zoom();
-      return (box && blankTotal((box.right - box.left) / z, saved.blank / z, c.gap)) ?? c.left + c.right;
-    }
-    function danmakuChrome() {
-      const page = document.querySelector("#danmukuBox .bpx-player-wraplist"), list = document.querySelector("#danmukuBox .bpx-player-dm-wrap");
-      const chrome = parseFloat(page?.style.height ?? "") - parseFloat(list?.style.height ?? "");
-      return chrome > 0 && chrome < 200 ? chrome : 71;
-    }
-    const dm2 = `${on3} #danmukuBox[style*="--vl-dm-h:"]`, wide2 = `${on3}[data-atelier-screen=wide]`;
-    const zoomed = `${on3}[${pageZoomAttribute}]`, main = `.main-container:not([style*="--vl-main:"])`;
-    const avh = "calc(1vh / var(--atelier-zoom, 1))", avw = "calc(1vw / var(--atelier-zoom, 1))", across = (fixed, right = " + var(--right-bar-width)") => `width:calc(177.778 * ${avh} - ${fixed}px + 30px${right})!important`;
-    const bangumiZoom = `${zoomed}{--right-bar-width:350px;--danmu-bar-height:46px}
-${zoomed}[data-vl-viewport~=w1680]{--right-bar-width:411px;--danmu-bar-height:56px}
-${zoomed} ${main}{${across(470)};max-width:calc(100 * ${avw} - 80px)!important}
-${zoomed}[data-vl-viewport~=w1680] ${main}{${across(505)}}
-${zoomed}[data-vl-viewport~=w2560] ${main}{max-width:2480px!important}
-${zoomed} .home-container.wide ${main}{${across(650)}}
-${zoomed}[data-vl-viewport~=w1680] .home-container.wide ${main}{${across(735)}}
-${zoomed} .home-container.special.wide ${main}{${across(460, "")};max-width:calc(100 * ${avw} - 80px)!important}
-${zoomed}[data-vl-viewport~=w2221] .home-container.special.wide ${main}{max-width:2141px!important}`;
-    style.textContent = `${kind === "bangumi" ? bangumiZoom + "\n" : ""}${on3} :is(${containers.video},${containers.list})[style*="--vl-blank:"]{padding:0 0 0 ${frameWidth}px!important}
-${on3} ${containers.bangumi}[style*="--vl-main:"]{width:var(--vl-main)!important;max-width:none!important;min-width:0!important;padding:0 0 0 ${frameWidth}px!important}
-${wide2} #bilibili-player[style*="--vl-wide-w:"]{width:var(--vl-wide-w)!important;height:var(--vl-wide-h)!important}
-${wide2} #playerWrap[style*="--vl-wide-h:"]{height:var(--vl-wide-h)!important}
-${wide2} #danmukuBox[style*="--vl-wide-h:"]{margin-top:calc(var(--vl-wide-h) + 28px)!important}
-${wide2} #oldfanfollowEntry[style*="--vl-wide-h:"]{top:calc(var(--vl-wide-h) + 10px)!important}
-${on3} :is(${[...columnSelectors.video, ...columnSelectors.list].join(",")})[style*="--vl-col:"]{width:var(--vl-col)!important}
-${sized} #bilibili-player[style*="--vl-col:"]{width:var(--vl-col)!important;height:var(--vl-col-h)!important}
-${sized} #playerWrap[style*="--vl-col-h:"]{height:var(--vl-col-h)!important}
-${on3} .plp-layout[style*="--vl-grid:"]{grid-template-columns:var(--vl-grid)!important}
-${dm2} .bpx-player-wraplist{height:var(--vl-dm-h)!important}
-${dm2} :is(.bpx-player-dm-wrap,.bpx-player-dm-load-status){height:var(--vl-dm-list)!important}
-${dm2} .bpx-player-dm-load-status{line-height:var(--vl-dm-list)!important}
-${on3} :is(${Object.values(stickyColumns).join(",")}){overflow-anchor:none}
-${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).scroll-sticky{top:var(--vl-hold-top,var(--vl-stick))!important}
-`;
-    const mark2 = (selector, values) => {
-      const element2 = document.querySelector(selector);
-      if (!element2) return;
-      for (const [name, value2] of Object.entries(values)) {
-        if (value2 === null) element2.style.removeProperty(name);
-        else if (element2.style.getPropertyValue(name) !== value2) element2.style.setProperty(name, value2);
-      }
-    };
-    function paint2() {
-      const all = columns3 ? total(columns3) : 0, sizes = columns3 && columnWidths(columns3, saved.right, all), px2 = (value2) => value2 ? `${value2}px` : null;
-      const widened = !!columns3 && !!sizes && Math.abs(all - columns3.left - columns3.right) >= 0.5;
-      if (kind === "bangumi") {
-        mark2(".plp-layout", { "--vl-grid": sizes ? `${sizes.left}px ${columns3.gap}px ${sizes.right}px` : null });
-        mark2(containers.bangumi, { "--vl-main": widened ? px2(all + columns3.gap) : null });
-      } else {
-        const held = !sizes && columns3 && zoom() !== 1 ? columns3.right : 0;
-        const [left, right] = columnSelectors[kind], height = px2(sizes ? playerHeight(sizes.left) : 0);
-        mark2(left, { "--vl-col": px2(sizes?.left) });
-        mark2(right, { "--vl-col": px2(sizes?.right ?? held) });
-        mark2("#bilibili-player", { "--vl-col": px2(sizes?.left), "--vl-col-h": height });
-        mark2("#playerWrap", { "--vl-col-h": height });
-        const across2 = widened ? all + columns3.gap : 0, high = px2(across2 ? playerHeight(across2) : 0);
-        mark2(containers[kind], { "--vl-blank": widened ? "1" : null });
-        mark2("#bilibili-player", { "--vl-wide-w": px2(across2), "--vl-wide-h": high });
-        for (const selector of ["#playerWrap", "#danmukuBox", "#oldfanfollowEntry"]) mark2(selector, { "--vl-wide-h": high });
-      }
-      const danmaku = saved.heights?.danmaku;
-      mark2("#danmukuBox", { "--vl-dm-h": px2(danmaku), "--vl-dm-list": px2(danmaku ? danmaku - danmakuChrome() : 0) });
-      for (const [name, rows] of lists) {
-        const element2 = rows(), height = saved.heights?.[name];
-        if (element2) element2.style.maxHeight = height ? `${height}px` : "";
-      }
-    }
-    function measureColumns() {
-      columns3 = native2();
-      paint2();
-    }
-    function save() {
-      writeSaved(saved);
-      notifyPageLayoutChanged();
-    }
-    const setHeight = (name, height) => {
-      const heights = { ...saved.heights };
-      if (height) heights[name] = Math.round(height);
-      else delete heights[name];
-      saved = { ...saved, heights };
-    };
-    function lineDrag(to) {
-      columns3 = native2();
-      const all = columns3 ? total(columns3) : 0;
-      if (!columns3 || all - rightMin < playerMin) return null;
-      const start = columnWidths(columns3, saved.right, all)?.right ?? columns3.right;
-      return {
-        move(dx, dy) {
-          const z = zoom(), right = Math.min(Math.max(all - to(dx / z, dy / z, all - start), rightMin), all - playerMin);
-          saved = { ...saved, right: Math.round(right) };
-          paint2();
-        },
-        end() {
-          if (saved.right === Math.round(columns3.right)) {
-            const { right, ...rest } = saved;
-            saved = rest;
-            paint2();
-          }
-          save();
-        }
-      };
-    }
-    function heightDrag(name, box, start, least, after) {
-      const z = zoom(), room = (innerHeight - headerScreenHeight() - box.getBoundingClientRect().height) / z;
-      return {
-        move(_dx, dy) {
-          setHeight(name, Math.min(Math.max(start + dy / z, least), Math.max(start + room, least)));
-          paint2();
-        },
-        end() {
-          save();
-          after?.();
-        }
-      };
-    }
-    const both = (line, height) => ({
-      move(dx, dy) {
-        line?.move(dx, dy);
-        height.move(dx, dy);
-      },
-      end() {
-        line?.end();
-        height.end();
-      }
-    });
-    const resetLine = () => {
-      const { right, ...rest } = saved;
-      saved = rest;
-      measureColumns();
-      save();
-    };
-    function setBlank(blank) {
-      columns3 = native2();
-      if (!columns3) return;
-      const before = columnWidths(columns3, saved.right, total(columns3)) ?? { left: columns3.left, right: columns3.right };
-      const { blank: _old, right: _right, ...rest } = saved;
-      saved = blank === void 0 ? rest : { ...rest, blank };
-      const right = splitRight(before, total(columns3));
-      if (blank !== void 0 || right !== Math.round(columns3.right)) saved = { ...saved, right };
-      paint2();
-      save();
-      window.dispatchEvent(new Event("resize"));
-    }
-    const add = (grip) => grips.push(grip);
-    const lineEdges = () => mode2() === "web" || mode2() === "full" ? [] : null;
-    let cursor = "";
-    const setCursor = (next) => {
-      if (next === cursor) return;
-      cursor = next;
-      if (next) root2.setAttribute("data-vl-resize", next);
-      else root2.removeAttribute("data-vl-resize");
-    };
-    const covered = (x, y, box) => {
-      const top = document.elementFromPoint?.(x, y);
-      return !!top && !box.contains(top) && !!top.closest(".bpx-player-container,.vl-menu-host,dialog,header.lh");
-    };
-    function hit(x, y) {
-      for (const grip of grips) {
-        const box = grip.box();
-        if (!box?.isConnected || folded(box)) continue;
-        const edges = grip.edges();
-        if (!edges.length) continue;
-        const rect = box.getBoundingClientRect();
-        if (!rect.width || !rect.height) continue;
-        const inside2 = x >= rect.left && x < rect.right && y >= rect.top && y < rect.bottom;
-        const edge = grip.whole ? inside2 && edges.includes(grip.whole) ? grip.whole : null : hitEdge(rect, x, y, edges, zoom());
-        if (edge && !covered(x, y, box)) return { grip, edge };
-      }
-      return null;
-    }
-    let dragging = false, hover = null, hoverFrame = 0;
-    window.addEventListener("pointermove", (event) => {
-      if (dragging) return;
-      hover = event;
-      hoverFrame ||= requestAnimationFrame(() => {
-        hoverFrame = 0;
-        const found = hover && hover.pointerType !== "touch" ? hit(hover.clientX, hover.clientY) : null;
-        setCursor(found ? cursors[found.edge] : "");
-      });
-    }, { passive: true });
-    window.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0 || dragging) return;
-      const found = hit(event.clientX, event.clientY), drag = found?.grip.drag(found.edge);
-      if (!found || !drag) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      const sheet = document.body.appendChild(el2("div", "vl-resize-sheet"));
-      sheet.setAttribute("data-bili-blocker-ui", "true");
-      dragging = true;
-      setCursor(cursors[found.edge]);
-      root2.setAttribute("data-vl-resizing", "");
-      const x = event.clientX, y = event.clientY;
-      let moved2 = false, last = [0, 0], frame2 = 0;
-      const move = (next) => {
-        last = [next.clientX - x, next.clientY - y];
-        if (last[0] || last[1]) moved2 = true;
-        frame2 ||= requestAnimationFrame(() => {
-          frame2 = 0;
-          drag.move(...last);
-        });
-      };
-      const finish = () => {
-        window.removeEventListener("pointermove", move, true);
-        window.removeEventListener("pointerup", finish, true);
-        window.removeEventListener("pointercancel", finish, true);
-        window.removeEventListener("blur", finish);
-        cancelAnimationFrame(frame2);
-        if (moved2) {
-          drag.move(...last);
-          drag.end();
-        }
-        sheet.remove();
-        dragging = false;
-        root2.removeAttribute("data-vl-resizing");
-        setCursor("");
-      };
-      window.addEventListener("pointermove", move, true);
-      window.addEventListener("pointerup", finish, true);
-      window.addEventListener("pointercancel", finish, true);
-      window.addEventListener("blur", finish);
-    }, true);
-    window.addEventListener("dblclick", (event) => {
-      const found = hit(event.clientX, event.clientY);
-      if (!found) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      found.grip.reset(found.edge);
-    }, true);
-    let resizeFrame = 0;
-    const remeasure = () => {
-      resizeFrame ||= requestAnimationFrame(() => {
-        resizeFrame = 0;
-        measureColumns();
-      });
-    };
-    window.addEventListener("resize", () => {
-      markViewport();
-      remeasure();
-    });
-    window.addEventListener(zoomChanged, () => {
-      markViewport();
-      remeasure();
-    });
-    const sizeStyle = document.getElementById("setSizeStyle");
-    if (sizeStyle) new MutationObserver(remeasure).observe(sizeStyle, { childList: true, characterData: true, subtree: true });
-    registerPageLayout({
-      isDefault: () => !saved.right && saved.blank === void 0 && !Object.keys(saved.heights ?? {}).length,
-      reset() {
-        saved = {};
-        measureColumns();
-        save();
-        window.dispatchEvent(new Event("resize"));
-      }
-    });
-    function markViewport() {
-      const width2 = innerWidth / zoom(), marks = [1680, 2221, 2560].filter((at) => width2 >= at).map((at) => `w${at}`).join(" ");
-      if (root2.getAttribute("data-vl-viewport") !== marks) root2.setAttribute("data-vl-viewport", marks);
-    }
-    markViewport();
-    if (kind !== "bangumi") injectPageScript(`(${setSizePageWorld.toString()})(${JSON.stringify(pageZoomAttribute)});`);
-    measureColumns();
-    placeColumn(kind);
-    startSideBounds({
-      measure() {
-        const box = stage(), edges = content();
-        if (!columns3 || !box || !edges || mode2() === "web" || mode2() === "full") return null;
-        return { stage: box, content: edges, least: contentLeast(columns3.gap) * zoom() };
-      },
-      commit: (blank) => setBlank(blank),
-      reset: () => setBlank()
-    });
-    return {
-      /** Bilibili resized its columns (a new mode): measure them again. */
-      measure: measureColumns,
-      /** The player window's frame: its right and bottom edges size the player,
-       * keeping Bilibili's 16:9. Only in normal mode. */
-      player(frame2, grip) {
-        const drag = (edge) => lineDrag((dx, dy, left) => {
-          const across2 = left + dx, down = playerWidth(playerHeight(left) + dy);
-          if (edge === "right") return across2;
-          if (edge === "bottom") return down;
-          return Math.abs(across2 - left) >= Math.abs(down - left) ? across2 : down;
-        });
-        const edges = () => mode2() === "normal" ? ["right", "bottom", "bottom-right"] : [];
-        add({ box: frame2, edges, drag, reset: resetLine });
-        if (grip) add({ box: () => grip, edges, drag, reset: resetLine, whole: "bottom-right" });
-      },
-      /** A window along the line between the columns, on its `side`. */
-      line(box, side) {
-        add({ box: () => box, edges: () => lineEdges() ?? [side], drag: () => lineDrag((dx, _dy, left) => left + dx), reset: resetLine });
-      },
-      /** A list window in the right column: its bottom edge sets how tall its
-       * list may grow (three rows of 22 px at least, with the header if the
-       * header scrolls with them), its left edge is the line. */
-      list(name, box, rows) {
-        lists.set(name, rows);
-        paint2();
-        const height = () => {
-          const element2 = rows();
-          if (!element2) return null;
-          const head = element2.querySelector(":scope > .vl-lv-head")?.offsetHeight ?? 0;
-          return heightDrag(name, box, element2.getBoundingClientRect().height / zoom(), head + 66);
-        };
-        add({
-          box: () => box,
-          edges: () => lineEdges() ?? ["left", "bottom", "bottom-left"],
-          drag: (edge) => {
-            const line = edge === "bottom" ? null : lineDrag((dx, _dy, left) => left + dx), list = edge === "left" ? null : height();
-            return list ? both(line, list) : line;
-          },
-          reset: (edge) => {
-            if (edge !== "left") {
-              setHeight(name);
-              paint2();
-              save();
-            }
-            if (edge !== "bottom") resetLine();
-          }
-        });
-      },
-      /** Bilibili's 弹幕 window: the same, on the player's tab page; its
-       * virtual list draws rows for a new height on the next resize. */
-      danmaku() {
-        const box = () => document.querySelector("#danmukuBox .bui-collapse-wrap");
-        const refill = () => window.dispatchEvent(new Event("resize"));
-        const height = () => {
-          const page = document.querySelector("#danmukuBox .bpx-player-wraplist"), wrap = box();
-          if (!page || !wrap) return null;
-          return heightDrag("danmaku", wrap, parseFloat(getComputedStyle(page).height) || page.getBoundingClientRect().height / zoom(), danmakuChrome() + 72, refill);
-        };
-        add({
-          box,
-          edges: () => lineEdges() ?? ["left", "bottom", "bottom-left"],
-          drag: (edge) => {
-            const line = edge === "bottom" ? null : lineDrag((dx, _dy, left) => left + dx), list = edge === "left" ? null : height();
-            return list ? both(line, list) : line;
-          },
-          reset: (edge) => {
-            if (edge !== "left") {
-              setHeight("danmaku");
-              paint2();
-              save();
-              refill();
-            }
-            if (edge !== "bottom") resetLine();
-          }
-        });
-      }
-    };
-  }
-
   // src/ui/assets/wmp9/bar-fill.png
   var bar_fill_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAA5CAYAAAAY231eAAABVUlEQVR42u3cMU7DQBRF0Yw9tmOzAVbA3ulYBX3qFKnSGiQQiBBlaNjA/0WUSOcs4TVXM9a4rB+ntgGAoLo7vFsBgHhAnl9erQBAPCBPj4sVAIgHZByqFQBIBGQUEAASAVm2oxUAEBAArhSQh2WwAgCJE8jsBAJA6gQiIAAkAjLPrrAA8BEdgKu9A5m8AwEgrrTLl7/xApAISGsCAkBYPZ9PVgAgHpD98ccKAMQDcjiuVgAgHpD17dsKAMQD8vvpBAJAIiB931sBgHhAhkFAAEgEpFYv0QFIBcQJBABXWAC4wgLgpgMyTX7nDkDqCssJBAABAUBAAPARHQDvQADg/19YnRUAiAek6wQEgERASilWACDM8QMAAQFAQAC4cXXTjACAEwgAAgKAgAAgIAAgIAAICAACAoCAACAgACAgAAgIAAICgIAAICAAICAACAgAAgLA3fkDOA4iGXdkaCkAAAAASUVORK5CYII=";
 
@@ -17373,9 +17690,9 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
   var tinted = /* @__PURE__ */ new Map();
   function mediaArt(scheme, dark) {
     if (scheme === "blue" && !dark) return Promise.resolve({ ...art });
-    const key6 = `${scheme}:${dark}`;
-    if (!tinted.has(key6)) tinted.set(key6, tint(scheme, dark).catch(() => ({ ...art })));
-    return tinted.get(key6);
+    const key7 = `${scheme}:${dark}`;
+    if (!tinted.has(key7)) tinted.set(key7, tint(scheme, dark).catch(() => ({ ...art })));
+    return tinted.get(key7);
   }
   async function tint(scheme, dark) {
     const [blueHue, blueSaturation] = hsl(lunaTokens("blue", false).highlight), [hue, saturation] = hsl(lunaTokens(scheme, false).highlight);
@@ -17496,17 +17813,17 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     };
     const rate = tool2("\u500D\u901F"), quality = tool2("\u753B\u8D28"), subtitle = tool2("\u5B57\u5E55");
     const screens = [["pip", "\u753B\u4E2D\u753B"], ["wide", "\u5BBD\u5C4F"], ["web", "\u7F51\u9875\u5168\u5C4F"], ["full", "\u5168\u5C4F\uFF08F\uFF09"]];
-    const screenTools = screens.map(([key6, title]) => [key6, tool2(title, glyphs[key6])]);
+    const screenTools = screens.map(([key7, title]) => [key7, tool2(title, glyphs[key7])]);
     let clockState = null, around = {};
     let seeking = null;
     root2.classList.add("vl-wmp-art");
     let painted = "";
     function paintArt() {
-      const { scheme, dark } = appearanceState(), key6 = `${scheme}:${dark}`;
-      if (key6 === painted) return;
-      painted = key6;
+      const { scheme, dark } = appearanceState(), key7 = `${scheme}:${dark}`;
+      if (key7 === painted) return;
+      painted = key7;
       void mediaArt(scheme, dark).then((urls) => {
-        if (painted !== key6) return;
+        if (painted !== key7) return;
         let style = document.getElementById("atelier-wmp-art");
         if (!style) {
           style = document.createElement("style");
@@ -17528,8 +17845,8 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
         tip.setAttribute("data-bili-blocker-ui", "true");
       }
       tip.textContent = formatDuration(seconds2);
-      const width2 = screenWidth(tip);
-      placeFixed(tip, { left: Math.max(4, Math.min(event.clientX - width2 / 2, innerWidth - width2 - 4)), top: seek.getBoundingClientRect().top - screenHeight(tip) - 4 });
+      const width = screenWidth(tip);
+      placeFixed(tip, { left: Math.max(4, Math.min(event.clientX - width / 2, innerWidth - width - 4)), top: seek.getBoundingClientRect().top - screenHeight(tip) - 4 });
     };
     const hideTip = () => {
       tip?.remove();
@@ -17577,8 +17894,8 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       if (!bubble) return;
       bubble.textContent = clockState?.muted ? "\u9759\u97F3" : `\u97F3\u91CF ${Math.round((clockState?.volume ?? 1) * 100)}`;
       const knobBox = knob.getBoundingClientRect();
-      const width2 = screenWidth(bubble);
-      placeFixed(bubble, { left: Math.max(4, Math.min(knobBox.left + knobBox.width / 2 - width2 / 2, innerWidth - width2 - 4)), top: volume2.getBoundingClientRect().top - screenHeight(bubble) - 4 });
+      const width = screenWidth(bubble);
+      placeFixed(bubble, { left: Math.max(4, Math.min(knobBox.left + knobBox.width / 2 - width / 2, innerWidth - width - 4)), top: volume2.getBoundingClientRect().top - screenHeight(bubble) - 4 });
     };
     const showBubble = () => {
       window.clearTimeout(bubbleTimer);
@@ -17645,7 +17962,7 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     mute.addEventListener("click", () => {
       if (clockState) context.bridge.player({ op: "mute", value: !clockState.muted });
     });
-    for (const [key6, node4] of screenTools) node4.addEventListener("click", () => native(`.bpx-player-ctrl-${key6}`)?.click());
+    for (const [key7, node4] of screenTools) node4.addEventListener("click", () => native(`.bpx-player-ctrl-${key7}`)?.click());
     const choose = (item) => {
       item.click();
       window.setTimeout(paint2, 100);
@@ -17724,7 +18041,7 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       quality.firstElementChild.textContent = activeQuality ? qualityLabel(activeQuality).split(/[\s(（]/)[0] : "\u753B\u8D28";
       subtitle.firstElementChild.textContent = "\u5B57\u5E55";
       subtitle.hidden = !native(".bpx-player-ctrl-subtitle");
-      for (const [key6, node4] of screenTools) node4.hidden = !native(`.bpx-player-ctrl-${key6}`);
+      for (const [key7, node4] of screenTools) node4.hidden = !native(`.bpx-player-ctrl-${key7}`);
     }
     const fit = () => {
       seek.style.setProperty("--track", `${seek.clientWidth}px`);
@@ -17836,6 +18153,25 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     const win = xpWindow({ className: "vl-small vl-rec-window", icon: shellIcon(224, 16), title: "\u76F8\u5173\u63A8\u8350" });
     foldable(win, "rec");
     let state2 = null, expanded = false;
+    const published = /* @__PURE__ */ new Map(), asked = /* @__PURE__ */ new Set();
+    const dateLine = (aid) => {
+      const stamp = formatTimestamp(published.get(aid)).slice(0, 16);
+      return stamp ? el2("span", "vl-tile-date", stamp) : null;
+    };
+    function readDates() {
+      const missing = [...win.body.querySelectorAll(".vl-tile[data-aid]")].map((node4) => Number(node4.dataset.aid)).filter((aid) => aid > 0 && !published.has(aid) && !asked.has(aid));
+      if (!missing.length) return;
+      for (const aid of missing) asked.add(aid);
+      void context.actions.published(missing).then((times) => {
+        for (const [aid, time2] of times) published.set(aid, time2);
+        for (const node4 of win.body.querySelectorAll(".vl-tile[data-aid]")) {
+          const info = node4.querySelector(".vl-tile-info"), line = info && !info.querySelector(".vl-tile-date") ? dateLine(Number(node4.dataset.aid)) : null;
+          if (line) info.append(line);
+        }
+      }, () => {
+        for (const aid of missing) asked.delete(aid);
+      });
+    }
     function blockedBy(item, rules, holder) {
       if (!rules) return null;
       const target = { kind: "video", el: holder, insertionEl: holder, uid: Number(item?.owner?.mid) || void 0, name: item?.owner?.name, title: item?.title, bv: item?.bvid };
@@ -17845,6 +18181,7 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     }
     function tile(item, index, rules) {
       const node4 = el2("div", "vl-tile");
+      if (Number(item?.aid) > 0) node4.dataset.aid = String(Number(item.aid));
       const bvid = String(item?.bvid ?? ""), id = viewedIdFromBvid(bvid), redirect = typeof item?.redirect_url === "string" && /^https?:\/\//.test(item.redirect_url) ? item.redirect_url : "";
       const url = redirect || videoUrl(bvid);
       const decision = blockedBy(item, rules, node4);
@@ -17872,6 +18209,8 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       owner.append(el2("span", "vl-up-badge", "UP"), document.createTextNode(String(item?.owner?.name ?? "")));
       const view = formatCount(item?.stat?.view), danmaku = formatCount(item?.stat?.danmaku);
       text4.append(el2("span", "vl-tile-stats", [view && `${view}\u64AD\u653E`, danmaku && `${danmaku}\u5F39\u5E55`].filter(Boolean).join(" \xB7 ")));
+      const date2 = dateLine(Number(item?.aid));
+      if (date2) text4.append(date2);
       anchor.title = String(item?.title ?? "");
       if (id) node4.append(viewedButton(id));
       anchor.addEventListener("click", (event) => {
@@ -17952,6 +18291,7 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       }
       if (!related.length) win.body.append(el2("p", "vl-empty vl-muted", "\u6CA1\u6709\u76F8\u5173\u63A8\u8350"));
       paintBlocked();
+      readDates();
     }
     const paintBlocked = () => {
       for (const node4 of win.body.querySelectorAll(".vl-tile[data-blocked]")) node4.hidden = !isShowingBlocked();
@@ -17980,7 +18320,7 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     const win = xpWindow({ className: "vl-small vl-rec-window vl-season-rec-window", icon: shellIcon(224, 16), title: "\u76F8\u5173\u63A8\u8350" });
     foldable(win, "rec");
     const tiles = win.body.appendChild(el2("div", "vl-tiles"));
-    let key6 = "";
+    let key7 = "";
     function tile(season) {
       const id = Number(season?.season_id) || 0, url = bangumiUrl(`ss${id}`), viewedId = bangumiViewedId("ss", id);
       const node4 = el2("div", "vl-tile vl-season-tile");
@@ -18033,8 +18373,8 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       render(next) {
         const seasons = (Array.isArray(next.bangumi?.related) ? next.bangumi.related : []).filter((season) => Number(season?.season_id) > 0);
         const now = seasons.map((season) => season.season_id).join();
-        if (now === key6) return;
-        key6 = now;
+        if (now === key7) return;
+        key7 = now;
         tiles.replaceChildren(...seasons.map(tile));
         if (!seasons.length) tiles.append(el2("p", "vl-empty vl-muted", "\u6CA1\u6709\u76F8\u5173\u63A8\u8350"));
       }
@@ -18132,14 +18472,14 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     async function toggleFollow() {
       const seasonId = Number(state2?.seasonId), word = followWord(state2?.bangumi?.season?.season_type);
       if (!seasonId) return;
-      const set = async (on5) => {
+      const set = async (on7) => {
         follow.disabled = true;
         try {
-          await context.actions.followSeason(seasonId, on5);
-          followed2 = on5;
-          if (on5) followStatus = 2;
+          await context.actions.followSeason(seasonId, on7);
+          followed2 = on7;
+          if (on7) followStatus = 2;
           paintFollow();
-          note(on5 ? `\u5DF2${word}` : `\u5DF2\u53D6\u6D88${word}`, "success");
+          note(on7 ? `\u5DF2${word}` : `\u5DF2\u53D6\u6D88${word}`, "success");
         } catch (error) {
           note(failure2(error), "error");
         } finally {
@@ -18181,12 +18521,12 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       if (!up?.mid) return;
       producer.append(el2("span", "vl-muted", "\u51FA\u54C1\uFF1A"), link2("vl-link", String(up.uname ?? ""), `https://space.bilibili.com/${up.mid}`));
       const button5 = producer.appendChild(xpButton(upFollowed ? "\u5DF2\u5173\u6CE8" : "\u5173\u6CE8", async () => {
-        const on5 = !upFollowed;
+        const on7 = !upFollowed;
         button5.disabled = true;
         try {
-          await context.actions.follow(String(up.mid), on5 ? 1 : 2);
-          upFollowed = on5;
-          note(on5 ? "\u5DF2\u5173\u6CE8" : "\u5DF2\u53D6\u6D88\u5173\u6CE8", "success");
+          await context.actions.follow(String(up.mid), on7 ? 1 : 2);
+          upFollowed = on7;
+          note(on7 ? "\u5DF2\u5173\u6CE8" : "\u5DF2\u53D6\u6D88\u5173\u6CE8", "success");
           paintProducer(up);
         } catch (error) {
           note(failure2(error), "error");
@@ -18234,14 +18574,14 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       if (nextSeason === id) return;
       nextSeason = id;
       coming.hidden = true;
-      const key6 = type;
-      let read3 = timelines.get(key6);
-      if (!read3) {
-        read3 = context.actions.bangumiTimeline(key6).then((days) => (Array.isArray(days) ? days : []).flatMap((day) => Array.isArray(day?.episodes) ? day.episodes : []));
-        read3.catch(() => timelines.delete(key6));
-        timelines.set(key6, read3);
+      const key7 = type;
+      let read4 = timelines.get(key7);
+      if (!read4) {
+        read4 = context.actions.bangumiTimeline(key7).then((days) => (Array.isArray(days) ? days : []).flatMap((day) => Array.isArray(day?.episodes) ? day.episodes : []));
+        read4.catch(() => timelines.delete(key7));
+        timelines.set(key7, read4);
       }
-      read3.then((episodes) => {
+      read4.then((episodes) => {
         if (Number(state2?.seasonId) !== id) return;
         const next = episodes.filter((item) => Number(item?.season_id) === id && !Number(item?.published)).sort((a, b) => Number(a.pub_ts) - Number(b.pub_ts))[0];
         if (!next) return;
@@ -18253,9 +18593,9 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     }
     function paintStats(stat) {
       stats.hidden = !stat;
-      const key6 = stat ? JSON.stringify([...counters.map(([, , field]) => stat[field]), stat.follow_text]) : "";
-      if (!stat || key6 === statKey) return;
-      statKey = key6;
+      const key7 = stat ? JSON.stringify([...counters.map(([, , field]) => stat[field]), stat.follow_text]) : "";
+      if (!stat || key7 === statKey) return;
+      statKey = key7;
       stats.replaceChildren(...counters.map(([label, icon2, field]) => {
         const item = el2("li", "xp-button vl-counter");
         const image7 = item.appendChild(el2("img"));
@@ -18324,10 +18664,10 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
   }
 
   // src/modules/video-luna/styles.ts
-  var on4 = `html[${videoAttribute}=luna]`;
-  var wide = `${on4}[data-atelier-screen=wide]`;
-  var full = `${on4}[data-vl-wmp]:is([data-atelier-screen=web],[data-atelier-screen=full])`;
-  var skin = `${on4}:not([${nativeAttribute}~=skin])`;
+  var on6 = `html[${videoAttribute}=luna]`;
+  var wide = `${on6}[data-atelier-screen=wide]`;
+  var full = `${on6}[data-vl-wmp]:is([data-atelier-screen=web],[data-atelier-screen=full])`;
+  var skin = `${on6}:not([${nativeAttribute}~=skin])`;
   var image4 = (part, state2, fill = true) => `border-image-source:var(--xp-${part}-${state2});border-image-slice:var(--xp-${part}-slice)${fill ? " fill" : ""};border-image-width:var(--xp-${part}-edge);border-image-repeat:stretch`;
   var frame = `border:0 solid var(--xp-caption);border-width:var(--xp-frame-edge,0 4px 4px 4px);${image4("frame", 0, false)};border-image-width:var(--xp-caption-h,29px) var(--xp-frame-r,4px) var(--xp-frame-b,4px) var(--xp-frame-l,4px);image-rendering:pixelated`;
   var caption = `box-sizing:border-box;display:flex;align-items:center;gap:3px;min-height:var(--xp-caption-h,29px);margin:0 calc(-1 * var(--xp-frame-r,4px)) 0 calc(-1 * var(--xp-frame-l,4px));padding:3px 5px 2px 6px;color:var(--xp-caption-ink);background:var(--xp-fallback-caption,var(--xp-caption));${image4("caption", 0)};image-rendering:pixelated;user-select:none`;
@@ -18371,10 +18711,10 @@ ${wide} .vl-player-window{box-sizing:border-box;width:calc(var(--vl-player-w,0px
    a long title gives way first. */
 .vl-caption-check{flex:none;display:inline-flex;align-items:center;gap:3px;margin:0 4px 0 6px;${xpFont};color:inherit;white-space:nowrap;text-shadow:var(--xp-dot) var(--xp-dot) var(--xp-caption-shadow);cursor:default}.vl-caption-check .xp-check{margin:0}
 .vl-player-frame{position:absolute!important;left:0;top:0;width:100%;height:calc(100% + var(--vl-player-h,0px) + var(--vl-wmp-h,0px) + var(--vl-status-h,0px) + 4px);z-index:1;pointer-events:none;background:none!important;display:block!important}
-${on4}[data-atelier-screen=web] .vl-player-frame,${on4}[data-atelier-screen=full] .vl-player-frame{display:none!important}
+${on6}[data-atelier-screen=web] .vl-player-frame,${on6}[data-atelier-screen=full] .vl-player-frame{display:none!important}
 /* Its status bar, at the bottom of the window under the Media Player bar,
    with XP's size grip in the corner. */
-${on4}{--vl-status-h:24px}
+${on6}{--vl-status-h:24px}
 .vl-player-status{position:relative;z-index:2;box-sizing:border-box;height:var(--vl-status-h);min-height:0;margin:0;padding:2px 0 1px 3px;${xpFont};pointer-events:auto}
 ${wide} .vl-player-status{width:var(--vl-player-w)}
 .vl-player-status>.xp-status-pane{flex:none}
@@ -18401,7 +18741,7 @@ ${wide} .vl-player-status{width:var(--vl-player-w)}
    its states side by side: normal, hover, down, disabled. Places are those of
    Media Player's FULLSCREENBOTTOMLAYOUT.WSZ: each button covers its socket
    in the bar art exactly. */
-${on4}[data-vl-wmp]{--vl-wmp-h:57px}
+${on6}[data-vl-wmp]{--vl-wmp-h:57px}
 .vl-wmp{position:relative;z-index:2;height:57px;margin:0;background:var(--wmp-bar-left) left top no-repeat,var(--wmp-bar-right) right top no-repeat,var(--wmp-bar-fill) left top repeat-x;${xpFont};color:var(--xp-ink);user-select:none;pointer-events:auto}
 .vl-wmp *{box-sizing:border-box}
 ${wide} .vl-wmp{width:var(--vl-player-w)}
@@ -18455,7 +18795,7 @@ ${wide} .vl-wmp{width:var(--vl-player-w)}
 .vl-wmp-tip{position:fixed;z-index:2147483646;pointer-events:none}
 /* Bilibili's own control bar hides while ours is up; the mini player and
    full screen keep theirs. Its buttons stay in the page and do the work. */
-${on4}[data-vl-wmp]:not([data-atelier-screen=web],[data-atelier-screen=full],[data-atelier-screen=mini]) :is(.bpx-player-control-wrap,[class*=bpx-player-shadow-progress]){opacity:0!important;pointer-events:none!important}
+${on6}[data-vl-wmp]:not([data-atelier-screen=web],[data-atelier-screen=full],[data-atelier-screen=mini]) :is(.bpx-player-control-wrap,[class*=bpx-player-shadow-progress]){opacity:0!important;pointer-events:none!important}
 /* \u5168\u5C4F and \u7F51\u9875\u5168\u5C4F (media-fullscreen.ts): Media Player's full-screen bars
    over the picture, inside Bilibili's player box. Its control bar keeps only
    its sending bar, moved into the middle of our black strip; its title bar
@@ -18560,13 +18900,13 @@ ${wide} .vl-list-view .vl-lv-rows{max-height:344px}
 /* \u756A\u5267: the player has a grid cell of its own and the left column starts a
    player's height below the top (runtime.ts pads it). The page's 30 px under
    the header goes, so the windows start under it as on /video/ and /list/. */
-${on4} .main-container:has(>.plp-layout){margin-top:0!important}
+${on6} .main-container:has(>.plp-layout){margin-top:0!important}
 /* Bilibili sticks the shorter column at min(header + 14 px, viewport - column
    - 280 px); the 14 px sat inside that margin. Under the header now, a column
    short enough (a window minimized) would drop 14 px, the windows above too.
    layout.ts places it by the same rule (--vl-stick) without the delay, and
    holds it in place (--vl-hold-top) when a window minimized would move it. */
-${on4} .main-container .plp-r.sticky{top:var(--vl-hold-top,var(--vl-stick,min(var(--plp-right-sticky-top,0px),${headerBottomCss})))!important}
+${on6} .main-container .plp-r.sticky{top:var(--vl-hold-top,var(--vl-stick,min(var(--plp-right-sticky-top,0px),${headerBottomCss})))!important}
 .vl-season{display:flex;gap:9px;padding:9px 9px 6px}
 .vl-season-cover{flex:none;display:block;width:72px;height:96px;border:1px solid var(--xp-edge);background:var(--xp-window)}
 .vl-season-cover img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:auto}
@@ -18615,9 +18955,9 @@ ${on4} .main-container .plp-r.sticky{top:var(--vl-hold-top,var(--vl-stick,min(va
 .vl-duration{position:absolute;right:2px;bottom:2px;padding:0 3px;color:#fff;background:#000b}
 .vl-tile-info{display:flex;flex-direction:column;gap:3px;min-width:0}
 .vl-tile-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
-.vl-tile-up,.vl-tile-stats{color:var(--xp-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vl-tile-up,.vl-tile-stats,.vl-tile-date{color:var(--xp-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vl-up-badge{display:inline-block;margin-right:4px;padding:0 2px;border:1px solid currentColor;line-height:1}
-.vl-tile[data-viewed] .vl-tile-link,.vl-tile[data-viewed] .vl-tile-link :is(.vl-tile-up,.vl-tile-stats){color:var(--xp-graytext)!important}
+.vl-tile[data-viewed] .vl-tile-link,.vl-tile[data-viewed] .vl-tile-link :is(.vl-tile-up,.vl-tile-stats,.vl-tile-date){color:var(--xp-graytext)!important}
 .vl-tile[data-viewed] .vl-cover img{filter:grayscale(1);opacity:.6}
 .vl-tile[data-blocked]{outline:1px dashed #a33024;outline-offset:-1px}
 .vl-tile>.vl-viewed{position:absolute;top:9px;left:calc(5px + 140px - 4px);transform:translateX(-100%);min-width:0!important;min-height:21px!important;padding:1px 6px!important;z-index:1}
@@ -18916,7 +19256,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
     face.referrerPolicy = "no-referrer";
     const win = xpWindow({ className: "vl-small vl-up-window", icon: face, title: "", label: "UP \u4E3B" });
     foldable(win, "up");
-    let people2 = [], states = {}, key6 = "", generation = 0;
+    let people2 = [], states = {}, key7 = "", generation = 0;
     function followButton(person, className) {
       const button5 = xpButton("", () => void clickFollow(person, button5), className);
       const paint2 = () => {
@@ -18999,14 +19339,14 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
       const button5 = el2("button", "atelier-control vl-local-follow");
       button5.type = "button";
       const paint2 = () => {
-        const on5 = localFollowSnapshot().accounts.some((account) => account.uid === person.mid);
-        button5.textContent = on5 ? "\u79FB\u9664\u672C\u5730\u5173\u6CE8" : "\u6DFB\u52A0\u672C\u5730\u5173\u6CE8";
-        button5.setAttribute("aria-pressed", String(on5));
+        const on7 = localFollowSnapshot().accounts.some((account) => account.uid === person.mid);
+        button5.textContent = on7 ? "\u79FB\u9664\u672C\u5730\u5173\u6CE8" : "\u6DFB\u52A0\u672C\u5730\u5173\u6CE8";
+        button5.setAttribute("aria-pressed", String(on7));
       };
       button5.addEventListener("click", () => {
-        const on5 = localFollowSnapshot().accounts.some((account) => account.uid === person.mid);
+        const on7 = localFollowSnapshot().accounts.some((account) => account.uid === person.mid);
         sound("click");
-        if (on5) removeLocalFollow(person.mid);
+        if (on7) removeLocalFollow(person.mid);
         else {
           addLocalFollow({ uid: person.mid, name: person.name, face: person.face });
           writeLocalFollowCache(person.mid, { name: person.name, face: person.face });
@@ -19078,9 +19418,9 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
         people2 = staff.length > 1 ? staff.map((member) => ({ mid: String(member.mid), name: String(member.name ?? ""), face: String(member.face ?? ""), role: String(member.title ?? "") })) : [{ mid: String(up.mid ?? owner.mid ?? ""), name: String(up.name ?? owner.name ?? ""), face: String(up.face ?? owner.face ?? ""), sign: typeof up.sign === "string" ? up.sign : "", fans: Number.isFinite(Number(up.fans)) ? Number(up.fans) : void 0 }];
         people2 = people2.filter((person) => /^\d+$/.test(person.mid));
         const next = people2.map((person) => person.mid).join(",") + "|" + people2.map((person) => person.fans ?? "").join(",");
-        if (next === key6) return;
-        const sameAccounts = key6.split("|")[0] === next.split("|")[0];
-        key6 = next;
+        if (next === key7) return;
+        const sameAccounts = key7.split("|")[0] === next.split("|")[0];
+        key7 = next;
         draw();
         if (!sameAccounts) {
           states = {};
@@ -19443,8 +19783,8 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
     return bvid && index >= 0 ? viewedIdFromBvid(bvid, index + 1) : "";
   }
   function collectionBvid(item) {
-    const key6 = item?.getAttribute("data-key");
-    if (isBvid(key6)) return key6;
+    const key7 = item?.getAttribute("data-key");
+    if (isBvid(key7)) return key7;
     return /\/video\/(BV1[0-9A-Za-z]{9})/i.exec(item?.querySelector('a[href*="/video/BV"]')?.getAttribute("href") ?? "")?.[1] ?? "";
   }
   var mainVideo = {
@@ -19527,7 +19867,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
 .atelier-viewed-bulk{margin:0 12px 0 0}
 [${coverMark}]{opacity:.45!important}`;
   var buttons = /* @__PURE__ */ new WeakMap();
-  var covers2 = /* @__PURE__ */ new WeakMap();
+  var covers3 = /* @__PURE__ */ new WeakMap();
   function paint(button5, viewed2) {
     const label = viewed2 ? "\u5DF2\u770B" : "\u672A\u770B";
     if (button5.textContent !== label) button5.textContent = label;
@@ -19536,7 +19876,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
       button5.classList.toggle("btnNotView", !viewed2);
     }
     if (button5.getAttribute("aria-pressed") !== String(viewed2)) button5.setAttribute("aria-pressed", String(viewed2));
-    const cover = covers2.get(button5);
+    const cover = covers3.get(button5);
     if (cover && cover.hasAttribute(coverMark) !== viewed2) cover.toggleAttribute(coverMark, viewed2);
   }
   function repaintAll() {
@@ -19557,13 +19897,13 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
     return button5;
   }
   function setCover(button5, cover) {
-    const before = covers2.get(button5);
+    const before = covers3.get(button5);
     if (before === cover) return;
     before?.removeAttribute(coverMark);
     if (cover) {
-      covers2.set(button5, cover);
+      covers3.set(button5, cover);
       cover.toggleAttribute(coverMark, button5.classList.contains("btnIsView"));
-    } else covers2.delete(button5);
+    } else covers3.delete(button5);
   }
   function mark(spot, host, viewed2) {
     let button5 = buttons.get(host);
@@ -19780,26 +20120,26 @@ ${page.css ?? ""}`;
   var pausedUrl = `${api4}/x/v2/history/shadow`;
 
   // src/modules/watch-history/bounds.ts
-  var key4 = "BiliAtelier_HistoryLayout";
+  var key5 = "BiliAtelier_HistoryLayout";
   var historyLeast = 212 + 216 + 24 + 8;
   var historyNarrow = 760;
   var blankProperty = "--ahp-blank";
-  function read2() {
-    const value2 = typeof GM_getValue === "function" ? GM_getValue(key4, {}) : {};
+  function read3() {
+    const value2 = typeof GM_getValue === "function" ? GM_getValue(key5, {}) : {};
     return value2 && typeof value2 === "object" && Number.isFinite(value2.blank) ? { blank: Math.max(0, value2.blank) } : {};
   }
-  var write = (saved) => {
-    if (typeof GM_setValue === "function") GM_setValue(key4, saved);
+  var write2 = (saved) => {
+    if (typeof GM_setValue === "function") GM_setValue(key5, saved);
   };
   function startHistoryBounds(win) {
-    let saved = read2();
+    let saved = read3();
     const paint2 = () => {
       if (saved.blank === void 0) win.style.removeProperty(blankProperty);
       else win.style.setProperty(blankProperty, `${+(saved.blank / zoomOf(win)).toFixed(3)}px`);
     };
     const change = (next) => {
       saved = next;
-      write(saved);
+      write2(saved);
       paint2();
       notifyPageLayoutChanged();
     };
@@ -19820,15 +20160,15 @@ ${page.css ?? ""}`;
   }
 
   // src/modules/watch-history/prefs.ts
-  var key5 = "BiliAtelier_HistoryLuna";
+  var key6 = "BiliAtelier_HistoryLuna";
   var historyAttribute = "data-atelier-history";
   var isHistoryLocation = (where = location) => where.hostname === "www.bilibili.com" && /^\/(?:account\/)?history(?:\/|$)/.test(where.pathname);
   function historyLunaEnabled() {
-    const stored = typeof GM_getValue === "function" ? GM_getValue(key5, null) : null;
+    const stored = typeof GM_getValue === "function" ? GM_getValue(key6, null) : null;
     return stored?.enabled !== false;
   }
   function setHistoryLunaEnabled(enabled) {
-    if (typeof GM_setValue === "function") GM_setValue(key5, { enabled });
+    if (typeof GM_setValue === "function") GM_setValue(key6, { enabled });
   }
   var hideCss = `html[${historyAttribute}=drawn] #app{display:none!important}`;
   function prepareWatchHistory() {
@@ -20095,14 +20435,14 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     });
     const paintFilters = () => {
       for (const button5 of filterButtons) {
-        const on5 = button5.dataset.type === type;
-        button5.setAttribute("aria-pressed", String(on5));
-        button5.setAttribute("aria-checked", String(on5));
+        const on7 = button5.dataset.type === type;
+        button5.setAttribute("aria-pressed", String(on7));
+        button5.setAttribute("aria-checked", String(on7));
       }
     };
     paintFilters();
     const selectAll = toolButton("\u5168\u9009", () => {
-      for (const key6 of cards2.keys()) selected.add(key6);
+      for (const key7 of cards2.keys()) selected.add(key7);
       paintSelection();
     });
     const deleteSelected = toolButton("\u5220\u9664\u6240\u9009", () => void removeSelected(), shellIcon(240, 16));
@@ -20139,23 +20479,23 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       recordPane.textContent = paused2 === null ? "" : paused2 ? "\u5DF2\u6682\u505C\u8BB0\u5F55\u5386\u53F2" : "\u6B63\u5728\u8BB0\u5F55\u5386\u53F2";
     }
     function paintSelection() {
-      for (const [key6, entry] of cards2) {
-        const on5 = selected.has(key6);
-        entry.check.checked = on5;
-        entry.element.toggleAttribute("data-selected", on5);
-        entry.element.setAttribute("aria-selected", String(on5));
+      for (const [key7, entry] of cards2) {
+        const on7 = selected.has(key7);
+        entry.check.checked = on7;
+        entry.element.toggleAttribute("data-selected", on7);
+        entry.element.setAttribute("aria-selected", String(on7));
       }
       deleteSelected.lastElementChild.textContent = `\u5220\u9664\u6240\u9009\uFF08${selected.size}\uFF09`;
       deleteSelected.disabled = !selected.size;
       paintCount();
     }
-    function setSelecting(on5) {
-      selecting = on5;
+    function setSelecting(on7) {
+      selecting = on7;
       selected.clear();
-      root2.toggleAttribute("data-selecting", on5);
-      filters.hidden = on5;
-      selectBar.hidden = !on5;
-      batch2.node.toggleAttribute("disabled", on5);
+      root2.toggleAttribute("data-selecting", on7);
+      filters.hidden = on7;
+      selectBar.hidden = !on7;
+      batch2.node.toggleAttribute("disabled", on7);
       paintSelection();
     }
     function paintFoot(text4) {
@@ -20259,7 +20599,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       }
       paintCount();
     }
-    async function read3(url, mine) {
+    async function read4(url, mine) {
       const stop = new AbortController(), timer2 = window.setTimeout(() => stop.abort(), 15e3);
       try {
         const body2 = await relay.read(url, stop.signal);
@@ -20276,7 +20616,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       paintFoot("\u6B63\u5728\u52A0\u8F7D\u2026");
       const mine = generation;
       try {
-        const body2 = await read3(keyword ? searchUrl(type, keyword, page) : cursorUrl(type, cursor), mine);
+        const body2 = await read4(keyword ? searchUrl(type, keyword, page) : cursorUrl(type, cursor), mine);
         if (!body2) return;
         if (Number(body2.code) === -101) {
           paintFoot("\u767B\u5F55\u5DF2\u5931\u6548\uFF0C\u8BF7\u91CD\u65B0\u767B\u5F55");
@@ -20322,7 +20662,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       paintSelection();
       return more();
     }
-    async function write2(op, body2, fallback2) {
+    async function write3(op, body2, fallback2) {
       const answer = await relay.write(op, { body: body2 });
       if (!ok3(answer)) throw new Error(failure3(answer, fallback2));
       return answer;
@@ -20331,19 +20671,19 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       if (!keys.length) return;
       const feedback = soundTask();
       try {
-        await write2("history-delete", { kid: keys.join(",") }, "\u5220\u9664\u5931\u8D25");
+        await write3("history-delete", { kid: keys.join(",") }, "\u5220\u9664\u5931\u8D25");
       } catch (error) {
         feedback.finish("error");
         showInfoLog(`\u5220\u9664\u5931\u8D25\uFF1A${error.message}`, "error");
         return;
       }
-      for (const key6 of keys) {
-        const entry = cards2.get(key6);
+      for (const key7 of keys) {
+        const entry = cards2.get(key7);
         if (!entry) continue;
         const grid = entry.element.parentElement;
         entry.element.remove();
-        cards2.delete(key6);
-        selected.delete(key6);
+        cards2.delete(key7);
+        selected.delete(key7);
         if (grid && !grid.childElementCount) {
           grid.parentElement?.remove();
           if (grid === lastGrid) {
@@ -20358,7 +20698,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       else if (!done && foot.getBoundingClientRect().top < innerHeight + 600) void more();
     }
     async function removeSelected() {
-      const keys = [...cards2.keys()].filter((key6) => selected.has(key6));
+      const keys = [...cards2.keys()].filter((key7) => selected.has(key7));
       if (!keys.length) return;
       if (!await atelierConfirm(`\u786E\u5B9E\u8981\u4ECE\u5386\u53F2\u8BB0\u5F55\u4E2D\u5220\u9664\u8FD9 ${keys.length} \u9879\u5417\uFF1F`, "\u786E\u8BA4\u5220\u9664")) return;
       await remove(keys);
@@ -20368,7 +20708,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       const what = type === "all" ? "\u5168\u90E8\u5386\u53F2\u8BB0\u5F55" : `\u6240\u6709${historyTypes.find(([value2]) => value2 === type)[1]}\u5386\u53F2\u8BB0\u5F55`;
       if (!await atelierConfirm(`\u786E\u5B9E\u8981\u6E05\u7A7A${what}\u5417\uFF1F\u6B64\u64CD\u4F5C\u4E0D\u80FD\u64A4\u9500\u3002`, "\u6E05\u7A7A\u5386\u53F2")) return;
       const feedback = soundTask();
-      const results = await Promise.allSettled(clearBusinesses(type).map((business) => write2("history-clear", { business }, "\u6E05\u7A7A\u5931\u8D25")));
+      const results = await Promise.allSettled(clearBusinesses(type).map((business) => write3("history-clear", { business }, "\u6E05\u7A7A\u5931\u8D25")));
       const failed = results.find((result) => result.status === "rejected");
       if (failed && results.every((result) => result.status === "rejected")) {
         feedback.finish("error");
@@ -20381,7 +20721,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     }
     async function readPaused() {
       try {
-        const body2 = await read3(pausedUrl, generation);
+        const body2 = await read4(pausedUrl, generation);
         if (body2 && ok3(body2)) {
           paused2 = body2.data === true;
           paintPaused();
@@ -20393,7 +20733,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       if (paused2 === null) return;
       const next = !paused2;
       try {
-        await write2("history-pause", { switch: String(next) }, next ? "\u6682\u505C\u5931\u8D25" : "\u6062\u590D\u5931\u8D25");
+        await write3("history-pause", { switch: String(next) }, next ? "\u6682\u505C\u5931\u8D25" : "\u6062\u590D\u5931\u8D25");
       } catch (error) {
         showInfoLog(error.message, "error");
         return;
@@ -20404,7 +20744,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     }
     async function watchLater2(card3) {
       try {
-        await write2("watchlater", { aid: String(card3.aid) }, "\u6DFB\u52A0\u5931\u8D25");
+        await write3("watchlater", { aid: String(card3.aid) }, "\u6DFB\u52A0\u5931\u8D25");
         showInfoLog("\u5DF2\u6DFB\u52A0\u5230\u7A0D\u540E\u518D\u770B", "success");
       } catch (error) {
         showInfoLog(`\u7A0D\u540E\u518D\u770B\uFF1A${error.message}`, "error");
@@ -20706,7 +21046,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     const fields2 = /* @__PURE__ */ new Map();
     const saved = /* @__PURE__ */ new Map();
     let selectedKey = "title";
-    const isDirty = () => [...fields2].some(([key6, field]) => field.value !== saved.get(key6));
+    const isDirty = () => [...fields2].some(([key7, field]) => field.value !== saved.get(key7));
     for (const rule of ruleDefinitions) {
       const field = element("textarea", "luna-editor");
       field.id = "bili-rule-" + rule.key;
@@ -20765,33 +21105,33 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
           editorHost.setAttribute("role", "tabpanel");
           editorHost.id = "bili-atelier-rule-editor";
           const modeButtons = /* @__PURE__ */ new Map();
-          function selectMode(key6, user = false) {
-            if (user && selectedKey !== key6) sound("select");
-            selectedKey = key6;
+          function selectMode(key7, user = false) {
+            if (user && selectedKey !== key7) sound("select");
+            selectedKey = key7;
             for (const [mode2, node4] of modeButtons) {
-              node4.setAttribute("aria-selected", String(mode2 === key6));
-              node4.tabIndex = mode2 === key6 ? 0 : -1;
+              node4.setAttribute("aria-selected", String(mode2 === key7));
+              node4.tabIndex = mode2 === key7 ? 0 : -1;
             }
-            editorHost.setAttribute("aria-labelledby", "bili-atelier-mode-" + key6);
-            editorHost.replaceChildren(fields2.get(key6));
+            editorHost.setAttribute("aria-labelledby", "bili-atelier-mode-" + key7);
+            editorHost.replaceChildren(fields2.get(key7));
           }
-          for (const key6 of category.keys) {
-            const tab = button4(modeLabels[key6], () => selectMode(key6, true), "luna-rule-tab");
+          for (const key7 of category.keys) {
+            const tab = button4(modeLabels[key7], () => selectMode(key7, true), "luna-rule-tab");
             const mark2 = element("span", "luna-radio");
             mark2.setAttribute("aria-hidden", "true");
             tab.prepend(mark2);
-            tab.id = "bili-atelier-mode-" + key6;
+            tab.id = "bili-atelier-mode-" + key7;
             tab.setAttribute("role", "tab");
             tab.setAttribute("aria-controls", editorHost.id);
             tab.addEventListener("keydown", (event) => {
               if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
               event.preventDefault();
-              const index = category.keys.indexOf(key6);
+              const index = category.keys.indexOf(key7);
               const next = event.key === "Home" ? 0 : event.key === "End" ? category.keys.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + category.keys.length) % category.keys.length;
               selectMode(category.keys[next], true);
               modeButtons.get(category.keys[next]).focus();
             });
-            modeButtons.set(key6, tab);
+            modeButtons.set(key7, tab);
             tabs2.appendChild(tab);
           }
           selectMode(selectedKey);
@@ -20823,7 +21163,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       },
       status() {
         if (!isDirty() && !categories.some((category) => category.id === win.current())) return "";
-        const count2 = [...fields2].reduce((sum, [key6, field]) => sum + parseRuleText(field.value, ruleDefinitions.find((rule) => rule.key === key6)?.integer).length, 0);
+        const count2 = [...fields2].reduce((sum, [key7, field]) => sum + parseRuleText(field.value, ruleDefinitions.find((rule) => rule.key === key7)?.integer).length, 0);
         return count2 + " \u6761\u89C4\u5219 \xB7 " + (isDirty() ? "\u6709\u672A\u4FDD\u5B58\u7684\u4FEE\u6539" : "\u5DF2\u4FDD\u5B58");
       },
       isDirty,
@@ -20999,9 +21339,9 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     };
     const choice = (options, value2, change) => {
       const node4 = element("select");
-      for (const [key6, text4] of options) {
+      for (const [key7, text4] of options) {
         const option = element("option", "", text4);
-        option.value = key6;
+        option.value = key7;
         node4.append(option);
       }
       node4.value = value2;
