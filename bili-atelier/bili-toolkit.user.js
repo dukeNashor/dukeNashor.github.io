@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.5.0
+// @version      0.6.0
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -114,9 +114,9 @@
   };
   var __copyProps = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
-      for (let key3 of __getOwnPropNames(from))
-        if (!__hasOwnProp.call(to, key3) && key3 !== except)
-          __defProp(to, key3, { get: () => from[key3], enumerable: !(desc = __getOwnPropDesc(from, key3)) || desc.enumerable });
+      for (let key4 of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key4) && key4 !== except)
+          __defProp(to, key4, { get: () => from[key4], enumerable: !(desc = __getOwnPropDesc(from, key4)) || desc.enumerable });
     }
     return to;
   };
@@ -1459,11 +1459,11 @@
          */
         PriorityQueue: {
           make: function(opts) {
-            var T = dijkstra.PriorityQueue, t = {}, key3;
+            var T = dijkstra.PriorityQueue, t = {}, key4;
             opts = opts || {};
-            for (key3 in T) {
-              if (T.hasOwnProperty(key3)) {
-                t[key3] = T[key3];
+            for (key4 in T) {
+              if (T.hasOwnProperty(key4)) {
+                t[key4] = T[key4];
               }
             }
             t.queue = [];
@@ -1613,18 +1613,18 @@
           const currentNodeIds = [];
           for (let j = 0; j < nodeGroup.length; j++) {
             const node4 = nodeGroup[j];
-            const key3 = "" + i + j;
-            currentNodeIds.push(key3);
-            table[key3] = { node: node4, lastCount: 0 };
-            graph[key3] = {};
+            const key4 = "" + i + j;
+            currentNodeIds.push(key4);
+            table[key4] = { node: node4, lastCount: 0 };
+            graph[key4] = {};
             for (let n = 0; n < prevNodeIds.length; n++) {
               const prevNodeId = prevNodeIds[n];
               if (table[prevNodeId] && table[prevNodeId].node.mode === node4.mode) {
-                graph[prevNodeId][key3] = getSegmentBitsLength(table[prevNodeId].lastCount + node4.length, node4.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node4.mode);
+                graph[prevNodeId][key4] = getSegmentBitsLength(table[prevNodeId].lastCount + node4.length, node4.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node4.mode);
                 table[prevNodeId].lastCount += node4.length;
               } else {
                 if (table[prevNodeId]) table[prevNodeId].lastCount = node4.length;
-                graph[prevNodeId][key3] = getSegmentBitsLength(node4.length, node4.mode) + 4 + Mode.getCharCountIndicator(node4.mode, version);
+                graph[prevNodeId][key4] = getSegmentBitsLength(node4.length, node4.mode) + 4 + Mode.getCharCountIndicator(node4.mode, version);
               }
             }
           }
@@ -2058,10 +2058,10 @@
         opts = Utils.getOptions(opts);
         const size = Utils.getImageWidth(qrData.modules.size, opts);
         const ctx = canvasEl.getContext("2d");
-        const image5 = ctx.createImageData(size, size);
-        Utils.qrToImageData(image5.data, qrData, opts);
+        const image6 = ctx.createImageData(size, size);
+        Utils.qrToImageData(image6.data, qrData, opts);
         clearCanvas(ctx, canvasEl, size);
-        ctx.putImageData(image5, 0, 0);
+        ctx.putImageData(image6, 0, 0);
         return canvasEl;
       };
       exports.renderToDataURL = function renderToDataURL(qrData, canvas, options) {
@@ -2144,7 +2144,7 @@
       var QRCode2 = require_qrcode();
       var CanvasRenderer = require_canvas();
       var SvgRenderer = require_svg_tag();
-      function renderCanvas(renderFunc, canvas, text3, opts, cb) {
+      function renderCanvas(renderFunc, canvas, text4, opts, cb) {
         const args = [].slice.call(arguments, 1);
         const argsNum = args.length;
         const isLastArgCb = typeof args[argsNum - 1] === "function";
@@ -2156,8 +2156,8 @@
             throw new Error("Too few arguments provided");
           }
           if (argsNum === 2) {
-            cb = text3;
-            text3 = canvas;
+            cb = text4;
+            text4 = canvas;
             canvas = opts = void 0;
           } else if (argsNum === 3) {
             if (canvas.getContext && typeof cb === "undefined") {
@@ -2165,8 +2165,8 @@
               opts = void 0;
             } else {
               cb = opts;
-              opts = text3;
-              text3 = canvas;
+              opts = text4;
+              text4 = canvas;
               canvas = void 0;
             }
           }
@@ -2175,16 +2175,16 @@
             throw new Error("Too few arguments provided");
           }
           if (argsNum === 1) {
-            text3 = canvas;
+            text4 = canvas;
             canvas = opts = void 0;
           } else if (argsNum === 2 && !canvas.getContext) {
-            opts = text3;
-            text3 = canvas;
+            opts = text4;
+            text4 = canvas;
             canvas = void 0;
           }
           return new Promise(function(resolve, reject) {
             try {
-              const data = QRCode2.create(text3, opts);
+              const data = QRCode2.create(text4, opts);
               resolve(renderFunc(data, canvas, opts));
             } catch (e) {
               reject(e);
@@ -2192,7 +2192,7 @@
           });
         }
         try {
-          const data = QRCode2.create(text3, opts);
+          const data = QRCode2.create(text4, opts);
           cb(null, renderFunc(data, canvas, opts));
         } catch (e) {
           cb(e);
@@ -3887,7 +3887,7 @@
   var lunaSchemeNames = { blue: "\u9ED8\u8BA4\uFF08\u84DD\uFF09", olive: "\u6A44\u6984\u7EFF", silver: "\u94F6\u8272" };
   var isLunaScheme = (value2) => typeof value2 === "string" && Object.prototype.hasOwnProperty.call(lunaSchemes, value2);
   var theme = (scheme) => lunaSchemes[scheme].theme;
-  var value = (scheme, section, key3, fallback2) => theme(scheme)[section]?.[key3] || fallback2;
+  var value = (scheme, section, key4, fallback2) => theme(scheme)[section]?.[key4] || fallback2;
   var darkPalettes = {
     blue: { face: "#23272f", window: "#191c22", ink: "#e8eaee", muted: "#a3a9b5", edge: "#56678a", line: "#3a3f4a", light3d: "#3b414d", shadow3d: "#14171c", dark3d: "#0b0d10", lift: "#b7c3d9", gradient1: "#26355a", gradient2: "#1c2744", taskFill: "#2a3550", taskText: "#c7d6f5", taskLink: "#a9c1f2", groupText: "#9cb8ff" },
     olive: { face: "#2a2d22", window: "#1c1e16", ink: "#ecebdf", muted: "#b3b8a2", edge: "#76845a", line: "#3d4132", light3d: "#42473a", shadow3d: "#15170f", dark3d: "#0c0d08", lift: "#c8cfb0", gradient1: "#353c27", gradient2: "#282d1d", taskFill: "#343a28", taskText: "#d6dcbf", taskLink: "#c9d69f", groupText: "#c0d091" },
@@ -3895,7 +3895,7 @@
   };
   var dim = (hex, factor = 0.7) => "#" + [1, 3, 5].map((at) => Math.round(parseInt(hex.slice(at, at + 2), 16) * factor).toString(16).padStart(2, "0")).join("");
   function lunaTokens(scheme, dark) {
-    const sys = (key3, fallback2) => value(scheme, "SysMetrics", key3, fallback2);
+    const sys = (key4, fallback2) => value(scheme, "SysMetrics", key4, fallback2);
     const light = {
       face: sys("btnface", "#ece9d8"),
       window: sys("window", "#ffffff"),
@@ -3916,7 +3916,7 @@
     const base = dark ? darkPalettes[scheme] : light;
     const caption2 = sys("activecaption", "#0054e3"), inactive = sys("inactivecaption", "#7a96df");
     return {
-      ...Object.fromEntries(Object.entries(base).filter(([key3]) => key3 !== "lift")),
+      ...Object.fromEntries(Object.entries(base).filter(([key4]) => key4 !== "lift")),
       graytext: dark ? dim(sys("graytext", "#aca899")) : sys("graytext", "#aca899"),
       highlight: sys("highlight", "#316ac5"),
       "highlight-ink": sys("highlighttext", "#ffffff"),
@@ -3939,14 +3939,14 @@
     const parsed = value(scheme, section, "sizingmargins", "").split(",").map(Number);
     return parsed.length === 4 && parsed.every(Number.isFinite) ? parsed : fallback2;
   };
-  function crop(image5, x, y, width2, height) {
+  function crop(image6, x, y, width2, height) {
     const canvas = document.createElement("canvas");
     canvas.width = width2;
     canvas.height = height;
-    canvas.getContext("2d").drawImage(image5, x, y, width2, height, 0, 0, width2, height);
+    canvas.getContext("2d").drawImage(image6, x, y, width2, height, 0, 0, width2, height);
     return canvas;
   }
-  var state = (image5, index, count2, horizontal = false) => horizontal ? crop(image5, index * image5.width / count2, 0, image5.width / count2, image5.height) : crop(image5, 0, index * image5.height / count2, image5.width, image5.height / count2);
+  var state = (image6, index, count2, horizontal = false) => horizontal ? crop(image6, index * image6.width / count2, 0, image6.width / count2, image6.height) : crop(image6, 0, index * image6.height / count2, image6.width, image6.height / count2);
   function overlay(background, glyph) {
     background.getContext("2d").drawImage(glyph, Math.floor((background.width - glyph.width) / 2), Math.floor((background.height - glyph.height) / 2));
     return background;
@@ -4054,23 +4054,23 @@
   var images = /* @__PURE__ */ new Map();
   function decode(url) {
     return images.get(url) ?? images.set(url, new Promise((resolve, reject) => {
-      const image5 = new Image();
-      image5.onload = () => {
+      const image6 = new Image();
+      image6.onload = () => {
         const canvas = document.createElement("canvas");
-        canvas.width = image5.naturalWidth;
-        canvas.height = image5.naturalHeight;
-        canvas.getContext("2d").drawImage(image5, 0, 0);
+        canvas.width = image6.naturalWidth;
+        canvas.height = image6.naturalHeight;
+        canvas.getContext("2d").drawImage(image6, 0, 0);
         resolve(canvas);
       };
-      image5.onerror = reject;
-      image5.src = url;
+      image6.onerror = reject;
+      image6.src = url;
     })).get(url);
   }
   var px = (value2) => `${+value2.toFixed(4)}px`;
   var rendered = /* @__PURE__ */ new Map();
   function lunaImageVars(scheme, dark, dpr) {
-    const key3 = `${scheme}|${dark}|${dpr}`;
-    if (rendered.has(key3)) return rendered.get(key3);
+    const key4 = `${scheme}|${dark}|${dpr}`;
+    if (rendered.has(key4)) return rendered.get(key4);
     const work = (async () => {
       if (/jsdom/i.test(navigator.userAgent) || !document.createElement("canvas").getContext?.("2d")) return "";
       const loader = async (which) => {
@@ -4083,10 +4083,10 @@
         const scale = dpr / (part.sourceScale ?? 1);
         for (let index = 0; index < part.states; index++) {
           const source = typeof part.source === "function" ? part.source(load, index) : state(load(part.source), index, part.states, part.horizontal);
-          const image5 = render(source, part, scale, dark && darkPalettes[scheme]);
-          vars.push(`--xp-${name}-${index}:url("${image5.url}")`);
+          const image6 = render(source, part, scale, dark && darkPalettes[scheme]);
+          vars.push(`--xp-${name}-${index}:url("${image6.url}")`);
           if (index) continue;
-          const [top, right, bottom, left] = image5.edges;
+          const [top, right, bottom, left] = image6.edges;
           vars.push(
             `--xp-${name}-slice:${top} ${right} ${bottom} ${left}`,
             `--xp-${name}-edge:${[top, right, bottom, left].map((edge) => px(edge / dpr)).join(" ")}`,
@@ -4094,8 +4094,8 @@
             `--xp-${name}-r:${px(right / dpr)}`,
             `--xp-${name}-b:${px(bottom / dpr)}`,
             `--xp-${name}-l:${px(left / dpr)}`,
-            `--xp-${name}-w:${px(image5.width / dpr)}`,
-            `--xp-${name}-h:${px(image5.height / dpr)}`
+            `--xp-${name}-w:${px(image6.width / dpr)}`,
+            `--xp-${name}-h:${px(image6.height / dpr)}`
           );
         }
       }
@@ -4107,7 +4107,7 @@
       vars.push("--xp-fallback:transparent", "--xp-fallback-caption:transparent");
       return vars.join(";");
     })().catch(() => "");
-    rendered.set(key3, work);
+    rendered.set(key4, work);
     return work;
   }
 
@@ -4165,18 +4165,18 @@
   function xpFontCss(dpr) {
     const faces = Object.entries(strikes).flatMap(([strike, [regular, bold]]) => [[regular, 400], [bold, 700]].filter(([url]) => url).map(([url, weight]) => `@font-face{font-family:"Atelier XP ${strike}";src:url("${url}") format("woff");font-weight:${weight};font-display:block}`));
     const body2 = xpTextFor(9, dpr), caption2 = xpTextFor(10, dpr), title = xpTextFor(12, dpr);
-    const family = (text3) => `"Atelier XP ${text3.strike}",SimSun,"NSimSun",monospace`;
+    const family = (text4) => `"Atelier XP ${text4.strike}",SimSun,"NSimSun",monospace`;
     return { faces: faces.join("\n"), vars: `--xp-font:${family(body2)};--xp-font-size:${body2.size}px;--xp-line:${body2.line}px;--xp-caption-font:${family(caption2)};--xp-caption-size:${caption2.size}px;--xp-title-font:${family(title)};--xp-title-size:${title.size}px;--xp-dot:${body2.factor / dpr}px;--xp-crisp:${xpCrispFilter}` };
   }
   var fallback = /[^\u0000-\u007e\u00a0-\u024f\u2000-\u206f\u2e80-\u9fff\uff00-\uffef]/u;
   var graphemes;
-  function crispPieces(text3) {
-    if (!fallback.test(text3)) return [text3];
+  function crispPieces(text4) {
+    if (!fallback.test(text4)) return [text4];
     const Segmenter = Intl.Segmenter;
     graphemes ??= typeof Segmenter === "function" ? new Segmenter(void 0, { granularity: "grapheme" }) : null;
     const pieces = [];
     let run = "";
-    for (const piece of graphemes ? Array.from(graphemes.segment(text3), (part) => part.segment) : Array.from(text3)) {
+    for (const piece of graphemes ? Array.from(graphemes.segment(text4), (part) => part.segment) : Array.from(text4)) {
       if (!fallback.test(piece)) {
         run += piece;
         continue;
@@ -4435,7 +4435,9 @@ ${xpButtonCss(".atelier-control", true)}
     if (typeof GM_setValue === "function") GM_setValue(key, { ...readUiPreferences(), ...change });
     window.dispatchEvent(new Event(appearanceChanged));
   }
+  var switching = null;
   function pageIsDark() {
+    if (switching) return switching.dark;
     for (const node4 of [document.documentElement, document.body]) {
       if (!node4) continue;
       const theme2 = `${node4.className} ${node4.getAttribute("data-theme") || ""} ${node4.getAttribute("theme") || ""}`;
@@ -4471,9 +4473,9 @@ ${xpControlCss}`;
     ensureCrispFilter(document);
     let current4 = "", fontDpr = 0;
     const update = () => {
-      const { scheme, dark, dpr } = appearanceState(), key3 = `${scheme}|${dark}|${dpr}`;
-      if (key3 === current4) return;
-      current4 = key3;
+      const { scheme, dark, dpr } = appearanceState(), key4 = `${scheme}|${dark}|${dpr}`;
+      if (key4 === current4) return;
+      current4 = key4;
       const font = xpFontCss(dpr);
       if (fontDpr !== dpr) {
         fonts.textContent = font.faces;
@@ -4500,7 +4502,7 @@ ${xpControlCss}`;
       const base = `${Object.entries(tokens).map(([name, value2]) => `--xp-${name.replace(/[A-Z]/g, (letter) => "-" + letter.toLowerCase())}:${value2}`).join(";")};${Object.entries(aliases2).map(([name, value2]) => `--atelier-${name}:${value2}`).join(";")};${font.vars};color-scheme:${dark ? "dark" : "light"}`;
       theme2.textContent = `:root{${base}}`;
       void lunaImageVars(scheme, dark, dpr).then((images2) => {
-        if (current4 === key3 && images2) theme2.textContent = `:root{${base};${images2}}`;
+        if (current4 === key4 && images2) theme2.textContent = `:root{${base};${images2}}`;
       });
       watchScale(dpr);
     };
@@ -4518,6 +4520,21 @@ ${xpControlCss}`;
     }, { once: true });
     window.addEventListener(appearanceChanged, update);
     window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener("change", update);
+    document.addEventListener("biliThemeChange", (event) => {
+      const theme3 = event.detail?.theme;
+      if (theme3 !== "light" && theme3 !== "dark") return;
+      const mine = switching = { dark: theme3 === "dark" };
+      update();
+      const settle = () => {
+        if (switching !== mine) return;
+        switching = null;
+        update();
+      };
+      const sheet = document.getElementById("__css-map__");
+      sheet?.addEventListener("load", settle, { once: true });
+      sheet?.addEventListener("error", settle, { once: true });
+      window.setTimeout(settle, 3e3);
+    });
     update();
   }
 
@@ -4699,20 +4716,20 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     return root2;
   }
   function showInfoLog(message, tone = "info", durationMs = 3600) {
-    const text3 = String(message || "").replace(/\s+/g, " ").trim();
-    if (!text3) {
+    const text4 = String(message || "").replace(/\s+/g, " ").trim();
+    if (!text4) {
       return;
     }
     const root2 = ensureInfoLogRoot();
     if (!root2) {
-      document.addEventListener("DOMContentLoaded", () => showInfoLog(text3, tone, durationMs), { once: true });
+      document.addEventListener("DOMContentLoaded", () => showInfoLog(text4, tone, durationMs), { once: true });
       return;
     }
     const item = document.createElement("div");
     item.className = `bili-atelier-info-log-item bili-atelier-info-log-${tone}`;
     const label = item.appendChild(document.createElement("span"));
     label.className = "xp-text";
-    label.textContent = text3;
+    label.textContent = text4;
     root2.prepend(item);
     item.style.maxHeight = `${Math.max(48, item.scrollHeight + 20)}px`;
     window.requestAnimationFrame(() => item.classList.add("is-visible"));
@@ -5376,7 +5393,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
   // src/modules/sounds/media.ts
   var pulseKey = "AtelierSounds_mediaPulse";
   function startSoundMediaMonitor(changed) {
-    const key3 = soundMediaPrefix + crypto.randomUUID();
+    const key4 = soundMediaPrefix + crypto.randomUUID();
     const media2 = /* @__PURE__ */ new Set(), roots2 = /* @__PURE__ */ new WeakSet(), frames = /* @__PURE__ */ new WeakSet();
     let suspended = false, playing = false, published = false;
     const events = new AbortController();
@@ -5390,12 +5407,12 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     function publish(force = false) {
       if (playing && !suspended) {
         if (force || !published) {
-          GM_setValue(key3, { version: 1, at: Date.now(), playing: true });
+          GM_setValue(key4, { version: 1, at: Date.now(), playing: true });
           signal();
         }
         published = true;
       } else if (published) {
-        GM_deleteValue(key3);
+        GM_deleteValue(key4);
         published = false;
         signal();
       }
@@ -5462,7 +5479,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
       if (playing && !suspended) return true;
       const now = Date.now();
       for (const other of GM_listValues()) {
-        if (!other.startsWith(soundMediaPrefix) || other === key3) continue;
+        if (!other.startsWith(soundMediaPrefix) || other === key4) continue;
         if (activeMediaHeartbeat(GM_getValue(other), now)) return true;
       }
       return false;
@@ -5521,8 +5538,8 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
         const fail = (stage) => (error) => {
           this.loading.delete(id);
           const { name, message } = error ?? {};
-          const text3 = typeof message === "string" ? typeof name === "string" && name !== "Error" ? `${name}: ${message}` : message : String(error);
-          this.failures.set(id, { stage, scheme, message: text3 });
+          const text4 = typeof message === "string" ? typeof name === "string" && name !== "Error" ? `${name}: ${message}` : message : String(error);
+          this.failures.set(id, { stage, scheme, message: text4 });
         };
         const decode2 = (bytes) => decoder.decodeAudioData(bytes).then((buffer) => {
           this.loading.delete(id);
@@ -6056,17 +6073,17 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
       return null;
     }
     const resolvedOptions = resolveOptions(options);
-    let text3 = String(value2).trim();
-    if (text3.length === 0) {
+    let text4 = String(value2).trim();
+    if (text4.length === 0) {
       return null;
     }
     if (resolvedOptions.collapseWhitespace) {
-      text3 = text3.replace(/[\t\r\f\n\s]+/g, "");
+      text4 = text4.replace(/[\t\r\f\n\s]+/g, "");
     }
     if (resolvedOptions.caseInsensitive) {
-      text3 = text3.toLowerCase();
+      text4 = text4.toLowerCase();
     }
-    return text3.length > 0 ? text3 : null;
+    return text4.length > 0 ? text4 : null;
   }
   function normalizeRuleValue(value2, options = {}) {
     if (typeof value2 === "number") {
@@ -6243,13 +6260,13 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
   var viewedKey = (id) => `v:${id}`;
   var uidKey = (uid) => `u:${String(uid).trim()}`;
   var nameKey = (name) => `n:${String(name).trim().toLowerCase()}`;
-  function validKey(key3) {
-    const value2 = key3.slice(2);
-    if (key3.startsWith("v:")) return isViewedId(value2);
-    if (key3.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
-    return key3.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
+  function validKey(key4) {
+    const value2 = key4.slice(2);
+    if (key4.startsWith("v:")) return isViewedId(value2);
+    if (key4.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
+    return key4.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
   }
-  var sameKeys = (a, b) => a.size === b.size && [...a].every((key3) => b.has(key3));
+  var sameKeys = (a, b) => a.size === b.size && [...a].every((key4) => b.has(key4));
 
   // src/modules/blocker/rules.ts
   var ruleDefinitions = [
@@ -6287,31 +6304,31 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     }
     return normalized;
   }
-  function readRuleList(key3) {
-    const integer = integerRuleKeys.has(key3);
-    return normalizeStoredRules(GM_getValue(key3, []), integer);
+  function readRuleList(key4) {
+    const integer = integerRuleKeys.has(key4);
+    return normalizeStoredRules(GM_getValue(key4, []), integer);
   }
   var syncedRules = { precise_uid: { prefix: "u:", key: uidKey }, precise_name: { prefix: "n:", key: nameKey } };
-  var isSyncedRule = (key3) => Object.prototype.hasOwnProperty.call(syncedRules, key3);
+  var isSyncedRule = (key4) => Object.prototype.hasOwnProperty.call(syncedRules, key4);
   var journal;
-  var keysOf = (key3, values) => new Set(values.map(syncedRules[key3].key).filter(validKey));
-  function writeRuleList(key3, values) {
-    const integer = integerRuleKeys.has(key3);
+  var keysOf = (key4, values) => new Set(values.map(syncedRules[key4].key).filter(validKey));
+  function writeRuleList(key4, values) {
+    const integer = integerRuleKeys.has(key4);
     const normalized = normalizeStoredRules(values, integer);
-    if (isSyncedRule(key3)) journal?.(keysOf(key3, readRuleList(key3)), keysOf(key3, normalized));
-    GM_setValue(key3, normalized);
+    if (isSyncedRule(key4)) journal?.(keysOf(key4, readRuleList(key4)), keysOf(key4, normalized));
+    GM_setValue(key4, normalized);
     return normalized;
   }
   var blockedUserSyncStore = {
     keys: () => /* @__PURE__ */ new Set([...keysOf("precise_uid", readRuleList("precise_uid")), ...keysOf("precise_name", readRuleList("precise_name"))]),
     applySync(desired) {
-      const mine = new Set([...desired].filter((key3) => key3.startsWith("u:") || key3.startsWith("n:")));
+      const mine = new Set([...desired].filter((key4) => key4.startsWith("u:") || key4.startsWith("n:")));
       if (sameKeys(mine, blockedUserSyncStore.keys())) return false;
-      for (const key3 of Object.keys(syncedRules)) {
-        const { prefix: prefix4, key: toKey } = syncedRules[key3];
-        const local = readRuleList(key3).filter((value2) => !validKey(toKey(value2)));
+      for (const key4 of Object.keys(syncedRules)) {
+        const { prefix: prefix4, key: toKey } = syncedRules[key4];
+        const local = readRuleList(key4).filter((value2) => !validKey(toKey(value2)));
         const synced = [...mine].filter((entry) => entry.startsWith(prefix4)).map((entry) => entry.slice(prefix4.length));
-        GM_setValue(key3, normalizeStoredRules([...local, ...synced], integerRuleKeys.has(key3)));
+        GM_setValue(key4, normalizeStoredRules([...local, ...synced], integerRuleKeys.has(key4)));
       }
       return true;
     },
@@ -6326,31 +6343,31 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     }
     return snapshot;
   }
-  function addRuleItem(key3, value2) {
-    const validation = validateRuleInput(value2, integerRuleKeys.has(key3));
+  function addRuleItem(key4, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key4));
     if (!validation.status) {
       return validation;
     }
-    const current4 = readRuleList(key3);
+    const current4 = readRuleList(key4);
     if (current4.includes(validation.res)) {
       return { status: false, res: "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" };
     }
     current4.push(validation.res);
-    writeRuleList(key3, current4);
+    writeRuleList(key4, current4);
     return { status: true, res: "\u6DFB\u52A0\u6210\u529F", value: validation.res };
   }
-  function removeRuleItem(key3, value2) {
-    const validation = validateRuleInput(value2, integerRuleKeys.has(key3));
+  function removeRuleItem(key4, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key4));
     if (!validation.status) {
       return validation;
     }
-    const current4 = readRuleList(key3);
+    const current4 = readRuleList(key4);
     const index = current4.findIndex((item) => item === validation.res);
     if (index < 0) {
       return { status: false, res: "\u89C4\u5219\u4E0D\u5B58\u5728" };
     }
     current4.splice(index, 1);
-    writeRuleList(key3, current4);
+    writeRuleList(key4, current4);
     return { status: true, res: "\u5DF2\u89E3\u9664\u5C4F\u853D", value: validation.res };
   }
   function importRuleSnapshot(data, mode2) {
@@ -6638,10 +6655,10 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     parts2.push(`\u547D\u4E2D\uFF1A${entry.matching}`);
     return parts2.join(" / ");
   }
-  function appendText(parent, tagName, className, text3) {
+  function appendText(parent, tagName, className, text4) {
     const el3 = document.createElement(tagName);
     el3.className = className;
-    el3.textContent = text3;
+    el3.textContent = text4;
     parent.appendChild(el3);
     return el3;
   }
@@ -7981,6 +7998,16 @@ ${concealCss}
         "pgc-triple": ["/pgc/season/episode/like/triple", "form", "query", 0]
       }
     },
+    /** The drawn 观看历史 page: what Bilibili's own history page reads and sends. */
+    history: {
+      reads: { [api]: ["/x/web-interface/history/cursor", "/x/web-interface/history/search", "/x/v2/history/shadow"] },
+      writes: {
+        "history-delete": ["/x/v2/history/delete", "form", "body", 0],
+        "history-clear": ["/x/v2/history/clear", "form", "body", 0],
+        "history-pause": ["/x/v2/history/shadow/set", "form", "body", 0],
+        watchlater: ["/x/v2/history/toview/add", "form", "body", 0]
+      }
+    },
     /** The IE6 header: what Bilibili's own header reads. */
     header: {
       reads: {
@@ -7993,7 +8020,7 @@ ${concealCss}
           "/x/v3/fav/folder/list4navigate",
           "/x/v3/fav/resource/list4navigate"
         ],
-        "api.vc.bilibili.com": ["/x/im/web/msgfeed/unread", "/session_svr/v1/session_svr/single_unread"]
+        "api.vc.bilibili.com": ["/link_setting/v1/link_setting/get", "/x/im/web/msgfeed/unread", "/session_svr/v1/session_svr/single_unread"]
       },
       writes: {}
     }
@@ -8029,19 +8056,19 @@ ${concealCss}
       return false;
     }
   }
-  function readKey(key3) {
-    if (typeof key3 !== "string") throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
-    const parts2 = key3.split(":");
+  function readKey(key4) {
+    if (typeof key4 !== "string") throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
+    const parts2 = key4.split(":");
     if (parts2.length === 2 && parts2[0] === "follow" && validUid(parts2[1])) return { kind: "follow", uid: parts2[1] };
     if (parts2.length === 2 && parts2[0] === "group" && validUuid(parts2[1])) return { kind: "group", group: parts2[1] };
     if (parts2.length === 2 && parts2[0] === "group-icon" && validUuid(parts2[1])) return { kind: "icon", group: parts2[1] };
     if (parts2.length === 4 && parts2[0] === "member" && validUid(parts2[1]) && validUuid(parts2[2]) && validUuid(parts2[3]))
       return { kind: "member", uid: parts2[1], generation: parts2[2], group: parts2[3] };
-    if (key3 === "group-order") return { kind: "order" };
+    if (key4 === "group-order") return { kind: "order" };
     throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
   }
-  function readValue(key3, value2) {
-    switch (key3.kind) {
+  function readValue(key4, value2) {
+    switch (key4.kind) {
       case "follow":
         if (value2 === null) return null;
         if (fields(value2, ["name", "face", "addedAt"]) && typeof value2.name === "string" && validFace(value2.face) && typeof value2.addedAt === "number" && Number.isSafeInteger(value2.addedAt) && value2.addedAt >= 0)
@@ -8065,8 +8092,8 @@ ${concealCss}
   function readOperation(input) {
     if (!fields(input, ["id", "key", "value", "parents"]) || !validUuid(input.id) || !Array.isArray(input.parents) || !input.parents.every(validUuid) || new Set(input.parents).size !== input.parents.length || input.parents.includes(input.id))
       throw new Error("\u672C\u5730\u5173\u6CE8\u64CD\u4F5C\u635F\u574F");
-    const key3 = readKey(input.key);
-    return { id: input.id, key: input.key, value: readValue(key3, input.value), parents: [...input.parents].sort(lexical) };
+    const key4 = readKey(input.key);
+    return { id: input.id, key: input.key, value: readValue(key4, input.value), parents: [...input.parents].sort(lexical) };
   }
   function parseLocalFollowBatch(input) {
     if (!fields(input, ["schema", "version", "operations"]) || input.schema !== "bili-atelier-local-following" || input.version !== 1 && input.version !== 2 || !Array.isArray(input.operations) || input.operations.length > 1e4)
@@ -8097,14 +8124,14 @@ ${concealCss}
         if (!children.has(parentId)) children.set(parentId, []);
         children.get(parentId).push(op.id);
       }
-      const key3 = readKey(op.key);
-      if (key3.kind === "member") {
-        const generation = map.get(key3.generation);
-        if (!generation || generation.key !== `follow:${key3.uid}` || generation.value === null || !groupKeys.has(`group:${key3.group}`))
+      const key4 = readKey(op.key);
+      if (key4.kind === "member") {
+        const generation = map.get(key4.generation);
+        if (!generation || generation.key !== `follow:${key4.uid}` || generation.value === null || !groupKeys.has(`group:${key4.group}`))
           throw new Error("\u672C\u5730\u5173\u6CE8\u6210\u5458\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u8D26\u53F7\u4EE3\u6216\u5206\u7EC4");
       }
-      if (key3.kind === "icon" && !groupKeys.has(`group:${key3.group}`)) throw new Error("\u672C\u5730\u5173\u6CE8\u56FE\u6807\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
-      if (key3.kind === "order" && op.value.some((id) => !groupKeys.has(`group:${id}`)))
+      if (key4.kind === "icon" && !groupKeys.has(`group:${key4.group}`)) throw new Error("\u672C\u5730\u5173\u6CE8\u56FE\u6807\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
+      if (key4.kind === "order" && op.value.some((id) => !groupKeys.has(`group:${id}`)))
         throw new Error("\u672C\u5730\u5173\u6CE8\u6392\u5E8F\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
     }
     const queue = [...degrees].filter(([, n]) => n === 0).map(([id]) => id);
@@ -8132,10 +8159,10 @@ ${concealCss}
   }
   function materializeLocalFollow(operations) {
     const heads = localFollowFrontier(operations), groupMap = /* @__PURE__ */ new Map();
-    for (const [key3, ops] of heads) if (key3.startsWith("group:")) {
+    for (const [key4, ops] of heads) if (key4.startsWith("group:")) {
       const value2 = winner(ops).value;
       if (value2 === null) continue;
-      const id = key3.slice(6), icon2 = heads.get(`group-icon:${id}`);
+      const id = key4.slice(6), icon2 = heads.get(`group-icon:${id}`);
       groupMap.set(id, icon2 ? { id, name: value2, icon: winner(icon2).value } : { id, name: value2 });
     }
     const orderHeads = heads.get("group-order");
@@ -8144,10 +8171,10 @@ ${concealCss}
     order.push(...[...groupMap.keys()].filter((id) => !ordered.has(id)).sort(lexical));
     const groups = order.map((id) => groupMap.get(id));
     const accounts = [];
-    for (const [key3, ops] of heads) if (key3.startsWith("follow:")) {
+    for (const [key4, ops] of heads) if (key4.startsWith("follow:")) {
       const chosen = winner(ops);
       if (chosen.value === null) continue;
-      const uid = key3.slice(7), generations = ops.map((o) => o.id);
+      const uid = key4.slice(7), generations = ops.map((o) => o.id);
       const groupIds = order.filter((group) => {
         const memberships = generations.flatMap((generation) => heads.get(`member:${uid}:${generation}:${group}`) || []);
         return memberships.some((o) => o.value === true) && !memberships.some((o) => o.value === false);
@@ -8163,7 +8190,7 @@ ${concealCss}
   var localFollowChangedEvent = "atelier-local-following-changed";
   var listeners = /* @__PURE__ */ new Set();
   var uuid = () => crypto.randomUUID();
-  var recordKeys = () => GM_listValues().filter((key3) => key3.startsWith(prefix + "record_") || key3.startsWith(prefix + "pull_")).sort();
+  var recordKeys = () => GM_listValues().filter((key4) => key4.startsWith(prefix + "record_") || key4.startsWith(prefix + "pull_")).sort();
   function localFollowRecords(keys = recordKeys()) {
     const result = /* @__PURE__ */ new Map();
     const add = (id, raw) => {
@@ -8175,10 +8202,10 @@ ${concealCss}
       }
       result.set(id, batch2);
     };
-    for (const key3 of keys) {
-      if (key3.startsWith(prefix + "record_")) add(key3.slice((prefix + "record_").length), GM_getValue(key3));
-      else if (key3.startsWith(prefix + "pull_")) {
-        const value2 = GM_getValue(key3);
+    for (const key4 of keys) {
+      if (key4.startsWith(prefix + "record_")) add(key4.slice((prefix + "record_").length), GM_getValue(key4));
+      else if (key4.startsWith(prefix + "pull_")) {
+        const value2 = GM_getValue(key4);
         if (!value2 || typeof value2 !== "object" || Array.isArray(value2)) throw new Error("\u672C\u5730\u5173\u6CE8\u62C9\u53D6\u65E5\u5FD7\u635F\u574F");
         for (const [id, raw] of Object.entries(value2)) add(id, raw);
       }
@@ -8263,10 +8290,10 @@ ${concealCss}
     if (!changes2.length) return;
     const heads = localFollowFrontier(known2);
     const operations = [];
-    for (const [key3, value2] of changes2) {
-      const operation = { id: uuid(), key: key3, value: value2, parents: (heads.get(key3) ?? []).map((head) => head.id).sort() };
+    for (const [key4, value2] of changes2) {
+      const operation = { id: uuid(), key: key4, value: value2, parents: (heads.get(key4) ?? []).map((head) => head.id).sort() };
       operations.push(operation);
-      heads.set(key3, [operation]);
+      heads.set(key4, [operation]);
     }
     mergeLocalFollowOperations(known2, operations);
     if (operations.length <= 1e4) GM_setValue(prefix + "record_" + uuid(), localFollowBatch(operations));
@@ -8279,8 +8306,8 @@ ${concealCss}
     notify(true);
   }
   function normalizeLocalUid(value2) {
-    const text3 = String(value2 ?? "").trim();
-    return /^[1-9]\d*$/.test(text3) && Number.isSafeInteger(Number(text3)) ? text3 : null;
+    const text4 = String(value2 ?? "").trim();
+    return /^[1-9]\d*$/.test(text4) && Number.isSafeInteger(Number(text4)) ? text4 : null;
   }
   function parseLocalFollowInput(value2) {
     const direct = normalizeLocalUid(value2);
@@ -8424,8 +8451,8 @@ ${concealCss}
     }
   });
   var localFollowFeatures = "itemOpusStyle,listOnlyfans,opusBigCover,onlyfansVote,decorationCard,onlyfansAssetsV2,forwardListHidden,ugcDelete,onlyfansQaCard";
-  function localFollowMd5(text3) {
-    const bytes = new TextEncoder().encode(text3), length = Math.ceil((bytes.length + 9) / 64) * 64;
+  function localFollowMd5(text4) {
+    const bytes = new TextEncoder().encode(text4), length = Math.ceil((bytes.length + 9) / 64) * 64;
     const data = new Uint8Array(length);
     data.set(bytes);
     data[bytes.length] = 128;
@@ -8455,10 +8482,10 @@ ${concealCss}
     return [a0, b0, c0, d0].flatMap((n) => [0, 8, 16, 24].map((shift) => (n >>> shift & 255).toString(16).padStart(2, "0"))).join("");
   }
   var mixin = [46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13];
-  function localFollowWbiQuery(params, key3, now = Date.now()) {
+  function localFollowWbiQuery(params, key4, now = Date.now()) {
     const values = { ...params, wts: String(Math.floor(now / 1e3)) };
     const query = Object.keys(values).sort().map((name) => `${encodeURIComponent(name)}=${encodeURIComponent(values[name].replace(/[!'()*]/g, ""))}`).join("&");
-    return `${query}&w_rid=${localFollowMd5(query + key3)}`;
+    return `${query}&w_rid=${localFollowMd5(query + key4)}`;
   }
   function successful(raw) {
     if (!raw || raw.code !== 0 || !raw.data || typeof raw.data !== "object") {
@@ -8511,9 +8538,9 @@ ${concealCss}
     }
     async dynamic(uid, signal, offset = "") {
       if (!normalizeLocalUid(uid)) throw new Error("\u65E0\u6548\u8D26\u53F7");
-      const key3 = await this.signingKey(signal);
+      const key4 = await this.signingKey(signal);
       if (signal.aborted) throw new DOMException("\u68C0\u67E5\u5DF2\u53D6\u6D88", "AbortError");
-      const query = localFollowWbiQuery({ host_mid: uid, offset, timezone_offset: String((/* @__PURE__ */ new Date()).getTimezoneOffset()), platform: "web", features: localFollowFeatures, web_location: "333.1387" }, key3);
+      const query = localFollowWbiQuery({ host_mid: uid, offset, timezone_offset: String((/* @__PURE__ */ new Date()).getTimezoneOffset()), platform: "web", features: localFollowFeatures, web_location: "333.1387" }, key4);
       const data = successful(await this.request(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?${query}`, signal));
       if (!Array.isArray(data.items)) throw new BiliReadError("\u52A8\u6001\u9875\u683C\u5F0F\u65E0\u6548\uFF0C\u4FDD\u7559\u5DF2\u6709\u8BB0\u5F55");
       return data;
@@ -8753,13 +8780,13 @@ ${concealCss}
     ensureStyle();
     const index = shellIconIds.indexOf(id ?? shellFolderIcon);
     if (!shellIconsAvailable() || index < 0) {
-      const image5 = document.createElement("img");
-      image5.className = "xp-shell-icon";
-      image5.alt = "";
-      image5.width = image5.height = size;
-      image5.src = shellFolderImages[size];
-      image5.dataset.icon = String(shellFolderIcon);
-      return image5;
+      const image6 = document.createElement("img");
+      image6.className = "xp-shell-icon";
+      image6.alt = "";
+      image6.width = image6.height = size;
+      image6.src = shellFolderImages[size];
+      image6.dataset.icon = String(shellFolderIcon);
+      return image6;
     }
     const icon2 = document.createElement("span");
     icon2.className = `xp-shell-icon xp-shell-${size}`;
@@ -8908,7 +8935,7 @@ ${concealCss}
     else options.batch.addEventListener("abort", stopAll, { once: true });
     const worker = async () => {
       while (!stopped && queue.length) {
-        const key3 = queue.shift(), controller = new AbortController();
+        const key4 = queue.shift(), controller = new AbortController();
         active2.add(controller);
         let timedOut = false;
         const timer2 = setTimeout(() => {
@@ -8917,12 +8944,12 @@ ${concealCss}
         }, timeout);
         const aborted = new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError")), { once: true }));
         try {
-          const value2 = await Promise.race([options.read(key3, controller.signal), aborted]);
-          if (!stopped && !controller.signal.aborted) options.onValue(key3, value2);
+          const value2 = await Promise.race([options.read(key4, controller.signal), aborted]);
+          if (!stopped && !controller.signal.aborted) options.onValue(key4, value2);
         } catch (error) {
           if (timedOut && !stopped) {
-            if (options.onError(key3, new LocalReadTimeout(timeout))) stopAll();
-          } else if (!stopped && !controller.signal.aborted && options.onError(key3, error)) stopAll();
+            if (options.onError(key4, new LocalReadTimeout(timeout))) stopAll();
+          } else if (!stopped && !controller.signal.aborted && options.onError(key4, error)) stopAll();
         } finally {
           clearTimeout(timer2);
           active2.delete(controller);
@@ -8984,9 +9011,9 @@ ${concealCss}
     });
   }
   var LocalFollowChecker = class {
-    constructor(api4 = new LocalFollowApi(), changed = () => {
+    constructor(api5 = new LocalFollowApi(), changed = () => {
     }, limits = {}) {
-      this.api = api4;
+      this.api = api5;
       this.changed = changed;
       this.limits = limits;
       this.state = { running: false, total: 0, completed: 0, failed: 0, message: "\u4EC5\u663E\u793A\u672C\u673A\u5DF2\u83B7\u53D6\u7684\u53D1\u5E03\u8BB0\u5F55" };
@@ -9099,9 +9126,9 @@ ${concealCss}
         const local = Object.fromEntries(Object.entries(entry.local ?? {}).filter(([uid, generation]) => live.get(uid) === generation));
         return entry.online || Object.keys(local).length ? [{ ...entry, local }] : [];
       });
-      for (const key3 of Object.keys(this.cache.cursors)) {
-        const [kind, uid, generation] = key3.split(":");
-        if (kind === "local" && live.get(uid) !== generation) delete this.cache.cursors[key3];
+      for (const key4 of Object.keys(this.cache.cursors)) {
+        const [kind, uid, generation] = key4.split(":");
+        if (kind === "local" && live.get(uid) !== generation) delete this.cache.cursors[key4];
       }
     }
     stale(source) {
@@ -9197,7 +9224,7 @@ ${concealCss}
         first2 ||= result.first;
         read2 += result.read;
         total += result.total;
-        for (const key3 of result.failedKeys) failedKeys.add(key3);
+        for (const key4 of result.failedKeys) failedKeys.add(key4);
         return result;
       };
       if (options.first) {
@@ -9243,12 +9270,12 @@ ${concealCss}
           batch: signal,
           limit: 1,
           timeout: this.deps.timeout,
-          read: (key3, readSignal) => this.deps.api.dynamic(key3, readSignal, fromTop || !stream2 ? "" : stream2.offset),
+          read: (key4, readSignal) => this.deps.api.dynamic(key4, readSignal, fromTop || !stream2 ? "" : stream2.offset),
           onValue: (_, value2) => {
             data = value2;
           },
-          onError: (_, failure3) => {
-            error = failure3;
+          onError: (_, failure4) => {
+            error = failure4;
             return true;
           }
         });
@@ -9318,8 +9345,8 @@ ${concealCss}
       if (entries.length > localFeedCacheLimit) {
         const bound = time(entries[localFeedCacheLimit - 1].raw);
         entries = entries.filter((entry) => time(entry.raw) >= bound && time(entry.raw) > 0);
-        cursors2 = Object.fromEntries(Object.entries(cursors2).map(([key3, cursor]) => [
-          key3,
+        cursors2 = Object.fromEntries(Object.entries(cursors2).map(([key4, cursor]) => [
+          key4,
           cursor.frontier !== void 0 && cursor.frontier < bound ? { offset: "", hasMore: true, fetchedAt: cursor.fetchedAt } : cursor
         ]));
       }
@@ -9330,6 +9357,19 @@ ${concealCss}
       }
     }
   };
+
+  // src/core/time.ts
+  var two = (value2) => String(value2).padStart(2, "0");
+  function formatTimestamp(seconds2) {
+    const value2 = Number(seconds2);
+    if (!Number.isFinite(value2) || value2 <= 0) return "";
+    const date2 = new Date(value2 * 1e3);
+    return `${date2.getFullYear()}-${two(date2.getMonth() + 1)}-${two(date2.getDate())} ${two(date2.getHours())}:${two(date2.getMinutes())}:${two(date2.getSeconds())}`;
+  }
+  function withTimestamp(text4, seconds2) {
+    const stamp = formatTimestamp(seconds2);
+    return text4 && stamp ? `${text4}\uFF08${stamp}\uFF09` : text4 || stamp;
+  }
 
   // src/modules/local-following/feed-cards.ts
   function safeUrl(value2) {
@@ -9346,19 +9386,19 @@ ${concealCss}
     return /^https:\/\/[^/]*hdslb\.com\//.test(url) && !url.includes("@") ? `${url}@${size}.webp` : url;
   }
   var formatCount = (value2) => {
-    const number = Number(value2);
-    if (!Number.isFinite(number) || number <= 0) return typeof value2 === "string" && value2 && value2 !== "0" ? value2 : "";
-    return number >= 1e4 ? `${(number / 1e4).toFixed(number >= 1e5 ? 0 : 1)}\u4E07` : String(number);
+    const number2 = Number(value2);
+    if (!Number.isFinite(number2) || number2 <= 0) return typeof value2 === "string" && value2 && value2 !== "0" ? value2 : "";
+    return number2 >= 1e4 ? `${(number2 / 1e4).toFixed(number2 >= 1e5 ? 0 : 1)}\u4E07` : String(number2);
   };
   var count = formatCount;
-  function node(tag, className = "", text3) {
+  function node(tag, className = "", text4) {
     const element2 = document.createElement(tag);
     if (className) element2.className = className;
-    if (text3 !== void 0) element2.textContent = text3;
+    if (text4 !== void 0) element2.textContent = text4;
     return element2;
   }
-  function link(href, className = "", text3) {
-    const anchor = node("a", className, text3);
+  function link(href, className = "", text4) {
+    const anchor = node("a", className, text4);
     if (href) {
       anchor.href = href;
       anchor.target = "_blank";
@@ -9402,16 +9442,16 @@ ${concealCss}
     const box = node("div", "adc-text");
     const list = Array.isArray(nodes) && nodes.length ? nodes : typeof fallback2 === "string" && fallback2 ? [{ type: "RICH_TEXT_NODE_TYPE_TEXT", text: fallback2 }] : [];
     for (const item of list) {
-      const text3 = typeof item?.text === "string" ? item.text : typeof item?.orig_text === "string" ? item.orig_text : "";
+      const text4 = typeof item?.text === "string" ? item.text : typeof item?.orig_text === "string" ? item.orig_text : "";
       if (item?.type === "RICH_TEXT_NODE_TYPE_EMOJI" && item.emoji) {
-        const emoji = image2(safeUrl(item.emoji.webp_url || item.emoji.icon_url), item.emoji.size === 2 ? "adc-emoji adc-emoji-large" : "adc-emoji", text3);
-        emoji.title = text3;
+        const emoji = image2(safeUrl(item.emoji.webp_url || item.emoji.icon_url), item.emoji.size === 2 ? "adc-emoji adc-emoji-large" : "adc-emoji", text4);
+        emoji.title = text4;
         box.append(emoji);
         continue;
       }
       const href = safeUrl(item?.jump_url) || (item?.type === "RICH_TEXT_NODE_TYPE_AT" && /^\d+$/.test(String(item?.rid)) ? `https://space.bilibili.com/${item.rid}` : "");
       const target = href && item?.type !== "RICH_TEXT_NODE_TYPE_TEXT" ? box.appendChild(link(href, "adc-link")) : box;
-      text3.split("\n").forEach((part, index) => {
+      text4.split("\n").forEach((part, index) => {
         if (index) target.append(node("br"));
         if (part) target.append(document.createTextNode(part));
       });
@@ -9464,8 +9504,8 @@ ${concealCss}
     if (type === "MAJOR_TYPE_OPUS" && value2.opus) {
       const box = node("div", "adc-opus");
       if (value2.opus.title) box.append(node("strong", "adc-opus-title", value2.opus.title));
-      const text3 = richText(value2.opus.summary?.rich_text_nodes, value2.opus.summary?.text);
-      if (text3) box.append(text3);
+      const text4 = richText(value2.opus.summary?.rich_text_nodes, value2.opus.summary?.text);
+      if (text4) box.append(text4);
       if (value2.opus.summary?.has_more && safeUrl(value2.opus.jump_url)) box.append(link(safeUrl(value2.opus.jump_url), "adc-more", "\u67E5\u770B\u5168\u6587"));
       const pics = pictures(value2.opus.pics);
       if (pics) box.append(pics);
@@ -9516,15 +9556,15 @@ ${concealCss}
   }
   function body(raw) {
     const box = node("div", "adc-body"), dynamic = raw?.modules?.module_dynamic;
-    const text3 = richText(dynamic?.desc?.rich_text_nodes, dynamic?.desc?.text);
-    if (text3) box.append(text3);
+    const text4 = richText(dynamic?.desc?.rich_text_nodes, dynamic?.desc?.text);
+    if (text4) box.append(text4);
     const main = major(raw);
     if (main) box.append(main);
     else if (dynamic?.major && raw?.type !== "DYNAMIC_TYPE_FORWARD") box.append(elsewhere(raw, `\u6B64\u7C7B\u5185\u5BB9\uFF08${String(dynamic.major.type ?? "\u672A\u77E5").replace(/^MAJOR_TYPE_/, "")}\uFF09`));
     if (raw?.type === "DYNAMIC_TYPE_FORWARD") box.append(raw.orig ? renderDynamicCard(raw.orig, true) : node("p", "adc-none", "\u539F\u52A8\u6001\u5DF2\u5931\u6548"));
     const additional = dynamic?.additional?.type;
     if (additional) box.append(elsewhere(raw, `\u9644\u52A0\u5185\u5BB9\uFF1A${additionalLabels[additional] ?? "\u5176\u4ED6"}`));
-    if (!text3 && !main && !box.childElementCount) box.append(elsewhere(raw, "\u6682\u4E0D\u652F\u6301\u7684\u52A8\u6001"));
+    if (!text4 && !main && !box.childElementCount) box.append(elsewhere(raw, "\u6682\u4E0D\u652F\u6301\u7684\u52A8\u6001"));
     return box;
   }
   function renderDynamicCard(raw, nested = false) {
@@ -9542,18 +9582,18 @@ ${concealCss}
     const content = card3.appendChild(body(raw));
     if (!nested) {
       const stat = raw?.modules?.module_stat ?? {}, actions = node("div", "adc-actions");
-      for (const [label, key3] of [["\u8F6C\u53D1", "forward"], ["\u8BC4\u8BBA", "comment"], ["\u70B9\u8D5E", "like"]]) {
-        const button5 = actions.appendChild(node("button", `adc-button atelier-control adc-${key3}`, label));
+      for (const [label, key4] of [["\u8F6C\u53D1", "forward"], ["\u8BC4\u8BBA", "comment"], ["\u70B9\u8D5E", "like"]]) {
+        const button5 = actions.appendChild(node("button", `adc-button atelier-control adc-${key4}`, label));
         button5.type = "button";
-        button5.dataset.action = key3;
+        button5.dataset.action = key4;
         button5.dataset.label = label;
-        button5.dataset.count = String(Math.max(0, Number(stat[key3]?.count) || 0));
-        const value2 = count(stat[key3]?.count);
+        button5.dataset.count = String(Math.max(0, Number(stat[key4]?.count) || 0));
+        const value2 = count(stat[key4]?.count);
         if (value2) button5.textContent = `${label} ${value2}`;
-        if (key3 === "like") button5.setAttribute("aria-pressed", String(stat.like?.status === true));
-        if (stat[key3]?.disabled || stat[key3]?.forbidden) {
+        if (key4 === "like") button5.setAttribute("aria-pressed", String(stat.like?.status === true));
+        if (stat[key4]?.disabled || stat[key4]?.forbidden) {
           button5.disabled = true;
-          button5.title = key3 === "comment" ? "\u8FD9\u6761\u52A8\u6001\u7684\u8BC4\u8BBA\u533A\u5DF2\u5173\u95ED" : key3 === "like" ? "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u70B9\u8D5E" : "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u8F6C\u53D1";
+          button5.title = key4 === "comment" ? "\u8FD9\u6761\u52A8\u6001\u7684\u8BC4\u8BBA\u533A\u5DF2\u5173\u95ED" : key4 === "like" ? "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u70B9\u8D5E" : "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u8F6C\u53D1";
         }
       }
       const last = node("div", "adc-last");
@@ -9561,7 +9601,7 @@ ${concealCss}
       last.append(actions);
       content.append(last);
     }
-    const when2 = typeof author2.pub_time === "string" && author2.pub_time ? author2.pub_time : Number(author2.pub_ts) > 0 ? new Date(Number(author2.pub_ts) * 1e3).toLocaleString() : "";
+    const when2 = withTimestamp(typeof author2.pub_time === "string" ? author2.pub_time.trim() : "", author2.pub_ts);
     if (when2 && !nested) card3.appendChild(node("footer", "adc-footer xp-status")).append(node("span", "xp-status-pane", `\u53D1\u5E03\u4E8E ${when2}`));
     return card3;
   }
@@ -9661,8 +9701,8 @@ ${root} .btnView{z-index:3}
       return this.send("like", { body: { dyn_id_str: dynId, up: on5 ? 1 : 2, spmid: "333.1365.0.0" } });
     }
     /** The page's own forward flow: submit check, then the scene-4 create. */
-    async forward(dynId, text3) {
-      const content = { contents: text3 ? [{ raw_text: text3, type: 1, biz_id: "" }] : [] };
+    async forward(dynId, text4) {
+      const content = { contents: text4 ? [{ raw_text: text4, type: 1, biz_id: "" }] : [] };
       const upload = `${this.mid || 0}_${Math.floor(Date.now() / 1e3)}_${Math.floor(Math.random() * 9e3 + 1e3)}`;
       const request2 = { content, scene: 4, attach_card: null, upload_id: upload, meta: { app_meta: { from: "create.dynamic.web", mobi_app: "web" } }, option: { aigc: 2 } };
       await this.send("forward-check", { body: { content, scene: 4, attach_card: null, create_option: request2.option } });
@@ -9723,10 +9763,10 @@ ${root} .btnView{z-index:3}
   };
 
   // src/modules/local-following/feed-comments.ts
-  function node2(tag, className = "", text3) {
+  function node2(tag, className = "", text4) {
     const element2 = document.createElement(tag);
     if (className) element2.className = className;
-    if (text3 !== void 0) element2.textContent = text3;
+    if (text4 !== void 0) element2.textContent = text4;
     return element2;
   }
   function button(label, className, action) {
@@ -9772,7 +9812,7 @@ ${root} .btnView{z-index:3}
         box.append(jump);
       });
     };
-    const text3 = (value2) => value2.split("\n").forEach((part, index) => {
+    const text4 = (value2) => value2.split("\n").forEach((part, index) => {
       if (index) box.append(node2("br"));
       if (part) plain(part);
     });
@@ -9780,20 +9820,20 @@ ${root} .btnView{z-index:3}
       if (!piece) continue;
       const emote = emotes[piece], url = safeUrl(emote?.url);
       if (url) {
-        const image5 = node2("img", Number(emote?.meta?.size) === 2 ? "acm-emote acm-emote-large" : "acm-emote");
-        image5.src = url;
-        image5.alt = piece;
-        image5.title = piece;
-        image5.referrerPolicy = "no-referrer";
-        image5.loading = "lazy";
-        box.append(image5);
+        const image6 = node2("img", Number(emote?.meta?.size) === 2 ? "acm-emote acm-emote-large" : "acm-emote");
+        image6.src = url;
+        image6.alt = piece;
+        image6.title = piece;
+        image6.referrerPolicy = "no-referrer";
+        image6.loading = "lazy";
+        box.append(image6);
       } else if (links.has(piece)) {
         const link3 = node2("a", "acm-link", piece);
         link3.href = links.get(piece);
         link3.target = "_blank";
         link3.rel = "noopener noreferrer";
         box.append(link3);
-      } else text3(piece);
+      } else text4(piece);
     }
     const pictures2 = (Array.isArray(content?.pictures) ? content.pictures : []).map((picture) => safeUrl(picture?.img_src)).filter(Boolean).slice(0, 9);
     if (pictures2.length) {
@@ -9803,18 +9843,18 @@ ${root} .btnView{z-index:3}
         link3.href = src;
         link3.target = "_blank";
         link3.rel = "noopener noreferrer";
-        const image5 = link3.appendChild(node2("img"));
-        image5.src = bilibiliThumb(src, "160w_160h_1c");
-        image5.alt = "";
-        image5.referrerPolicy = "no-referrer";
-        image5.loading = "lazy";
+        const image6 = link3.appendChild(node2("img"));
+        image6.src = bilibiliThumb(src, "160w_160h_1c");
+        image6.alt = "";
+        image6.referrerPolicy = "no-referrer";
+        image6.loading = "lazy";
       }
       box.append(grid);
     }
     return box;
   }
   var emotePanel;
-  async function openEmotes(api4, anchor, insert) {
+  async function openEmotes(api5, anchor, insert) {
     emotePanel?.close();
     const panel = node2("section", "acm-emotes xp-window");
     panel.setAttribute("data-bili-blocker-ui", "");
@@ -9854,7 +9894,7 @@ ${root} .btnView{z-index:3}
     document.addEventListener("keydown", escape, true);
     let packages;
     try {
-      packages = await api4.emotes();
+      packages = await api5.emotes();
     } catch (error) {
       grid.textContent = `\u8868\u60C5\u8BFB\u53D6\u5931\u8D25\uFF1A${failure(error)}`;
       return;
@@ -9866,11 +9906,11 @@ ${root} .btnView{z-index:3}
         cell.type = "button";
         cell.title = emote.text;
         if (emote.url) {
-          const image5 = cell.appendChild(node2("img"));
-          image5.src = emote.url;
-          image5.alt = emote.text;
-          image5.referrerPolicy = "no-referrer";
-          image5.loading = "lazy";
+          const image6 = cell.appendChild(node2("img"));
+          image6.src = emote.url;
+          image6.alt = emote.text;
+          image6.referrerPolicy = "no-referrer";
+          image6.loading = "lazy";
         } else cell.textContent = emote.text;
         cell.addEventListener("click", () => insert(emote.text));
         return cell;
@@ -9896,9 +9936,9 @@ ${root} .btnView{z-index:3}
     const row = box.appendChild(node2("div", "acm-compose-row"));
     const note2 = node2("span", "acm-note");
     const pictures2 = [];
-    const insert = (text3) => {
+    const insert = (text4) => {
       const start = field.selectionStart ?? field.value.length, end = field.selectionEnd ?? start;
-      field.setRangeText(text3, start, end, "end");
+      field.setRangeText(text4, start, end, "end");
       field.focus();
       refresh();
     };
@@ -9919,12 +9959,12 @@ ${root} .btnView{z-index:3}
     input.addEventListener("change", () => {
       for (const file of [...input.files ?? []].slice(0, 9 - pictures2.length)) {
         const element2 = thumbs.appendChild(node2("span", "acm-thumb"));
-        const image5 = element2.appendChild(node2("img"));
-        image5.src = URL.createObjectURL(file);
-        image5.alt = "";
+        const image6 = element2.appendChild(node2("img"));
+        image6.src = URL.createObjectURL(file);
+        image6.alt = "";
         const item = { file, element: element2 };
         element2.appendChild(button("\u2715", "acm-thumb-remove", () => {
-          URL.revokeObjectURL(image5.src);
+          URL.revokeObjectURL(image6.src);
           element2.remove();
           pictures2.splice(pictures2.indexOf(item), 1);
           refresh();
@@ -10096,7 +10136,7 @@ ${root} .btnView{z-index:3}
       if (pinned) top.append(node2("span", "acm-badge", "\u7F6E\u9876"));
       main.append(commentMessage(reply?.content, context.seek));
       const meta = main.appendChild(node2("div", "acm-meta"));
-      const when2 = String(reply?.reply_control?.time_desc ?? "").replace(/发布$/, "") || (Number(reply?.ctime) > 0 ? new Date(Number(reply.ctime) * 1e3).toLocaleString() : "");
+      const when2 = formatTimestamp(reply?.ctime) || String(reply?.reply_control?.time_desc ?? "").replace(/发布$/, "");
       meta.append(node2("span", "acm-when", [when2, reply?.reply_control?.location].filter(Boolean).join(" \xB7 ")));
       const actions = meta.appendChild(node2("span", "acm-actions"));
       let likes = Math.max(0, Number(reply?.like) || 0), action = Number(reply?.action) || 0;
@@ -10200,17 +10240,17 @@ ${root} .btnView{z-index:3}
           const open = replies.appendChild(button(String(reply?.reply_control?.sub_reply_entry_text || `\u5171 ${replyCount} \u6761\u56DE\u590D`) + "\uFF0C\u70B9\u51FB\u67E5\u770B", "acm-open", () => void page(1)));
           open.classList.add("xp-tool");
         }
-        async function page(number) {
+        async function page(number2) {
           replies.dataset.loading = "";
           try {
-            const data = await context.api.replies(context.oid, context.type, rpid, number);
+            const data = await context.api.replies(context.oid, context.type, rpid, number2);
             const pages = Math.max(1, Math.ceil((Number(data.page?.count) || 0) / (Number(data.page?.size) || 10)));
             replies.replaceChildren(...(Array.isArray(data.replies) ? data.replies : []).map((child) => item(child, true)));
             if (pages > 1) {
               const pager = replies.appendChild(node2("div", "acm-pager"));
-              pager.append(button("\u4E0A\u4E00\u9875", "acm-prev", () => void page(number - 1)), node2("span", "", `\u7B2C ${number} / ${pages} \u9875`), button("\u4E0B\u4E00\u9875", "acm-next", () => void page(number + 1)));
-              pager.querySelector(".acm-prev").disabled = number <= 1;
-              pager.querySelector(".acm-next").disabled = number >= pages;
+              pager.append(button("\u4E0A\u4E00\u9875", "acm-prev", () => void page(number2 - 1)), node2("span", "", `\u7B2C ${number2} / ${pages} \u9875`), button("\u4E0B\u4E00\u9875", "acm-next", () => void page(number2 + 1)));
+              pager.querySelector(".acm-prev").disabled = number2 <= 1;
+              pager.querySelector(".acm-next").disabled = number2 >= pages;
             }
           } catch (error) {
             say(failure(error));
@@ -10341,9 +10381,9 @@ ${root2} .acm-blocked{outline:1px dashed #a33024;outline-offset:-1px}
   async function readFollowings(request2, mid, signal, limits = {}) {
     const found = /* @__PURE__ */ new Map();
     let total = 0, error = "", stopped = false;
-    const onError = (_, failure3) => {
-      error ||= failure3 instanceof Error ? failure3.message : "\u8BFB\u53D6\u5931\u8D25";
-      stopped = failure3 instanceof BiliReadError && failure3.stopsBatch;
+    const onError = (_, failure4) => {
+      error ||= failure4 instanceof Error ? failure4.message : "\u8BFB\u53D6\u5931\u8D25";
+      stopped = failure4 instanceof BiliReadError && failure4.stopsBatch;
       return stopped;
     };
     await runConcurrentReads({
@@ -10581,13 +10621,13 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}` : person.name;
       return img;
     };
     const picture = (src) => Object.assign(document.createElement("img"), { alt: "", src, className: "afp-pixel" });
-    function group(text3, open, onClick, tip = "") {
+    function group(text4, open, onClick, tip = "") {
       const header = document.createElement("button");
       header.type = "button";
       header.className = "afp-group";
       header.setAttribute("aria-expanded", String(open));
       if (tip) header.title = tip;
-      header.append(Object.assign(document.createElement("span"), { className: "afp-group-title", textContent: text3 }), Object.assign(document.createElement("i"), { className: "afp-chevron" }));
+      header.append(Object.assign(document.createElement("span"), { className: "afp-group-title", textContent: text4 }), Object.assign(document.createElement("i"), { className: "afp-chevron" }));
       header.addEventListener("click", onClick);
       return header;
     }
@@ -10702,7 +10742,7 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}` : person.name;
       }
     }
     observeCrispText(panel);
-    const place = () => {
+    const place2 = () => {
       panel.style.top = `calc(${headerBottomCss} + 8px)`;
       body2.style.maxHeight = `calc(100vh - ${headerBottomCss} - 60px)`;
     };
@@ -10713,9 +10753,9 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}` : person.name;
       const live = left.querySelector(".bili-dyn-live-users");
       if (live) live.insertAdjacentElement("afterend", panel);
       else left.append(panel);
-      place();
+      place2();
     }
-    window.addEventListener("resize", place);
+    window.addEventListener("resize", place2);
     return { panel, render: render2, mount, unmount: () => panel.remove() };
   }
   var p = `.${panelClass}`;
@@ -10763,9 +10803,9 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     }
     const filter = document.getElementById("__css-map-filter__");
     if (filter) {
-      const text3 = (filter.textContent ?? "").trim(), bare = text3.replace(/^[/*]+|[*/]+$/g, "");
+      const text4 = (filter.textContent ?? "").trim(), bare = text4.replace(/^[/*]+|[*/]+$/g, "");
       if (theme2 === "dark") filter.textContent = bare;
-      else if (!text3.startsWith("/*")) filter.textContent = `/*${bare}*/`;
+      else if (!text4.startsWith("/*")) filter.textContent = `/*${bare}*/`;
     }
     try {
       injectPageScript(`(${pageThemeSwitch.toString()})(${JSON.stringify(theme2)});`);
@@ -10894,7 +10934,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     let drag;
     const mode2 = () => panel.dataset.minimized === "true" ? "minimized" : "normal";
     const maximized = () => panel.dataset.maximized === "true" && mode2() === "normal";
-    const place = (position) => {
+    const place2 = (position) => {
       const rect = panel.getBoundingClientRect();
       position.x = Math.max(0, Math.min(Math.max(0, innerWidth - rect.width), position.x));
       position.y = Math.max(0, Math.min(Math.max(0, innerHeight - rect.height), position.y));
@@ -10903,7 +10943,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     const update = () => {
       drag = void 0;
       for (const property of ["left", "top", "right", "bottom", "margin"]) panel.style.removeProperty(property);
-      if (!maximized() && positions[mode2()]) place(positions[mode2()]);
+      if (!maximized() && positions[mode2()]) place2(positions[mode2()]);
       caption2.style.cursor = maximized() ? "default" : "move";
     };
     caption2.style.touchAction = "none";
@@ -10922,14 +10962,14 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 4) drag.moved = true;
       if (!drag.moved) return;
       const position = { x: drag.origin.x + event.clientX - drag.x, y: drag.origin.y + event.clientY - drag.y };
-      place(position);
+      place2(position);
       positions[mode2()] = position;
     }, { signal });
     const release = (event) => {
       if (!drag || drag.id !== event.pointerId) return;
       if (event.type === "pointercancel" && drag.moved) {
         positions[mode2()] = drag.origin;
-        place(drag.origin);
+        place2(drag.origin);
       }
       drag = void 0;
     };
@@ -11001,7 +11041,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       }
     }
     const cell = (row, column) => table.querySelector(`[data-row="${row}"][data-column="${column}"]`);
-    const byKey = (key3) => [...table.querySelectorAll("[data-key]")].find((node4) => node4.dataset.key === key3);
+    const byKey = (key4) => [...table.querySelectorAll("[data-key]")].find((node4) => node4.dataset.key === key4);
     const header = (group) => byKey(`group:${group}`);
     function focusCell(target) {
       if (!target) return;
@@ -11121,12 +11161,12 @@ UID\uFF1A${account.uid}`;
       menu.setAttribute("aria-label", group.name);
       const box = th.getBoundingClientRect(), frame2 = panel.getBoundingClientRect();
       Object.assign(menu.style, { left: `${box.left - frame2.left}px`, top: `${box.bottom - frame2.top}px` });
-      const item = (text3, enabled, action) => {
+      const item = (text4, enabled, action) => {
         const entry = menu.appendChild(document.createElement("button"));
         entry.type = "button";
         entry.className = "xp-menu-item";
         entry.setAttribute("role", "menuitem");
-        entry.textContent = text3;
+        entry.textContent = text4;
         entry.disabled = !enabled;
         entry.addEventListener("click", () => {
           closeMenu2();
@@ -11273,11 +11313,11 @@ UID\uFF1A${account.uid}`;
         }
       }
       const actions = dialog.appendChild(Object.assign(document.createElement("div"), { className: "atelier-dialog-actions" }));
-      const button5 = (text3, action) => {
+      const button5 = (text4, action) => {
         const node4 = actions.appendChild(document.createElement("button"));
         node4.type = "button";
         node4.className = "atelier-control";
-        node4.textContent = text3;
+        node4.textContent = text4;
         node4.addEventListener("click", () => {
           sound("click");
           action();
@@ -11336,30 +11376,30 @@ UID\uFF1A${account.uid}`;
     if (document.getElementById("atelier-groups-style")) return;
     const style = document.createElement("style");
     style.id = "atelier-groups-style";
-    const w = `.${windowClass}`;
+    const w2 = `.${windowClass}`;
     style.textContent = `
-${w}{position:fixed;inset:0;z-index:100002;width:640px;height:440px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);min-width:320px;min-height:220px;margin:auto;display:flex;flex-direction:column;resize:both;overflow:hidden;${xpFont};color:var(--xp-ink)}
-${w} *{box-sizing:border-box}
-${w} .xp-caption{gap:4px}
-${w} .agw-body{display:flex;flex-direction:column;gap:6px;flex:1;min-height:0;padding:6px;background:var(--xp-face)}
-${w} .agw-search{flex:none}
-${w} .agw-sheet{flex:1;min-height:0;overflow:auto;background:var(--xp-window);border:1px solid var(--xp-edge)}
-${w} table{border-collapse:separate;border-spacing:0;${xpFont}}
-${w} th,${w} td{height:22px;padding:0 4px;border-right:1px solid var(--xp-line);border-bottom:1px solid var(--xp-line);white-space:nowrap;font-weight:normal;text-align:left}
-${w} thead th{position:sticky;top:0;z-index:2;height:24px;background:var(--xp-face);border-right-color:var(--xp-shadow3d);border-bottom-color:var(--xp-shadow3d);cursor:default}
-${w} .agw-corner{left:0;z-index:3;width:130px;min-width:130px}
-${w} .agw-group{width:78px;min-width:78px;max-width:78px;overflow:hidden;text-overflow:ellipsis}
-${w} .agw-group>*{vertical-align:middle}${w} .agw-group>span:last-child{margin-left:3px}
-${w} .agw-group[aria-current=true]{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
-${w} .agw-new{width:96px;min-width:96px;max-width:none}
-${w} tbody th{position:sticky;left:0;z-index:1;max-width:130px;overflow:hidden;text-overflow:ellipsis;background:var(--xp-window);border-right-color:var(--xp-shadow3d)}
-${w} tbody th img{width:16px;height:16px;margin-right:4px;vertical-align:middle;object-fit:cover;image-rendering:auto}
-${w} .agw-cell{text-align:center;cursor:default}${w} .agw-cell input{margin:0;pointer-events:none}
-${w} .agw-spare{border-right:0}
-${w} .agw-empty{padding:16px 8px;color:var(--xp-muted);text-align:left}
-${w} [data-row]:focus{outline:1px dotted var(--xp-ink);outline-offset:-2px}
-${w} .agw-menu{position:absolute;z-index:4;min-width:120px}
-${w} .xp-status{flex:none}
+${w2}{position:fixed;inset:0;z-index:100002;width:640px;height:440px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);min-width:320px;min-height:220px;margin:auto;display:flex;flex-direction:column;resize:both;overflow:hidden;${xpFont};color:var(--xp-ink)}
+${w2} *{box-sizing:border-box}
+${w2} .xp-caption{gap:4px}
+${w2} .agw-body{display:flex;flex-direction:column;gap:6px;flex:1;min-height:0;padding:6px;background:var(--xp-face)}
+${w2} .agw-search{flex:none}
+${w2} .agw-sheet{flex:1;min-height:0;overflow:auto;background:var(--xp-window);border:1px solid var(--xp-edge)}
+${w2} table{border-collapse:separate;border-spacing:0;${xpFont}}
+${w2} th,${w2} td{height:22px;padding:0 4px;border-right:1px solid var(--xp-line);border-bottom:1px solid var(--xp-line);white-space:nowrap;font-weight:normal;text-align:left}
+${w2} thead th{position:sticky;top:0;z-index:2;height:24px;background:var(--xp-face);border-right-color:var(--xp-shadow3d);border-bottom-color:var(--xp-shadow3d);cursor:default}
+${w2} .agw-corner{left:0;z-index:3;width:130px;min-width:130px}
+${w2} .agw-group{width:78px;min-width:78px;max-width:78px;overflow:hidden;text-overflow:ellipsis}
+${w2} .agw-group>*{vertical-align:middle}${w2} .agw-group>span:last-child{margin-left:3px}
+${w2} .agw-group[aria-current=true]{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
+${w2} .agw-new{width:96px;min-width:96px;max-width:none}
+${w2} tbody th{position:sticky;left:0;z-index:1;max-width:130px;overflow:hidden;text-overflow:ellipsis;background:var(--xp-window);border-right-color:var(--xp-shadow3d)}
+${w2} tbody th img{width:16px;height:16px;margin-right:4px;vertical-align:middle;object-fit:cover;image-rendering:auto}
+${w2} .agw-cell{text-align:center;cursor:default}${w2} .agw-cell input{margin:0;pointer-events:none}
+${w2} .agw-spare{border-right:0}
+${w2} .agw-empty{padding:16px 8px;color:var(--xp-muted);text-align:left}
+${w2} [data-row]:focus{outline:1px dotted var(--xp-ink);outline-offset:-2px}
+${w2} .agw-menu{position:absolute;z-index:4;min-width:120px}
+${w2} .xp-status{flex:none}
 .agw-picker .atelier-dialog-body{display:flex;flex-direction:column;gap:6px}
 .agw-picker .agw-icons{display:grid;grid-auto-flow:column;grid-template-rows:repeat(4,44px);grid-auto-columns:44px;width:${44 * 8 + 2}px;height:${44 * 4 + 18}px;overflow-x:auto;overflow-y:hidden;background:var(--xp-window);border:1px solid var(--xp-edge)}
 .agw-picker .agw-icon{display:flex;align-items:center;justify-content:center;outline:none}
@@ -11439,10 +11479,10 @@ ${w} .xp-status{flex:none}
   var notifyPageLayoutChanged = () => window.dispatchEvent(new Event(pageLayoutChanged));
 
   // src/modules/luna-header/menu.ts
-  function node3(tag, className = "", text3) {
+  function node3(tag, className = "", text4) {
     const element2 = document.createElement(tag);
     if (className) element2.className = className;
-    if (text3 !== void 0) element2.textContent = text3;
+    if (text4 !== void 0) element2.textContent = text4;
     return element2;
   }
   var hoverDelay = 250;
@@ -11526,9 +11566,9 @@ ${w} .xp-status{flex:none}
       row.append(node3("span", "lh-check", item.checked ? "\u2713" : ""));
       const glyph = row.appendChild(node3("span", "lh-item-icon"));
       if (typeof item.icon === "string") {
-        const image5 = glyph.appendChild(node3("img"));
-        image5.src = item.icon;
-        image5.alt = "";
+        const image6 = glyph.appendChild(node3("img"));
+        image6.src = item.icon;
+        image6.alt = "";
       } else if (item.icon) glyph.append(item.icon);
       row.append(node3("span", item.bold || item.count ? "lh-item-label lh-bold" : "lh-item-label", item.label));
       if (item.count) row.append(node3("span", "lh-count", `(${item.count > 99 ? "99+" : item.count})`));
@@ -11609,13 +11649,51 @@ ${w} .xp-status{flex:none}
     }
   };
 
+  // src/modules/luna-header/unread.ts
+  var UnreadNumber = 1;
+  var RedDot = 2;
+  var NoReminder = 3;
+  var number = (value2) => Math.max(0, Number(value2) || 0);
+  function unreadBadge(feed, single, setting) {
+    const notify3 = [UnreadNumber, RedDot, NoReminder].includes(Number(setting?.msg_notify)) ? Number(setting.msg_notify) : UnreadNumber;
+    const folded = Number(setting?.show_unfollowed_msg) === 1;
+    const people2 = number(single?.follow_unread) + (folded ? 0 : number(single?.unfollow_unread));
+    const services = number(single?.biz_msg_follow_unread) + (folded ? 0 : number(single?.biz_msg_unfollow_unread));
+    const entries = {
+      reply: { count: number(feed?.reply), dot: false },
+      at: { count: number(feed?.at), dot: false },
+      like: { count: number(feed?.like), dot: false },
+      // 系统通知 the account chose to see as a dot.
+      system: { count: number(feed?.sys_msg), dot: Number(feed?.sys_msg_style) === 1 },
+      // Messages from people are counted; from service accounts only a dot.
+      whisper: people2 > 0 ? { count: people2, dot: false } : { count: services, dot: true }
+    };
+    let numbers = 0, dots = 0;
+    for (const entry of Object.values(entries)) if (entry.dot) dots += entry.count;
+    else numbers += entry.count;
+    if (notify3 === NoReminder) {
+      for (const entry of Object.values(entries)) entry.count = 0;
+      return { count: 0, dot: false, entries };
+    }
+    if (notify3 === RedDot) return { count: 0, dot: numbers > 0, entries };
+    return numbers === 0 && dots > 0 ? { count: 0, dot: true, entries } : { count: numbers, dot: false, entries };
+  }
+  function dynamicOffsets(cookie, mid) {
+    const read2 = (name) => {
+      const value2 = new RegExp(`(?:^|;\\s*)${name}_${mid}=([^;]*)`).exec(cookie)?.[1] ?? "";
+      return value2 && value2 !== "undefined" ? decodeURIComponent(value2) : "";
+    };
+    const offsets = { all: read2("bp_t_offset"), video: read2("bp_video_offset"), article: read2("bp_article_offset") };
+    return { ...offsets, first: !offsets.all && !offsets.video && !offsets.article };
+  }
+
   // src/modules/luna-header/header.ts
   var api2 = "https://api.bilibili.com";
   var vc = "https://api.vc.bilibili.com";
-  function el(tag, className = "", text3) {
+  function el(tag, className = "", text4) {
     const element2 = document.createElement(tag);
     if (className) element2.className = className;
-    if (text3 !== void 0) element2.textContent = text3;
+    if (text4 !== void 0) element2.textContent = text4;
     return element2;
   }
   var image3 = (src, size = 24) => {
@@ -11626,9 +11704,9 @@ ${w} .xp-status{flex:none}
     node4.draggable = false;
     return node4;
   };
-  var titled = (label, key3) => {
+  var titled = (label, key4) => {
     const span = el("span");
-    span.append(label + "(", el("u", "", key3), ")");
+    span.append(label + "(", el("u", "", key4), ")");
     return span;
   };
   var newTab = (href) => window.open(href, "_blank", "noopener");
@@ -11636,9 +11714,9 @@ ${w} .xp-status{flex:none}
   function when(seconds2) {
     const value2 = Number(seconds2) * 1e3;
     if (!Number.isFinite(value2) || value2 <= 0) return "";
-    const date = new Date(value2), today = /* @__PURE__ */ new Date(), day = 864e5;
+    const date2 = new Date(value2), today = /* @__PURE__ */ new Date(), day = 864e5;
     const start = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
-    return value2 >= start ? "\u4ECA\u5929" : value2 >= start - day ? "\u6628\u5929" : `${date.getMonth() + 1}-${date.getDate()}`;
+    return value2 >= start ? "\u4ECA\u5929" : value2 >= start - day ? "\u6628\u5929" : `${date2.getMonth() + 1}-${date2.getDate()}`;
   }
   function openBiliLogin() {
     const native2 = document.querySelector(".header-avatar-unlogin-wrap,.header-login-entry");
@@ -11671,17 +11749,17 @@ ${w} .xp-status{flex:none}
       else openFrom(anchor, items, align);
     };
     const openers = {};
-    const menu = (id, label2, key3, items) => {
+    const menu = (id, label2, key4, items) => {
       const button6 = menus.appendChild(el("button", "lh-menu-title"));
       button6.type = "button";
-      button6.append(titled(label2, key3));
+      button6.append(titled(label2, key4));
       button6.setAttribute("data-menu-anchor", "");
       button6.setAttribute("aria-haspopup", "menu");
       button6.addEventListener("click", () => toggleFrom(button6, items));
       button6.addEventListener("pointerenter", () => {
         if (chain.isOpen && active2 && active2 !== button6 && active2.classList.contains("lh-menu-title")) openFrom(button6, items);
       });
-      openers[key3.toLowerCase()] = () => openFrom(button6, items, "left", true);
+      openers[key4.toLowerCase()] = () => openFrom(button6, items, "left", true);
       return button6;
     };
     const brand = bar.appendChild(el("div", "lh-brand"));
@@ -11762,29 +11840,29 @@ ${w} .xp-status{flex:none}
     const toolbar = header.appendChild(el("div", "lh-band lh-toolbar xp-toolbar"));
     toolbar.setAttribute("role", "toolbar");
     toolbar.setAttribute("aria-label", "\u6807\u51C6\u6309\u94AE");
-    const label = (text3) => el("span", "lh-tool-label", text3);
-    const button5 = (icon2, text3, action, showText = true) => {
+    const label = (text4) => el("span", "lh-tool-label", text4);
+    const button5 = (icon2, text4, action, showText = true) => {
       const control = toolbar.appendChild(el("button", "xp-tool lh-tool"));
       control.type = "button";
       control.append(image3(icon2));
-      if (showText) control.append(label(text3));
-      else control.title = text3;
-      control.setAttribute("aria-label", text3);
+      if (showText) control.append(label(text4));
+      else control.title = text4;
+      control.setAttribute("aria-label", text4);
       control.addEventListener("click", action);
       return control;
     };
-    const link3 = (icon2, text3, href) => {
+    const link3 = (icon2, text4, href) => {
       const control = toolbar.appendChild(el("a", "xp-tool lh-tool"));
       control.href = href;
       control.target = "_blank";
       control.rel = "noopener noreferrer";
-      control.append(image3(icon2), label(text3));
+      control.append(image3(icon2), label(text4));
       return control;
     };
-    const split = (main, text3, items) => {
+    const split = (main, text4, items) => {
       const arrow = toolbar.appendChild(el("button", "xp-tool lh-split"));
       arrow.type = "button";
-      arrow.setAttribute("aria-label", `${text3}\u5217\u8868`);
+      arrow.setAttribute("aria-label", `${text4}\u5217\u8868`);
       arrow.setAttribute("data-menu-anchor", "");
       arrow.append(el("span", "lh-drop"));
       arrow.addEventListener("click", () => {
@@ -11807,7 +11885,7 @@ ${w} .xp-status{flex:none}
         openBiliLogin();
         return;
       }
-      toggleFrom(messages2, messageItems);
+      toggleFrom(messages2, () => refreshCounts(true).then(messageItems, messageItems));
     });
     messages2.setAttribute("data-menu-anchor", "");
     messages2.setAttribute("aria-haspopup", "menu");
@@ -11831,14 +11909,18 @@ ${w} .xp-status{flex:none}
       paintReset();
       window.addEventListener(pageLayoutChanged, paintReset);
     }
-    let unread = { reply: 0, at: 0, like: 0, system: 0, whisper: 0 };
+    let unread = unreadBadge(null, null, null);
+    const entry = (label2, kind, href) => {
+      const { count: count2, dot } = unread.entries[kind];
+      return { label: label2, href, ...dot ? { bold: count2 > 0 } : { count: count2 } };
+    };
     function messageItems() {
       return [
-        { label: "\u56DE\u590D\u6211\u7684", count: unread.reply, href: "https://message.bilibili.com/#/reply" },
-        { label: "@ \u6211\u7684", count: unread.at, href: "https://message.bilibili.com/#/at" },
-        { label: "\u6536\u5230\u7684\u8D5E", count: unread.like, href: "https://message.bilibili.com/#/love" },
-        { label: "\u7CFB\u7EDF\u901A\u77E5", count: unread.system, href: "https://message.bilibili.com/#/system" },
-        { label: "\u6211\u7684\u6D88\u606F", count: unread.whisper, href: "https://message.bilibili.com/#/whisper" },
+        entry("\u56DE\u590D\u6211\u7684", "reply", "https://message.bilibili.com/#/reply"),
+        entry("@ \u6211\u7684", "at", "https://message.bilibili.com/#/at"),
+        entry("\u6536\u5230\u7684\u8D5E", "like", "https://message.bilibili.com/#/love"),
+        entry("\u7CFB\u7EDF\u901A\u77E5", "system", "https://message.bilibili.com/#/system"),
+        entry("\u6211\u7684\u6D88\u606F", "whisper", "https://message.bilibili.com/#/whisper"),
         "-",
         { label: "\u6253\u5F00\u6D88\u606F\u4E2D\u5FC3", href: "https://message.bilibili.com/" }
       ];
@@ -11865,11 +11947,11 @@ ${w} .xp-status{flex:none}
         { label: `\u67E5\u770B\u5168\u90E8\u7A0D\u540E\u518D\u770B\uFF08\u5171 ${total} \u4E2A\uFF09`, href: "https://www.bilibili.com/watchlater/#/list" }
       ];
     }
-    const paintCount = (control, text3, count2) => {
+    const paintCount = (control, text4, count2, dot = false) => {
       const target = control.querySelector(".lh-tool-label");
-      target.replaceChildren(text3);
-      target.classList.toggle("lh-bold", count2 > 0);
-      if (count2 > 0) target.append(el("span", "lh-count", ` (${count2 > 99 ? "99+" : count2})`));
+      target.replaceChildren(text4);
+      target.classList.toggle("lh-bold", count2 > 0 || dot);
+      if (count2 > 0 && !dot) target.append(el("span", "lh-count", ` (${count2 > 99 ? "99+" : count2})`));
     };
     const address = header.appendChild(el("form", "lh-band lh-address"));
     address.setAttribute("role", "search");
@@ -11909,13 +11991,13 @@ ${w} .xp-status{flex:none}
       pick = -1;
     };
     const showList = () => {
-      list.replaceChildren(...suggestions.map((text3, index) => {
-        const row = el("div", index === pick ? "lh-suggest lh-hot" : "lh-suggest", text3);
+      list.replaceChildren(...suggestions.map((text4, index) => {
+        const row = el("div", index === pick ? "lh-suggest lh-hot" : "lh-suggest", text4);
         row.setAttribute("role", "option");
         row.addEventListener("pointerdown", (event) => {
           event.preventDefault();
-          field.value = text3;
-          search(text3);
+          field.value = text4;
+          search(text4);
         });
         return row;
       }));
@@ -11998,32 +12080,37 @@ ${w} .xp-status{flex:none}
     paintBrand();
     header.addEventListener("keydown", (event) => {
       if (!event.altKey || event.ctrlKey || event.metaKey) return;
-      const key3 = event.key.toLowerCase();
-      if (key3 === "d") {
+      const key4 = event.key.toLowerCase();
+      if (key4 === "d") {
         event.preventDefault();
         field.focus();
         field.select();
         return;
       }
-      if (openers[key3]) {
+      if (openers[key4]) {
         event.preventDefault();
-        openers[key3]();
+        openers[key4]();
       }
     });
     let lastCounts = 0;
     async function refreshCounts(force = false) {
       if (!loggedIn || !force && Date.now() - lastCounts < 6e4) return;
       lastCounts = Date.now();
-      const [feed, single, entrance] = await Promise.allSettled([
+      const seen = dynamicOffsets(document.cookie, me.mid);
+      const [setting, feed, single, entrance] = await Promise.allSettled([
+        read2(`${vc}/link_setting/v1/link_setting/get?build=0&mobi_app=web&msg_notify=1&show_unfollowed_msg=1`),
         read2(`${vc}/x/im/web/msgfeed/unread?build=0&mobi_app=web`),
         read2(`${vc}/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0`),
-        read2(`${api2}/x/web-interface/dynamic/entrance`)
+        read2(`${api2}/x/web-interface/dynamic/entrance?alltype_offset=${encodeURIComponent(seen.all)}&video_offset=${encodeURIComponent(seen.video)}&article_offset=${encodeURIComponent(seen.article)}`)
       ]);
-      const number = (value2) => Math.max(0, Number(value2) || 0);
-      if (feed.status === "fulfilled") unread = { ...unread, reply: number(feed.value?.reply), at: number(feed.value?.at), like: number(feed.value?.like), system: number(feed.value?.sys_msg) };
-      if (single.status === "fulfilled") unread.whisper = number(single.value?.follow_unread) + number(single.value?.unfollow_unread);
-      paintCount(messages2, "\u6D88\u606F", unread.reply + unread.at + unread.like + unread.system + unread.whisper);
-      if (entrance.status === "fulfilled") paintCount(dynamic, "\u52A8\u6001", number(entrance.value?.update_info?.item?.count));
+      if (feed.status === "fulfilled" && single.status === "fulfilled") {
+        unread = unreadBadge(feed.value, single.value, setting.status === "fulfilled" ? setting.value : null);
+        paintCount(messages2, "\u6D88\u606F", unread.count, unread.dot);
+      }
+      if (entrance.status === "fulfilled") {
+        const count2 = Math.max(0, Number(entrance.value?.update_info?.item?.count) || 0);
+        paintCount(dynamic, "\u52A8\u6001", count2, seen.first && count2 > 0);
+      }
     }
     async function loadAccount() {
       if (!loggedIn) return;
@@ -12041,6 +12128,9 @@ ${w} .xp-status{flex:none}
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") void refreshCounts();
     });
+    window.setInterval(() => {
+      if (document.visibilityState === "visible") void refreshCounts();
+    }, 6e4);
     return { element: header, close: () => {
       chain.close();
       hideList();
@@ -12210,14 +12300,14 @@ a.lh-item{color:var(--xp-ink)}
       const url = parse(urls.get(this)), body2 = empty(url), xhr = this;
       if (!body2) return send.apply(this, args);
       setTimeout(() => {
-        const text3 = JSON.stringify(body2);
+        const text4 = JSON.stringify(body2);
         const define = (name, value2) => Object.defineProperty(xhr, name, { configurable: true, value: value2 });
         define("readyState", 4);
         define("status", 200);
         define("statusText", "OK");
         define("responseURL", url.href);
-        define("responseText", text3);
-        define("response", xhr.responseType === "json" ? body2 : text3);
+        define("responseText", text4);
+        define("response", xhr.responseType === "json" ? body2 : text4);
         define("getResponseHeader", (name) => /^content-type$/i.test(name) ? "application/json" : null);
         define("getAllResponseHeaders", () => "content-type: application/json\r\n");
         for (const name of ["readystatechange", "load", "loadend"]) xhr.dispatchEvent(new Event(name));
@@ -12278,9 +12368,9 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       return;
     }
     const request2 = relay.read;
-    const api4 = new LocalFollowApi(request2);
+    const api5 = new LocalFollowApi(request2);
     const engine2 = new LocalFeedEngine({
-      api: api4,
+      api: api5,
       directory: localFollowSnapshot,
       prefs: () => prefs,
       loggedIn,
@@ -12324,12 +12414,12 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     statusText.setAttribute("role", "status");
     const progressPane = statusBar.appendChild(document.createElement("span"));
     progressPane.className = "alf-progress xp-status-pane";
-    const progress = progressPane.appendChild(document.createElement("span"));
-    progress.className = "xp-progress";
-    progress.dataset.marquee = "";
-    progress.setAttribute("role", "progressbar");
-    progress.setAttribute("aria-label", "\u6B63\u5728\u8BFB\u53D6");
-    progress.append(document.createElement("i"));
+    const progress2 = progressPane.appendChild(document.createElement("span"));
+    progress2.className = "xp-progress";
+    progress2.dataset.marquee = "";
+    progress2.setAttribute("role", "progressbar");
+    progress2.setAttribute("aria-label", "\u6B63\u5728\u8BFB\u53D6");
+    progress2.append(document.createElement("i"));
     const footer = pane.appendChild(document.createElement("div"));
     footer.className = "atelier-feed-footer";
     const footerText = footer.appendChild(document.createElement("span"));
@@ -12472,14 +12562,14 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       });
       return step;
     }
-    const interactions = new FeedInteractions(request2, relay.write, (signal) => api4.signingKey(signal), mid ?? "");
+    const interactions = new FeedInteractions(request2, relay.write, (signal) => api5.signingKey(signal), mid ?? "");
     const cards2 = /* @__PURE__ */ new WeakMap();
     let comments;
     const label = (control, total) => {
       control.dataset.count = String(Math.max(0, total));
       control.textContent = total > 0 ? `${control.dataset.label} ${formatCount(total)}` : control.dataset.label;
     };
-    const failure3 = (error) => error instanceof BiliActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u539F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
+    const failure4 = (error) => error instanceof BiliActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u539F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
     function note2(card3, message, sticky = false) {
       const pane2 = card3.querySelector(".adc-footer .xp-status-pane");
       if (!pane2) return;
@@ -12510,7 +12600,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       } catch (error) {
         control.setAttribute("aria-pressed", String(!on5));
         label(control, before);
-        note2(card3, failure3(error));
+        note2(card3, failure4(error));
       } finally {
         control.disabled = false;
       }
@@ -12550,7 +12640,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
         } catch (error) {
           send.disabled = false;
           field.disabled = false;
-          note2(card3, failure3(error));
+          note2(card3, failure4(error));
         }
       }
       card3.querySelector(".adc-footer")?.before(box);
@@ -12787,10 +12877,10 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
 
   // src/modules/local-following/panel.ts
   var panelId = "atelier-local-following-panel";
-  function localFollowElement(tag, className = "", text3 = "") {
+  function localFollowElement(tag, className = "", text4 = "") {
     const node4 = document.createElement(tag);
     node4.className = className;
-    node4.textContent = text3;
+    node4.textContent = text4;
     return node4;
   }
   function button2(label, action, className = "lf-button") {
@@ -12939,8 +13029,8 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     search.setAttribute("aria-label", "\u641C\u7D22\u672C\u5730\u5173\u6CE8");
     const sortSelect = localFollowElement("select");
     sortSelect.setAttribute("aria-label", "\u6392\u5E8F\u65B9\u5F0F");
-    for (const [value2, text3] of [["name", "\u6309\u540D\u5B57\uFF0F\u62FC\u97F3"], ["added", "\u6309\u6DFB\u52A0\u65F6\u95F4"], ["viewed", "\u6309\u6700\u8FD1\u67E5\u770B"], ["updated", "\u6309\u5DF2\u83B7\u53D6\u66F4\u65B0\u65F6\u95F4"]]) {
-      const option = localFollowElement("option", "", text3);
+    for (const [value2, text4] of [["name", "\u6309\u540D\u5B57\uFF0F\u62FC\u97F3"], ["added", "\u6309\u6DFB\u52A0\u65F6\u95F4"], ["viewed", "\u6309\u6700\u8FD1\u67E5\u770B"], ["updated", "\u6309\u5DF2\u83B7\u53D6\u66F4\u65B0\u65F6\u95F4"]]) {
+      const option = localFollowElement("option", "", text4);
       option.value = value2;
       sortSelect.append(option);
     }
@@ -13032,7 +13122,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     function visible() {
       return sortLocalFollows(inGroup(), sort, ascending, types, search.value);
     }
-    function date(value2) {
+    function date2(value2) {
       return value2 ? new Date(value2).toLocaleString() : "\u65F6\u95F4\u672A\u77E5";
     }
     function groupLabel(group) {
@@ -13079,7 +13169,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
         select.input.setAttribute("aria-label", `\u9009\u62E9 ${name}`);
         select.input.id = "lf-select-" + account.uid;
         tile.append(link3, select.input);
-        const time2 = sort === "viewed" ? `\u6700\u8FD1\u67E5\u770B\uFF1A${date(cache.viewedAt)}` : sort === "added" ? `\u6DFB\u52A0\u4E8E\uFF1A${date(account.addedAt)}` : `\u5DF2\u83B7\u53D6\u66F4\u65B0\uFF1A${date(latestLocalFollowUpdate(cache, types))}`;
+        const time2 = sort === "viewed" ? `\u6700\u8FD1\u67E5\u770B\uFF1A${date2(cache.viewedAt)}` : sort === "added" ? `\u6DFB\u52A0\u4E8E\uFF1A${date2(account.addedAt)}` : `\u5DF2\u83B7\u53D6\u66F4\u65B0\uFF1A${date2(latestLocalFollowUpdate(cache, types))}`;
         tile.append(localFollowElement("span", "lf-meta", time2));
         if (account.groupIds.length) tile.append(localFollowElement("span", "lf-meta", account.groupIds.map((id) => snapshot.groups.find((group) => group.id === id)).filter(Boolean).map(groupLabel).join("\u3001")));
         if (cache.checkError) tile.append(localFollowElement("span", "lf-meta", `\u4E0A\u6B21\u68C0\u67E5\u5931\u8D25\uFF1A${cache.checkError}`));
@@ -13373,10 +13463,10 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     }
     async authorize() {
       this.auth = await this.request("https://api.backblazeb2.com/b2api/v4/b2_authorize_account", "GET", { Authorization: `Basic ${btoa(`${this.config.keyId}:${this.config.applicationKey}`)}` });
-      const api4 = this.auth.apiInfo.storageApi;
-      b2Url(api4.apiUrl);
-      b2Url(api4.downloadUrl);
-      const allowed = api4.allowed;
+      const api5 = this.auth.apiInfo.storageApi;
+      b2Url(api5.apiUrl);
+      b2Url(api5.downloadUrl);
+      const allowed = api5.allowed;
       if (!["listFiles", "readFiles", "writeFiles"].every((p2) => allowed.capabilities.includes(p2)) || allowed.buckets && !allowed.buckets.some((b) => b.id === this.config.bucketId) || allowed.namePrefix && !this.config.prefix.startsWith(allowed.namePrefix)) throw new Error("\u5E94\u7528\u5BC6\u94A5\u9700\u8981\u76EE\u6807\u76EE\u5F55\u7684 listFiles\u3001readFiles\u3001writeFiles \u6743\u9650");
     }
     call(name, body2) {
@@ -13501,7 +13591,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     if (typeof GM_listValues !== "function") {
       return [];
     }
-    return GM_listValues().filter((key3) => String(key3).startsWith("BiliViewed_"));
+    return GM_listValues().filter((key4) => String(key4).startsWith("BiliViewed_"));
   }
   function readViewedGroup(groupId, fallback2 = null) {
     return GM_getValue(viewedGroupStorageKey(groupId), fallback2);
@@ -13513,13 +13603,13 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     GM_setValue(viewedGroupStorageKey(groupId), values);
   }
   function putGroups(groups, mode2) {
-    if (mode2 === "overwrite") for (const key3 of listViewedGroupKeys()) GM_deleteValue(key3);
+    if (mode2 === "overwrite") for (const key4 of listViewedGroupKeys()) GM_deleteValue(key4);
     for (const [groupId, values] of Object.entries(groups)) GM_setValue(viewedGroupStorageKey(groupId), values);
   }
   function readViewedStorage() {
     const groups = {};
-    for (const key3 of listViewedGroupKeys()) {
-      const groupId = String(key3).slice("BiliViewed_".length);
+    for (const key4 of listViewedGroupKeys()) {
+      const groupId = String(key4).slice("BiliViewed_".length);
       groups[groupId] = flattenViewedGroups({ [groupId]: readViewedGroup(groupId, []) });
     }
     return { items: flattenViewedGroups(groups), groups };
@@ -13535,10 +13625,10 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   var viewedSyncStore = {
     keys: () => keysOf2(readViewedStorage().items),
     applySync(desired) {
-      const wanted = new Set([...desired].filter((key3) => key3.startsWith("v:")));
+      const wanted = new Set([...desired].filter((key4) => key4.startsWith("v:")));
       if (sameKeys(wanted, viewedSyncStore.keys())) return false;
       const unsyncable = readViewedStorage().items.filter((id) => !isViewedId(id));
-      putGroups(groupViewedItems([...unsyncable, ...[...wanted].map((key3) => key3.slice(2))]), "overwrite");
+      putGroups(groupViewedItems([...unsyncable, ...[...wanted].map((key4) => key4.slice(2))]), "overwrite");
       return true;
     },
     setJournal(next) {
@@ -13546,15 +13636,15 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     }
   };
   function isLegacyViewedExport(value2) {
-    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key3) => key3.startsWith("BiliViewed_"));
+    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key4) => key4.startsWith("BiliViewed_"));
   }
   function normalizeLegacyViewedExport(value2) {
     const groups = {};
-    for (const [key3, items] of Object.entries(value2)) {
-      if (!key3.startsWith("BiliViewed_") || !Array.isArray(items)) {
+    for (const [key4, items] of Object.entries(value2)) {
+      if (!key4.startsWith("BiliViewed_") || !Array.isArray(items)) {
         continue;
       }
-      const groupId = key3.slice("BiliViewed_".length);
+      const groupId = key4.slice("BiliViewed_".length);
       groups[groupId] = flattenViewedGroups({ [groupId]: items });
     }
     return { items: flattenViewedGroups(groups), groups };
@@ -13567,11 +13657,11 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   function splitLegacyBlockerExport(value2) {
     const rules = {};
     const legacySettings = {};
-    for (const [key3, data] of Object.entries(value2)) {
-      if (ruleKeySet.has(key3) && Array.isArray(data)) {
-        rules[key3] = data;
-      } else if (!key3.startsWith("BiliViewed_")) {
-        legacySettings[key3] = data;
+    for (const [key4, data] of Object.entries(value2)) {
+      if (ruleKeySet.has(key4) && Array.isArray(data)) {
+        rules[key4] = data;
+      } else if (!key4.startsWith("BiliViewed_")) {
+        legacySettings[key4] = data;
       }
     }
     return { rules, legacySettings };
@@ -13639,7 +13729,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   }
 
   // src/modules/sync/protocol.ts
-  var seedId = (key3) => `seed:${key3}`;
+  var seedId = (key4) => `seed:${key4}`;
   function batch(operations) {
     return { schema: "bili-atelier-sync", version: 1, operations };
   }
@@ -13688,15 +13778,15 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     return result;
   }
   function materialize(operations) {
-    return new Set([...frontier(operations)].filter(([, ops]) => ops.every((o) => o.present)).map(([key3]) => key3));
+    return new Set([...frontier(operations)].filter(([, ops]) => ops.every((o) => o.present)).map(([key4]) => key4));
   }
   function changes(before, after, known2, uuid2) {
     const heads = frontier(known2);
-    return [.../* @__PURE__ */ new Set([...before, ...after])].filter((k) => validKey(k) && before.has(k) !== after.has(k)).map((key3) => ({
+    return [.../* @__PURE__ */ new Set([...before, ...after])].filter((k) => validKey(k) && before.has(k) !== after.has(k)).map((key4) => ({
       id: uuid2(),
-      key: key3,
-      present: after.has(key3),
-      parents: [.../* @__PURE__ */ new Set([seedId(key3), ...(heads.get(key3) || []).map((o) => o.id)])]
+      key: key4,
+      present: after.has(key4),
+      parents: [.../* @__PURE__ */ new Set([seedId(key4), ...(heads.get(key4) || []).map((o) => o.id)])]
     }));
   }
 
@@ -13729,7 +13819,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     if (!GM_getValue(`${prefix2}initialized`, false)) {
       if (!viewedJournalBackup()) GM_setValue(`${prefix2}backup`, exportAtelierDataPackage());
       const keys = new Set(stores.flatMap((store) => [...store.keys()]));
-      saveOperations([...keys].map((key3) => ({ id: seedId(key3), key: key3, present: true, parents: [] })));
+      saveOperations([...keys].map((key4) => ({ id: seedId(key4), key: key4, present: true, parents: [] })));
       GM_setValue(`${prefix2}initialized`, true);
     }
     applyViewedJournal();
@@ -13927,17 +14017,17 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     const fields2 = /* @__PURE__ */ new Map();
     const cleanupPixels = observeCrispText(root2);
     const c = getConfig();
-    for (const [key3, label, value2] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
+    for (const [key4, label, value2] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
       const row = document.createElement("label");
       row.textContent = label;
       const input = document.createElement("input");
-      input.name = key3;
-      input.type = key3 === "applicationKey" ? "password" : "text";
+      input.name = key4;
+      input.type = key4 === "applicationKey" ? "password" : "text";
       input.autocomplete = "off";
       input.spellcheck = false;
       input.value = value2;
       input.addEventListener("input", () => hideSecrets());
-      fields2.set(key3, input);
+      fields2.set(key4, input);
       row.append(input);
       root2.querySelector(".fields").append(row);
     }
@@ -14008,12 +14098,12 @@ ${message}` : ""}`;
         return;
       }
       const generation = ++qrGeneration;
-      const text3 = JSON.stringify(config2());
+      const text4 = JSON.stringify(config2());
       const hint = document.createElement("p");
       hint.className = "hint";
       hint.textContent = "\u4E8C\u7EF4\u7801\u5305\u542B\u8BBF\u95EE\u5BC6\u94A5\uFF0C\u8BF7\u52FF\u5206\u4EAB\u3002\u518D\u6B21\u70B9\u51FB\u53EF\u9690\u85CF\u3002\u624B\u673A\u53EF\u626B\u7801\u590D\u5236\u6587\u672C\uFF0C\u5728\u4E91\u540C\u6B65\u8BBE\u7F6E\u4E2D\u7C98\u8D34\u5BFC\u5165\u3002";
       const canvas = document.createElement("canvas");
-      await import_qrcode.default.toCanvas(canvas, text3, { width: 320, errorCorrectionLevel: "M" });
+      await import_qrcode.default.toCanvas(canvas, text4, { width: 320, errorCorrectionLevel: "M" });
       if (disposed || generation !== qrGeneration) return;
       const copy = document.createElement("button");
       copy.type = "button";
@@ -14022,7 +14112,7 @@ ${message}` : ""}`;
       copy.onclick = async () => {
         const feedback = soundTask(void 0, () => !disposed && copy.isConnected && host.isConnected);
         try {
-          await navigator.clipboard.writeText(text3);
+          await navigator.clipboard.writeText(text4);
           message = "\u914D\u7F6E\u6587\u672C\u5DF2\u590D\u5236";
           feedback.finish("success");
         } catch {
@@ -14377,8 +14467,8 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     let client = null;
     const queryClient = () => {
       if (client) return client;
-      const root2 = document.getElementById("__next"), key3 = root2 && Object.keys(root2).find((name) => name.startsWith("__reactContainer"));
-      const stack = key3 ? [root2[key3]] : [];
+      const root2 = document.getElementById("__next"), key4 = root2 && Object.keys(root2).find((name) => name.startsWith("__reactContainer"));
+      const stack = key4 ? [root2[key4]] : [];
       for (let seen = 0; stack.length && seen < 2e4; seen++) {
         const fiber = stack.pop();
         if (!fiber) continue;
@@ -14401,7 +14491,7 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       const queries = cache.getAll().filter((query) => query.state?.status === "success");
       const data = (name, match) => queries.find((query) => query.queryKey?.[0] === name && match(query.state.data, query.queryKey[1]))?.state.data;
       const seasonId = Number(manifest?.seasonId) || 0;
-      const season = data("pgc/view/web/simple/season", (value2, key3) => seasonId ? Number(value2?.season_id) === seasonId : key3?.ep_id === epId);
+      const season = data("pgc/view/web/simple/season", (value2, key4) => seasonId ? Number(value2?.season_id) === seasonId : key4?.ep_id === epId);
       if (!epId || !season) return;
       const sid = Number(season.season_id);
       const next = clone({
@@ -14411,13 +14501,13 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
         aid: Number(manifest?.aid) || 0,
         cid: Number(manifest?.cid) || 0,
         season,
-        episode: data("pgc/season/episode/web/info", (_value, key3) => Number(key3) === epId) ?? null,
-        related: data("/pgc/season/web/related/recommend", (_value, key3) => Number(key3) === sid)?.season ?? [],
-        rating: data("pgc/review/user", (_value, key3) => Number(key3) === Number(season.media_id)) ?? null
+        episode: data("pgc/season/episode/web/info", (_value, key4) => Number(key4) === epId) ?? null,
+        related: data("/pgc/season/web/related/recommend", (_value, key4) => Number(key4) === sid)?.season ?? [],
+        rating: data("pgc/review/user", (_value, key4) => Number(key4) === Number(season.media_id)) ?? null
       });
-      const text3 = JSON.stringify(next);
-      if (text3 === signature) return;
-      signature = text3;
+      const text4 = JSON.stringify(next);
+      if (text4 === signature) return;
+      signature = text4;
       post({ kind: "state", state: next });
     };
     const schedule2 = () => {
@@ -14468,9 +14558,9 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
           volume: Math.round((Number(player.getVolume()) || 0) * 100) / 100,
           muted: !!player.isMuted()
         };
-        const text3 = JSON.stringify(state2);
-        if (text3 !== playback) {
-          playback = text3;
+        const text4 = JSON.stringify(state2);
+        if (text4 !== playback) {
+          playback = text4;
           post({ kind: "playback", state: state2 });
         }
       } catch {
@@ -14486,9 +14576,9 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
         const vm = app(), list = actionList(), target = data.target ?? {};
         const router = window.next?.router;
         if (bangumi) {
-          const ok3 = typeof router?.push === "function" && /^\/bangumi\/play\/(?:ep|ss)\d+$/.test(String(target.path ?? ""));
-          if (ok3) router.push(target.path);
-          post({ kind: "command-result", id: data.id, ok: ok3 });
+          const ok4 = typeof router?.push === "function" && /^\/bangumi\/play\/(?:ep|ss)\d+$/.test(String(target.path ?? ""));
+          if (ok4) router.push(target.path);
+          post({ kind: "command-result", id: data.id, ok: ok4 });
           return;
         }
         if (list && typeof list.switchVideo === "function" && target.bvid) {
@@ -14503,8 +14593,8 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
         vm.switchVideo({ aid: target.aid, bvid: target.bvid, cid: target.cid, p: target.p || 1, spmIdFrom: target.spm || "333.788.0.0" });
         post({ kind: "command-result", id: data.id, ok: true });
       } else if (data.kind === "list") {
-        const list = actionList(), done = (ok3) => post({ kind: "command-result", id: data.id, ok: ok3 });
-        const has = (key3) => (Array.isArray(list?.visibleResourceList) ? list.visibleResourceList : []).some((item) => `${item.type}_${item.oid}` === key3);
+        const list = actionList(), done = (ok4) => post({ kind: "command-result", id: data.id, ok: ok4 });
+        const has = (key4) => (Array.isArray(list?.visibleResourceList) ? list.visibleResourceList : []).some((item) => `${item.type}_${item.oid}` === key4);
         if (!list) {
           done(false);
           return;
@@ -14521,15 +14611,15 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
             const was = !!list.isFaved;
             Promise.resolve(list.handleCollect()).then(() => done(!!list.isFaved !== was), () => done(false));
           } else if (data.op === "remove") {
-            const key3 = String(data.key ?? "");
-            const wrap = [...document.querySelectorAll(".action-list-item-wrap")].find((node4) => node4.getAttribute("data-index") === key3);
+            const key4 = String(data.key ?? "");
+            const wrap = [...document.querySelectorAll(".action-list-item-wrap")].find((node4) => node4.getAttribute("data-index") === key4);
             const item = wrap?.querySelector(".action-list-item")?.__vue__;
             if (!item || typeof item.itemDelete !== "function") {
               done(false);
               return;
             }
             const started7 = Date.now(), wait = () => {
-              if (!has(key3)) done(true);
+              if (!has(key4)) done(true);
               else if (Date.now() - started7 > 3e3) done(false);
               else window.setTimeout(wait, 100);
             };
@@ -14605,14 +14695,14 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
   var note = (message, tone = "info") => showInfoLog(message, tone);
 
   // src/modules/video-luna/ui.ts
-  function el2(tag, className = "", text3) {
+  function el2(tag, className = "", text4) {
     const node4 = document.createElement(tag);
     if (className) node4.className = className;
-    if (text3 !== void 0) node4.textContent = text3;
+    if (text4 !== void 0) node4.textContent = text4;
     return node4;
   }
-  function link2(className, text3, href, newTab2 = true) {
-    const node4 = el2("a", className, text3);
+  function link2(className, text4, href, newTab2 = true) {
+    const node4 = el2("a", className, text4);
     node4.href = href;
     if (newTab2) {
       node4.target = "_blank";
@@ -14761,7 +14851,7 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       closeMenu();
       stop();
     };
-    const key3 = (event) => {
+    const key4 = (event) => {
       if (event.key === "Escape") {
         event.preventDefault();
         closeMenu();
@@ -14777,13 +14867,13 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       document.removeEventListener("pointerdown", close, true);
       window.removeEventListener("scroll", close, true);
       window.removeEventListener("resize", close);
-      document.removeEventListener("keydown", key3, true);
+      document.removeEventListener("keydown", key4, true);
     };
     window.setTimeout(() => {
       document.addEventListener("pointerdown", close, true);
       window.addEventListener("scroll", close, true);
       window.addEventListener("resize", close);
-      document.addEventListener("keydown", key3, true);
+      document.addEventListener("keydown", key4, true);
     }, 0);
     buttons2.find((button5) => !button5.disabled)?.focus({ preventScroll: true });
   }
@@ -14812,25 +14902,25 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
   });
   function formatDuration(seconds2) {
     const total = Math.max(0, Math.floor(Number(seconds2) || 0)), h = Math.floor(total / 3600), m = Math.floor(total % 3600 / 60), s = total % 60;
-    const two = (value2) => String(value2).padStart(2, "0");
-    return h ? `${h}:${two(m)}:${two(s)}` : `${two(m)}:${two(s)}`;
+    const two2 = (value2) => String(value2).padStart(2, "0");
+    return h ? `${h}:${two2(m)}:${two2(s)}` : `${two2(m)}:${two2(s)}`;
   }
   function formatDate(seconds2) {
     const value2 = Number(seconds2);
     if (!Number.isFinite(value2) || value2 <= 0) return "";
-    const date = new Date(value2 * 1e3), two = (n) => String(n).padStart(2, "0");
-    return `${date.getFullYear()}-${two(date.getMonth() + 1)}-${two(date.getDate())} ${two(date.getHours())}:${two(date.getMinutes())}`;
+    const date2 = new Date(value2 * 1e3), two2 = (n) => String(n).padStart(2, "0");
+    return `${date2.getFullYear()}-${two2(date2.getMonth() + 1)}-${two2(date2.getDate())} ${two2(date2.getHours())}:${two2(date2.getMinutes())}`;
   }
   function shortCount(value2) {
-    const number = Number(value2);
-    if (!Number.isFinite(number) || number <= 0) return "0";
+    const number2 = Number(value2);
+    if (!Number.isFinite(number2) || number2 <= 0) return "0";
     for (const [size, unit] of [[1e8, "\u4EBF"], [1e4, "\u4E07"]]) {
-      if (number >= size) {
-        const scaled = number / size;
+      if (number2 >= size) {
+        const scaled = number2 / size;
         return `${scaled >= 1e3 ? Math.round(scaled) : Number(scaled.toFixed(1))}${unit}`;
       }
     }
-    return String(Math.round(number));
+    return String(Math.round(number2));
   }
   var weekday = (seconds2) => `\u5468${"\u65E5\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D"[new Date(seconds2 * 1e3).getDay()]}`;
   var videoUrl = (bvid, p2) => `https://www.bilibili.com/video/${bvid}/${p2 && p2 > 1 ? `?p=${p2}` : ""}`;
@@ -14898,9 +14988,9 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
         resolve(value3);
       };
       const value2 = options.build(body2, finish);
-      const ok3 = actions.appendChild(el2("button", "atelier-control xp-default", options.confirm ?? "\u786E\u5B9A"));
-      ok3.type = "button";
-      ok3.addEventListener("click", () => {
+      const ok4 = actions.appendChild(el2("button", "atelier-control xp-default", options.confirm ?? "\u786E\u5B9A"));
+      ok4.type = "button";
+      ok4.addEventListener("click", () => {
         const result = value2();
         if (result === null) {
           sound("error");
@@ -14934,7 +15024,7 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       if (typeof dialog.showModal === "function") dialog.showModal();
       else dialog.setAttribute("open", "");
       sound("open");
-      (body2.querySelector("input,button") ?? ok3).focus();
+      (body2.querySelector("input,button") ?? ok4).focus();
     });
   }
 
@@ -14969,8 +15059,8 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       control.title = guestTitle;
     }
     function paint2() {
-      const label = (control, text3, count2) => {
-        control.querySelector(".vl-tool-label").textContent = count2 > 0 ? `${text3} ${formatCount(count2)}` : text3;
+      const label = (control, text4, count2) => {
+        control.querySelector(".vl-tool-label").textContent = count2 > 0 ? `${text4} ${formatCount(count2)}` : text4;
       };
       label(like, "\u70B9\u8D5E", counts.like);
       label(coin, "\u6295\u5E01", counts.coin);
@@ -14980,8 +15070,8 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       coin.setAttribute("aria-pressed", String(mine.coin > 0));
       favorite.setAttribute("aria-pressed", String(mine.favorite));
     }
-    function rich(parent, text3) {
-      for (const [index, part] of text3.split(urlPattern).entries()) {
+    function rich(parent, text4) {
+      for (const [index, part] of text4.split(urlPattern).entries()) {
         if (!part) continue;
         if (index % 2) {
           parent.append(link2("vl-link", part, part));
@@ -15007,9 +15097,9 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       descText.replaceChildren();
       const pieces = Array.isArray(video2.desc_v2) && video2.desc_v2.length ? video2.desc_v2 : [{ raw_text: String(video2.desc ?? ""), type: 1 }];
       for (const piece of pieces) {
-        const text3 = String(piece?.raw_text ?? "");
-        if (Number(piece?.type) === 2 && /^\d+$/.test(String(piece?.biz_id))) descText.append(link2("vl-link", `@${text3}`, `https://space.bilibili.com/${piece.biz_id}`));
-        else rich(descText, text3);
+        const text4 = String(piece?.raw_text ?? "");
+        if (Number(piece?.type) === 2 && /^\d+$/.test(String(piece?.biz_id))) descText.append(link2("vl-link", `@${text4}`, `https://space.bilibili.com/${piece.biz_id}`));
+        else rich(descText, text4);
       }
       if (!descText.textContent?.trim() || descText.textContent.trim() === "-") descText.replaceChildren(el2("span", "vl-muted", "\u6CA1\u6709\u7B80\u4ECB"));
     }
@@ -15194,7 +15284,7 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     }
     share.addEventListener("click", () => {
       const bvid = String(state2?.bvid ?? ""), p2 = Number(state2?.p) || 1, page = () => String(state2?.pageUrl || videoUrl(bvid, p2));
-      const copy = (text3, what) => void navigator.clipboard.writeText(text3).then(() => note(`\u5DF2\u590D\u5236${what}`, "success"), () => note("\u590D\u5236\u5931\u8D25", "error"));
+      const copy = (text4, what) => void navigator.clipboard.writeText(text4).then(() => note(`\u5DF2\u590D\u5236${what}`, "success"), () => note("\u590D\u5236\u5931\u8D25", "error"));
       openMenu([
         { label: "\u590D\u5236\u94FE\u63A5", action: () => copy(page(), "\u94FE\u63A5"), bold: true },
         { label: "\u590D\u5236\u5E26\u5F53\u524D\u65F6\u95F4\u7684\u94FE\u63A5", action: () => {
@@ -15217,8 +15307,8 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     return {
       element: win.root,
       render(next) {
-        const bangumi = next.kind === "bangumi", key3 = (value2) => value2 ? value2.kind === "bangumi" ? `ep${value2.epId}` : value2.bvid : "";
-        const switched = key3(next) !== key3(state2);
+        const bangumi = next.kind === "bangumi", key4 = (value2) => value2 ? value2.kind === "bangumi" ? `ep${value2.epId}` : value2.bvid : "";
+        const switched = key4(next) !== key4(state2);
         state2 = next;
         const video2 = next.videoData ?? {}, stat = video2.stat ?? {};
         if (switched) {
@@ -15265,10 +15355,10 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     const cover = el2("div", "vl-cover");
     cover.setAttribute("aria-hidden", "true");
     cover.setAttribute("data-bili-blocker-ui", "true");
-    const image5 = cover.appendChild(el2("img"));
-    image5.alt = "";
-    image5.referrerPolicy = "no-referrer";
-    image5.decoding = "async";
+    const image6 = cover.appendChild(el2("img"));
+    image6.alt = "";
+    image6.referrerPolicy = "no-referrer";
+    image6.decoding = "async";
     let played = false, src = "";
     const paint2 = () => {
       cover.hidden = played || !src || !videoCoverEnabled();
@@ -15292,8 +15382,8 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
         const next = coverUrl(state2?.videoData?.pic);
         if (next !== src) {
           src = next;
-          if (src) image5.src = src;
-          else image5.removeAttribute("src");
+          if (src) image6.src = src;
+          else image6.removeAttribute("src");
         }
         paint2();
       },
@@ -15310,8 +15400,8 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
 
   // src/modules/video-luna/image-window.ts
   var current3 = null;
-  function showImageWindow(image5) {
-    (current3 ??= createImageWindow()).show(image5);
+  function showImageWindow(image6) {
+    (current3 ??= createImageWindow()).show(image6);
   }
   function createImageWindow() {
     const win = xpWindow({ className: "vl-image-window", icon: shellIcon(224, 16), title: "" });
@@ -15356,13 +15446,13 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       current3 = null;
     }
     async function download() {
-      const image5 = shown2;
-      if (!image5) return;
+      const image6 = shown2;
+      if (!image6) return;
       try {
-        const url = URL.createObjectURL(await image5.save());
+        const url = URL.createObjectURL(await image6.save());
         const link3 = el2("a");
         link3.href = url;
-        link3.download = image5.name;
+        link3.download = image6.name;
         document.body.append(link3);
         link3.click();
         link3.remove();
@@ -15391,14 +15481,14 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       win.caption.addEventListener("pointercancel", done);
     });
     return {
-      show(image5) {
+      show(image6) {
         shown2?.dispose?.();
-        shown2 = image5;
-        win.title.textContent = image5.title;
-        root2.setAttribute("aria-label", image5.title);
+        shown2 = image6;
+        win.title.textContent = image6.title;
+        root2.setAttribute("aria-label", image6.title);
         size.textContent = "";
         save.disabled = false;
-        picture.src = image5.src;
+        picture.src = image6.src;
         if (!root2.isConnected) {
           dragged = false;
           (document.fullscreenElement ?? document.body).append(root2);
@@ -15443,6 +15533,10 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     const win = xpWindow({ className: "vl-player-window", icon: shellIcon(224, 16), title: "", label: "\u64AD\u653E\u5668" });
     win.root.classList.remove("xp-window");
     win.body.hidden = true;
+    const viewedLabel = win.caption.appendChild(el2("label", "vl-caption-check"));
+    const check2 = viewedLabel.appendChild(el2("input", "xp-check"));
+    check2.type = "checkbox";
+    const viewedText = viewedLabel.appendChild(el2("span"));
     const wide2 = captionButton(win.caption, "maximize", "\u5BBD\u5C4F", () => {
       sound(wide2.dataset.kind === "maximize" ? "maximize" : "restore");
       document.querySelector(".bpx-player-ctrl-wide")?.click();
@@ -15454,7 +15548,7 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     status2.setAttribute("role", "status");
     status2.setAttribute("aria-label", "\u64AD\u653E\u5668\u72B6\u6001\u680F");
     const pane = (className = "") => status2.appendChild(el2("span", `xp-status-pane ${className}`.trim()));
-    const views2 = pane(), danmaku = pane(), date = pane(), rights = pane();
+    const views2 = pane(), danmaku = pane(), date2 = pane(), rights = pane();
     pane("vl-status-spring");
     let latest = null;
     const toolsPane = pane("vl-status-tools");
@@ -15487,20 +15581,15 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
         note(error.message, "error");
         return;
       }
-      const url = URL.createObjectURL(frame3.blob), clock = formatDuration(frame3.seconds);
+      const url = URL.createObjectURL(frame3.blob), clock2 = formatDuration(frame3.seconds);
       showImageWindow({
-        title: `\u5F53\u524D\u5E27 \xB7 ${clock}`,
+        title: `\u5F53\u524D\u5E27 \xB7 ${clock2}`,
         src: url,
         name: `${stem(latest)}_${fileClock(frame3.seconds)}.png`,
         save: async () => frame3.blob,
         dispose: () => URL.revokeObjectURL(url)
       });
     }
-    const viewedPane = pane("vl-status-viewed");
-    const viewedLabel = viewedPane.appendChild(el2("label", "vl-status-check"));
-    const check2 = viewedLabel.appendChild(el2("input", "xp-check"));
-    check2.type = "checkbox";
-    const viewedText = viewedLabel.appendChild(el2("span"));
     const grip = status2.appendChild(el2("span", "vl-status-grip"));
     grip.setAttribute("aria-hidden", "true");
     let viewedId = "";
@@ -15527,11 +15616,11 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
         win.root.title = String(video2.title ?? "");
         views2.textContent = `\u64AD\u653E ${formatCount(stat.view) || 0}`;
         danmaku.textContent = `\u5F39\u5E55 ${formatCount(stat.danmaku) || 0}`;
-        date.textContent = formatDate(video2.pubdate);
+        date2.textContent = formatDate(video2.pubdate);
         rights.textContent = Number(video2.copyright) === 1 ? "\u672A\u7ECF\u4F5C\u8005\u6388\u6743\uFF0C\u7981\u6B62\u8F6C\u8F7D" : "";
         const parts2 = Array.isArray(video2.pages) ? video2.pages.length : 0, p2 = Number(state2.p) || 1;
         viewedId = state2.viewedId ?? viewedIdFromBvid(String(state2.bvid ?? ""), parts2 > 1 ? p2 : void 0) ?? "";
-        viewedPane.dataset.viewedId = viewedId;
+        viewedLabel.dataset.viewedId = viewedId;
         viewedText.textContent = parts2 > 1 ? `P${p2} \u5DF2\u770B` : "\u5DF2\u770B";
         check2.setAttribute("aria-label", viewedText.textContent);
         paintViewed();
@@ -15549,7 +15638,7 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     const win = xpWindow({ className: "vl-small vl-pod-window", icon: shellIcon(4, 16), title: "\u89C6\u9891\u9009\u96C6" });
     foldable(win, "pod");
     const top = win.body.appendChild(el2("div", "vl-pod-top"));
-    const progress = top.appendChild(el2("span", "vl-muted"));
+    const progress2 = top.appendChild(el2("span", "vl-muted"));
     const subscribe = top.appendChild(xpButton("\u8BA2\u9605\u5408\u96C6", () => void toggleSubscribe()));
     const tabs2 = win.body.appendChild(el2("div", "xp-tabs vl-pod-tabs"));
     tabs2.setAttribute("role", "tablist");
@@ -15714,12 +15803,12 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
           subscribed = !!next.sectionsFavState;
           const all = sections().flatMap((part) => part.episodes), at = all.findIndex((episode) => episode.bvid === next.bvid);
           win.title.textContent = `\u5408\u96C6 \xB7 ${season.title ?? ""}`;
-          progress.textContent = at >= 0 ? `\u7B2C ${at + 1} / ${all.length} \u4E2A\u89C6\u9891` : `\u5171 ${all.length} \u4E2A\u89C6\u9891`;
+          progress2.textContent = at >= 0 ? `\u7B2C ${at + 1} / ${all.length} \u4E2A\u89C6\u9891` : `\u5171 ${all.length} \u4E2A\u89C6\u9891`;
           subscribe.hidden = false;
           paintSubscribe();
         } else {
           win.title.textContent = "\u89C6\u9891\u9009\u96C6";
-          progress.textContent = `\u7B2C ${Number(next.p) || 1} / ${pages.length} P`;
+          progress2.textContent = `\u7B2C ${Number(next.p) || 1} / ${pages.length} P`;
           subscribe.hidden = true;
         }
         drawTabs();
@@ -15788,9 +15877,9 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       const run = async () => {
         const was = !!list?.faved;
         fav.disabled = true;
-        const ok3 = await command({ op: "fav" });
+        const ok4 = await command({ op: "fav" });
         fav.disabled = false;
-        if (ok3) {
+        if (ok4) {
           note(was ? "\u5DF2\u53D6\u6D88\u6536\u85CF" : "\u5DF2\u6536\u85CF\u6B64\u5217\u8868", "success");
         } else {
           note(was ? "\u53D6\u6D88\u6536\u85CF\u5931\u8D25" : "\u6536\u85CF\u5931\u8D25", "error");
@@ -15802,8 +15891,8 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     const removable = (item) => !!list && (list.type === watchLater || list.isOwner && list.type === favorites && (item.attr & 1) !== 0);
     const removeLabel = () => list?.type === watchLater ? "\u4ECE\u7A0D\u540E\u518D\u770B\u4E2D\u79FB\u9664" : "\u4ECE\u6536\u85CF\u5939\u4E2D\u79FB\u9664";
     async function remove(item) {
-      const ok3 = await command({ op: "remove", key: item.key });
-      if (ok3) {
+      const ok4 = await command({ op: "remove", key: item.key });
+      if (ok4) {
         note(list?.type === watchLater ? "\u5DF2\u4ECE\u7A0D\u540E\u518D\u770B\u4E2D\u79FB\u9664" : "\u5DF2\u4ECE\u6536\u85CF\u5939\u4E2D\u79FB\u9664", "success");
       } else {
         note("\u79FB\u9664\u5931\u8D25", "error");
@@ -15975,9 +16064,9 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       if (at < 0) return;
       const ends = [[false, at >= size - 3 && !list.tail], [true, at <= 2 && !list.head]];
       for (const [ahead, wanted] of ends) {
-        const key3 = `${state2.bvid}|${ahead}|${size}`;
-        if (!wanted || tried.has(key3)) continue;
-        tried.add(key3);
+        const key4 = `${state2.bvid}|${ahead}|${size}`;
+        if (!wanted || tried.has(key4)) continue;
+        tried.add(key4);
         void more(ahead);
         return;
       }
@@ -16222,10 +16311,10 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       }
       const viewedId = bangumiViewedId("ep", id), viewed2 = !!viewedId && isViewedVideo(viewedId);
       if (viewed2 && !current4) node4.dataset.viewed = "";
-      const number = numberOf(episode, index);
+      const number2 = numberOf(episode, index);
       const title = String(episode.long_title || episode.show_title || episode.title || "");
       const published = formatDate(episode.pub_time), stat = stats?.get(id);
-      node4.append(el2("span", "vl-lv-cell vl-num", number), el2("span", "vl-lv-cell vl-ellipsis", title));
+      node4.append(el2("span", "vl-lv-cell vl-num", number2), el2("span", "vl-lv-cell vl-ellipsis", title));
       for (const column of visible) {
         if (column.key === "duration") node4.append(el2("span", "vl-lv-cell vl-num", Number(episode.duration) ? formatDuration(Number(episode.duration) / 1e3) : ""));
         else if (column.key === "date") node4.append(el2("span", "vl-lv-cell vl-ep-date", published.slice(0, 10)));
@@ -16437,7 +16526,7 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       if (top === null) host?.style.removeProperty("--vl-hold-top");
       else host?.style.setProperty("--vl-hold-top", `${top}px`);
     };
-    const place = () => {
+    const place2 = () => {
       if (!column?.parentElement) return;
       const header = document.getElementById("biliMainHeader")?.clientHeight || headerHeight();
       column.parentElement.style.setProperty("--vl-stick", `${Math.min(header, innerHeight - column.offsetHeight - bottomGaps[kind])}px`);
@@ -16455,7 +16544,7 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       width2 = rect.width;
       height = rect.height;
       const at = column.getBoundingClientRect().top;
-      place();
+      place2();
       if (resized) set(null);
       else if (Math.abs(free(column) - at) > 0.5) set(at);
     }) : null;
@@ -16479,7 +16568,7 @@ ${on2} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     }, { passive: true });
     window.addEventListener("resize", () => {
       set(null);
-      place();
+      place2();
     });
   }
   var sized = `${on3}:not([data-atelier-screen=wide],[data-atelier-screen=web],[data-atelier-screen=full])`;
@@ -16900,24 +16989,24 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
   var tinted = /* @__PURE__ */ new Map();
   function mediaArt(scheme, dark) {
     if (scheme === "blue" && !dark) return Promise.resolve({ ...art });
-    const key3 = `${scheme}:${dark}`;
-    if (!tinted.has(key3)) tinted.set(key3, tint(scheme, dark).catch(() => ({ ...art })));
-    return tinted.get(key3);
+    const key4 = `${scheme}:${dark}`;
+    if (!tinted.has(key4)) tinted.set(key4, tint(scheme, dark).catch(() => ({ ...art })));
+    return tinted.get(key4);
   }
   async function tint(scheme, dark) {
     const [blueHue, blueSaturation] = hsl(lunaTokens("blue", false).highlight), [hue, saturation] = hsl(lunaTokens(scheme, false).highlight);
     const shift = hue - blueHue, scale = saturation / blueSaturation, bright = dark ? 0.7 : 1;
     const out = {};
     for (const name of mediaArtNames) {
-      const image5 = new Image();
-      image5.src = art[name];
-      await image5.decode();
+      const image6 = new Image();
+      image6.src = art[name];
+      await image6.decode();
       const canvas = document.createElement("canvas");
-      canvas.width = image5.naturalWidth;
-      canvas.height = image5.naturalHeight;
+      canvas.width = image6.naturalWidth;
+      canvas.height = image6.naturalHeight;
       const context = canvas.getContext("2d");
       if (!context) throw new Error("no canvas");
-      context.drawImage(image5, 0, 0);
+      context.drawImage(image6, 0, 0);
       const pixels = context.getImageData(0, 0, canvas.width, canvas.height), data = pixels.data;
       for (let at = 0; at < data.length; at += 4) {
         if (!data[at + 3]) continue;
@@ -17002,7 +17091,7 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     const level = volume2.appendChild(el2("b")), knob = volume2.appendChild(el2("i"));
     const plate = root2.appendChild(el2("div", "vl-wmp-plate"));
     const status2 = plate.appendChild(el2("span", "vl-wmp-status"));
-    const word = status2.appendChild(el2("span", "vl-wmp-word")), clock = status2.appendChild(el2("span", "vl-wmp-clock"));
+    const word = status2.appendChild(el2("span", "vl-wmp-word")), clock2 = status2.appendChild(el2("span", "vl-wmp-clock"));
     const tools = plate.appendChild(el2("span", "vl-wmp-tools"));
     const tool2 = (title, icon2) => {
       const node4 = tools.appendChild(el2("button", icon2 ? "vl-wmp-tool vl-wmp-icon" : "vl-wmp-tool"));
@@ -17011,10 +17100,10 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       node4.setAttribute("aria-label", title.replace(/（.*）/, ""));
       node4.addEventListener("click", () => sound("click"));
       if (icon2) {
-        const image5 = node4.appendChild(el2("img"));
-        image5.src = icon2;
-        image5.alt = "";
-        image5.width = image5.height = 18;
+        const image6 = node4.appendChild(el2("img"));
+        image6.src = icon2;
+        image6.alt = "";
+        image6.width = image6.height = 18;
       } else {
         node4.setAttribute("aria-haspopup", "menu");
         node4.append(el2("span"), el2("span", "vl-drop"));
@@ -17023,17 +17112,17 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     };
     const rate = tool2("\u500D\u901F"), quality = tool2("\u753B\u8D28"), subtitle = tool2("\u5B57\u5E55");
     const screens = [["pip", "\u753B\u4E2D\u753B"], ["wide", "\u5BBD\u5C4F"], ["web", "\u7F51\u9875\u5168\u5C4F"], ["full", "\u5168\u5C4F\uFF08F\uFF09"]];
-    const screenTools = screens.map(([key3, title]) => [key3, tool2(title, glyphs[key3])]);
+    const screenTools = screens.map(([key4, title]) => [key4, tool2(title, glyphs[key4])]);
     let clockState = null, around = {};
     let seeking = null;
     root2.classList.add("vl-wmp-art");
     let painted = "";
     function paintArt() {
-      const { scheme, dark } = appearanceState(), key3 = `${scheme}:${dark}`;
-      if (key3 === painted) return;
-      painted = key3;
+      const { scheme, dark } = appearanceState(), key4 = `${scheme}:${dark}`;
+      if (key4 === painted) return;
+      painted = key4;
       void mediaArt(scheme, dark).then((urls) => {
-        if (painted !== key3) return;
+        if (painted !== key4) return;
         let style = document.getElementById("atelier-wmp-art");
         if (!style) {
           style = document.createElement("style");
@@ -17172,7 +17261,7 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     mute.addEventListener("click", () => {
       if (clockState) context.bridge.player({ op: "mute", value: !clockState.muted });
     });
-    for (const [key3, node4] of screenTools) node4.addEventListener("click", () => native(`.bpx-player-ctrl-${key3}`)?.click());
+    for (const [key4, node4] of screenTools) node4.addEventListener("click", () => native(`.bpx-player-ctrl-${key4}`)?.click());
     const choose = (item) => {
       item.click();
       window.setTimeout(paint2, 100);
@@ -17184,8 +17273,8 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       action: () => choose(item)
     }));
     const qualityLabel = (item) => {
-      const badge = text2(item.querySelector("[class*=badge]")), all = text2(item);
-      return badge && all.endsWith(badge) ? `${all.slice(0, -badge.length).trim()}\uFF08${badge}\uFF09` : all;
+      const badge2 = text2(item.querySelector("[class*=badge]")), all = text2(item);
+      return badge2 && all.endsWith(badge2) ? `${all.slice(0, -badge2.length).trim()}\uFF08${badge2}\uFF09` : all;
     };
     const menuFrom = (anchor, build) => anchor.addEventListener("click", () => {
       const list = build();
@@ -17244,14 +17333,14 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       volume2.setAttribute("aria-valuenow", String(Math.round(loud * 100)));
       paintBubble();
       word.textContent = !clockState ? "" : clockState.waiting ? "\u6B63\u5728\u7F13\u51B2" : clockState.ended ? "\u64AD\u653E\u5B8C\u6BD5" : clockState.paused ? "\u5DF2\u6682\u505C" : "\u6B63\u5728\u64AD\u653E";
-      clock.replaceChildren(el2("b", "", formatDuration(now)), ` / ${formatDuration(total)}`);
+      clock2.replaceChildren(el2("b", "", formatDuration(now)), ` / ${formatDuration(total)}`);
       const activeRate = native(".bpx-player-ctrl-playbackrate-menu-item.bpx-state-active");
       rate.firstElementChild.textContent = activeRate ? text2(activeRate) : "\u500D\u901F";
       const activeQuality = native(".bpx-player-ctrl-quality-menu-item.bpx-state-active");
       quality.firstElementChild.textContent = activeQuality ? qualityLabel(activeQuality).split(/[\s(（]/)[0] : "\u753B\u8D28";
       subtitle.firstElementChild.textContent = "\u5B57\u5E55";
       subtitle.hidden = !native(".bpx-player-ctrl-subtitle");
-      for (const [key3, node4] of screenTools) node4.hidden = !native(`.bpx-player-ctrl-${key3}`);
+      for (const [key4, node4] of screenTools) node4.hidden = !native(`.bpx-player-ctrl-${key4}`);
     }
     const fit = () => {
       seek.style.setProperty("--track", `${seek.clientWidth}px`);
@@ -17387,18 +17476,18 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
         anchor.rel = "noopener";
       }
       const cover = anchor.appendChild(el2("span", "vl-cover"));
-      const image5 = cover.appendChild(el2("img"));
-      image5.src = thumb(item?.pic, "320w_180h_1c");
-      image5.alt = "";
-      image5.loading = "lazy";
-      image5.referrerPolicy = "no-referrer";
+      const image6 = cover.appendChild(el2("img"));
+      image6.src = thumb(item?.pic, "320w_180h_1c");
+      image6.alt = "";
+      image6.loading = "lazy";
+      image6.referrerPolicy = "no-referrer";
       if (item?.duration) cover.append(el2("span", "vl-duration", formatDuration(item.duration)));
-      const text3 = anchor.appendChild(el2("span", "vl-tile-info"));
-      text3.append(el2("span", "vl-tile-title", String(item?.title ?? "")));
-      const owner = text3.appendChild(el2("span", "vl-tile-up"));
+      const text4 = anchor.appendChild(el2("span", "vl-tile-info"));
+      text4.append(el2("span", "vl-tile-title", String(item?.title ?? "")));
+      const owner = text4.appendChild(el2("span", "vl-tile-up"));
       owner.append(el2("span", "vl-up-badge", "UP"), document.createTextNode(String(item?.owner?.name ?? "")));
       const view = formatCount(item?.stat?.view), danmaku = formatCount(item?.stat?.danmaku);
-      text3.append(el2("span", "vl-tile-stats", [view && `${view}\u64AD\u653E`, danmaku && `${danmaku}\u5F39\u5E55`].filter(Boolean).join(" \xB7 ")));
+      text4.append(el2("span", "vl-tile-stats", [view && `${view}\u64AD\u653E`, danmaku && `${danmaku}\u5F39\u5E55`].filter(Boolean).join(" \xB7 ")));
       anchor.title = String(item?.title ?? "");
       if (id) node4.append(viewedButton(id));
       anchor.addEventListener("click", (event) => {
@@ -17507,7 +17596,7 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     const win = xpWindow({ className: "vl-small vl-rec-window vl-season-rec-window", icon: shellIcon(224, 16), title: "\u76F8\u5173\u63A8\u8350" });
     foldable(win, "rec");
     const tiles = win.body.appendChild(el2("div", "vl-tiles"));
-    let key3 = "";
+    let key4 = "";
     function tile(season) {
       const id = Number(season?.season_id) || 0, url = bangumiUrl(`ss${id}`), viewedId = bangumiViewedId("ss", id);
       const node4 = el2("div", "vl-tile vl-season-tile");
@@ -17516,16 +17605,16 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       anchor.href = url;
       anchor.title = String(season?.title ?? "");
       const cover = anchor.appendChild(el2("span", "vl-cover vl-poster"));
-      const image5 = cover.appendChild(el2("img"));
-      image5.src = thumb(season?.cover, "120w_160h_1c");
-      image5.alt = "";
-      image5.loading = "lazy";
-      image5.referrerPolicy = "no-referrer";
-      const text3 = anchor.appendChild(el2("span", "vl-tile-info"));
-      text3.append(el2("span", "vl-tile-title", String(season?.title ?? "")));
-      if (season?.new_ep?.index_show) text3.append(el2("span", "vl-tile-stats", String(season.new_ep.index_show)));
+      const image6 = cover.appendChild(el2("img"));
+      image6.src = thumb(season?.cover, "120w_160h_1c");
+      image6.alt = "";
+      image6.loading = "lazy";
+      image6.referrerPolicy = "no-referrer";
+      const text4 = anchor.appendChild(el2("span", "vl-tile-info"));
+      text4.append(el2("span", "vl-tile-title", String(season?.title ?? "")));
+      if (season?.new_ep?.index_show) text4.append(el2("span", "vl-tile-stats", String(season.new_ep.index_show)));
       const view = formatCount(season?.stat?.view), follows = formatCount(season?.stat?.follow);
-      text3.append(el2("span", "vl-tile-stats", [view && `${view}\u64AD\u653E`, follows && `${follows}${followWord(season?.season_type)}`].filter(Boolean).join(" \xB7 ")));
+      text4.append(el2("span", "vl-tile-stats", [view && `${view}\u64AD\u653E`, follows && `${follows}${followWord(season?.season_type)}`].filter(Boolean).join(" \xB7 ")));
       if (viewedId) node4.append(viewedButton(viewedId));
       anchor.addEventListener("click", (event) => {
         if (!id || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
@@ -17560,8 +17649,8 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       render(next) {
         const seasons = (Array.isArray(next.bangumi?.related) ? next.bangumi.related : []).filter((season) => Number(season?.season_id) > 0);
         const now = seasons.map((season) => season.season_id).join();
-        if (now === key3) return;
-        key3 = now;
+        if (now === key4) return;
+        key4 = now;
         tiles.replaceChildren(...seasons.map(tile));
         if (!seasons.length) tiles.append(el2("p", "vl-empty vl-muted", "\u6CA1\u6709\u76F8\u5173\u63A8\u8350"));
       }
@@ -17611,9 +17700,9 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     const cover = head.appendChild(el2("a", "vl-season-cover"));
     cover.target = "_blank";
     cover.rel = "noopener noreferrer";
-    const image5 = cover.appendChild(el2("img"));
-    image5.alt = "";
-    image5.referrerPolicy = "no-referrer";
+    const image6 = cover.appendChild(el2("img"));
+    image6.alt = "";
+    image6.referrerPolicy = "no-referrer";
     const info = head.appendChild(el2("div", "vl-season-info"));
     const title = info.appendChild(link2("vl-up-name", "", "https://www.bilibili.com/anime/"));
     const kind = info.appendChild(el2("p", "vl-muted vl-season-kind"));
@@ -17626,7 +17715,7 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     const stats = win.body.appendChild(el2("ul", "vl-season-stats"));
     stats.setAttribute("aria-label", "\u7EDF\u8BA1");
     let statKey = "";
-    const progress = win.body.appendChild(el2("div", "vl-season-progress"));
+    const progress2 = win.body.appendChild(el2("div", "vl-season-progress"));
     const producer = win.body.appendChild(el2("div", "vl-season-up"));
     const texts = win.body.appendChild(el2("div", "vl-season-texts"));
     const groups = ["\u7B80\u4ECB", "\u58F0\u4F18", "\u5236\u4F5C"].map((label) => {
@@ -17729,14 +17818,14 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     function paintProgress() {
       const full2 = state2?.bangumi?.full, last = full2?.user_status?.progress;
       const lastId = Number(last?.last_ep_id) || 0;
-      progress.replaceChildren();
-      progress.hidden = !lastId || lastId === Number(state2?.epId);
-      if (progress.hidden) return;
+      progress2.replaceChildren();
+      progress2.hidden = !lastId || lastId === Number(state2?.epId);
+      if (progress2.hidden) return;
       const all = [...full2?.episodes ?? [], ...(full2?.section ?? []).flatMap((part) => part?.episodes ?? [])];
       const episode = all.find((item) => episodeId(item) === lastId);
       const time2 = Number(last?.last_time) || 0;
-      progress.append(el2("span", "", `\u4E0A\u6B21\u770B\u5230\uFF1A${episode ? episodeTitle(episode) : `\u7B2C${last?.last_ep_index ?? ""}\u8BDD`}${time2 > 0 ? ` ${formatDuration(time2)}` : ""}`));
-      const go = progress.appendChild(tool("\u7EE7\u7EED"));
+      progress2.append(el2("span", "", `\u4E0A\u6B21\u770B\u5230\uFF1A${episode ? episodeTitle(episode) : `\u7B2C${last?.last_ep_index ?? ""}\u8BDD`}${time2 > 0 ? ` ${formatDuration(time2)}` : ""}`));
+      const go = progress2.appendChild(tool("\u7EE7\u7EED"));
       go.addEventListener("click", () => context.open({ bvid: String(episode?.bvid ?? ""), path: `/bangumi/play/ep${lastId}`, episodeId: lastId, url: bangumiUrl(`ep${lastId}`) }));
     }
     function paintKind(season, full2) {
@@ -17761,34 +17850,34 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       if (nextSeason === id) return;
       nextSeason = id;
       coming.hidden = true;
-      const key3 = type;
-      let read2 = timelines.get(key3);
+      const key4 = type;
+      let read2 = timelines.get(key4);
       if (!read2) {
-        read2 = context.actions.bangumiTimeline(key3).then((days) => (Array.isArray(days) ? days : []).flatMap((day) => Array.isArray(day?.episodes) ? day.episodes : []));
-        read2.catch(() => timelines.delete(key3));
-        timelines.set(key3, read2);
+        read2 = context.actions.bangumiTimeline(key4).then((days) => (Array.isArray(days) ? days : []).flatMap((day) => Array.isArray(day?.episodes) ? day.episodes : []));
+        read2.catch(() => timelines.delete(key4));
+        timelines.set(key4, read2);
       }
       read2.then((episodes) => {
         if (Number(state2?.seasonId) !== id) return;
         const next = episodes.filter((item) => Number(item?.season_id) === id && !Number(item?.published)).sort((a, b) => Number(a.pub_ts) - Number(b.pub_ts))[0];
         if (!next) return;
-        const when2 = Number(next.pub_ts), date = new Date(when2 * 1e3);
-        coming.textContent = Number(next.delay) ? `\u4E0B\u4E00\u8BDD\uFF1A${next.delay_index || next.pub_index} \u5EF6\u671F${next.delay_reason ? `\uFF08${next.delay_reason}\uFF09` : ""}` : `\u4E0B\u4E00\u8BDD\uFF1A${next.pub_index} \xB7 ${date.getMonth() + 1}\u6708${date.getDate()}\u65E5 ${weekday(when2)} ${formatDate(when2).slice(11)}`;
+        const when2 = Number(next.pub_ts), date2 = new Date(when2 * 1e3);
+        coming.textContent = Number(next.delay) ? `\u4E0B\u4E00\u8BDD\uFF1A${next.delay_index || next.pub_index} \u5EF6\u671F${next.delay_reason ? `\uFF08${next.delay_reason}\uFF09` : ""}` : `\u4E0B\u4E00\u8BDD\uFF1A${next.pub_index} \xB7 ${date2.getMonth() + 1}\u6708${date2.getDate()}\u65E5 ${weekday(when2)} ${formatDate(when2).slice(11)}`;
         coming.hidden = false;
       }, () => {
       });
     }
     function paintStats(stat) {
       stats.hidden = !stat;
-      const key3 = stat ? JSON.stringify([...counters.map(([, , field]) => stat[field]), stat.follow_text]) : "";
-      if (!stat || key3 === statKey) return;
-      statKey = key3;
+      const key4 = stat ? JSON.stringify([...counters.map(([, , field]) => stat[field]), stat.follow_text]) : "";
+      if (!stat || key4 === statKey) return;
+      statKey = key4;
       stats.replaceChildren(...counters.map(([label, icon2, field]) => {
         const item = el2("li", "xp-button vl-counter");
-        const image6 = item.appendChild(el2("img"));
-        image6.src = icon2;
-        image6.alt = label;
-        image6.width = image6.height = 16;
+        const image7 = item.appendChild(el2("img"));
+        image7.src = icon2;
+        image7.alt = label;
+        image7.width = image7.height = 16;
         item.append(el2("span", "", shortCount(stat[field])));
         item.title = `${label} ${(Number(stat[field]) || 0).toLocaleString("zh-CN")}${field === "favorites" && stat.follow_text ? ` \xB7 ${stat.follow_text}` : ""}`;
         return item;
@@ -17797,9 +17886,9 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     function paintTexts(season) {
       const values = [season.evaluate, season.actors, season.staff];
       groups.forEach(({ box, body: body2, more }, index) => {
-        const text3 = String(values[index] ?? "").trim();
-        box.hidden = !text3;
-        body2.textContent = text3;
+        const text4 = String(values[index] ?? "").trim();
+        box.hidden = !text4;
+        body2.textContent = text4;
         box.removeAttribute("data-open");
         more.textContent = "\u5C55\u5F00";
         requestAnimationFrame(() => {
@@ -17820,7 +17909,7 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
         title.href = page;
         cover.href = page;
         const src = thumb(season.cover, "144w_192h_1c");
-        if (image5.getAttribute("src") !== src) image5.src = src;
+        if (image6.getAttribute("src") !== src) image6.src = src;
         paintKind(season, bangumi.full);
         paintNext(season, bangumi.full);
         paintStats(season.stat ?? bangumi.full?.stat);
@@ -17860,6 +17949,11 @@ ${on3} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
   var caption = `box-sizing:border-box;display:flex;align-items:center;gap:3px;min-height:var(--xp-caption-h,29px);margin:0 calc(-1 * var(--xp-frame-r,4px)) 0 calc(-1 * var(--xp-frame-l,4px));padding:3px 5px 2px 6px;color:var(--xp-caption-ink);background:var(--xp-fallback-caption,var(--xp-caption));${image4("caption", 0)};image-rendering:pixelated;user-select:none`;
   var sunken = "border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d)";
   var crisp = "filter:var(--xp-crisp)";
+  var lunaMenuCss = `.vl-menu-host{position:fixed;inset:0 auto auto 0;z-index:2147483646}
+.vl-menu{position:fixed;min-width:180px;${xpFont}}
+.vl-menu .xp-menu-item{padding-left:2px}
+.vl-menu-check{flex:none;width:16px;text-align:center}
+.vl-menu-default{font-weight:bold}`;
   var videoWindowCss = `
 /* Bilibili sets pointer-events:none on its right column (in wide mode it
    overlaps the player) and turns it back on per block: so do we. */
@@ -17889,6 +17983,9 @@ html[data-vl-resizing] *{user-select:none!important}
 .vl-player-window{position:relative;display:flex;flex-direction:column;margin:0 -4px;padding:0 4px;z-index:2}
 ${wide} .vl-player-window{width:calc(var(--vl-player-w,0px) + 8px);max-width:none}
 .vl-player-window>.xp-caption,.vl-player-window>.vl-body{position:relative;z-index:2}
+/* \u5DF2\u770B in the caption, left of \u5BBD\u5C4F: caption ink with the title's shadow;
+   a long title gives way first. */
+.vl-caption-check{flex:none;display:inline-flex;align-items:center;gap:3px;margin:0 4px 0 6px;${xpFont};color:inherit;white-space:nowrap;text-shadow:var(--xp-dot) var(--xp-dot) var(--xp-caption-shadow);cursor:default}.vl-caption-check .xp-check{margin:0}
 .vl-player-frame{position:absolute!important;left:0;top:0;width:100%;height:calc(100% + var(--vl-player-h,0px) + var(--vl-wmp-h,0px) + var(--vl-status-h,0px) + 4px);z-index:1;pointer-events:none;background:none!important;display:block!important}
 ${on4}[data-atelier-screen=web] .vl-player-frame,${on4}[data-atelier-screen=full] .vl-player-frame{display:none!important}
 /* Its status bar, at the bottom of the window under the Media Player bar,
@@ -17913,8 +18010,6 @@ ${wide} .vl-player-status{width:var(--vl-player-w)}
 .vl-image-view>img{display:block;max-width:calc(90vw - 8px);max-height:calc(90vh - 64px);width:auto;height:auto}
 .vl-image-status{display:flex;align-items:center}
 .vl-image-status>.vl-status-spring{flex:1 1 auto}
-.vl-status-check{display:inline-flex;align-items:center;gap:3px;cursor:default}
-.vl-status-check .xp-check{margin:0}
 .vl-status-grip{flex:none;align-self:flex-end;width:var(--xp-gripper-w,13px);height:var(--xp-gripper-h,13px);background:var(--xp-gripper-0) right bottom no-repeat}
 
 /* The Media Player bar (media-bar.ts) under the player, inside its frame.
@@ -18146,11 +18241,7 @@ ${on4} .main-container .plp-r.sticky{top:var(--vl-hold-top,var(--vl-stick,min(va
 .vl-empty{margin:0;padding:16px;text-align:center}
 
 /* Menus and dialogs */
-.vl-menu-host{position:fixed;inset:0 auto auto 0;z-index:2147483646}
-.vl-menu{position:fixed;min-width:180px;${xpFont}}
-.vl-menu .xp-menu-item{padding-left:2px}
-.vl-menu-check{flex:none;width:16px;text-align:center}
-.vl-menu-default{font-weight:bold}
+${lunaMenuCss}
 .vl-dialog{width:min(360px,calc(100vw - 32px))}
 .vl-dialog .vl-choice{display:flex;align-items:center;gap:2px;min-height:22px}
 /* appearance:none boxes have no width of their own: the dialog's 100% must
@@ -18441,7 +18532,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
     face.referrerPolicy = "no-referrer";
     const win = xpWindow({ className: "vl-small vl-up-window", icon: face, title: "", label: "UP \u4E3B" });
     foldable(win, "up");
-    let people2 = [], states = {}, key3 = "", generation = 0;
+    let people2 = [], states = {}, key4 = "", generation = 0;
     function followButton(person, className) {
       const button5 = xpButton("", () => void clickFollow(person, button5), className);
       const paint2 = () => {
@@ -18558,8 +18649,8 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
           avatar2.src = thumb(person2.face, "64w_64h_1c");
           avatar2.alt = "";
           avatar2.referrerPolicy = "no-referrer";
-          const text3 = row.appendChild(el2("div", "vl-member-text"));
-          text3.append(link2("vl-up-name", person2.name, `https://space.bilibili.com/${person2.mid}`), el2("span", "vl-muted", person2.role ?? ""));
+          const text4 = row.appendChild(el2("div", "vl-member-text"));
+          text4.append(link2("vl-up-name", person2.name, `https://space.bilibili.com/${person2.mid}`), el2("span", "vl-muted", person2.role ?? ""));
           row.append(followButton(person2, "vl-follow vl-follow-small"));
         }
         return;
@@ -18603,9 +18694,9 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
         people2 = staff.length > 1 ? staff.map((member) => ({ mid: String(member.mid), name: String(member.name ?? ""), face: String(member.face ?? ""), role: String(member.title ?? "") })) : [{ mid: String(up.mid ?? owner.mid ?? ""), name: String(up.name ?? owner.name ?? ""), face: String(up.face ?? owner.face ?? ""), sign: typeof up.sign === "string" ? up.sign : "", fans: Number.isFinite(Number(up.fans)) ? Number(up.fans) : void 0 }];
         people2 = people2.filter((person) => /^\d+$/.test(person.mid));
         const next = people2.map((person) => person.mid).join(",") + "|" + people2.map((person) => person.fans ?? "").join(",");
-        if (next === key3) return;
-        const sameAccounts = key3.split("|")[0] === next.split("|")[0];
-        key3 = next;
+        if (next === key4) return;
+        const sameAccounts = key4.split("|")[0] === next.split("|")[0];
+        key4 = next;
         draw();
         if (!sameAccounts) {
           states = {};
@@ -18775,10 +18866,10 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
       } catch (error) {
         barFailed(error);
       }
-      place();
+      place2();
     }
     let placed = false;
-    function place() {
+    function place2() {
       const wrap = document.getElementById(bangumi ? "bilibili-player-wrap" : "playerWrap");
       const inner = document.querySelector(bangumi ? ".plp-r" : ".right-container-inner,.playlist-container--right");
       if (!wrap?.parentElement || !inner) return false;
@@ -18813,7 +18904,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
     const columns3 = new MutationObserver(() => {
       if (!queued) queued = requestAnimationFrame(() => {
         queued = 0;
-        if (latest) place();
+        if (latest) place2();
       });
     });
     const watched = /* @__PURE__ */ new WeakSet();
@@ -18829,7 +18920,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
       trackPlayer();
       dmFold();
       dmCount();
-      if (latest) place();
+      if (latest) place2();
     }, 1e3);
     watchColumns();
     const root2 = document.documentElement;
@@ -18917,8 +19008,8 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
       const list2 = document.querySelector("#danmukuBox .bpx-player-dm .bui-long-list-list");
       const footer = document.querySelector("#danmukuBox .bpx-player-dm-btn-footer");
       if (!list2 || !footer) return;
-      const text3 = `\u5171 ${Math.round((parseFloat(list2.style.height) || 0) / 24)} \u6761`;
-      if (footer.getAttribute("data-vl-count") !== text3) footer.setAttribute("data-vl-count", text3);
+      const text4 = `\u5171 ${Math.round((parseFloat(list2.style.height) || 0) / 24)} \u6761`;
+      if (footer.getAttribute("data-vl-count") !== text4) footer.setAttribute("data-vl-count", text4);
     }
     dmCount();
     function paintIcons() {
@@ -18968,8 +19059,8 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
     return bvid && index >= 0 ? viewedIdFromBvid(bvid, index + 1) : "";
   }
   function collectionBvid(item) {
-    const key3 = item?.getAttribute("data-key");
-    if (isBvid(key3)) return key3;
+    const key4 = item?.getAttribute("data-key");
+    if (isBvid(key4)) return key4;
     return /\/video\/(BV1[0-9A-Za-z]{9})/i.exec(item?.querySelector('a[href*="/video/BV"]')?.getAttribute("href") ?? "")?.[1] ?? "";
   }
   var mainVideo = {
@@ -19020,6 +19111,14 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
     bulk,
     css: ".bili-video-card__cover>.btnView{left:auto;right:0;z-index:201}"
   });
+  var historyPage = {
+    spots: [
+      { hosts: ".ahc-media[data-viewed-id]", id: (host) => host.dataset.viewedId ?? "", cover: (host) => host.querySelector(".ahc-cover") },
+      card2("html:not([data-atelier-history=drawn]) .bili-video-card__cover")
+    ],
+    bulk: "html:not([data-atelier-history=drawn]) .breadcrumbs__top .right",
+    css: ".bili-video-card__cover>.btnView{left:auto;right:0;z-index:201}\n.ahc-media>.btnView{opacity:1;left:auto;right:4px;top:4px;z-index:2}"
+  };
   function viewedPage(where = location) {
     const { hostname, pathname } = where;
     if (hostname === "search.bilibili.com") return { spots: [cards, card2(".media-card")] };
@@ -19028,7 +19127,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
     if (hostname !== "www.bilibili.com") return null;
     if (/^\/video\//i.test(pathname)) return { spots: [mainVideo, recommendations, ...collection, endScreen] };
     if (/^\/list\//i.test(pathname)) return { spots: [mainVideo, recommendations] };
-    if (/^\/(?:account\/)?history\b/.test(pathname)) return coverList(".breadcrumbs__top .right");
+    if (/^\/(?:account\/)?history\b/.test(pathname)) return historyPage;
     if (/^\/watchlater\b/.test(pathname)) return coverList(".list-header-options");
     if (/^\/(?:bangumi|cheese|festival)\//.test(pathname)) return null;
     return { spots: [cards] };
@@ -19131,8 +19230,8 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
     feedback.finish(changed ? "success" : "click");
   }
   function ensureBulk(page) {
-    const place = page.bulk && document.querySelector(page.bulk);
-    if (!place || place.querySelector(":scope > .atelier-viewed-bulk")) return;
+    const place2 = page.bulk && document.querySelector(page.bulk);
+    if (!place2 || place2.querySelector(":scope > .atelier-viewed-bulk")) return;
     const button5 = document.createElement("button");
     button5.type = "button";
     button5.className = "atelier-viewed-bulk";
@@ -19142,7 +19241,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
       void markAllViewed();
     });
     styleAtelierAction(button5);
-    place.prepend(button5);
+    place2.prepend(button5);
   }
   function startViewedMarker() {
     const page = viewedPage();
@@ -19185,22 +19284,743 @@ ${page.css ?? ""}`;
     scan();
   }
 
+  // src/ui/assets/xp-icons/ie-history-16.png
+  var ie_history_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACtElEQVR42q2TW2gTCRiFv8mMSTtTx0mr46WNnYLQYtk6RHfdIgrig0i7iggi+lKLKL55eelLUakv4oOL6ELqZfGKRCRRkC3u0ktcswhV25dIxV4UbWJtbLrTRjuTTnxYKl765p7Hw38O/zn8P3wnhNnIUChk6Lo++DXf19fnb2pqynzOiV8PRSKRvKIoBwLLA1i5KYrnV4DzHr/fj+u6O0zT7Oro6EjNukFbW9vvvW5vw9XEBSaltzgT0zjZQtZV7afe2IbndQLnQzYzMDCwvqWlpQdAmhGHw+GGC4PnG2LTf7CwtIjKzCq2/7QTo8SgP5shnRnGXx7ETsQ0VVUjQMUXEeQf5cif3NF+riljsHeM7kMJqgImcomBVynl2tHjZCfzBMwg0+lhrbq6+kU8Hu/xzJT2l9Vm1JplPPk7yem6S4wCb4ARy+Lkvn0U6ZXUNexl2YoggiSjaQu2fIpg27bxeReyrGEB/3R28uTePVKvkvwWCvH4aZK68YckhDy6XqEBCKXNC/MzwvqtS8m7c7h7u59li2qolTby6n4PvoCJPHcuAMdX61x/msInl3Y2Nm5eL62tWEdWTzBf91KkKKiqyi9bC8i9XEP9xsOMbvrPPJeDJYWQLQF1PMZw/zMAPDcabwryyHJGR2wURUEUvTzuEtlWe4TMGIgiODlwc/BDMQyl03inC0ml+m8DeABuNN4U2tufRx1H4PLFRxzZHkZwYcqGySxoEmwogwkBetsf4LpkLOtd9JMBwMTE1O5zZx4M7Zq3h7GXSdQCWFmYYfPl3Zg6JJ0s0VtRyotr6O6+c6y1tXXom0tsbm42VVWN+Hw+A3keRYsXgwckV0K0RJSCErq6rvx66tSJg7P+QiwWSwWDwUu2bU9JedHwOpJW4PiYHP0XazwdjcfD+8+ePR3i/8RHHNYIneXTQyAAAAAASUVORK5CYII=";
+
+  // src/modules/watch-history/model.ts
+  var historyTypes = [["all", "\u5168\u90E8"], ["archive", "\u89C6\u9891"], ["live", "\u76F4\u64AD"], ["article", "\u4E13\u680F"]];
+  var devices = { 1: "phone", 2: "pc", 3: "phone", 4: "pad", 5: "phone", 6: "pad", 7: "phone", 10: "pad", 11: "tv", 12: "phone", 13: "pad", 14: "pc", 33: "tv" };
+  var deviceNames = { phone: "\u624B\u673A", pc: "\u7535\u8111", pad: "\u5E73\u677F", tv: "\u7535\u89C6" };
+  var text3 = (value2) => typeof value2 === "string" ? value2.trim() : "";
+  var https2 = (value2) => text3(value2).replace(/^\/\//, "https://").replace(/^http:/, "https:");
+  function clock(seconds2) {
+    const total = Math.max(0, Math.floor(seconds2)), h = Math.floor(total / 3600), m = Math.floor(total % 3600 / 60), s = total % 60;
+    const two2 = (value2) => String(value2).padStart(2, "0");
+    return h ? `${h}:${two2(m)}:${two2(s)}` : `${two2(m)}:${two2(s)}`;
+  }
+  var withSpm = (href, extra = {}) => {
+    try {
+      const url = new URL(href);
+      url.searchParams.set("spm_id_from", "333.1391.0.0");
+      for (const [name, value2] of Object.entries(extra)) url.searchParams.set(name, String(value2));
+      return url.href;
+    } catch {
+      return href;
+    }
+  };
+  function historyHref(raw) {
+    const history2 = raw?.history ?? {}, uri = https2(raw?.uri), progress2 = Number(raw?.progress) || 0;
+    switch (history2.business) {
+      case "archive":
+      case "pgc": {
+        const page = Number(history2.page) || 1;
+        return withSpm(uri || `https://www.bilibili.com/video/${text3(history2.bvid)}/`, page > 1 ? { p: page } : {});
+      }
+      case "article":
+        return withSpm(uri || `https://www.bilibili.com/read/cv${Number(history2.oid) || 0}/`);
+      case "article-list":
+        return withSpm(uri || `https://www.bilibili.com/read/cv${Number(history2.cid) || 0}/`);
+      case "live":
+        return withSpm(uri || `https://live.bilibili.com/${Number(history2.oid) || 0}/`, { live_from: "88001" });
+      case "cheese":
+        return withSpm(uri || `https://www.bilibili.com/cheese/play/ep${Number(history2.epid) || 0}/`, progress2 > 0 ? { t: progress2 } : {});
+      default:
+        return uri || "https://www.bilibili.com/history";
+    }
+  }
+  function historyViewedId(raw) {
+    const history2 = raw?.history ?? {};
+    if (history2.business === "pgc") return Number(history2.epid) > 0 ? `ep${Number(history2.epid)}` : "";
+    if (history2.business !== "archive") return "";
+    const parts2 = Number(raw?.videos) || 0, page = Number(history2.page) || 1;
+    return viewedIdFromBvid(text3(history2.bvid), parts2 > 1 ? page : void 0);
+  }
+  function progress(raw) {
+    const business = raw?.history?.business, duration = Number(raw?.duration) || 0, at = Number(raw?.progress);
+    if (!["archive", "pgc", "cheese"].includes(business) || duration <= 0 || !Number.isFinite(at)) return null;
+    if (at < 0) return { percent: 100, text: "\u5DF2\u770B\u5B8C" };
+    const percent = Math.min(100, Math.max(1, Math.round(at / duration * 1e4) / 100));
+    return { percent, text: `${clock(at)} / ${clock(duration)}` };
+  }
+  function badge(raw) {
+    const business = raw?.history?.business, own = text3(raw?.badge);
+    if (business === "live") return Number(raw?.live_status) === 1 ? "\u76F4\u64AD\u4E2D" : "\u672A\u5F00\u64AD";
+    if (business === "pgc") return own || "\u756A\u5267";
+    if (business === "cheese") return own || "\u8BFE\u7A0B";
+    if (business === "article") return own || "\u4E13\u680F";
+    if (business === "article-list") return own || "\u6587\u96C6";
+    return own;
+  }
+  function historyCard(raw) {
+    const history2 = raw?.history, business = text3(history2?.business), kid = Number(raw?.kid);
+    if (!business || !Number.isSafeInteger(kid) || kid <= 0) return null;
+    const mid = Number(raw?.author_mid) || 0, episode = text3(raw?.show_title) || text3(raw?.new_desc);
+    const cover = https2(Array.isArray(raw?.covers) && raw.covers[0] ? raw.covers[0] : raw?.cover);
+    const viewAt = Number(raw?.view_at) || 0, dt = Number(history2?.dt);
+    return {
+      key: `${business}_${kid}`,
+      business,
+      title: text3(raw?.title) || "\uFF08\u65E0\u6807\u9898\uFF09",
+      href: historyHref(raw),
+      cover,
+      line: mid ? text3(raw?.author_name) : episode,
+      lineHref: mid ? `https://space.bilibili.com/${mid}` : "",
+      viewAt,
+      when: formatTimestamp(viewAt),
+      device: devices[dt] ?? null,
+      badge: badge(raw),
+      progress: progress(raw),
+      viewedId: historyViewedId(raw),
+      bvid: text3(history2?.bvid),
+      aid: business === "archive" ? Number(history2?.oid) || 0 : 0
+    };
+  }
+  function dayOf(seconds2) {
+    const date2 = new Date(seconds2 * 1e3);
+    return new Date(date2.getFullYear(), date2.getMonth(), date2.getDate()).getTime() / 1e3;
+  }
+  var date = (seconds2) => formatTimestamp(seconds2).slice(0, 10);
+  function dayLabel(day, now = Date.now() / 1e3) {
+    const today = dayOf(now), yesterday = dayOf(today - 43200);
+    if (day === today) return `\u4ECA\u5929\uFF08${date(day)}\uFF09`;
+    if (day === yesterday) return `\u6628\u5929\uFF08${date(day)}\uFF09`;
+    return `${date(day)} \u661F\u671F${"\u65E5\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D"[new Date(day * 1e3).getDay()]}`;
+  }
+  function clearBusinesses(type) {
+    return type === "archive" ? ["archive", "pgc", "cheese"] : type === "live" ? ["live"] : type === "article" ? ["article", "article-list"] : [""];
+  }
+  var api4 = "https://api.bilibili.com";
+  var firstCursor = { max: 0, viewAt: 0, business: "" };
+  var cursorUrl = (type, cursor) => `${api4}/x/web-interface/history/cursor?max=${cursor.max}&view_at=${cursor.viewAt}&business=${encodeURIComponent(cursor.business)}&ps=20&type=${type}`;
+  var searchUrl = (type, keyword, page) => `${api4}/x/web-interface/history/search?pn=${page}&keyword=${encodeURIComponent(keyword)}&business=${type}`;
+  var pausedUrl = `${api4}/x/v2/history/shadow`;
+
+  // src/modules/watch-history/prefs.ts
+  var key3 = "BiliAtelier_HistoryLuna";
+  var historyAttribute = "data-atelier-history";
+  var isHistoryLocation = (where = location) => where.hostname === "www.bilibili.com" && /^\/(?:account\/)?history(?:\/|$)/.test(where.pathname);
+  function historyLunaEnabled() {
+    const stored = typeof GM_getValue === "function" ? GM_getValue(key3, null) : null;
+    return stored?.enabled !== false;
+  }
+  function setHistoryLunaEnabled(enabled) {
+    if (typeof GM_setValue === "function") GM_setValue(key3, { enabled });
+  }
+  var hideCss = `html[${historyAttribute}=drawn] #app{display:none!important}`;
+  function prepareWatchHistory() {
+    if (typeof GM_getValue !== "function" || !isHistoryLocation() || !historyLunaEnabled()) return false;
+    document.documentElement.setAttribute(historyAttribute, "drawn");
+    prepareLunaHeader();
+    if (!document.getElementById("atelier-history-hide")) {
+      const style = document.createElement("style");
+      style.id = "atelier-history-hide";
+      style.textContent = hideCss;
+      (document.head || document.documentElement).append(style);
+    }
+    return true;
+  }
+  function showNativeHistory() {
+    document.documentElement.removeAttribute(historyAttribute);
+    document.getElementById("atelier-history-hide")?.remove();
+    document.getElementById("atelier-history")?.remove();
+  }
+
+  // src/modules/watch-history/styles.ts
+  var w = "#atelier-history";
+  var watchHistoryCss = `
+${lunaMenuCss}
+${w}{width:min(calc(100% - 32px),1680px);margin:12px auto 16px;${xpFont};color:var(--xp-ink);text-align:left;letter-spacing:normal;line-height:normal}
+${w} *{box-sizing:border-box}
+${w} [hidden]{display:none!important}
+${w} .ahp-toolbar{flex-wrap:nowrap}
+${w} :is(.ahp-filters,.ahp-select){display:flex;align-items:center;gap:1px}
+${w} .ahp-spring{flex:1 1 auto}
+${w} .ahp-search{display:flex;align-items:center;gap:4px;margin:0 2px 0 8px}
+${w} .ahp-field{position:relative;display:inline-flex;align-items:center}
+${w} .ahp-field>.xp-field{width:220px;padding-right:20px}
+${w} .ahp-clear{position:absolute;right:3px;top:50%;width:15px;height:15px;margin-top:-7px;padding:0;border:0;background:none;color:var(--xp-muted);font:bold 13px/15px Tahoma,sans-serif;cursor:default}
+${w} .ahp-clear:hover{color:var(--xp-ink)}
+${w} .ahp-main{display:grid;grid-template-columns:212px minmax(0,1fr);align-items:stretch;min-height:calc(100vh - ${headerBottomCss} - 120px);background:var(--xp-window)}
+${w} .ahp-taskcol{background:linear-gradient(var(--xp-gradient1),var(--xp-gradient2))}
+${w} .ahp-tasks{position:sticky;top:calc(${headerBottomCss} + 8px);overflow:visible;background:none}
+${w} .ahp-tasks .xp-task-link[disabled]{color:var(--xp-graytext);text-decoration:none;cursor:default}
+${w} .ahp-view{min-width:0;padding:6px 12px 0;background:var(--xp-window)}
+${w} .ahp-group{margin:0 0 14px}
+${w} .ahp-group-head{position:relative;margin:6px 0 9px;padding:0 0 3px;font:inherit;font-weight:bold;color:var(--xp-group-text)}
+${w} .ahp-group-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(to right,var(--xp-group-text),transparent 80%)}
+${w} .ahp-grid{display:grid;grid-template-columns:repeat(auto-fill,216px);gap:12px 10px;justify-content:start}
+${w} .ahc{position:relative;display:flex;flex-direction:column;gap:2px;width:216px;padding:3px;border:1px solid transparent}
+${w} .ahc:hover{background:var(--atelier-hover)}
+${w} .ahc[data-selected]{background:var(--atelier-selected);border-color:var(--xp-highlight)}
+${w} .ahc-media{position:relative}
+${w} .ahc-link{display:block;text-decoration:none}
+${w} .ahc-thumb{position:relative;aspect-ratio:16/9;border:1px solid var(--xp-line);background:var(--xp-face);overflow:hidden}
+${w} .ahc-cover{position:absolute;inset:0}
+${w} .ahc-cover>img{display:block;width:100%;height:100%;object-fit:cover}
+${w} .ahc-badge{position:absolute;left:3px;top:3px;padding:0 3px;color:var(--xp-caption-ink);background:var(--xp-caption)}
+${w} .ahc-badge.ahc-live{background:var(--xp-danger);color:#fff}
+${w} .ahc-time{position:absolute;right:3px;bottom:6px;padding:0 3px;color:#fff;background:#000b}
+${w} .ahc-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:#0007}
+${w} .ahc-bar>i{display:block;height:100%;background:var(--xp-highlight)}
+${w} .ahc-check{position:absolute;left:4px;top:4px;z-index:3;margin:0;display:none}
+${w}[data-selecting] .ahc-check{display:block}
+${w}[data-selecting] .ahc-badge{display:none}
+${w}[data-selecting] .ahc-media>.btnView{pointer-events:none}
+${w} .ahc-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em;margin-top:2px;color:var(--xp-ink);text-decoration:none;overflow-wrap:anywhere}
+${w} .ahc-title:hover{color:var(--xp-highlight);text-decoration:underline}
+${w} .ahc-line{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--xp-muted);text-decoration:none}
+${w} a.ahc-line:hover{color:var(--xp-highlight);text-decoration:underline}
+${w} .ahc-when{display:flex;align-items:center;gap:4px;color:var(--xp-muted);white-space:nowrap}
+${w} .ahp-foot{min-height:48px;padding:14px 0 20px;text-align:center;color:var(--xp-muted)}
+${w} .ahp-guest{display:flex;flex-direction:column;align-items:center;gap:10px;padding:56px 0}
+${w} .ahp-guest>p{margin:0}
+${w} .ahp-status{position:sticky;bottom:0;z-index:2}
+${w} .ahp-count{flex:1 1 auto}
+${w} .ahp-record{flex:0 0 150px}
+${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
+@media (max-width:760px){
+  ${w}{width:calc(100% - 16px);margin:8px auto}
+  ${w} .ahp-main{grid-template-columns:minmax(0,1fr)}
+  ${w} .ahp-tasks{position:static;flex-direction:row;flex-wrap:wrap;padding:6px}
+  ${w} .ahp-tasks .xp-task-group{flex:1 1 220px}
+  ${w} .ahp-toolbar{flex-wrap:wrap}
+  ${w} .ahp-field>.xp-field{width:150px}
+  ${w} .ahp-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  ${w} .ahc{width:auto}
+}
+`;
+
+  // src/modules/watch-history/page.ts
+  var deviceIcons = { phone: 310, pc: 16, pad: 314, tv: 249 };
+  var image5 = (src) => {
+    const node4 = el2("img");
+    node4.src = src;
+    node4.alt = "";
+    node4.width = node4.height = 16;
+    return node4;
+  };
+  var ok3 = (body2) => Number(body2?.code) === 0;
+  var failure3 = (body2, fallback2) => typeof body2?.message === "string" && body2.message && body2.message !== "0" ? body2.message : fallback2;
+  var mounted2 = false;
+  function registerWatchHistoryMode() {
+    if (!isHistoryLocation()) return;
+    registerPageMode({
+      native: () => document.documentElement.getAttribute(historyAttribute) !== "drawn",
+      setNative: (native2) => {
+        setHistoryLunaEnabled(!native2);
+        location.reload();
+      }
+    });
+  }
+  function mountWatchHistory() {
+    if (mounted2 || !isHistoryLocation() || !historyLunaEnabled()) return;
+    if (document.documentElement.getAttribute(historyAttribute) !== "drawn" && !prepareWatchHistory()) return;
+    mounted2 = true;
+    ensureAppearance();
+    mountLunaHeader("history");
+    if (!document.getElementById("atelier-watch-history")) {
+      const style = document.createElement("style");
+      style.id = "atelier-watch-history";
+      style.textContent = watchHistoryCss;
+      (document.head || document.documentElement).append(style);
+    }
+    const loggedIn = biliLoggedIn();
+    let relay = null;
+    if (loggedIn) relay = startPageRelay("history", endpoints.history);
+    const root2 = el2("section", "xp-window ahp");
+    root2.id = "atelier-history";
+    root2.setAttribute("aria-label", "\u5386\u53F2\u8BB0\u5F55");
+    root2.setAttribute("data-bili-blocker-ui", "true");
+    const caption2 = root2.appendChild(el2("header", "xp-caption"));
+    caption2.append(image5(ie_history_16_default));
+    const title = caption2.appendChild(el2("h2", "xp-caption-title", "\u5386\u53F2\u8BB0\u5F55"));
+    const toolbar = root2.appendChild(el2("div", "xp-toolbar ahp-toolbar"));
+    toolbar.setAttribute("role", "toolbar");
+    toolbar.setAttribute("aria-label", "\u5386\u53F2\u8BB0\u5F55\u5DE5\u5177\u680F");
+    const toolButton = (label, action, icon2) => {
+      const button5 = el2("button", "xp-tool");
+      button5.type = "button";
+      if (icon2) button5.append(icon2);
+      button5.append(el2("span", "", label));
+      button5.addEventListener("click", () => {
+        sound("click");
+        action();
+      });
+      return button5;
+    };
+    const filters = toolbar.appendChild(el2("div", "ahp-filters"));
+    filters.setAttribute("role", "radiogroup");
+    filters.setAttribute("aria-label", "\u7C7B\u578B");
+    const selectBar = toolbar.appendChild(el2("div", "ahp-select"));
+    selectBar.hidden = true;
+    toolbar.append(el2("span", "ahp-spring"));
+    const search = toolbar.appendChild(el2("form", "ahp-search"));
+    search.setAttribute("role", "search");
+    const searchLabel = search.appendChild(el2("label", "ahp-search-label", "\u641C\u7D22"));
+    const fieldBox = search.appendChild(el2("span", "ahp-field"));
+    const field = fieldBox.appendChild(el2("input", "xp-field"));
+    field.type = "text";
+    field.placeholder = "\u641C\u7D22\u5386\u53F2\u8BB0\u5F55";
+    field.autocomplete = "off";
+    field.id = `ahp-search-${crypto.randomUUID()}`;
+    searchLabel.htmlFor = field.id;
+    const clearSearch = fieldBox.appendChild(el2("button", "ahp-clear", "\xD7"));
+    clearSearch.type = "button";
+    clearSearch.title = "\u6E05\u9664\u641C\u7D22";
+    clearSearch.setAttribute("aria-label", "\u6E05\u9664\u641C\u7D22");
+    clearSearch.hidden = true;
+    const go = search.appendChild(el2("button", "xp-tool ahp-go"));
+    go.type = "submit";
+    go.append(image5(ie_go_16_default), el2("span", "", "\u641C\u7D22"));
+    const main = root2.appendChild(el2("div", "ahp-main"));
+    const taskColumn = main.appendChild(el2("div", "ahp-taskcol"));
+    const tasks = taskColumn.appendChild(el2("div", "xp-taskpane ahp-tasks"));
+    const view = main.appendChild(el2("div", "ahp-view"));
+    view.setAttribute("role", "list");
+    view.setAttribute("aria-label", "\u5386\u53F2\u8BB0\u5F55");
+    const groups = view.appendChild(el2("div", "ahp-groups"));
+    const foot = view.appendChild(el2("div", "ahp-foot"));
+    const statusBar = root2.appendChild(el2("div", "xp-status ahp-status"));
+    const countPane = statusBar.appendChild(el2("span", "xp-status-pane ahp-count"));
+    countPane.setAttribute("role", "status");
+    const recordPane = statusBar.appendChild(el2("span", "xp-status-pane ahp-record"));
+    const progressPane = statusBar.appendChild(el2("span", "xp-status-pane ahp-progress"));
+    const progress2 = progressPane.appendChild(el2("span", "xp-progress"));
+    progress2.dataset.marquee = "";
+    progress2.setAttribute("role", "progressbar");
+    progress2.setAttribute("aria-label", "\u6B63\u5728\u8BFB\u53D6");
+    progress2.append(el2("i"));
+    progressPane.hidden = true;
+    const taskGroup = (label, special = false) => {
+      const group = tasks.appendChild(el2("section", "xp-task-group"));
+      if (special) group.dataset.special = "";
+      const head = group.appendChild(el2("button", "xp-task-head", label));
+      head.type = "button";
+      head.setAttribute("aria-expanded", "true");
+      head.addEventListener("click", () => {
+        group.toggleAttribute("data-collapsed");
+        head.setAttribute("aria-expanded", String(!group.hasAttribute("data-collapsed")));
+      });
+      return group.appendChild(el2("div", "xp-task-body"));
+    };
+    const taskLink = (body2, label, icon2, action) => {
+      const node4 = typeof action === "string" ? el2("a", "xp-task-link") : el2("button", "xp-task-link");
+      if (node4 instanceof HTMLAnchorElement) {
+        node4.href = action;
+        node4.target = "_blank";
+        node4.rel = "noopener noreferrer";
+      } else {
+        node4.type = "button";
+        node4.addEventListener("click", () => {
+          sound("click");
+          action();
+        });
+      }
+      const text4 = el2("span", "", label);
+      node4.append(icon2, text4);
+      body2.append(node4);
+      return { node: node4, text: text4 };
+    };
+    if (!loggedIn || !relay) {
+      taskColumn.remove();
+      toolbar.remove();
+      countPane.textContent = "\u672A\u767B\u5F55";
+      recordPane.remove();
+      const guest = groups.appendChild(el2("div", "ahp-guest"));
+      guest.append(el2("p", "", "\u767B\u5F55\u540E\u67E5\u770B\u5386\u53F2\u8BB0\u5F55"));
+      const login = guest.appendChild(el2("button", "xp-button", "\u767B\u5F55"));
+      login.type = "button";
+      login.addEventListener("click", () => {
+        sound("click");
+        openBiliLogin();
+      });
+      place(root2);
+      return;
+    }
+    const actions = taskGroup("\u5386\u53F2\u8BB0\u5F55\u4EFB\u52A1", true);
+    const pause = taskLink(actions, "\u6682\u505C\u8BB0\u5F55\u5386\u53F2", image5(ie_history_16_default), () => void togglePaused());
+    taskLink(actions, "\u6E05\u7A7A\u5386\u53F2", shellIcon(32, 16), () => void clearAll());
+    const batch2 = taskLink(actions, "\u6279\u91CF\u5220\u9664", shellIcon(240, 16), () => setSelecting(true));
+    taskLink(actions, "\u4E00\u952E\u5DF2\u770B", image5(atelierIcons.viewed), () => void markAllViewed());
+    const places = taskGroup("\u5176\u4ED6\u4F4D\u7F6E");
+    taskLink(places, "\u7A0D\u540E\u518D\u770B", shellIcon(21, 16), "https://www.bilibili.com/watchlater/#/list");
+    const mid = document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1] ?? "";
+    taskLink(places, "\u6536\u85CF\u5939", image5(ie_favorites_16_default), mid ? `https://space.bilibili.com/${mid}/favlist` : "https://www.bilibili.com/");
+    taskLink(places, "\u52A8\u6001", shellIcon(14, 16), "https://t.bilibili.com/");
+    let type = "all", keyword = "", cursor = firstCursor, page = 1;
+    let generation = 0, loading = false, done = false, paused2 = null, selecting = false;
+    const cards2 = /* @__PURE__ */ new Map();
+    const selected = /* @__PURE__ */ new Set();
+    let lastDay = -1, lastGrid = null;
+    const filterButtons = historyTypes.map(([value2, label]) => {
+      const button5 = toolButton(label, () => {
+        if (type !== value2) {
+          type = value2;
+          paintFilters();
+          void reload();
+        }
+      });
+      button5.setAttribute("role", "radio");
+      button5.dataset.type = value2;
+      filters.append(button5);
+      return button5;
+    });
+    const paintFilters = () => {
+      for (const button5 of filterButtons) {
+        const on5 = button5.dataset.type === type;
+        button5.setAttribute("aria-pressed", String(on5));
+        button5.setAttribute("aria-checked", String(on5));
+      }
+    };
+    paintFilters();
+    const selectAll = toolButton("\u5168\u9009", () => {
+      for (const key4 of cards2.keys()) selected.add(key4);
+      paintSelection();
+    });
+    const deleteSelected = toolButton("\u5220\u9664\u6240\u9009", () => void removeSelected(), shellIcon(240, 16));
+    const cancelSelect = toolButton("\u53D6\u6D88", () => setSelecting(false));
+    selectBar.append(selectAll, deleteSelected, cancelSelect);
+    search.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sound("click");
+      const next = field.value.trim();
+      if (next === keyword) return;
+      keyword = next;
+      void reload();
+    });
+    field.addEventListener("input", () => {
+      clearSearch.hidden = !field.value;
+    });
+    clearSearch.addEventListener("click", () => {
+      sound("click");
+      field.value = "";
+      clearSearch.hidden = true;
+      field.focus();
+      if (keyword) {
+        keyword = "";
+        void reload();
+      }
+    });
+    function paintCount() {
+      const count2 = cards2.size;
+      countPane.textContent = selecting ? `${count2} \u4E2A\u9879\u76EE\uFF0C\u5DF2\u9009\u62E9 ${selected.size} \u4E2A` : `${count2} \u4E2A\u9879\u76EE`;
+    }
+    function paintPaused() {
+      pause.text.textContent = paused2 ? "\u6062\u590D\u8BB0\u5F55\u5386\u53F2" : "\u6682\u505C\u8BB0\u5F55\u5386\u53F2";
+      pause.node.toggleAttribute("disabled", paused2 === null);
+      recordPane.textContent = paused2 === null ? "" : paused2 ? "\u5DF2\u6682\u505C\u8BB0\u5F55\u5386\u53F2" : "\u6B63\u5728\u8BB0\u5F55\u5386\u53F2";
+    }
+    function paintSelection() {
+      for (const [key4, entry] of cards2) {
+        const on5 = selected.has(key4);
+        entry.check.checked = on5;
+        entry.element.toggleAttribute("data-selected", on5);
+        entry.element.setAttribute("aria-selected", String(on5));
+      }
+      deleteSelected.lastElementChild.textContent = `\u5220\u9664\u6240\u9009\uFF08${selected.size}\uFF09`;
+      deleteSelected.disabled = !selected.size;
+      paintCount();
+    }
+    function setSelecting(on5) {
+      selecting = on5;
+      selected.clear();
+      root2.toggleAttribute("data-selecting", on5);
+      filters.hidden = on5;
+      selectBar.hidden = !on5;
+      batch2.node.toggleAttribute("disabled", on5);
+      paintSelection();
+    }
+    function paintFoot(text4) {
+      foot.textContent = text4;
+    }
+    function render2(card3) {
+      const element2 = el2("article", "ahc");
+      element2.dataset.key = card3.key;
+      element2.setAttribute("role", "listitem");
+      element2.title = card3.title;
+      const media2 = element2.appendChild(el2("div", "ahc-media"));
+      if (card3.viewedId) media2.dataset.viewedId = card3.viewedId;
+      const link3 = media2.appendChild(el2("a", "ahc-link"));
+      link3.href = card3.href;
+      link3.target = "_blank";
+      link3.rel = "noopener noreferrer";
+      const box = link3.appendChild(el2("div", "ahc-thumb"));
+      const cover = box.appendChild(el2("div", "ahc-cover"));
+      if (card3.cover) {
+        const picture = cover.appendChild(el2("img"));
+        picture.alt = "";
+        picture.loading = "lazy";
+        picture.referrerPolicy = "no-referrer";
+        picture.src = thumb(card3.cover, "432w_243h_1c");
+      }
+      if (card3.badge) box.append(el2("span", `ahc-badge${card3.business === "live" && card3.badge === "\u76F4\u64AD\u4E2D" ? " ahc-live" : ""}`, card3.badge));
+      if (card3.progress) {
+        box.append(el2("span", "ahc-time", card3.progress.text));
+        const bar = box.appendChild(el2("span", "ahc-bar"));
+        bar.appendChild(el2("i")).style.width = `${card3.progress.percent}%`;
+      }
+      const check2 = media2.appendChild(el2("input", "xp-check ahc-check"));
+      check2.type = "checkbox";
+      check2.tabIndex = -1;
+      check2.setAttribute("aria-label", `\u9009\u62E9 ${card3.title}`);
+      const name = element2.appendChild(el2("a", "ahc-title", card3.title));
+      name.href = card3.href;
+      name.target = "_blank";
+      name.rel = "noopener noreferrer";
+      if (card3.line) {
+        const line = element2.appendChild(card3.lineHref ? el2("a", "ahc-line", card3.line) : el2("span", "ahc-line", card3.line));
+        if (line instanceof HTMLAnchorElement) {
+          line.href = card3.lineHref;
+          line.target = "_blank";
+          line.rel = "noopener noreferrer";
+        }
+      }
+      const when2 = element2.appendChild(el2("span", "ahc-when"));
+      if (card3.device) {
+        const icon2 = when2.appendChild(shellIcon(deviceIcons[card3.device], 16));
+        icon2.title = deviceNames[card3.device];
+        icon2.setAttribute("role", "img");
+        icon2.setAttribute("aria-label", deviceNames[card3.device]);
+      }
+      when2.append(el2("span", "", card3.when));
+      element2.addEventListener("click", (event) => {
+        if (!selecting) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (selected.has(card3.key)) selected.delete(card3.key);
+        else selected.add(card3.key);
+        sound("click");
+        paintSelection();
+      }, true);
+      element2.addEventListener("contextmenu", (event) => {
+        if (selecting) return;
+        event.preventDefault();
+        const seen = !!card3.viewedId && isViewedVideo(card3.viewedId);
+        openMenu([
+          { label: "\u6253\u5F00", action: () => {
+            location.href = card3.href;
+          } },
+          { label: "\u5728\u65B0\u6807\u7B7E\u9875\u6253\u5F00", bold: true, action: () => {
+            window.open(card3.href, "_blank", "noopener");
+          } },
+          "separator",
+          { label: "\u7A0D\u540E\u518D\u770B", disabled: !card3.aid, title: card3.aid ? "" : "\u53EA\u6709\u89C6\u9891\u80FD\u52A0\u5165\u7A0D\u540E\u518D\u770B", action: () => void watchLater2(card3) },
+          { label: seen ? "\u6807\u8BB0\u4E3A\u672A\u770B" : "\u6807\u8BB0\u4E3A\u5DF2\u770B", disabled: !card3.viewedId, action: () => {
+            setViewedVideo(card3.viewedId, !seen);
+          } },
+          "separator",
+          { label: "\u4ECE\u5386\u53F2\u8BB0\u5F55\u4E2D\u5220\u9664", action: () => void remove([card3.key]) }
+        ], { x: event.clientX, y: event.clientY });
+      });
+      cards2.set(card3.key, { card: card3, element: element2, check: check2 });
+      if (selecting) paintSelection();
+      return element2;
+    }
+    function append(list) {
+      for (const raw of list) {
+        const card3 = historyCard(raw);
+        if (!card3 || cards2.has(card3.key)) continue;
+        const day = dayOf(card3.viewAt);
+        if (day !== lastDay || !lastGrid) {
+          lastDay = day;
+          const group = groups.appendChild(el2("section", "ahp-group"));
+          group.append(el2("h3", "ahp-group-head", dayLabel(day)));
+          lastGrid = group.appendChild(el2("div", "ahp-grid"));
+        }
+        lastGrid.append(render2(card3));
+      }
+      paintCount();
+    }
+    async function read2(url, mine) {
+      const stop = new AbortController(), timer2 = window.setTimeout(() => stop.abort(), 15e3);
+      try {
+        const body2 = await relay.read(url, stop.signal);
+        if (mine !== generation) return null;
+        return body2;
+      } finally {
+        window.clearTimeout(timer2);
+      }
+    }
+    async function more() {
+      if (loading || done) return;
+      loading = true;
+      progressPane.hidden = false;
+      paintFoot("\u6B63\u5728\u52A0\u8F7D\u2026");
+      const mine = generation;
+      try {
+        const body2 = await read2(keyword ? searchUrl(type, keyword, page) : cursorUrl(type, cursor), mine);
+        if (!body2) return;
+        if (Number(body2.code) === -101) {
+          paintFoot("\u767B\u5F55\u5DF2\u5931\u6548\uFF0C\u8BF7\u91CD\u65B0\u767B\u5F55");
+          done = true;
+          return;
+        }
+        if (!ok3(body2)) throw new Error(failure3(body2, "\u8BFB\u53D6\u5931\u8D25"));
+        const data = body2.data ?? {}, list = Array.isArray(data.list) ? data.list : [];
+        append(list);
+        if (keyword) {
+          page += 1;
+          done = !list.length || !data.has_more;
+        } else {
+          const next = data.cursor ?? {};
+          cursor = { max: Number(next.max) || 0, viewAt: Number(next.view_at) || 0, business: typeof next.business === "string" ? next.business : "" };
+          done = !list.length || !cursor.max && !cursor.viewAt;
+        }
+        paintFoot(done ? cards2.size ? "\u6CA1\u6709\u66F4\u591A\u4E86" : keyword ? `\u6CA1\u6709\u627E\u5230\u4E0E\u201C${keyword}\u201D\u6709\u5173\u7684\u8BB0\u5F55` : "\u8FD9\u91CC\u8FD8\u6CA1\u6709\u5386\u53F2\u8BB0\u5F55" : "");
+      } catch (error) {
+        if (mine !== generation) return;
+        paintFoot(`\u8BFB\u53D6\u5931\u8D25\uFF1A${error?.message || error}`);
+        done = true;
+      } finally {
+        if (mine === generation) {
+          loading = false;
+          progressPane.hidden = true;
+        }
+      }
+      if (mine === generation && !done && foot.getBoundingClientRect().top < innerHeight + 600) void more();
+    }
+    function reload() {
+      generation += 1;
+      loading = false;
+      done = false;
+      cursor = firstCursor;
+      page = 1;
+      cards2.clear();
+      selected.clear();
+      groups.replaceChildren();
+      lastDay = -1;
+      lastGrid = null;
+      title.textContent = keyword ? `\u5386\u53F2\u8BB0\u5F55 - \u641C\u7D22\u201C${keyword}\u201D` : "\u5386\u53F2\u8BB0\u5F55";
+      paintSelection();
+      return more();
+    }
+    async function write(op, body2, fallback2) {
+      const answer = await relay.write(op, { body: body2 });
+      if (!ok3(answer)) throw new Error(failure3(answer, fallback2));
+      return answer;
+    }
+    async function remove(keys) {
+      if (!keys.length) return;
+      const feedback = soundTask();
+      try {
+        await write("history-delete", { kid: keys.join(",") }, "\u5220\u9664\u5931\u8D25");
+      } catch (error) {
+        feedback.finish("error");
+        showInfoLog(`\u5220\u9664\u5931\u8D25\uFF1A${error.message}`, "error");
+        return;
+      }
+      for (const key4 of keys) {
+        const entry = cards2.get(key4);
+        if (!entry) continue;
+        const grid = entry.element.parentElement;
+        entry.element.remove();
+        cards2.delete(key4);
+        selected.delete(key4);
+        if (grid && !grid.childElementCount) {
+          grid.parentElement?.remove();
+          if (grid === lastGrid) {
+            lastGrid = null;
+            lastDay = -1;
+          }
+        }
+      }
+      feedback.finish("delete");
+      paintSelection();
+      if (!cards2.size && done) paintFoot(keyword ? `\u6CA1\u6709\u627E\u5230\u4E0E\u201C${keyword}\u201D\u6709\u5173\u7684\u8BB0\u5F55` : "\u8FD9\u91CC\u8FD8\u6CA1\u6709\u5386\u53F2\u8BB0\u5F55");
+      else if (!done && foot.getBoundingClientRect().top < innerHeight + 600) void more();
+    }
+    async function removeSelected() {
+      const keys = [...cards2.keys()].filter((key4) => selected.has(key4));
+      if (!keys.length) return;
+      if (!await atelierConfirm(`\u786E\u5B9E\u8981\u4ECE\u5386\u53F2\u8BB0\u5F55\u4E2D\u5220\u9664\u8FD9 ${keys.length} \u9879\u5417\uFF1F`, "\u786E\u8BA4\u5220\u9664")) return;
+      await remove(keys);
+      setSelecting(false);
+    }
+    async function clearAll() {
+      const what = type === "all" ? "\u5168\u90E8\u5386\u53F2\u8BB0\u5F55" : `\u6240\u6709${historyTypes.find(([value2]) => value2 === type)[1]}\u5386\u53F2\u8BB0\u5F55`;
+      if (!await atelierConfirm(`\u786E\u5B9E\u8981\u6E05\u7A7A${what}\u5417\uFF1F\u6B64\u64CD\u4F5C\u4E0D\u80FD\u64A4\u9500\u3002`, "\u6E05\u7A7A\u5386\u53F2")) return;
+      const feedback = soundTask();
+      const results = await Promise.allSettled(clearBusinesses(type).map((business) => write("history-clear", { business }, "\u6E05\u7A7A\u5931\u8D25")));
+      const failed = results.find((result) => result.status === "rejected");
+      if (failed && results.every((result) => result.status === "rejected")) {
+        feedback.finish("error");
+        showInfoLog(`\u6E05\u7A7A\u5931\u8D25\uFF1A${failed.reason?.message ?? failed.reason}`, "error");
+        return;
+      }
+      feedback.finish("delete");
+      showInfoLog(`\u5DF2\u6E05\u7A7A${what}`, "success");
+      void reload();
+    }
+    async function readPaused() {
+      try {
+        const body2 = await read2(pausedUrl, generation);
+        if (body2 && ok3(body2)) {
+          paused2 = body2.data === true;
+          paintPaused();
+        }
+      } catch {
+      }
+    }
+    async function togglePaused() {
+      if (paused2 === null) return;
+      const next = !paused2;
+      try {
+        await write("history-pause", { switch: String(next) }, next ? "\u6682\u505C\u5931\u8D25" : "\u6062\u590D\u5931\u8D25");
+      } catch (error) {
+        showInfoLog(error.message, "error");
+        return;
+      }
+      paused2 = next;
+      paintPaused();
+      showInfoLog(next ? "\u5DF2\u6682\u505C\u8BB0\u5F55\u5386\u53F2" : "\u5DF2\u6062\u590D\u8BB0\u5F55\u5386\u53F2", "success");
+    }
+    async function watchLater2(card3) {
+      try {
+        await write("watchlater", { aid: String(card3.aid) }, "\u6DFB\u52A0\u5931\u8D25");
+        showInfoLog("\u5DF2\u6DFB\u52A0\u5230\u7A0D\u540E\u518D\u770B", "success");
+      } catch (error) {
+        showInfoLog(`\u7A0D\u540E\u518D\u770B\uFF1A${error.message}`, "error");
+      }
+    }
+    paintPaused();
+    paintSelection();
+    place(root2);
+    if (typeof IntersectionObserver === "function") new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) void more();
+    }, { rootMargin: "600px 0px" }).observe(foot);
+    void reload();
+    void readPaused();
+  }
+  function place(root2) {
+    const attach = () => {
+      if (!document.body) {
+        window.setTimeout(attach, 50);
+        return;
+      }
+      const app = document.getElementById("app");
+      if (app?.parentElement) app.before(root2);
+      else document.body.append(root2);
+      observeCrispText(root2);
+    };
+    attach();
+  }
+
   // src/ui/atelier-dom.ts
-  function element(tag, className = "", text3 = "") {
+  function element(tag, className = "", text4 = "") {
     const node4 = document.createElement(tag);
     node4.className = className;
-    node4.textContent = text3;
+    node4.textContent = text4;
     return node4;
   }
   function icon(src, size = 28) {
-    const image5 = element("img");
-    image5.src = src;
-    image5.alt = "";
-    image5.width = image5.height = size;
-    return image5;
+    const image6 = element("img");
+    image6.src = src;
+    image6.alt = "";
+    image6.width = image6.height = size;
+    return image6;
   }
-  function button4(text3, action, className = "luna-button") {
-    const node4 = element("button", className, text3);
+  function button4(text4, action, className = "luna-button") {
+    const node4 = element("button", className, text4);
     node4.type = "button";
     node4.addEventListener("click", () => {
       sound("click");
@@ -19457,7 +20277,7 @@ ${page.css ?? ""}`;
     const fields2 = /* @__PURE__ */ new Map();
     const saved = /* @__PURE__ */ new Map();
     let selectedKey = "title";
-    const isDirty = () => [...fields2].some(([key3, field]) => field.value !== saved.get(key3));
+    const isDirty = () => [...fields2].some(([key4, field]) => field.value !== saved.get(key4));
     for (const rule of ruleDefinitions) {
       const field = element("textarea", "luna-editor");
       field.id = "bili-rule-" + rule.key;
@@ -19516,33 +20336,33 @@ ${page.css ?? ""}`;
           editorHost.setAttribute("role", "tabpanel");
           editorHost.id = "bili-atelier-rule-editor";
           const modeButtons = /* @__PURE__ */ new Map();
-          function selectMode(key3, user = false) {
-            if (user && selectedKey !== key3) sound("select");
-            selectedKey = key3;
+          function selectMode(key4, user = false) {
+            if (user && selectedKey !== key4) sound("select");
+            selectedKey = key4;
             for (const [mode2, node4] of modeButtons) {
-              node4.setAttribute("aria-selected", String(mode2 === key3));
-              node4.tabIndex = mode2 === key3 ? 0 : -1;
+              node4.setAttribute("aria-selected", String(mode2 === key4));
+              node4.tabIndex = mode2 === key4 ? 0 : -1;
             }
-            editorHost.setAttribute("aria-labelledby", "bili-atelier-mode-" + key3);
-            editorHost.replaceChildren(fields2.get(key3));
+            editorHost.setAttribute("aria-labelledby", "bili-atelier-mode-" + key4);
+            editorHost.replaceChildren(fields2.get(key4));
           }
-          for (const key3 of category.keys) {
-            const tab = button4(modeLabels[key3], () => selectMode(key3, true), "luna-rule-tab");
+          for (const key4 of category.keys) {
+            const tab = button4(modeLabels[key4], () => selectMode(key4, true), "luna-rule-tab");
             const mark2 = element("span", "luna-radio");
             mark2.setAttribute("aria-hidden", "true");
             tab.prepend(mark2);
-            tab.id = "bili-atelier-mode-" + key3;
+            tab.id = "bili-atelier-mode-" + key4;
             tab.setAttribute("role", "tab");
             tab.setAttribute("aria-controls", editorHost.id);
             tab.addEventListener("keydown", (event) => {
               if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
               event.preventDefault();
-              const index = category.keys.indexOf(key3);
+              const index = category.keys.indexOf(key4);
               const next = event.key === "Home" ? 0 : event.key === "End" ? category.keys.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + category.keys.length) % category.keys.length;
               selectMode(category.keys[next], true);
               modeButtons.get(category.keys[next]).focus();
             });
-            modeButtons.set(key3, tab);
+            modeButtons.set(key4, tab);
             tabs2.appendChild(tab);
           }
           selectMode(selectedKey);
@@ -19574,7 +20394,7 @@ ${page.css ?? ""}`;
       },
       status() {
         if (!isDirty() && !categories.some((category) => category.id === win.current())) return "";
-        const count2 = [...fields2].reduce((sum, [key3, field]) => sum + parseRuleText(field.value, ruleDefinitions.find((rule) => rule.key === key3)?.integer).length, 0);
+        const count2 = [...fields2].reduce((sum, [key4, field]) => sum + parseRuleText(field.value, ruleDefinitions.find((rule) => rule.key === key4)?.integer).length, 0);
         return count2 + " \u6761\u89C4\u5219 \xB7 " + (isDirty() ? "\u6709\u672A\u4FDD\u5B58\u7684\u4FEE\u6539" : "\u5DF2\u4FDD\u5B58");
       },
       isDirty,
@@ -19750,9 +20570,9 @@ ${page.css ?? ""}`;
     };
     const choice = (options, value2, change) => {
       const node4 = element("select");
-      for (const [key3, text3] of options) {
-        const option = element("option", "", text3);
-        option.value = key3;
+      for (const [key4, text4] of options) {
+        const option = element("option", "", text4);
+        option.value = key4;
         node4.append(option);
       }
       node4.value = value2;
@@ -19835,11 +20655,11 @@ ${page.css ?? ""}`;
       showInfoLog("\u5DF2\u751F\u6210 " + data.viewed.items.length + " \u6761\u5DF2\u770B\u8BB0\u5F55\u7684\u4E0B\u8F7D\u6587\u4EF6", "success");
       sound("success");
     }
-    async function importText(text3, mode2) {
+    async function importText(text4, mode2) {
       if (win.isDirty() && !await atelierConfirm("\u5BFC\u5165\u4F1A\u91CD\u65B0\u8F7D\u5165\u89C4\u5219\u5E76\u653E\u5F03\u5C1A\u672A\u4FDD\u5B58\u7684\u4FEE\u6539\u3002\u7EE7\u7EED\u5417\uFF1F")) return false;
       if (mode2 === "overwrite" && !await atelierConfirm("\u8986\u76D6\u5BFC\u5165\u4F1A\u66FF\u6362\u5DF2\u770B\u8BB0\u5F55\u548C\u5BF9\u5E94\u5C4F\u853D\u89C4\u5219\u3002\u786E\u5B9A\u7EE7\u7EED\u5417\uFF1F")) return false;
       if (!win.element.isConnected) return false;
-      const result = importAtelierDataInput(JSON.parse(text3), mode2);
+      const result = importAtelierDataInput(JSON.parse(text4), mode2);
       win.reload();
       notifyAtelierDataChanged();
       win.updateStatus(result.res);
@@ -19848,13 +20668,13 @@ ${page.css ?? ""}`;
     }
     async function pasteImport(mode2) {
       const feedback = soundTask(void 0, win.element);
-      const text3 = await atelierPrompt("\u7C98\u8D34\u7EDF\u4E00\u6570\u636E JSON\uFF0C\u4E5F\u517C\u5BB9\u65E7\u5C4F\u853D/\u5DF2\u770B JSON");
-      if (!text3) {
+      const text4 = await atelierPrompt("\u7C98\u8D34\u7EDF\u4E00\u6570\u636E JSON\uFF0C\u4E5F\u517C\u5BB9\u65E7\u5C4F\u853D/\u5DF2\u770B JSON");
+      if (!text4) {
         feedback.finish("cancel");
         return;
       }
       try {
-        feedback.finish(await importText(text3, mode2) ? "success" : "cancel");
+        feedback.finish(await importText(text4, mode2) ? "success" : "cancel");
       } catch (error) {
         void atelierAlert("\u5BFC\u5165\u5931\u8D25\uFF1A" + String(error));
         feedback.finish("error");
@@ -19871,8 +20691,8 @@ ${page.css ?? ""}`;
         input.value = "";
         if (!file) return;
         try {
-          const text3 = await file.text();
-          if (win.element.isConnected) feedback.finish(await importText(text3, mode2) ? "success" : "cancel");
+          const text4 = await file.text();
+          if (win.element.isConnected) feedback.finish(await importText(text4, mode2) ? "success" : "cancel");
         } catch (error) {
           void atelierAlert("\u5BFC\u5165\u5931\u8D25\uFF1A" + String(error));
           feedback.finish("error");
@@ -19979,11 +20799,11 @@ ${page.css ?? ""}`;
     button5.setAttribute("aria-haspopup", "menu");
     button5.setAttribute("aria-expanded", "false");
     button5.title = "Atelier \xB7 \u62D6\u52A8\u53EF\u8C03\u6574\u4F4D\u7F6E";
-    const image5 = document.createElement("img");
-    image5.src = atelierIcons.tv;
-    image5.alt = "";
-    image5.draggable = false;
-    button5.append(image5);
+    const image6 = document.createElement("img");
+    image6.src = atelierIcons.tv;
+    image6.alt = "";
+    image6.draggable = false;
+    button5.append(image6);
     const menu = document.createElement("nav");
     menu.className = "atelier-quick-menu xp-menu";
     menu.hidden = true;
@@ -20206,6 +21026,8 @@ ${page.css ?? ""}`;
     // The Luna player page hides the blocks it replaces before Bilibili's page
     // renders, with a head stylesheet only; the windows come after hydration.
     { name: "Luna \u89C6\u9891\u9875\u9884\u5907", phase: "start", gm: {}, start: prepareVideoLuna },
+    // The same for 观看历史: Bilibili's page is hidden before it renders.
+    { name: "\u89C2\u770B\u5386\u53F2\u9884\u5907", phase: "start", gm: {}, start: prepareWatchHistory },
     { name: "Atelier \u7A97\u53E3", phase: "start", gm: {}, start: startAtelierWindow },
     {
       name: "\u97F3\u6548",
@@ -20228,6 +21050,10 @@ ${page.css ?? ""}`;
       registerVideoPageMode();
       mountVideoLuna();
     }, recover: showNativePage },
+    { name: "\u89C2\u770B\u5386\u53F2", phase: "page", gm: {}, start() {
+      registerWatchHistoryMode();
+      mountWatchHistory();
+    }, recover: showNativeHistory },
     { name: "\u7535\u89C6\u5165\u53E3", phase: "page", gm: {}, start: startAtelierLauncher },
     { name: "\u672C\u5730\u5173\u6CE8", phase: "page", gm: {}, start: startLocalFollowing },
     { name: "\u5DF2\u770B\u6A21\u5757", phase: "page", gm: { missing: "\u5DF2\u770B\u6A21\u5757\u9700\u8981 GM_* \u5B58\u50A8\u6743\u9650\uFF0C\u5F53\u524D\u73AF\u5883\u4E0D\u53EF\u7528\u3002" }, enabled: config.viewedMarker.enabled, start: () => whenHeadExists("\u5DF2\u770B\u6A21\u5757", startViewedMarker) },
