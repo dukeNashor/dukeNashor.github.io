@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.8.0
+// @version      0.9.0
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -10481,8 +10481,8 @@ ${root2} .acm-blocked{outline:1px dashed #a33024;outline-offset:-1px}
   // src/ui/header-offset.ts
   var headerHeightVar = "--atelier-header-h";
   function headerHeight() {
-    const value2 = parseFloat(document.documentElement.style.getPropertyValue(headerHeightVar));
-    return Number.isFinite(value2) && value2 > 0 ? value2 : 64;
+    const raw = document.documentElement.style.getPropertyValue(headerHeightVar), value2 = parseFloat(raw);
+    return raw && Number.isFinite(value2) && value2 >= 0 ? value2 : 64;
   }
   function headerScreenHeight() {
     return headerHeight() * zoomOf(document.body);
@@ -11620,6 +11620,7 @@ html[${attribute}=drag] *{user-select:none!important}
     };
     fold.addEventListener("click", () => {
       folded = !folded;
+      chain.close();
       sound(folded ? "minimize" : "restore");
       if (typeof GM_setValue === "function") GM_setValue(foldKey, folded);
       paintFold();
@@ -12018,11 +12019,15 @@ ${on2} :is(#biliMainHeader,#bili-header-container) .bili-header{visibility:hidde
 .lh-menu-title{${xpFont};color:var(--xp-ink);height:20px;padding:0 7px;margin:0;border:0;border-radius:0;background:transparent;cursor:default}
 .lh-menu-title:hover,.lh-menu-title[data-open]{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
 .lh u{text-decoration:underline}
-/* The fold button: XP's task pane chevrons, up to fold, down to unfold. */
-.lh-fold{flex:none;align-self:center;width:var(--xp-task-collapse-w,19px);height:var(--xp-task-collapse-h,19px);margin:0 4px;padding:0;border:0;background:var(--xp-task-collapse-0) center/100% 100% no-repeat;image-rendering:pixelated;cursor:default}
-.lh-fold:hover{background-image:var(--xp-task-collapse-1)}.lh-fold:active{background-image:var(--xp-task-collapse-2)}
-.lh[data-folded] .lh-fold{background-image:var(--xp-task-expand-0)}.lh[data-folded] .lh-fold:hover{background-image:var(--xp-task-expand-1)}.lh[data-folded] .lh-fold:active{background-image:var(--xp-task-expand-2)}
+/* The fold button: Luna's scroll bar arrows, up to fold, down to unfold. */
+.lh-fold{flex:none;align-self:center;width:var(--xp-arrow-w,17px);height:var(--xp-arrow-h,17px);margin:0 4px;padding:0;border:0;background:var(--xp-arrow-0) center/100% 100% no-repeat;image-rendering:pixelated;cursor:default}
+.lh-fold:hover{background-image:var(--xp-arrow-1)}.lh-fold:active{background-image:var(--xp-arrow-2)}
+/* Folded, nothing of the header shows but the button, floating where it
+   was: the menu bar keeps its place unseen, and lets the pointer through. */
+.lh[data-folded]{visibility:hidden}
 .lh[data-folded]>:is(.lh-toolbar,.lh-address),.lh[data-folded] .lh-autocomplete{display:none!important}
+.lh[data-folded] .lh-fold{visibility:visible;background-image:var(--xp-arrow-4)}.lh[data-folded] .lh-fold:hover{background-image:var(--xp-arrow-5)}.lh[data-folded] .lh-fold:active{background-image:var(--xp-arrow-6)}
+html:is([data-atelier-screen=web],[data-atelier-screen=full]) .lh[data-folded] .lh-fold{visibility:hidden}
 .lh-brand{flex:none;align-self:stretch;display:flex;align-items:center;justify-content:center;width:42px;border-left:1px solid var(--xp-shadow3d);box-shadow:inset 1px 0 var(--xp-light3d);background:var(--xp-window)}
 .lh-brand-guest{width:auto;padding:0 3px;background:var(--xp-face)}
 .lh-face-button{display:flex;align-items:center;justify-content:center;width:100%;height:100%;padding:0;margin:0;border:0;background:transparent;cursor:default}
@@ -12113,8 +12118,10 @@ a.lh-item{color:var(--xp-ink)}
         observeCrispText(current.element);
         window.clearTimeout(timer2);
         const measure = () => {
-          const height = current?.element.offsetHeight ?? 0;
-          if (height > 0) root2.style.setProperty(headerHeightVar, `${height}px`);
+          const element2 = current?.element;
+          if (!element2) return;
+          const folded = element2.hasAttribute("data-folded"), height = folded ? 0 : element2.offsetHeight;
+          if (height > 0 || folded) root2.style.setProperty(headerHeightVar, `${height}px`);
         };
         measure();
         if (typeof ResizeObserver === "function") new ResizeObserver(measure).observe(current.element);

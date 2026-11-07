@@ -1,13 +1,13 @@
 {
-  "version": "0.8.0",
+  "version": "0.9.0",
   "baseUrl": "https://dukenashor.github.io/bili-atelier",
   "script": {
     "file": "bili-toolkit.user.js",
-    "sha256": "cdc6d3a0c4cf9040e864f97111ceb5a49ca43fed400c52c194b3a0656be4d96a"
+    "sha256": "0b9d592cffdc9644126d520dec49278cb0d9cbcbf67720df5d27b70db664eace"
   },
   "metadata": {
     "file": "bili-toolkit.meta.js",
-    "sha256": "8196545bf9d6b781b01375f0efa6af656196aa2a58a983c4f8b3e6b9fbea1a65"
+    "sha256": "8aeea6b91ba251185e1a661b28996eeada809a681ac1db0c03f13437e989eb86"
   },
   "resources": [
     {
