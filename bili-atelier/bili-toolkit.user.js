@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.9.7
+// @version      0.9.8
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -114,9 +114,9 @@
   };
   var __copyProps = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
-      for (let key5 of __getOwnPropNames(from))
-        if (!__hasOwnProp.call(to, key5) && key5 !== except)
-          __defProp(to, key5, { get: () => from[key5], enumerable: !(desc = __getOwnPropDesc(from, key5)) || desc.enumerable });
+      for (let key6 of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key6) && key6 !== except)
+          __defProp(to, key6, { get: () => from[key6], enumerable: !(desc = __getOwnPropDesc(from, key6)) || desc.enumerable });
     }
     return to;
   };
@@ -1459,11 +1459,11 @@
          */
         PriorityQueue: {
           make: function(opts) {
-            var T = dijkstra.PriorityQueue, t = {}, key5;
+            var T = dijkstra.PriorityQueue, t = {}, key6;
             opts = opts || {};
-            for (key5 in T) {
-              if (T.hasOwnProperty(key5)) {
-                t[key5] = T[key5];
+            for (key6 in T) {
+              if (T.hasOwnProperty(key6)) {
+                t[key6] = T[key6];
               }
             }
             t.queue = [];
@@ -1613,18 +1613,18 @@
           const currentNodeIds = [];
           for (let j = 0; j < nodeGroup.length; j++) {
             const node4 = nodeGroup[j];
-            const key5 = "" + i + j;
-            currentNodeIds.push(key5);
-            table[key5] = { node: node4, lastCount: 0 };
-            graph[key5] = {};
+            const key6 = "" + i + j;
+            currentNodeIds.push(key6);
+            table[key6] = { node: node4, lastCount: 0 };
+            graph[key6] = {};
             for (let n = 0; n < prevNodeIds.length; n++) {
               const prevNodeId = prevNodeIds[n];
               if (table[prevNodeId] && table[prevNodeId].node.mode === node4.mode) {
-                graph[prevNodeId][key5] = getSegmentBitsLength(table[prevNodeId].lastCount + node4.length, node4.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node4.mode);
+                graph[prevNodeId][key6] = getSegmentBitsLength(table[prevNodeId].lastCount + node4.length, node4.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node4.mode);
                 table[prevNodeId].lastCount += node4.length;
               } else {
                 if (table[prevNodeId]) table[prevNodeId].lastCount = node4.length;
-                graph[prevNodeId][key5] = getSegmentBitsLength(node4.length, node4.mode) + 4 + Mode.getCharCountIndicator(node4.mode, version);
+                graph[prevNodeId][key6] = getSegmentBitsLength(node4.length, node4.mode) + 4 + Mode.getCharCountIndicator(node4.mode, version);
               }
             }
           }
@@ -2272,6 +2272,51 @@
       attributeFilter: ["data-server-rendered"]
     });
     document.addEventListener("DOMContentLoaded", check2);
+  }
+
+  // src/ui/interface-prefs.ts
+  var key = "BiliAtelier_Interface";
+  var interfaceChanged = "atelier-interface-changed";
+  var share = (value2, fallback2) => typeof value2 === "number" && Number.isFinite(value2) ? Math.round(Math.min(1, Math.max(0.1, value2)) * 20) / 20 : fallback2;
+  function readInterfacePrefs() {
+    const stored = (typeof GM_getValue === "function" ? GM_getValue(key, {}) : {}) ?? {};
+    return {
+      pbpOpacity: share(stored.pbpOpacity, 1),
+      viewedDim: stored.viewedDim !== false,
+      viewedOpacity: share(stored.viewedOpacity, 0.45),
+      userCard: stored.userCard !== false,
+      pictureWindow: stored.pictureWindow !== false,
+      ipLocation: stored.ipLocation !== false
+    };
+  }
+  function saveInterfacePrefs(change) {
+    if (typeof GM_setValue === "function") GM_setValue(key, { ...readInterfacePrefs(), ...change });
+    window.dispatchEvent(new Event(interfaceChanged));
+  }
+  var relayed = /* @__PURE__ */ new Set();
+  function relayRemoteChanges(name, event) {
+    if (relayed.has(name) || typeof GM_addValueChangeListener !== "function") return;
+    relayed.add(name);
+    GM_addValueChangeListener(name, (_name, _old, _value, remote) => {
+      if (remote) window.dispatchEvent(new Event(event));
+    });
+  }
+  function interfaceCss(prefs = readInterfacePrefs()) {
+    return `:root{--atelier-pbp-opacity:${prefs.pbpOpacity};--atelier-viewed-opacity:${prefs.viewedDim ? prefs.viewedOpacity : 1}}` + (prefs.ipLocation ? "" : "\n.acm-where{display:none!important}");
+  }
+  var started = false;
+  function startInterfacePrefs() {
+    if (started) return;
+    started = true;
+    const style = document.createElement("style");
+    style.id = "atelier-interface";
+    const paint2 = () => {
+      style.textContent = interfaceCss();
+      if (!style.isConnected) (document.head || document.documentElement).append(style);
+    };
+    paint2();
+    window.addEventListener(interfaceChanged, paint2);
+    relayRemoteChanges(key, interfaceChanged);
   }
 
   // src/ui/resource-cache.ts
@@ -3887,7 +3932,7 @@
   var lunaSchemeNames = { blue: "\u9ED8\u8BA4\uFF08\u84DD\uFF09", olive: "\u6A44\u6984\u7EFF", silver: "\u94F6\u8272" };
   var isLunaScheme = (value2) => typeof value2 === "string" && Object.prototype.hasOwnProperty.call(lunaSchemes, value2);
   var theme = (scheme) => lunaSchemes[scheme].theme;
-  var value = (scheme, section, key5, fallback2) => theme(scheme)[section]?.[key5] || fallback2;
+  var value = (scheme, section, key6, fallback2) => theme(scheme)[section]?.[key6] || fallback2;
   var darkPalettes = {
     blue: { face: "#23272f", window: "#191c22", ink: "#e8eaee", muted: "#a3a9b5", edge: "#56678a", line: "#3a3f4a", light3d: "#3b414d", shadow3d: "#14171c", dark3d: "#0b0d10", lift: "#b7c3d9", gradient1: "#26355a", gradient2: "#1c2744", taskFill: "#2a3550", taskText: "#c7d6f5", taskLink: "#a9c1f2", groupText: "#9cb8ff" },
     olive: { face: "#2a2d22", window: "#1c1e16", ink: "#ecebdf", muted: "#b3b8a2", edge: "#76845a", line: "#3d4132", light3d: "#42473a", shadow3d: "#15170f", dark3d: "#0c0d08", lift: "#c8cfb0", gradient1: "#353c27", gradient2: "#282d1d", taskFill: "#343a28", taskText: "#d6dcbf", taskLink: "#c9d69f", groupText: "#c0d091" },
@@ -3895,7 +3940,7 @@
   };
   var dim = (hex, factor = 0.7) => "#" + [1, 3, 5].map((at) => Math.round(parseInt(hex.slice(at, at + 2), 16) * factor).toString(16).padStart(2, "0")).join("");
   function lunaTokens(scheme, dark) {
-    const sys = (key5, fallback2) => value(scheme, "SysMetrics", key5, fallback2);
+    const sys = (key6, fallback2) => value(scheme, "SysMetrics", key6, fallback2);
     const light = {
       face: sys("btnface", "#ece9d8"),
       window: sys("window", "#ffffff"),
@@ -3916,7 +3961,7 @@
     const base = dark ? darkPalettes[scheme] : light;
     const caption2 = sys("activecaption", "#0054e3"), inactive = sys("inactivecaption", "#7a96df");
     return {
-      ...Object.fromEntries(Object.entries(base).filter(([key5]) => key5 !== "lift")),
+      ...Object.fromEntries(Object.entries(base).filter(([key6]) => key6 !== "lift")),
       graytext: dark ? dim(sys("graytext", "#aca899")) : sys("graytext", "#aca899"),
       highlight: sys("highlight", "#316ac5"),
       "highlight-ink": sys("highlighttext", "#ffffff"),
@@ -4069,8 +4114,8 @@
   var px = (value2) => `${+value2.toFixed(4)}px`;
   var rendered = /* @__PURE__ */ new Map();
   function lunaImageVars(scheme, dark, dpr) {
-    const key5 = `${scheme}|${dark}|${dpr}`;
-    if (rendered.has(key5)) return rendered.get(key5);
+    const key6 = `${scheme}|${dark}|${dpr}`;
+    if (rendered.has(key6)) return rendered.get(key6);
     const work = (async () => {
       if (/jsdom/i.test(navigator.userAgent) || !document.createElement("canvas").getContext?.("2d")) return "";
       const loader = async (which) => {
@@ -4107,12 +4152,12 @@
       vars.push("--xp-fallback:transparent", "--xp-fallback-caption:transparent");
       return vars.join(";");
     })().catch(() => "");
-    rendered.set(key5, work);
+    rendered.set(key6, work);
     return work;
   }
 
   // src/ui/pixel-scale.ts
-  var key = "BiliAtelier_PixelScale";
+  var key2 = "BiliAtelier_PixelScale";
   var pixelScaleChanged = "atelier-pixel-scale-changed";
   var screenRatio = () => window.devicePixelRatio || 1;
   var ratioKey = (dpr) => String(+dpr.toFixed(3));
@@ -4125,7 +4170,7 @@
     return scales;
   }
   function readAll() {
-    const value2 = typeof GM_getValue === "function" ? GM_getValue(key, {}) : {};
+    const value2 = typeof GM_getValue === "function" ? GM_getValue(key2, {}) : {};
     return value2 && typeof value2 === "object" ? { ...value2 } : {};
   }
   function readPixelScale(dpr = screenRatio()) {
@@ -4136,7 +4181,7 @@
     const all = readAll();
     if (scale && pixelScales(dpr).includes(scale)) all[ratioKey(dpr)] = scale;
     else delete all[ratioKey(dpr)];
-    if (typeof GM_setValue === "function") GM_setValue(key, all);
+    if (typeof GM_setValue === "function") GM_setValue(key2, all);
     window.dispatchEvent(new Event(pixelScaleChanged));
   }
   var pixelZoom = (scale, dpr) => scale ? scale / dpr : 1;
@@ -4526,10 +4571,10 @@ ${xpButtonCss(".atelier-control", true)}
 .btnView.atelier-control,.bili-blocker-inline-action.atelier-control{width:auto!important;min-width:40px;height:auto!important;min-height:21px;padding:1px 6px!important;line-height:var(--xp-line)!important}`;
 
   // src/ui/appearance.ts
-  var key2 = "BiliAtelier_UI";
+  var key3 = "BiliAtelier_UI";
   var appearanceChanged = "atelier-appearance-changed";
   function readUiPreferences() {
-    const stored = typeof GM_getValue === "function" ? GM_getValue(key2, {}) : {};
+    const stored = typeof GM_getValue === "function" ? GM_getValue(key3, {}) : {};
     return {
       theme: ["page", "light", "dark"].includes(stored?.theme) ? stored.theme : "page",
       // Olive used to be the only scheme, never a choice; everyone starts on XP's default blue.
@@ -4541,9 +4586,10 @@ ${xpButtonCss(".atelier-control", true)}
     };
   }
   function saveUiPreferences(change) {
-    if (typeof GM_setValue === "function") GM_setValue(key2, { ...readUiPreferences(), ...change });
+    if (typeof GM_setValue === "function") GM_setValue(key3, { ...readUiPreferences(), ...change });
     window.dispatchEvent(new Event(appearanceChanged));
   }
+  var relayUiPreferences = () => relayRemoteChanges(key3, appearanceChanged);
   var switching = null;
   function pageIsDark() {
     if (switching) return switching.dark;
@@ -4566,10 +4612,10 @@ ${xpButtonCss(".atelier-control", true)}
     const { theme: theme2, scheme } = readUiPreferences();
     return { scheme, dark: theme2 === "dark" || theme2 === "page" && pageIsDark(), dpr: window.devicePixelRatio || 1 };
   }
-  var started = false;
+  var started2 = false;
   function ensureAppearance() {
-    if (started) return;
-    started = true;
+    if (started2) return;
+    started2 = true;
     const styles = ["atelier-appearance", "atelier-fonts", "atelier-controls"].map((id) => {
       const style = document.createElement("style");
       style.id = id;
@@ -4582,12 +4628,12 @@ ${xpControlCss}`);
     ensureCrispFilter(document);
     let current4 = "", fontDpr = 0;
     const update = () => {
-      const { scheme, dark, dpr } = appearanceState(), { scale: scale2, zoom } = currentPixelScale(), key5 = `${scheme}|${dark}|${dpr}|${scale2}`;
-      if (key5 === current4) {
+      const { scheme, dark, dpr } = appearanceState(), { scale: scale2, zoom } = currentPixelScale(), key6 = `${scheme}|${dark}|${dpr}|${scale2}`;
+      if (key6 === current4) {
         syncZoom();
         return;
       }
-      current4 = key5;
+      current4 = key6;
       const font = xpFontCss(dpr), drawn = scale2 ? xpFontCss(scale2) : null;
       if (fontDpr !== dpr) {
         fonts.textContent = font.faces;
@@ -4618,7 +4664,7 @@ ${unzoomedScope}{${font.vars};--atelier-zoom:1${images2 && ";" + images2}}
 ${zoomCss(zoom)}` : "");
       theme2.textContent = sheet();
       void Promise.all([lunaImageVars(scheme, dark, dpr), scale2 ? lunaImageVars(scheme, dark, scale2) : ""]).then(([images2, drawnImages]) => {
-        if (current4 === key5 && (images2 || drawnImages)) theme2.textContent = sheet(images2, drawnImages);
+        if (current4 === key6 && (images2 || drawnImages)) theme2.textContent = sheet(images2, drawnImages);
       });
       watchScale(dpr);
       syncZoom();
@@ -4710,6 +4756,13 @@ ${id} .atelier-appearance-preview .preview-message{left:150px;top:96px;width:180
 ${id} .atelier-appearance-preview .preview-body{flex:1;margin:4px;padding:4px;background:var(--xp-window);border:1px solid var(--xp-edge)}
 ${id} .atelier-appearance-preview .preview-message .preview-body{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:8px}
 ${id} .atelier-appearance-row{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;gap:8px}
+${id} .atelier-interface{display:flex;flex-direction:column;gap:6px;max-width:520px}${id} .atelier-interface>.luna-hint{margin:10px 0 0}
+${id} .atelier-interface-group{display:flex;flex-direction:column;gap:6px;margin-top:12px}${id} .atelier-interface-group>.luna-hint{margin:0}
+${id} .atelier-interface-check{display:flex;align-items:flex-start;gap:6px}${id} .atelier-interface-check>input{flex:none;margin:0}
+${id} .atelier-interface-slider{display:flex;align-items:center;gap:8px;padding-left:19px}
+${id} .atelier-interface-slider>input{width:clamp(100px,25vw,200px);margin:0;accent-color:var(--atelier-accent)}
+${id} .atelier-interface-slider>output{min-width:4ch;font-variant-numeric:tabular-nums}
+${id} .atelier-interface-slider[data-disabled]{color:var(--xp-graytext)}
 ${id}[data-maximized=true]{inset:0;width:auto;height:auto;box-shadow:none}
 ${id}[data-maximized=true] .luna-rules-content{display:flex;flex-direction:column}${id}[data-maximized=true] .luna-rules-content>*{flex-shrink:0}${id}[data-maximized=true] .luna-editor-host{flex:1 0 auto;display:flex;flex-direction:column}${id}[data-maximized=true] .luna-editor{flex:1 0 auto;resize:none}
 ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw - 24px));height:auto;margin:0}${id}[data-minimized=true] :is(.luna-layout,.xp-status){display:none}
@@ -5511,7 +5564,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
   // src/modules/sounds/media.ts
   var pulseKey = "AtelierSounds_mediaPulse";
   function startSoundMediaMonitor(changed) {
-    const key5 = soundMediaPrefix + crypto.randomUUID();
+    const key6 = soundMediaPrefix + crypto.randomUUID();
     const media2 = /* @__PURE__ */ new Set(), roots2 = /* @__PURE__ */ new WeakSet(), frames = /* @__PURE__ */ new WeakSet();
     let suspended = false, playing = false, published = false;
     const events = new AbortController();
@@ -5525,12 +5578,12 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     function publish(force = false) {
       if (playing && !suspended) {
         if (force || !published) {
-          GM_setValue(key5, { version: 1, at: Date.now(), playing: true });
+          GM_setValue(key6, { version: 1, at: Date.now(), playing: true });
           signal();
         }
         published = true;
       } else if (published) {
-        GM_deleteValue(key5);
+        GM_deleteValue(key6);
         published = false;
         signal();
       }
@@ -5597,7 +5650,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
       if (playing && !suspended) return true;
       const now = Date.now();
       for (const other of GM_listValues()) {
-        if (!other.startsWith(soundMediaPrefix) || other === key5) continue;
+        if (!other.startsWith(soundMediaPrefix) || other === key6) continue;
         if (activeMediaHeartbeat(GM_getValue(other), now)) return true;
       }
       return false;
@@ -5750,7 +5803,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
   var gesture = 0;
   var sequence = 0;
   var foregroundEpoch = 0;
-  var started2 = false;
+  var started3 = false;
   var previewPlaying = false;
   var foreground = () => window.top === window.self && !document.hidden && document.hasFocus();
   var readSoundPreferences = () => normalizeSoundPreferences(typeof GM_getValue === "function" ? GM_getValue(preferenceKey, null) : null);
@@ -5829,8 +5882,8 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     return `\u5DF2\u5C31\u7EEA \xB7 ${clips2?.loaded ?? 0}/${clips2?.total ?? 0} \u4E2A\u58F0\u97F3\u5DF2\u8F7D\u5165 \xB7 \u8BD5\u542C\u4E5F\u9075\u5B88\u97F3\u91CF\u3001\u5206\u7C7B\u5F00\u5173\u548C\u5A92\u4F53\u907F\u8BA9`;
   }
   function startSounds() {
-    if (started2) return;
-    started2 = true;
+    if (started3) return;
+    started3 = true;
     try {
       transport = new WebAudioTransport();
       transport.preload();
@@ -6378,13 +6431,13 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
   var viewedKey = (id) => `v:${id}`;
   var uidKey = (uid) => `u:${String(uid).trim()}`;
   var nameKey = (name) => `n:${String(name).trim().toLowerCase()}`;
-  function validKey(key5) {
-    const value2 = key5.slice(2);
-    if (key5.startsWith("v:")) return isViewedId(value2);
-    if (key5.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
-    return key5.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
+  function validKey(key6) {
+    const value2 = key6.slice(2);
+    if (key6.startsWith("v:")) return isViewedId(value2);
+    if (key6.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
+    return key6.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
   }
-  var sameKeys = (a, b) => a.size === b.size && [...a].every((key5) => b.has(key5));
+  var sameKeys = (a, b) => a.size === b.size && [...a].every((key6) => b.has(key6));
 
   // src/modules/blocker/rules.ts
   var ruleDefinitions = [
@@ -6422,31 +6475,31 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     }
     return normalized;
   }
-  function readRuleList(key5) {
-    const integer = integerRuleKeys.has(key5);
-    return normalizeStoredRules(GM_getValue(key5, []), integer);
+  function readRuleList(key6) {
+    const integer = integerRuleKeys.has(key6);
+    return normalizeStoredRules(GM_getValue(key6, []), integer);
   }
   var syncedRules = { precise_uid: { prefix: "u:", key: uidKey }, precise_name: { prefix: "n:", key: nameKey } };
-  var isSyncedRule = (key5) => Object.prototype.hasOwnProperty.call(syncedRules, key5);
+  var isSyncedRule = (key6) => Object.prototype.hasOwnProperty.call(syncedRules, key6);
   var journal;
-  var keysOf = (key5, values) => new Set(values.map(syncedRules[key5].key).filter(validKey));
-  function writeRuleList(key5, values) {
-    const integer = integerRuleKeys.has(key5);
+  var keysOf = (key6, values) => new Set(values.map(syncedRules[key6].key).filter(validKey));
+  function writeRuleList(key6, values) {
+    const integer = integerRuleKeys.has(key6);
     const normalized = normalizeStoredRules(values, integer);
-    if (isSyncedRule(key5)) journal?.(keysOf(key5, readRuleList(key5)), keysOf(key5, normalized));
-    GM_setValue(key5, normalized);
+    if (isSyncedRule(key6)) journal?.(keysOf(key6, readRuleList(key6)), keysOf(key6, normalized));
+    GM_setValue(key6, normalized);
     return normalized;
   }
   var blockedUserSyncStore = {
     keys: () => /* @__PURE__ */ new Set([...keysOf("precise_uid", readRuleList("precise_uid")), ...keysOf("precise_name", readRuleList("precise_name"))]),
     applySync(desired) {
-      const mine = new Set([...desired].filter((key5) => key5.startsWith("u:") || key5.startsWith("n:")));
+      const mine = new Set([...desired].filter((key6) => key6.startsWith("u:") || key6.startsWith("n:")));
       if (sameKeys(mine, blockedUserSyncStore.keys())) return false;
-      for (const key5 of Object.keys(syncedRules)) {
-        const { prefix: prefix4, key: toKey } = syncedRules[key5];
-        const local = readRuleList(key5).filter((value2) => !validKey(toKey(value2)));
+      for (const key6 of Object.keys(syncedRules)) {
+        const { prefix: prefix4, key: toKey } = syncedRules[key6];
+        const local = readRuleList(key6).filter((value2) => !validKey(toKey(value2)));
         const synced = [...mine].filter((entry) => entry.startsWith(prefix4)).map((entry) => entry.slice(prefix4.length));
-        GM_setValue(key5, normalizeStoredRules([...local, ...synced], integerRuleKeys.has(key5)));
+        GM_setValue(key6, normalizeStoredRules([...local, ...synced], integerRuleKeys.has(key6)));
       }
       return true;
     },
@@ -6461,31 +6514,31 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     }
     return snapshot;
   }
-  function addRuleItem(key5, value2) {
-    const validation = validateRuleInput(value2, integerRuleKeys.has(key5));
+  function addRuleItem(key6, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key6));
     if (!validation.status) {
       return validation;
     }
-    const current4 = readRuleList(key5);
+    const current4 = readRuleList(key6);
     if (current4.includes(validation.res)) {
       return { status: false, res: "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" };
     }
     current4.push(validation.res);
-    writeRuleList(key5, current4);
+    writeRuleList(key6, current4);
     return { status: true, res: "\u6DFB\u52A0\u6210\u529F", value: validation.res };
   }
-  function removeRuleItem(key5, value2) {
-    const validation = validateRuleInput(value2, integerRuleKeys.has(key5));
+  function removeRuleItem(key6, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key6));
     if (!validation.status) {
       return validation;
     }
-    const current4 = readRuleList(key5);
+    const current4 = readRuleList(key6);
     const index = current4.findIndex((item) => item === validation.res);
     if (index < 0) {
       return { status: false, res: "\u89C4\u5219\u4E0D\u5B58\u5728" };
     }
     current4.splice(index, 1);
-    writeRuleList(key5, current4);
+    writeRuleList(key6, current4);
     return { status: true, res: "\u5DF2\u89E3\u9664\u5C4F\u853D", value: validation.res };
   }
   function importRuleSnapshot(data, mode2) {
@@ -7780,7 +7833,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     viewed: [],
     video: [["user", "\u7528\u6237"], ["video", "\u89C6\u9891"], ["comment", "\u8BC4\u8BBA"], ["dynamic", "\u52A8\u6001"], ["live", "\u76F4\u64AD"], ["history", "\u5C4F\u853D\u5386\u53F2"]],
     data: [["data", "\u5BFC\u5165\u4E0E\u5BFC\u51FA"], ["sync", "PC / Android \u540C\u6B65"]],
-    settings: [["settings", "\u5916\u89C2"], ["sounds", "\u97F3\u6548"]]
+    settings: [["settings", "\u5916\u89C2"], ["interface", "\u754C\u9762"], ["sounds", "\u97F3\u6548"]]
   };
   function areaFor(section) {
     for (const area of atelierAreas) if (atelierTabs[area.id].some(([id]) => id === section)) return area.id;
@@ -8017,6 +8070,7 @@ ${concealCss}
   }
   var injected = false;
   function startCommentLocation() {
+    if (!readInterfacePrefs().ipLocation) return;
     waitForVideoHeader(() => {
       if (injected) return;
       injected = true;
@@ -8181,19 +8235,19 @@ ${concealCss}
       return false;
     }
   }
-  function readKey(key5) {
-    if (typeof key5 !== "string") throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
-    const parts2 = key5.split(":");
+  function readKey(key6) {
+    if (typeof key6 !== "string") throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
+    const parts2 = key6.split(":");
     if (parts2.length === 2 && parts2[0] === "follow" && validUid(parts2[1])) return { kind: "follow", uid: parts2[1] };
     if (parts2.length === 2 && parts2[0] === "group" && validUuid(parts2[1])) return { kind: "group", group: parts2[1] };
     if (parts2.length === 2 && parts2[0] === "group-icon" && validUuid(parts2[1])) return { kind: "icon", group: parts2[1] };
     if (parts2.length === 4 && parts2[0] === "member" && validUid(parts2[1]) && validUuid(parts2[2]) && validUuid(parts2[3]))
       return { kind: "member", uid: parts2[1], generation: parts2[2], group: parts2[3] };
-    if (key5 === "group-order") return { kind: "order" };
+    if (key6 === "group-order") return { kind: "order" };
     throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
   }
-  function readValue(key5, value2) {
-    switch (key5.kind) {
+  function readValue(key6, value2) {
+    switch (key6.kind) {
       case "follow":
         if (value2 === null) return null;
         if (fields(value2, ["name", "face", "addedAt"]) && typeof value2.name === "string" && validFace(value2.face) && typeof value2.addedAt === "number" && Number.isSafeInteger(value2.addedAt) && value2.addedAt >= 0)
@@ -8217,8 +8271,8 @@ ${concealCss}
   function readOperation(input) {
     if (!fields(input, ["id", "key", "value", "parents"]) || !validUuid(input.id) || !Array.isArray(input.parents) || !input.parents.every(validUuid) || new Set(input.parents).size !== input.parents.length || input.parents.includes(input.id))
       throw new Error("\u672C\u5730\u5173\u6CE8\u64CD\u4F5C\u635F\u574F");
-    const key5 = readKey(input.key);
-    return { id: input.id, key: input.key, value: readValue(key5, input.value), parents: [...input.parents].sort(lexical) };
+    const key6 = readKey(input.key);
+    return { id: input.id, key: input.key, value: readValue(key6, input.value), parents: [...input.parents].sort(lexical) };
   }
   function parseLocalFollowBatch(input) {
     if (!fields(input, ["schema", "version", "operations"]) || input.schema !== "bili-atelier-local-following" || input.version !== 1 && input.version !== 2 || !Array.isArray(input.operations) || input.operations.length > 1e4)
@@ -8249,14 +8303,14 @@ ${concealCss}
         if (!children.has(parentId)) children.set(parentId, []);
         children.get(parentId).push(op.id);
       }
-      const key5 = readKey(op.key);
-      if (key5.kind === "member") {
-        const generation = map.get(key5.generation);
-        if (!generation || generation.key !== `follow:${key5.uid}` || generation.value === null || !groupKeys.has(`group:${key5.group}`))
+      const key6 = readKey(op.key);
+      if (key6.kind === "member") {
+        const generation = map.get(key6.generation);
+        if (!generation || generation.key !== `follow:${key6.uid}` || generation.value === null || !groupKeys.has(`group:${key6.group}`))
           throw new Error("\u672C\u5730\u5173\u6CE8\u6210\u5458\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u8D26\u53F7\u4EE3\u6216\u5206\u7EC4");
       }
-      if (key5.kind === "icon" && !groupKeys.has(`group:${key5.group}`)) throw new Error("\u672C\u5730\u5173\u6CE8\u56FE\u6807\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
-      if (key5.kind === "order" && op.value.some((id) => !groupKeys.has(`group:${id}`)))
+      if (key6.kind === "icon" && !groupKeys.has(`group:${key6.group}`)) throw new Error("\u672C\u5730\u5173\u6CE8\u56FE\u6807\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
+      if (key6.kind === "order" && op.value.some((id) => !groupKeys.has(`group:${id}`)))
         throw new Error("\u672C\u5730\u5173\u6CE8\u6392\u5E8F\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
     }
     const queue = [...degrees].filter(([, n]) => n === 0).map(([id]) => id);
@@ -8284,10 +8338,10 @@ ${concealCss}
   }
   function materializeLocalFollow(operations) {
     const heads = localFollowFrontier(operations), groupMap = /* @__PURE__ */ new Map();
-    for (const [key5, ops] of heads) if (key5.startsWith("group:")) {
+    for (const [key6, ops] of heads) if (key6.startsWith("group:")) {
       const value2 = winner(ops).value;
       if (value2 === null) continue;
-      const id = key5.slice(6), icon2 = heads.get(`group-icon:${id}`);
+      const id = key6.slice(6), icon2 = heads.get(`group-icon:${id}`);
       groupMap.set(id, icon2 ? { id, name: value2, icon: winner(icon2).value } : { id, name: value2 });
     }
     const orderHeads = heads.get("group-order");
@@ -8296,10 +8350,10 @@ ${concealCss}
     order.push(...[...groupMap.keys()].filter((id) => !ordered.has(id)).sort(lexical));
     const groups = order.map((id) => groupMap.get(id));
     const accounts = [];
-    for (const [key5, ops] of heads) if (key5.startsWith("follow:")) {
+    for (const [key6, ops] of heads) if (key6.startsWith("follow:")) {
       const chosen = winner(ops);
       if (chosen.value === null) continue;
-      const uid = key5.slice(7), generations = ops.map((o) => o.id);
+      const uid = key6.slice(7), generations = ops.map((o) => o.id);
       const groupIds = order.filter((group) => {
         const memberships = generations.flatMap((generation) => heads.get(`member:${uid}:${generation}:${group}`) || []);
         return memberships.some((o) => o.value === true) && !memberships.some((o) => o.value === false);
@@ -8315,7 +8369,7 @@ ${concealCss}
   var localFollowChangedEvent = "atelier-local-following-changed";
   var listeners = /* @__PURE__ */ new Set();
   var uuid = () => crypto.randomUUID();
-  var recordKeys = () => GM_listValues().filter((key5) => key5.startsWith(prefix + "record_") || key5.startsWith(prefix + "pull_")).sort();
+  var recordKeys = () => GM_listValues().filter((key6) => key6.startsWith(prefix + "record_") || key6.startsWith(prefix + "pull_")).sort();
   function localFollowRecords(keys = recordKeys()) {
     const result = /* @__PURE__ */ new Map();
     const add = (id, raw) => {
@@ -8327,10 +8381,10 @@ ${concealCss}
       }
       result.set(id, batch2);
     };
-    for (const key5 of keys) {
-      if (key5.startsWith(prefix + "record_")) add(key5.slice((prefix + "record_").length), GM_getValue(key5));
-      else if (key5.startsWith(prefix + "pull_")) {
-        const value2 = GM_getValue(key5);
+    for (const key6 of keys) {
+      if (key6.startsWith(prefix + "record_")) add(key6.slice((prefix + "record_").length), GM_getValue(key6));
+      else if (key6.startsWith(prefix + "pull_")) {
+        const value2 = GM_getValue(key6);
         if (!value2 || typeof value2 !== "object" || Array.isArray(value2)) throw new Error("\u672C\u5730\u5173\u6CE8\u62C9\u53D6\u65E5\u5FD7\u635F\u574F");
         for (const [id, raw] of Object.entries(value2)) add(id, raw);
       }
@@ -8367,10 +8421,10 @@ ${concealCss}
   function pulse() {
     GM_setValue(prefix + "pulse", uuid());
   }
-  var started3 = false;
+  var started4 = false;
   function startLocalFollowingStore() {
-    if (started3) return;
-    started3 = true;
+    if (started4) return;
+    started4 = true;
     if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(prefix + "pulse", (_, __, ___, remote) => {
       if (remote) notify(false);
     });
@@ -8415,10 +8469,10 @@ ${concealCss}
     if (!changes2.length) return;
     const heads = localFollowFrontier(known2);
     const operations = [];
-    for (const [key5, value2] of changes2) {
-      const operation = { id: uuid(), key: key5, value: value2, parents: (heads.get(key5) ?? []).map((head) => head.id).sort() };
+    for (const [key6, value2] of changes2) {
+      const operation = { id: uuid(), key: key6, value: value2, parents: (heads.get(key6) ?? []).map((head) => head.id).sort() };
       operations.push(operation);
-      heads.set(key5, [operation]);
+      heads.set(key6, [operation]);
     }
     mergeLocalFollowOperations(known2, operations);
     if (operations.length <= 1e4) GM_setValue(prefix + "record_" + uuid(), localFollowBatch(operations));
@@ -8607,10 +8661,10 @@ ${concealCss}
     return [a0, b0, c0, d0].flatMap((n) => [0, 8, 16, 24].map((shift) => (n >>> shift & 255).toString(16).padStart(2, "0"))).join("");
   }
   var mixin = [46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13];
-  function localFollowWbiQuery(params, key5, now = Date.now()) {
+  function localFollowWbiQuery(params, key6, now = Date.now()) {
     const values = { ...params, wts: String(Math.floor(now / 1e3)) };
     const query = Object.keys(values).sort().map((name) => `${encodeURIComponent(name)}=${encodeURIComponent(values[name].replace(/[!'()*]/g, ""))}`).join("&");
-    return `${query}&w_rid=${localFollowMd5(query + key5)}`;
+    return `${query}&w_rid=${localFollowMd5(query + key6)}`;
   }
   function successful(raw) {
     if (!raw || raw.code !== 0 || !raw.data || typeof raw.data !== "object") {
@@ -8663,9 +8717,9 @@ ${concealCss}
     }
     async dynamic(uid, signal, offset = "") {
       if (!normalizeLocalUid(uid)) throw new Error("\u65E0\u6548\u8D26\u53F7");
-      const key5 = await this.signingKey(signal);
+      const key6 = await this.signingKey(signal);
       if (signal.aborted) throw new DOMException("\u68C0\u67E5\u5DF2\u53D6\u6D88", "AbortError");
-      const query = localFollowWbiQuery({ host_mid: uid, offset, timezone_offset: String((/* @__PURE__ */ new Date()).getTimezoneOffset()), platform: "web", features: localFollowFeatures, web_location: "333.1387" }, key5);
+      const query = localFollowWbiQuery({ host_mid: uid, offset, timezone_offset: String((/* @__PURE__ */ new Date()).getTimezoneOffset()), platform: "web", features: localFollowFeatures, web_location: "333.1387" }, key6);
       const data = successful(await this.request(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?${query}`, signal));
       if (!Array.isArray(data.items)) throw new BiliReadError("\u52A8\u6001\u9875\u683C\u5F0F\u65E0\u6548\uFF0C\u4FDD\u7559\u5DF2\u6709\u8BB0\u5F55");
       return data;
@@ -9061,7 +9115,7 @@ ${concealCss}
     else options.batch.addEventListener("abort", stopAll, { once: true });
     const worker = async () => {
       while (!stopped && queue.length) {
-        const key5 = queue.shift(), controller = new AbortController();
+        const key6 = queue.shift(), controller = new AbortController();
         active2.add(controller);
         let timedOut = false;
         const timer2 = setTimeout(() => {
@@ -9070,12 +9124,12 @@ ${concealCss}
         }, timeout);
         const aborted = new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError")), { once: true }));
         try {
-          const value2 = await Promise.race([options.read(key5, controller.signal), aborted]);
-          if (!stopped && !controller.signal.aborted) options.onValue(key5, value2);
+          const value2 = await Promise.race([options.read(key6, controller.signal), aborted]);
+          if (!stopped && !controller.signal.aborted) options.onValue(key6, value2);
         } catch (error) {
           if (timedOut && !stopped) {
-            if (options.onError(key5, new LocalReadTimeout(timeout))) stopAll();
-          } else if (!stopped && !controller.signal.aborted && options.onError(key5, error)) stopAll();
+            if (options.onError(key6, new LocalReadTimeout(timeout))) stopAll();
+          } else if (!stopped && !controller.signal.aborted && options.onError(key6, error)) stopAll();
         } finally {
           clearTimeout(timer2);
           active2.delete(controller);
@@ -9252,9 +9306,9 @@ ${concealCss}
         const local = Object.fromEntries(Object.entries(entry.local ?? {}).filter(([uid, generation]) => live.get(uid) === generation));
         return entry.online || Object.keys(local).length ? [{ ...entry, local }] : [];
       });
-      for (const key5 of Object.keys(this.cache.cursors)) {
-        const [kind, uid, generation] = key5.split(":");
-        if (kind === "local" && live.get(uid) !== generation) delete this.cache.cursors[key5];
+      for (const key6 of Object.keys(this.cache.cursors)) {
+        const [kind, uid, generation] = key6.split(":");
+        if (kind === "local" && live.get(uid) !== generation) delete this.cache.cursors[key6];
       }
     }
     stale(source) {
@@ -9350,7 +9404,7 @@ ${concealCss}
         first2 ||= result.first;
         read3 += result.read;
         total += result.total;
-        for (const key5 of result.failedKeys) failedKeys.add(key5);
+        for (const key6 of result.failedKeys) failedKeys.add(key6);
         return result;
       };
       if (options.first) {
@@ -9396,7 +9450,7 @@ ${concealCss}
           batch: signal,
           limit: 1,
           timeout: this.deps.timeout,
-          read: (key5, readSignal) => this.deps.api.dynamic(key5, readSignal, fromTop || !stream2 ? "" : stream2.offset),
+          read: (key6, readSignal) => this.deps.api.dynamic(key6, readSignal, fromTop || !stream2 ? "" : stream2.offset),
           onValue: (_, value2) => {
             data = value2;
           },
@@ -9471,8 +9525,8 @@ ${concealCss}
       if (entries.length > localFeedCacheLimit) {
         const bound = time(entries[localFeedCacheLimit - 1].raw);
         entries = entries.filter((entry) => time(entry.raw) >= bound && time(entry.raw) > 0);
-        cursors2 = Object.fromEntries(Object.entries(cursors2).map(([key5, cursor]) => [
-          key5,
+        cursors2 = Object.fromEntries(Object.entries(cursors2).map(([key6, cursor]) => [
+          key6,
           cursor.frontier !== void 0 && cursor.frontier < bound ? { offset: "", hasMore: true, fetchedAt: cursor.fetchedAt } : cursor
         ]));
       }
@@ -9655,7 +9709,7 @@ ${concealCss}
     if (typeof GM_listValues !== "function") {
       return [];
     }
-    return GM_listValues().filter((key5) => String(key5).startsWith("BiliViewed_"));
+    return GM_listValues().filter((key6) => String(key6).startsWith("BiliViewed_"));
   }
   function readViewedGroup(groupId, fallback2 = null) {
     return GM_getValue(viewedGroupStorageKey(groupId), fallback2);
@@ -9667,13 +9721,13 @@ ${concealCss}
     GM_setValue(viewedGroupStorageKey(groupId), values);
   }
   function putGroups(groups, mode2) {
-    if (mode2 === "overwrite") for (const key5 of listViewedGroupKeys()) GM_deleteValue(key5);
+    if (mode2 === "overwrite") for (const key6 of listViewedGroupKeys()) GM_deleteValue(key6);
     for (const [groupId, values] of Object.entries(groups)) GM_setValue(viewedGroupStorageKey(groupId), values);
   }
   function readViewedStorage() {
     const groups = {};
-    for (const key5 of listViewedGroupKeys()) {
-      const groupId = String(key5).slice("BiliViewed_".length);
+    for (const key6 of listViewedGroupKeys()) {
+      const groupId = String(key6).slice("BiliViewed_".length);
       groups[groupId] = flattenViewedGroups({ [groupId]: readViewedGroup(groupId, []) });
     }
     return { items: flattenViewedGroups(groups), groups };
@@ -9689,10 +9743,10 @@ ${concealCss}
   var viewedSyncStore = {
     keys: () => keysOf2(readViewedStorage().items),
     applySync(desired) {
-      const wanted = new Set([...desired].filter((key5) => key5.startsWith("v:")));
+      const wanted = new Set([...desired].filter((key6) => key6.startsWith("v:")));
       if (sameKeys(wanted, viewedSyncStore.keys())) return false;
       const unsyncable = readViewedStorage().items.filter((id) => !isViewedId(id));
-      putGroups(groupViewedItems([...unsyncable, ...[...wanted].map((key5) => key5.slice(2))]), "overwrite");
+      putGroups(groupViewedItems([...unsyncable, ...[...wanted].map((key6) => key6.slice(2))]), "overwrite");
       return true;
     },
     setJournal(next) {
@@ -9700,15 +9754,15 @@ ${concealCss}
     }
   };
   function isLegacyViewedExport(value2) {
-    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key5) => key5.startsWith("BiliViewed_"));
+    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key6) => key6.startsWith("BiliViewed_"));
   }
   function normalizeLegacyViewedExport(value2) {
     const groups = {};
-    for (const [key5, items] of Object.entries(value2)) {
-      if (!key5.startsWith("BiliViewed_") || !Array.isArray(items)) {
+    for (const [key6, items] of Object.entries(value2)) {
+      if (!key6.startsWith("BiliViewed_") || !Array.isArray(items)) {
         continue;
       }
-      const groupId = key5.slice("BiliViewed_".length);
+      const groupId = key6.slice("BiliViewed_".length);
       groups[groupId] = flattenViewedGroups({ [groupId]: items });
     }
     return { items: flattenViewedGroups(groups), groups };
@@ -9906,7 +9960,7 @@ ${concealCss}
       closeMenu();
       stop();
     };
-    const key5 = (event) => {
+    const key6 = (event) => {
       if (event.key === "Escape") {
         event.preventDefault();
         closeMenu();
@@ -9922,13 +9976,13 @@ ${concealCss}
       document.removeEventListener("pointerdown", close2, true);
       window.removeEventListener("scroll", close2, true);
       window.removeEventListener("resize", close2);
-      document.removeEventListener("keydown", key5, true);
+      document.removeEventListener("keydown", key6, true);
     };
     window.setTimeout(() => {
       document.addEventListener("pointerdown", close2, true);
       window.addEventListener("scroll", close2, true);
       window.addEventListener("resize", close2);
-      document.addEventListener("keydown", key5, true);
+      document.addEventListener("keydown", key6, true);
     }, 0);
     buttons2.find((button6) => !button6.disabled)?.focus({ preventScroll: true });
   }
@@ -10199,14 +10253,14 @@ ${concealCss}
 
   // src/modules/local-following/picture-clicks.ts
   var pictureLinks = ".acm-pics>a.acm-pic[href],.adc-pics>a.adc-pic[href]";
-  var started4 = false;
+  var started5 = false;
   function enablePictureWindow() {
-    if (started4 || typeof document === "undefined") return;
-    started4 = true;
+    if (started5 || typeof document === "undefined") return;
+    started5 = true;
     document.addEventListener("click", (event) => {
       if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.shiftKey || event.metaKey || event.altKey) return;
       const anchor = event.target instanceof Element ? event.target.closest(pictureLinks) : null, grid = anchor?.parentElement;
-      if (!anchor || !grid) return;
+      if (!anchor || !grid || !readInterfacePrefs().pictureWindow) return;
       event.preventDefault();
       const anchors = [...grid.querySelectorAll(":scope>a[href]")], title = grid.dataset.pictureTitle || "\u56FE\u7247";
       showImages(anchors.map((link3) => remoteImage(title, link3.href)), anchors.indexOf(anchor));
@@ -10426,18 +10480,18 @@ ${concealCss}
     for (const grid of content.querySelectorAll(".adc-pics:not([data-picture-title])")) grid.dataset.pictureTitle = `\u52A8\u6001\u56FE\u7247 - ${author2.name || uid || "\u672A\u77E5"}`;
     if (!nested) {
       const stat = raw?.modules?.module_stat ?? {}, actions = node("div", "adc-actions");
-      for (const [label, key5] of [["\u8F6C\u53D1", "forward"], ["\u8BC4\u8BBA", "comment"], ["\u70B9\u8D5E", "like"]]) {
-        const button6 = actions.appendChild(node("button", `adc-button atelier-control adc-${key5}`, label));
+      for (const [label, key6] of [["\u8F6C\u53D1", "forward"], ["\u8BC4\u8BBA", "comment"], ["\u70B9\u8D5E", "like"]]) {
+        const button6 = actions.appendChild(node("button", `adc-button atelier-control adc-${key6}`, label));
         button6.type = "button";
-        button6.dataset.action = key5;
+        button6.dataset.action = key6;
         button6.dataset.label = label;
-        button6.dataset.count = String(Math.max(0, Number(stat[key5]?.count) || 0));
-        const value2 = count(stat[key5]?.count);
+        button6.dataset.count = String(Math.max(0, Number(stat[key6]?.count) || 0));
+        const value2 = count(stat[key6]?.count);
         if (value2) button6.textContent = `${label} ${value2}`;
-        if (key5 === "like") button6.setAttribute("aria-pressed", String(stat.like?.status === true));
-        if (stat[key5]?.disabled || stat[key5]?.forbidden) {
+        if (key6 === "like") button6.setAttribute("aria-pressed", String(stat.like?.status === true));
+        if (stat[key6]?.disabled || stat[key6]?.forbidden) {
           button6.disabled = true;
-          button6.title = key5 === "comment" ? "\u8FD9\u6761\u52A8\u6001\u7684\u8BC4\u8BBA\u533A\u5DF2\u5173\u95ED" : key5 === "like" ? "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u70B9\u8D5E" : "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u8F6C\u53D1";
+          button6.title = key6 === "comment" ? "\u8FD9\u6761\u52A8\u6001\u7684\u8BC4\u8BBA\u533A\u5DF2\u5173\u95ED" : key6 === "like" ? "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u70B9\u8D5E" : "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u8F6C\u53D1";
         }
       }
       const last = node("div", "adc-last");
@@ -10760,15 +10814,15 @@ ${root} .btnView{z-index:3}
     }
     return card4;
   }
-  var started5 = false;
+  var started6 = false;
   var card2 = null;
   var owner = null;
   var pending2 = null;
   var showTimer = 0;
   var hideTimer = 0;
   function start() {
-    if (started5) return;
-    started5 = true;
+    if (started6) return;
+    started6 = true;
     const anchorOf = (target) => target instanceof Element ? target.closest("[data-user-card]") : null;
     const inside2 = (target) => !!card2 && target instanceof Node && card2.contains(target);
     document.addEventListener("mouseover", (event) => {
@@ -10777,7 +10831,7 @@ ${root} .btnView{z-index:3}
         return;
       }
       const anchor = anchorOf(event.target);
-      if (!anchor || !hostOf(anchor)) return;
+      if (!anchor || !hostOf(anchor) || !readInterfacePrefs().userCard) return;
       if (anchor === owner) {
         clearTimeout(hideTimer);
         return;
@@ -10810,6 +10864,9 @@ ${root} .btnView{z-index:3}
     document.addEventListener("keydown", (event) => {
       if (card2 && event.key === "Escape") close();
     }, true);
+    window.addEventListener(interfaceChanged, () => {
+      if (!readInterfacePrefs().userCard) close();
+    });
   }
   function hideLater() {
     if (pending2 || card2?.querySelector("[data-menu-open]")) {
@@ -11313,7 +11370,8 @@ ${root} .btnView{z-index:3}
       main.querySelector(":scope > .acm-text > .acm-pics")?.setAttribute("data-picture-title", `\u8BC4\u8BBA\u56FE\u7247 - ${reply?.member?.uname || mid || "\u672A\u77E5\u7528\u6237"}`);
       const meta = main.appendChild(node2("div", "acm-meta"));
       const when2 = formatTimestamp(reply?.ctime) || String(reply?.reply_control?.time_desc ?? "").replace(/发布$/, "");
-      meta.append(node2("span", "acm-when", [when2, reply?.reply_control?.location].filter(Boolean).join(" \xB7 ")));
+      const stamp = meta.appendChild(node2("span", "acm-when", when2)), where = String(reply?.reply_control?.location ?? "");
+      if (where) stamp.append(node2("span", "acm-where", (when2 ? " \xB7 " : "") + where));
       const actions = meta.appendChild(node2("span", "acm-actions"));
       let likes = Math.max(0, Number(reply?.like) || 0), action = Number(reply?.action) || 0;
       const like = button("", "acm-like", () => void toggle(1)), hate = button("\u8E29", "acm-hate", () => void toggle(2));
@@ -12173,10 +12231,10 @@ ${on} aside.right>section.sticky{top:calc(${headerBottomCss} + 8px)!important}
   var notifyPageLayoutChanged = () => window.dispatchEvent(new Event(pageLayoutChanged));
 
   // src/ui/screen-records.ts
-  function screenRecords(key5, legacyKey, parse3) {
+  function screenRecords(key6, legacyKey, parse3) {
     const stored = () => typeof GM_getValue === "function" && typeof GM_setValue === "function";
     const all = () => {
-      const value2 = stored() ? GM_getValue(key5, {}) : {};
+      const value2 = stored() ? GM_getValue(key6, {}) : {};
       return value2 && typeof value2 === "object" ? { ...value2 } : {};
     };
     let screen = ratioKey(screenRatio());
@@ -12188,14 +12246,14 @@ ${on} aside.right>section.sticky{top:calc(${headerBottomCss} + 8px)!important}
         const legacy = stored() ? GM_getValue(legacyKey, void 0) : void 0;
         if (legacy !== void 0) {
           if (!(screen in records2)) records2[screen] = legacy;
-          GM_setValue(key5, records2);
+          GM_setValue(key6, records2);
           if (typeof GM_deleteValue === "function") GM_deleteValue(legacyKey);
         }
         return parse3(records2[screen]);
       },
       /** Only this screen's record: another tab on another screen keeps its own. */
       save(value2) {
-        if (stored()) GM_setValue(key5, { ...all(), [screen]: value2 });
+        if (stored()) GM_setValue(key6, { ...all(), [screen]: value2 });
       }
     };
   }
@@ -12331,7 +12389,7 @@ html[${attribute}=drag] *{user-select:none!important}
         window.removeEventListener("pointerup", up, true);
         window.removeEventListener("pointercancel", cancel, true);
         window.removeEventListener("blur", cancel);
-        window.removeEventListener("keydown", key5, true);
+        window.removeEventListener("keydown", key6, true);
         cancelAnimationFrame(moveFrame);
         sheet.remove();
         hide();
@@ -12346,7 +12404,7 @@ html[${attribute}=drag] *{user-select:none!important}
       };
       const up = () => finish(true), cancel = () => finish(false);
       cancelDrag = cancel;
-      const key5 = (next) => {
+      const key6 = (next) => {
         if (next.key === "Escape") {
           next.preventDefault();
           next.stopImmediatePropagation();
@@ -12357,7 +12415,7 @@ html[${attribute}=drag] *{user-select:none!important}
       window.addEventListener("pointerup", up, true);
       window.addEventListener("pointercancel", cancel, true);
       window.addEventListener("blur", cancel);
-      window.addEventListener("keydown", key5, true);
+      window.addEventListener("keydown", key6, true);
     }, true);
     window.addEventListener("dblclick", (event) => {
       if (!hit(event.clientX, event.clientY)) return;
@@ -12657,9 +12715,9 @@ html[${attribute}=drag] *{user-select:none!important}
     node4.draggable = false;
     return node4;
   };
-  var titled = (label, key5) => {
+  var titled = (label, key6) => {
     const span = el2("span");
-    span.append(label + "(", el2("u", "", key5), ")");
+    span.append(label + "(", el2("u", "", key6), ")");
     return span;
   };
   var newTab = (href) => window.open(href, "_blank", "noopener");
@@ -12702,17 +12760,17 @@ html[${attribute}=drag] *{user-select:none!important}
       else openFrom(anchor, items, align);
     };
     const openers = {};
-    const menu = (id, label2, key5, items) => {
+    const menu = (id, label2, key6, items) => {
       const button7 = menus.appendChild(el2("button", "lh-menu-title"));
       button7.type = "button";
-      button7.append(titled(label2, key5));
+      button7.append(titled(label2, key6));
       button7.setAttribute("data-menu-anchor", "");
       button7.setAttribute("aria-haspopup", "menu");
       button7.addEventListener("click", () => toggleFrom(button7, items));
       button7.addEventListener("pointerenter", () => {
         if (chain.isOpen && active2 && active2 !== button7 && active2.classList.contains("lh-menu-title")) openFrom(button7, items);
       });
-      openers[key5.toLowerCase()] = () => openFrom(button7, items, "left", true);
+      openers[key6.toLowerCase()] = () => openFrom(button7, items, "left", true);
       return button7;
     };
     const brand = bar.appendChild(el2("div", "lh-brand"));
@@ -13051,16 +13109,16 @@ html[${attribute}=drag] *{user-select:none!important}
     paintBrand();
     header.addEventListener("keydown", (event) => {
       if (!event.altKey || event.ctrlKey || event.metaKey) return;
-      const key5 = event.key.toLowerCase();
-      if (key5 === "d") {
+      const key6 = event.key.toLowerCase();
+      if (key6 === "d") {
         event.preventDefault();
         field.focus();
         field.select();
         return;
       }
-      if (openers[key5]) {
+      if (openers[key6]) {
         event.preventDefault();
-        openers[key5]();
+        openers[key6]();
       }
     });
     let lastCounts = 0;
@@ -13258,13 +13316,14 @@ a.lh-item{color:var(--xp-ink)}
   }
 
   // src/modules/video-luna/prefs.ts
-  var key3 = "BiliAtelier_VideoLuna";
+  var videoLunaKey = "BiliAtelier_VideoLuna";
+  var key4 = videoLunaKey;
   function videoLunaEnabled() {
-    const stored = typeof GM_getValue === "function" ? GM_getValue(key3, null) : null;
+    const stored = typeof GM_getValue === "function" ? GM_getValue(key4, null) : null;
     return stored?.enabled !== false;
   }
   function setVideoLunaEnabled(enabled) {
-    if (typeof GM_setValue === "function") GM_setValue(key3, { enabled });
+    if (typeof GM_setValue === "function") GM_setValue(key4, { enabled });
   }
   var coverKey = "BiliAtelier_VideoCover";
   var videoCoverChanged = "atelier-video-cover-changed";
@@ -14154,6 +14213,21 @@ ${on6} .bili-emoji__list__item:hover{background:color-mix(in srgb,var(--xp-highl
 .alf-publish-fold+.xp-caption-button{margin-left:0}
 `;
 
+  // src/modules/local-following/feed-prefs.ts
+  function localFeedIdentity() {
+    const mid = document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1];
+    return mid ? `account:${mid}` : "guest";
+  }
+  var localFeedPrefsKey = (identity = localFeedIdentity()) => `BiliAtelier_LocalFeedPrefs_${identity}`;
+  function localFeedLuna() {
+    return typeof GM_getValue === "function" && !parseLocalFeedPrefs(GM_getValue(localFeedPrefsKey(), null)).native;
+  }
+  function setLocalFeedLuna(luna) {
+    if (typeof GM_setValue !== "function") return;
+    const key6 = localFeedPrefsKey();
+    GM_setValue(key6, { ...parseLocalFeedPrefs(GM_getValue(key6, null)), native: !luna });
+  }
+
   // src/ui/window-drag.ts
   function enableWindowDrag(panel, caption2, signal) {
     const positions = {};
@@ -14268,7 +14342,7 @@ ${on6} .bili-emoji__list__item:hover{background:color-mix(in srgb,var(--xp-highl
       }
     }
     const cell = (row, column) => table.querySelector(`[data-row="${row}"][data-column="${column}"]`);
-    const byKey = (key5) => [...table.querySelectorAll("[data-key]")].find((node4) => node4.dataset.key === key5);
+    const byKey = (key6) => [...table.querySelectorAll("[data-key]")].find((node4) => node4.dataset.key === key6);
     const header = (group) => byKey(`group:${group}`);
     function focusCell(target) {
       if (!target) return;
@@ -14652,6 +14726,12 @@ ${w2} .xp-status{flex:none}
     });
   }
   var pbpColours = { played: "#00ff00", ahead: "#008000" };
+  var pbpShownChanged = "atelier-pbp-shown-changed";
+  var pbpShown = () => readFolded("high-energy", true);
+  function setPbpShown(shown2) {
+    writeFolded("high-energy", shown2);
+    window.dispatchEvent(new Event(pbpShownChanged));
+  }
   function createPbpDots(context, track = () => null) {
     const element2 = el("div", "vl-pbp");
     element2.hidden = true;
@@ -14663,20 +14743,25 @@ ${w2} .xp-status{flex:none}
     const box2 = toggle.appendChild(el("input", "xp-check"));
     box2.type = "checkbox";
     toggle.append(el("span", "", "\u9AD8\u80FD\u8FDB\u5EA6\u6761"));
-    let shown2 = readFolded("high-energy", true);
+    let shown2 = pbpShown();
     box2.checked = shown2;
     box2.addEventListener("change", () => {
-      shown2 = box2.checked;
-      writeFolded("high-energy", shown2);
       sound("click");
+      setPbpShown(box2.checked);
+    });
+    window.addEventListener(pbpShownChanged, () => {
+      if (pbpShown() === shown2) return;
+      shown2 = pbpShown();
+      box2.checked = shown2;
       paint2();
     });
+    relayRemoteChanges(foldKey, pbpShownChanged);
     for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup", "click", "dblclick", "contextmenu", "wheel"]) element2.addEventListener(type, (event) => event.stopPropagation());
     canvas.addEventListener("click", (event) => {
       const rect = canvas.getBoundingClientRect();
       if (rect.width && duration > 0) context.bridge.seek(Math.min(duration, Math.max(0, (event.clientX - rect.left) / rect.width * duration)));
     });
-    let data = null, key5 = "", duration = 0, played = 0, drawn = "";
+    let data = null, key6 = "", duration = 0, played = 0, drawn = "";
     const reads2 = /* @__PURE__ */ new Map();
     function paint2() {
       toggle.hidden = !data;
@@ -14732,8 +14817,8 @@ ${w2} .xp-status{flex:none}
       /** A new video (or part) reads its data once. */
       render(state2) {
         const aid = Number(state2?.aid) || 0, cid = Number(state2?.cid) || 0, bvid = String(state2?.bvid ?? ""), next = cid ? `${aid}:${cid}` : "";
-        if (next === key5) return;
-        key5 = next;
+        if (next === key6) return;
+        key6 = next;
         data = null;
         paint2();
         if (!next) return;
@@ -14746,7 +14831,7 @@ ${w2} .xp-status{flex:none}
           reads2.set(next, read3);
         }
         void read3.then((result) => {
-          if (key5 === next) {
+          if (key6 === next) {
             data = result;
             paint2();
           }
@@ -14761,7 +14846,7 @@ ${w2} .xp-status{flex:none}
     };
   }
   var pbpDotsCss = (on8, full2) => `${on8} .bpx-player-pbp{display:none!important}
-.vl-pbp{position:absolute;left:0;width:100%;bottom:0;height:28px;z-index:71;pointer-events:none}
+.vl-pbp{position:absolute;left:0;width:100%;bottom:0;height:28px;z-index:71;pointer-events:none;opacity:var(--atelier-pbp-opacity,1)}
 .vl-pbp[hidden],html[data-atelier-screen=mini] .vl-pbp{display:none}
 .vl-pbp>canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:auto;cursor:pointer;image-rendering:pixelated}
 ${full2} .bpx-player-container:not([data-ctrl-hidden=true]) .vl-pbp,${full2} .bpx-player-video-area:has(>.vl-wmp-fs[data-pinned])>.vl-pbp{bottom:91px}
@@ -15077,7 +15162,7 @@ ${on7} .main-container .plp-r.sticky{top:var(--vl-hold-top,var(--vl-stick,min(va
 .vl-up-badge{display:inline-block;margin-right:4px;padding:0 2px;border:1px solid currentColor;line-height:1}
 .vl-tile-up-link{color:inherit!important;text-decoration:none!important}.vl-tile-up-link:hover{color:var(--xp-task-link)!important;text-decoration:underline!important}
 .vl-tile[data-viewed] .vl-tile-link,.vl-tile[data-viewed] .vl-tile-link :is(.vl-tile-up,.vl-tile-stats,.vl-tile-date){color:var(--xp-graytext)!important}
-.vl-tile[data-viewed] .vl-cover img{opacity:.45}
+.vl-tile[data-viewed] .vl-cover img{opacity:var(--atelier-viewed-opacity,.45)}
 .vl-tile[data-blocked]{outline:1px dashed #a33024;outline-offset:-1px}
 .vl-tile>.vl-viewed{position:absolute;top:9px;left:calc(5px + 140px - 4px);transform:translateX(-100%);min-width:0!important;min-height:21px!important;padding:1px 6px!important;z-index:1}
 .vl-expand{display:flex;justify-content:center;padding:6px 0 10px}
@@ -15433,13 +15518,13 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
 .atelier-feed-footer .atelier-control{min-width:96px}
 #atelier-feed .adc-empty{padding:24px;text-align:center;color:var(--xp-muted)}
 `;
-  var started6 = false;
+  var started7 = false;
   function startLocalFeed() {
-    if (started6 || location.hostname !== "t.bilibili.com") return;
-    started6 = true;
+    if (started7 || location.hostname !== "t.bilibili.com") return;
+    started7 = true;
     const mid = document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1];
-    const loggedIn = !!mid, identity = mid ? `account:${mid}` : "guest";
-    const prefsKey = `BiliAtelier_LocalFeedPrefs_${identity}`, cacheKey = `BiliAtelier_LocalFeed_${identity}`, followingsKey = `BiliAtelier_Followings_${identity}`;
+    const loggedIn = !!mid, identity = localFeedIdentity();
+    const prefsKey = localFeedPrefsKey(identity), cacheKey = `BiliAtelier_LocalFeed_${identity}`, followingsKey = `BiliAtelier_Followings_${identity}`;
     let prefs = parseLocalFeedPrefs(GM_getValue(prefsKey, null));
     if (GM_getValue("BiliAtelier_LocalFeedIdentity", identity) !== identity && prefs.group) {
       prefs = { ...prefs, group: "" };
@@ -16390,10 +16475,10 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       return send.apply(this, args);
     };
   }
-  var started7 = false;
+  var started8 = false;
   function startLocalFollowing() {
-    if (started7) return;
-    started7 = true;
+    if (started8) return;
+    started8 = true;
     startLocalFollowingStore();
     const channel2 = "atelier-local-dynamics-" + crypto.randomUUID();
     window.addEventListener("message", (event) => {
@@ -16661,11 +16746,11 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   function splitLegacyBlockerExport(value2) {
     const rules = {};
     const legacySettings = {};
-    for (const [key5, data] of Object.entries(value2)) {
-      if (ruleKeySet.has(key5) && Array.isArray(data)) {
-        rules[key5] = data;
-      } else if (!key5.startsWith("BiliViewed_")) {
-        legacySettings[key5] = data;
+    for (const [key6, data] of Object.entries(value2)) {
+      if (ruleKeySet.has(key6) && Array.isArray(data)) {
+        rules[key6] = data;
+      } else if (!key6.startsWith("BiliViewed_")) {
+        legacySettings[key6] = data;
       }
     }
     return { rules, legacySettings };
@@ -16733,7 +16818,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   }
 
   // src/modules/sync/protocol.ts
-  var seedId = (key5) => `seed:${key5}`;
+  var seedId = (key6) => `seed:${key6}`;
   function batch(operations) {
     return { schema: "bili-atelier-sync", version: 1, operations };
   }
@@ -16782,15 +16867,15 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     return result;
   }
   function materialize(operations) {
-    return new Set([...frontier(operations)].filter(([, ops]) => ops.every((o) => o.present)).map(([key5]) => key5));
+    return new Set([...frontier(operations)].filter(([, ops]) => ops.every((o) => o.present)).map(([key6]) => key6));
   }
   function changes(before, after, known2, uuid2) {
     const heads = frontier(known2);
-    return [.../* @__PURE__ */ new Set([...before, ...after])].filter((k) => validKey(k) && before.has(k) !== after.has(k)).map((key5) => ({
+    return [.../* @__PURE__ */ new Set([...before, ...after])].filter((k) => validKey(k) && before.has(k) !== after.has(k)).map((key6) => ({
       id: uuid2(),
-      key: key5,
-      present: after.has(key5),
-      parents: [.../* @__PURE__ */ new Set([seedId(key5), ...(heads.get(key5) || []).map((o) => o.id)])]
+      key: key6,
+      present: after.has(key6),
+      parents: [.../* @__PURE__ */ new Set([seedId(key6), ...(heads.get(key6) || []).map((o) => o.id)])]
     }));
   }
 
@@ -16823,7 +16908,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     if (!GM_getValue(`${prefix2}initialized`, false)) {
       if (!viewedJournalBackup()) GM_setValue(`${prefix2}backup`, exportAtelierDataPackage());
       const keys = new Set(stores.flatMap((store) => [...store.keys()]));
-      saveOperations([...keys].map((key5) => ({ id: seedId(key5), key: key5, present: true, parents: [] })));
+      saveOperations([...keys].map((key6) => ({ id: seedId(key6), key: key6, present: true, parents: [] })));
       GM_setValue(`${prefix2}initialized`, true);
     }
     applyViewedJournal();
@@ -17021,17 +17106,17 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     const fields2 = /* @__PURE__ */ new Map();
     const cleanupPixels = observeCrispText(root2);
     const c = getConfig();
-    for (const [key5, label, value2] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
+    for (const [key6, label, value2] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
       const row = document.createElement("label");
       row.textContent = label;
       const input = document.createElement("input");
-      input.name = key5;
-      input.type = key5 === "applicationKey" ? "password" : "text";
+      input.name = key6;
+      input.type = key6 === "applicationKey" ? "password" : "text";
       input.autocomplete = "off";
       input.spellcheck = false;
       input.value = value2;
       input.addEventListener("input", () => hideSecrets());
-      fields2.set(key5, input);
+      fields2.set(key6, input);
       row.append(input);
       root2.querySelector(".fields").append(row);
     }
@@ -17396,8 +17481,8 @@ ${message}` : ""}`;
     let client = null;
     const queryClient = () => {
       if (client) return client;
-      const root2 = document.getElementById("__next"), key5 = root2 && Object.keys(root2).find((name) => name.startsWith("__reactContainer"));
-      const stack = key5 ? [root2[key5]] : [];
+      const root2 = document.getElementById("__next"), key6 = root2 && Object.keys(root2).find((name) => name.startsWith("__reactContainer"));
+      const stack = key6 ? [root2[key6]] : [];
       for (let seen = 0; stack.length && seen < 2e4; seen++) {
         const fiber = stack.pop();
         if (!fiber) continue;
@@ -17420,7 +17505,7 @@ ${message}` : ""}`;
       const queries = cache.getAll().filter((query) => query.state?.status === "success");
       const data = (name, match) => queries.find((query) => query.queryKey?.[0] === name && match(query.state.data, query.queryKey[1]))?.state.data;
       const seasonId = Number(manifest?.seasonId) || 0;
-      const season = data("pgc/view/web/simple/season", (value2, key5) => seasonId ? Number(value2?.season_id) === seasonId : key5?.ep_id === epId);
+      const season = data("pgc/view/web/simple/season", (value2, key6) => seasonId ? Number(value2?.season_id) === seasonId : key6?.ep_id === epId);
       if (!epId || !season) return;
       const sid = Number(season.season_id);
       const next = clone({
@@ -17430,9 +17515,9 @@ ${message}` : ""}`;
         aid: Number(manifest?.aid) || 0,
         cid: Number(manifest?.cid) || 0,
         season,
-        episode: data("pgc/season/episode/web/info", (_value, key5) => Number(key5) === epId) ?? null,
-        related: data("/pgc/season/web/related/recommend", (_value, key5) => Number(key5) === sid)?.season ?? [],
-        rating: data("pgc/review/user", (_value, key5) => Number(key5) === Number(season.media_id)) ?? null
+        episode: data("pgc/season/episode/web/info", (_value, key6) => Number(key6) === epId) ?? null,
+        related: data("/pgc/season/web/related/recommend", (_value, key6) => Number(key6) === sid)?.season ?? [],
+        rating: data("pgc/review/user", (_value, key6) => Number(key6) === Number(season.media_id)) ?? null
       });
       const text4 = JSON.stringify(next);
       if (text4 === signature) return;
@@ -17523,7 +17608,7 @@ ${message}` : ""}`;
         post({ kind: "command-result", id: data.id, ok: true });
       } else if (data.kind === "list") {
         const list = actionList(), done = (ok4) => post({ kind: "command-result", id: data.id, ok: ok4 });
-        const has = (key5) => (Array.isArray(list?.visibleResourceList) ? list.visibleResourceList : []).some((item) => `${item.type}_${item.oid}` === key5);
+        const has = (key6) => (Array.isArray(list?.visibleResourceList) ? list.visibleResourceList : []).some((item) => `${item.type}_${item.oid}` === key6);
         if (!list) {
           done(false);
           return;
@@ -17540,16 +17625,16 @@ ${message}` : ""}`;
             const was = !!list.isFaved;
             Promise.resolve(list.handleCollect()).then(() => done(!!list.isFaved !== was), () => done(false));
           } else if (data.op === "remove") {
-            const key5 = String(data.key ?? "");
-            const wrap = [...document.querySelectorAll(".action-list-item-wrap")].find((node4) => node4.getAttribute("data-index") === key5);
+            const key6 = String(data.key ?? "");
+            const wrap = [...document.querySelectorAll(".action-list-item-wrap")].find((node4) => node4.getAttribute("data-index") === key6);
             const item = wrap?.querySelector(".action-list-item")?.__vue__;
             if (!item || typeof item.itemDelete !== "function") {
               done(false);
               return;
             }
-            const started9 = Date.now(), wait = () => {
-              if (!has(key5)) done(true);
-              else if (Date.now() - started9 > 3e3) done(false);
+            const started10 = Date.now(), wait = () => {
+              if (!has(key6)) done(true);
+              else if (Date.now() - started10 > 3e3) done(false);
               else window.setTimeout(wait, 100);
             };
             Promise.resolve(item.itemDelete(item.info, { target: wrap })).then(wait, () => done(false));
@@ -17626,10 +17711,10 @@ ${message}` : ""}`;
     toolbar.setAttribute("role", "toolbar");
     toolbar.setAttribute("aria-label", "\u89C6\u9891\u64CD\u4F5C");
     const like = tool("\u70B9\u8D5E", icons.like(), "\u70B9\u8D5E\uFF08\u957F\u6309\u4E00\u79D2\u4E00\u952E\u4E09\u8FDE\uFF09");
-    const coin = tool("\u6295\u5E01", icons.coin()), favorite = tool("\u6536\u85CF", icons.star()), share = tool("\u5206\u4EAB", icons.share());
-    share.append(dropArrow());
+    const coin = tool("\u6295\u5E01", icons.coin()), favorite = tool("\u6536\u85CF", icons.star()), share2 = tool("\u5206\u4EAB", icons.share());
+    share2.append(dropArrow());
     const later = tool("\u7A0D\u540E\u518D\u770B", shellIcon(21, 16), "\u6DFB\u52A0\u5230\u7A0D\u540E\u518D\u770B");
-    toolbar.append(like, coin, favorite, share, later);
+    toolbar.append(like, coin, favorite, share2, later);
     const content = win.body.appendChild(el("div", "vl-info"));
     const desc = content.appendChild(el("fieldset", "xp-groupbox vl-desc"));
     desc.append(el("legend", "", "\u7B80\u4ECB"));
@@ -17653,7 +17738,7 @@ ${message}` : ""}`;
       label(like, "\u70B9\u8D5E", counts.like);
       label(coin, "\u6295\u5E01", counts.coin);
       label(favorite, "\u6536\u85CF", counts.favorite);
-      label(share, "\u5206\u4EAB", counts.share);
+      label(share2, "\u5206\u4EAB", counts.share);
       like.setAttribute("aria-pressed", String(mine.like));
       coin.setAttribute("aria-pressed", String(mine.coin > 0));
       favorite.setAttribute("aria-pressed", String(mine.favorite));
@@ -17870,7 +17955,7 @@ ${message}` : ""}`;
         note(failure(error), "error");
       }
     }
-    share.addEventListener("click", () => {
+    share2.addEventListener("click", () => {
       const bvid = String(state2?.bvid ?? ""), p2 = Number(state2?.p) || 1, page = () => String(state2?.pageUrl || videoUrl(bvid, p2));
       const copy = (text4, what) => void navigator.clipboard.writeText(text4).then(() => note(`\u5DF2\u590D\u5236${what}`, "success"), () => note("\u590D\u5236\u5931\u8D25", "error"));
       openMenu([
@@ -17882,7 +17967,7 @@ ${message}` : ""}`;
           copy(url.href, time2 > 0 ? `\u94FE\u63A5\uFF08\u4ECE ${Math.floor(time2 / 60)}:${String(time2 % 60).padStart(2, "0")} \u5F00\u59CB\uFF09` : "\u94FE\u63A5");
         } },
         { label: "\u590D\u5236 BV \u53F7", disabled: !bvid, action: () => copy(bvid, " BV \u53F7") }
-      ], share);
+      ], share2);
     });
     later.addEventListener("click", async () => {
       try {
@@ -17895,8 +17980,8 @@ ${message}` : ""}`;
     return {
       element: win.root,
       render(next) {
-        const bangumi = next.kind === "bangumi", key5 = (value2) => value2 ? value2.kind === "bangumi" ? `ep${value2.epId}` : value2.bvid : "";
-        const switched = key5(next) !== key5(state2);
+        const bangumi = next.kind === "bangumi", key6 = (value2) => value2 ? value2.kind === "bangumi" ? `ep${value2.epId}` : value2.bvid : "";
+        const switched = key6(next) !== key6(state2);
         state2 = next;
         const video2 = next.videoData ?? {}, stat = video2.stat ?? {};
         if (switched) {
@@ -17958,6 +18043,7 @@ ${message}` : ""}`;
       }
     };
     window.addEventListener(videoCoverChanged, paint2);
+    relayRemoteChanges(coverKey, videoCoverChanged);
     document.addEventListener("pointerdown", (event) => {
       if (event.button === 0 && event.target?.closest?.(".bpx-player-video-area .bpx-player-video-perch")) gone();
     }, true);
@@ -18552,9 +18638,9 @@ ${message}` : ""}`;
       if (at < 0) return;
       const ends = [[false, at >= size - 3 && !list.tail], [true, at <= 2 && !list.head]];
       for (const [ahead, wanted] of ends) {
-        const key5 = `${state2.bvid}|${ahead}|${size}`;
-        if (!wanted || tried.has(key5)) continue;
-        tried.add(key5);
+        const key6 = `${state2.bvid}|${ahead}|${size}`;
+        if (!wanted || tried.has(key6)) continue;
+        tried.add(key6);
         void more(ahead);
         return;
       }
@@ -19069,9 +19155,9 @@ ${message}` : ""}`;
   var tinted = /* @__PURE__ */ new Map();
   function mediaArt(scheme, dark) {
     if (scheme === "blue" && !dark) return Promise.resolve({ ...art });
-    const key5 = `${scheme}:${dark}`;
-    if (!tinted.has(key5)) tinted.set(key5, tint(scheme, dark).catch(() => ({ ...art })));
-    return tinted.get(key5);
+    const key6 = `${scheme}:${dark}`;
+    if (!tinted.has(key6)) tinted.set(key6, tint(scheme, dark).catch(() => ({ ...art })));
+    return tinted.get(key6);
   }
   async function tint(scheme, dark) {
     const [blueHue, blueSaturation] = hsl(lunaTokens("blue", false).highlight), [hue, saturation] = hsl(lunaTokens(scheme, false).highlight);
@@ -19192,17 +19278,17 @@ ${message}` : ""}`;
     };
     const rate = tool3("\u500D\u901F"), quality = tool3("\u753B\u8D28"), subtitle = tool3("\u5B57\u5E55");
     const screens = [["pip", "\u753B\u4E2D\u753B"], ["wide", "\u5BBD\u5C4F"], ["web", "\u7F51\u9875\u5168\u5C4F"], ["full", "\u5168\u5C4F\uFF08F\uFF09"]];
-    const screenTools = screens.map(([key5, title]) => [key5, tool3(title, glyphs[key5])]);
+    const screenTools = screens.map(([key6, title]) => [key6, tool3(title, glyphs[key6])]);
     let clockState = null, around = {};
     let seeking = null;
     root2.classList.add("vl-wmp-art");
     let painted = "";
     function paintArt() {
-      const { scheme, dark } = appearanceState(), key5 = `${scheme}:${dark}`;
-      if (key5 === painted) return;
-      painted = key5;
+      const { scheme, dark } = appearanceState(), key6 = `${scheme}:${dark}`;
+      if (key6 === painted) return;
+      painted = key6;
       void mediaArt(scheme, dark).then((urls) => {
-        if (painted !== key5) return;
+        if (painted !== key6) return;
         let style = document.getElementById("atelier-wmp-art");
         if (!style) {
           style = document.createElement("style");
@@ -19341,7 +19427,7 @@ ${message}` : ""}`;
     mute.addEventListener("click", () => {
       if (clockState) context.bridge.player({ op: "mute", value: !clockState.muted });
     });
-    for (const [key5, node4] of screenTools) node4.addEventListener("click", () => native(`.bpx-player-ctrl-${key5}`)?.click());
+    for (const [key6, node4] of screenTools) node4.addEventListener("click", () => native(`.bpx-player-ctrl-${key6}`)?.click());
     const choose = (item) => {
       item.click();
       window.setTimeout(paint2, 100);
@@ -19401,7 +19487,7 @@ ${message}` : ""}`;
       mute.classList.toggle("vl-wmp-on", !!clockState?.muted);
       mute.setAttribute("aria-pressed", String(!!clockState?.muted));
       const shown2 = seeking ?? (total ? now / total : 0), loaded = total ? Math.min(1, (clockState?.buffered ?? 0) / total) : 0;
-      const point = (share) => `calc(${share} * (100% - 24px) + 12px)`;
+      const point = (share2) => `calc(${share2} * (100% - 24px) + 12px)`;
       played.style.width = point(shown2);
       thumb2.style.left = point(shown2);
       buffered.style.width = `calc(${loaded} * (100% + 6px))`;
@@ -19420,7 +19506,7 @@ ${message}` : ""}`;
       quality.firstElementChild.textContent = activeQuality ? qualityLabel(activeQuality).split(/[\s(（]/)[0] : "\u753B\u8D28";
       subtitle.firstElementChild.textContent = "\u5B57\u5E55";
       subtitle.hidden = !native(".bpx-player-ctrl-subtitle");
-      for (const [key5, node4] of screenTools) node4.hidden = !native(`.bpx-player-ctrl-${key5}`);
+      for (const [key6, node4] of screenTools) node4.hidden = !native(`.bpx-player-ctrl-${key6}`);
     }
     const fit = () => {
       seek.style.setProperty("--track", `${seek.clientWidth}px`);
@@ -19751,7 +19837,7 @@ ${message}` : ""}`;
     const win = xpWindow({ className: "vl-small vl-rec-window vl-season-rec-window", icon: shellIcon(224, 16), title: "\u76F8\u5173\u63A8\u8350" });
     foldable(win, "rec");
     const tiles = win.body.appendChild(el("div", "vl-tiles"));
-    let key5 = "";
+    let key6 = "";
     function tile(season) {
       const id = Number(season?.season_id) || 0, url = bangumiUrl(`ss${id}`), viewedId = bangumiViewedId("ss", id);
       const node4 = el("div", "vl-tile vl-season-tile");
@@ -19804,8 +19890,8 @@ ${message}` : ""}`;
       render(next) {
         const seasons = (Array.isArray(next.bangumi?.related) ? next.bangumi.related : []).filter((season) => Number(season?.season_id) > 0);
         const now = seasons.map((season) => season.season_id).join();
-        if (now === key5) return;
-        key5 = now;
+        if (now === key6) return;
+        key6 = now;
         tiles.replaceChildren(...seasons.map(tile));
         if (!seasons.length) tiles.append(el("p", "vl-empty vl-muted", "\u6CA1\u6709\u76F8\u5173\u63A8\u8350"));
       }
@@ -20005,12 +20091,12 @@ ${message}` : ""}`;
       if (nextSeason === id) return;
       nextSeason = id;
       coming.hidden = true;
-      const key5 = type;
-      let read3 = timelines.get(key5);
+      const key6 = type;
+      let read3 = timelines.get(key6);
       if (!read3) {
-        read3 = context.actions.bangumiTimeline(key5).then((days) => (Array.isArray(days) ? days : []).flatMap((day) => Array.isArray(day?.episodes) ? day.episodes : []));
-        read3.catch(() => timelines.delete(key5));
-        timelines.set(key5, read3);
+        read3 = context.actions.bangumiTimeline(key6).then((days) => (Array.isArray(days) ? days : []).flatMap((day) => Array.isArray(day?.episodes) ? day.episodes : []));
+        read3.catch(() => timelines.delete(key6));
+        timelines.set(key6, read3);
       }
       read3.then((episodes) => {
         if (Number(state2?.seasonId) !== id) return;
@@ -20024,9 +20110,9 @@ ${message}` : ""}`;
     }
     function paintStats(stat) {
       stats.hidden = !stat;
-      const key5 = stat ? JSON.stringify([...counters.map(([, , field]) => stat[field]), stat.follow_text]) : "";
-      if (!stat || key5 === statKey) return;
-      statKey = key5;
+      const key6 = stat ? JSON.stringify([...counters.map(([, , field]) => stat[field]), stat.follow_text]) : "";
+      if (!stat || key6 === statKey) return;
+      statKey = key6;
       stats.replaceChildren(...counters.map(([label, icon2, field]) => {
         const item = el("li", "xp-button vl-counter");
         const image7 = item.appendChild(el("img"));
@@ -20101,7 +20187,7 @@ ${message}` : ""}`;
     face.referrerPolicy = "no-referrer";
     const win = xpWindow({ className: "vl-small vl-up-window", icon: face, title: "", label: "UP \u4E3B" });
     foldable(win, "up");
-    let people2 = [], key5 = "", generation = 0;
+    let people2 = [], key6 = "", generation = 0;
     const follow = { api: context.actions, me: context.me, failure };
     function draw() {
       win.body.replaceChildren();
@@ -20157,9 +20243,9 @@ ${message}` : ""}`;
         people2 = staff.length > 1 ? staff.map((member) => ({ mid: String(member.mid), name: String(member.name ?? ""), face: String(member.face ?? ""), role: String(member.title ?? "") })) : [{ mid: String(up.mid ?? owner2.mid ?? ""), name: String(up.name ?? owner2.name ?? ""), face: String(up.face ?? owner2.face ?? ""), sign: typeof up.sign === "string" ? up.sign : "", fans: Number.isFinite(Number(up.fans)) ? Number(up.fans) : void 0 }];
         people2 = people2.filter((person) => /^\d+$/.test(person.mid));
         const next = people2.map((person) => person.mid).join(",") + "|" + people2.map((person) => person.fans ?? "").join(",");
-        if (next === key5) return;
-        const sameAccounts = key5.split("|")[0] === next.split("|")[0];
-        key5 = next;
+        if (next === key6) return;
+        const sameAccounts = key6.split("|")[0] === next.split("|")[0];
+        key6 = next;
         draw();
         if (!sameAccounts) {
           generation++;
@@ -20403,16 +20489,16 @@ ${message}` : ""}`;
       "--vl-player-h": () => [player.element, up.element, list?.element],
       "--vl-head-h": () => [up.element]
     };
-    const share = (name, value2) => {
+    const share2 = (name, value2) => {
       for (const target of readers[name]()) if (target && target.style.getPropertyValue(name) !== value2) target.style.setProperty(name, value2);
     };
     function measure() {
       const element2 = document.getElementById("bilibili-player");
       if (element2) {
-        share("--vl-player-w", `${element2.offsetWidth}px`);
-        share("--vl-player-h", `${element2.offsetHeight}px`);
+        share2("--vl-player-w", `${element2.offsetWidth}px`);
+        share2("--vl-player-h", `${element2.offsetHeight}px`);
       }
-      share("--vl-head-h", `${player.element.offsetHeight}px`);
+      share2("--vl-head-h", `${player.element.offsetHeight}px`);
       const cell = bangumi ? document.querySelector(".plp-player") : null, column = cell && document.querySelector(".plp-left-wrap");
       if (cell && column) {
         const padding = root2.getAttribute("data-atelier-screen") === "wide" ? "" : `${cell.offsetHeight}px`;
@@ -20530,8 +20616,8 @@ ${message}` : ""}`;
     return bvid && index >= 0 ? viewedIdFromBvid(bvid, index + 1) : "";
   }
   function collectionBvid(item) {
-    const key5 = item?.getAttribute("data-key");
-    if (isBvid(key5)) return key5;
+    const key6 = item?.getAttribute("data-key");
+    if (isBvid(key6)) return key6;
     return /\/video\/(BV1[0-9A-Za-z]{9})/i.exec(item?.querySelector('a[href*="/video/BV"]')?.getAttribute("href") ?? "")?.[1] ?? "";
   }
   var mainVideo = {
@@ -20612,7 +20698,7 @@ ${message}` : ""}`;
 .btnView.atelier-viewed-inline{position:static;flex:0 0 auto;margin:0 6px 0 0}
 .pubdate-ip>.btnView.atelier-viewed-inline{margin:0 0 0 10px}
 .atelier-viewed-bulk{margin:0 12px 0 0}
-[${coverMark}]{opacity:.45!important}`;
+[${coverMark}]{opacity:var(--atelier-viewed-opacity,.45)!important}`;
   var buttons = /* @__PURE__ */ new WeakMap();
   var covers3 = /* @__PURE__ */ new WeakMap();
   function paint(button6, viewed2) {
@@ -20906,15 +20992,16 @@ ${page.css ?? ""}`;
   }
 
   // src/modules/watch-history/prefs.ts
-  var key4 = "BiliAtelier_HistoryLuna";
+  var historyLunaKey = "BiliAtelier_HistoryLuna";
+  var key5 = historyLunaKey;
   var historyAttribute = "data-atelier-history";
   var isHistoryLocation = (where = location) => where.hostname === "www.bilibili.com" && /^\/(?:account\/)?history(?:\/|$)/.test(where.pathname);
   function historyLunaEnabled() {
-    const stored = typeof GM_getValue === "function" ? GM_getValue(key4, null) : null;
+    const stored = typeof GM_getValue === "function" ? GM_getValue(key5, null) : null;
     return stored?.enabled !== false;
   }
   function setHistoryLunaEnabled(enabled) {
-    if (typeof GM_setValue === "function") GM_setValue(key4, { enabled });
+    if (typeof GM_setValue === "function") GM_setValue(key5, { enabled });
   }
   var hideCss = `html[${historyAttribute}=drawn] #app{display:none!important}`;
   function prepareWatchHistory() {
@@ -21188,7 +21275,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     };
     paintFilters();
     const selectAll = toolButton("\u5168\u9009", () => {
-      for (const key5 of cards2.keys()) selected.add(key5);
+      for (const key6 of cards2.keys()) selected.add(key6);
       paintSelection();
     });
     const deleteSelected = toolButton("\u5220\u9664\u6240\u9009", () => void removeSelected(), shellIcon(240, 16));
@@ -21225,8 +21312,8 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       recordPane.textContent = paused2 === null ? "" : paused2 ? "\u5DF2\u6682\u505C\u8BB0\u5F55\u5386\u53F2" : "\u6B63\u5728\u8BB0\u5F55\u5386\u53F2";
     }
     function paintSelection() {
-      for (const [key5, entry] of cards2) {
-        const on8 = selected.has(key5);
+      for (const [key6, entry] of cards2) {
+        const on8 = selected.has(key6);
         entry.check.checked = on8;
         entry.element.toggleAttribute("data-selected", on8);
         entry.element.setAttribute("aria-selected", String(on8));
@@ -21423,13 +21510,13 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
         showInfoLog(`\u5220\u9664\u5931\u8D25\uFF1A${error.message}`, "error");
         return;
       }
-      for (const key5 of keys) {
-        const entry = cards2.get(key5);
+      for (const key6 of keys) {
+        const entry = cards2.get(key6);
         if (!entry) continue;
         const grid = entry.element.parentElement;
         entry.element.remove();
-        cards2.delete(key5);
-        selected.delete(key5);
+        cards2.delete(key6);
+        selected.delete(key6);
         if (grid && !grid.childElementCount) {
           grid.parentElement?.remove();
           if (grid === lastGrid) {
@@ -21444,7 +21531,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       else if (!done && foot.getBoundingClientRect().top < innerHeight + 600) void more();
     }
     async function removeSelected() {
-      const keys = [...cards2.keys()].filter((key5) => selected.has(key5));
+      const keys = [...cards2.keys()].filter((key6) => selected.has(key6));
       if (!keys.length) return;
       if (!await atelierConfirm(`\u786E\u5B9E\u8981\u4ECE\u5386\u53F2\u8BB0\u5F55\u4E2D\u5220\u9664\u8FD9 ${keys.length} \u9879\u5417\uFF1F`, "\u786E\u8BA4\u5220\u9664")) return;
       await remove(keys);
@@ -21792,7 +21879,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     const fields2 = /* @__PURE__ */ new Map();
     const saved = /* @__PURE__ */ new Map();
     let selectedKey = "title";
-    const isDirty = () => [...fields2].some(([key5, field]) => field.value !== saved.get(key5));
+    const isDirty = () => [...fields2].some(([key6, field]) => field.value !== saved.get(key6));
     for (const rule of ruleDefinitions) {
       const field = element("textarea", "luna-editor");
       field.id = "bili-rule-" + rule.key;
@@ -21851,33 +21938,33 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
           editorHost.setAttribute("role", "tabpanel");
           editorHost.id = "bili-atelier-rule-editor";
           const modeButtons = /* @__PURE__ */ new Map();
-          function selectMode(key5, user = false) {
-            if (user && selectedKey !== key5) sound("select");
-            selectedKey = key5;
+          function selectMode(key6, user = false) {
+            if (user && selectedKey !== key6) sound("select");
+            selectedKey = key6;
             for (const [mode2, node4] of modeButtons) {
-              node4.setAttribute("aria-selected", String(mode2 === key5));
-              node4.tabIndex = mode2 === key5 ? 0 : -1;
+              node4.setAttribute("aria-selected", String(mode2 === key6));
+              node4.tabIndex = mode2 === key6 ? 0 : -1;
             }
-            editorHost.setAttribute("aria-labelledby", "bili-atelier-mode-" + key5);
-            editorHost.replaceChildren(fields2.get(key5));
+            editorHost.setAttribute("aria-labelledby", "bili-atelier-mode-" + key6);
+            editorHost.replaceChildren(fields2.get(key6));
           }
-          for (const key5 of category.keys) {
-            const tab = button5(modeLabels[key5], () => selectMode(key5, true), "luna-rule-tab");
+          for (const key6 of category.keys) {
+            const tab = button5(modeLabels[key6], () => selectMode(key6, true), "luna-rule-tab");
             const mark2 = element("span", "luna-radio");
             mark2.setAttribute("aria-hidden", "true");
             tab.prepend(mark2);
-            tab.id = "bili-atelier-mode-" + key5;
+            tab.id = "bili-atelier-mode-" + key6;
             tab.setAttribute("role", "tab");
             tab.setAttribute("aria-controls", editorHost.id);
             tab.addEventListener("keydown", (event) => {
               if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
               event.preventDefault();
-              const index = category.keys.indexOf(key5);
+              const index = category.keys.indexOf(key6);
               const next = event.key === "Home" ? 0 : event.key === "End" ? category.keys.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + category.keys.length) % category.keys.length;
               selectMode(category.keys[next], true);
               modeButtons.get(category.keys[next]).focus();
             });
-            modeButtons.set(key5, tab);
+            modeButtons.set(key6, tab);
             tabs2.appendChild(tab);
           }
           selectMode(selectedKey);
@@ -21909,7 +21996,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       },
       status() {
         if (!isDirty() && !categories.some((category) => category.id === win.current())) return "";
-        const count2 = [...fields2].reduce((sum, [key5, field]) => sum + parseRuleText(field.value, ruleDefinitions.find((rule) => rule.key === key5)?.integer).length, 0);
+        const count2 = [...fields2].reduce((sum, [key6, field]) => sum + parseRuleText(field.value, ruleDefinitions.find((rule) => rule.key === key6)?.integer).length, 0);
         return count2 + " \u6761\u89C4\u5219 \xB7 " + (isDirty() ? "\u6709\u672A\u4FDD\u5B58\u7684\u4FEE\u6539" : "\u5DF2\u4FDD\u5B58");
       },
       isDirty,
@@ -22085,9 +22172,9 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     };
     const choice = (options, value2, change) => {
       const node4 = element("select");
-      for (const [key5, text4] of options) {
+      for (const [key6, text4] of options) {
         const option = element("option", "", text4);
-        option.value = key5;
+        option.value = key6;
         node4.append(option);
       }
       node4.value = value2;
@@ -22105,9 +22192,6 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       row("\u660E\u6697(D):", choice([["page", "\u8DDF\u968F\u7F51\u9875"], ["light", "\u6D45\u8272"], ["dark", "\u6DF1\u8272"]], prefs.theme, (value2) => saveUiPreferences({ theme: value2 }))),
       pixelScaleRow(choice),
       element("p", "luna-hint", "\u6574\u6570\u500D\u65F6\uFF0CXP \u7684\u6BCF\u4E2A\u50CF\u7D20\u90FD\u753B\u6210\u540C\u6837\u5927\u5C0F\u7684\u65B9\u5757\u3002"),
-      videoLunaRow(),
-      videoCoverRow(),
-      hiddenCountRow(),
       button5("\u91CD\u7F6E\u7535\u89C6\u5165\u53E3\u4F4D\u7F6E", () => {
         saveUiPreferences({ edge: "right", y: 0.72 });
         window.dispatchEvent(new Event("atelier-reset-launcher"));
@@ -22134,44 +22218,6 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       draw();
     };
     window.addEventListener("resize", redraw);
-    return line;
-  }
-  function videoLunaRow() {
-    const line = element("label", "atelier-appearance-row atelier-check-row");
-    const box2 = element("input");
-    box2.type = "checkbox";
-    box2.checked = videoLunaEnabled();
-    box2.addEventListener("change", () => {
-      sound("select");
-      const mode2 = isLunaVideoLocation() ? currentPageMode() : null;
-      if (mode2) mode2.setNative(!box2.checked);
-      else setVideoLunaEnabled(box2.checked);
-    });
-    line.append(box2, element("span", "", "\u89C6\u9891\u64AD\u653E\u9875\u4F7F\u7528 Luna \u754C\u9762\uFF08\u5173\u95ED\u540E\u663E\u793A B \u7AD9\u539F\u6765\u7684\u9875\u9762\uFF09"));
-    return line;
-  }
-  function videoCoverRow() {
-    const line = element("label", "atelier-appearance-row atelier-check-row");
-    const box2 = element("input");
-    box2.type = "checkbox";
-    box2.checked = videoCoverEnabled();
-    box2.addEventListener("change", () => {
-      sound("select");
-      setVideoCoverEnabled(box2.checked);
-    });
-    line.append(box2, element("span", "", "\u8FDB\u5165\u89C6\u9891\u65F6\u663E\u793A\u5C01\u9762\uFF08\u6307\u5411\u753B\u9762\u65F6\u663E\u793A\u9996\u5E27\uFF0C\u5F00\u59CB\u64AD\u653E\u540E\u4E0D\u518D\u663E\u793A\uFF09"));
-    return line;
-  }
-  function hiddenCountRow() {
-    const line = element("label", "atelier-appearance-row atelier-check-row");
-    const box2 = element("input");
-    box2.type = "checkbox";
-    box2.checked = readUiPreferences().hiddenCount;
-    box2.addEventListener("change", () => {
-      sound("select");
-      saveUiPreferences({ hiddenCount: box2.checked });
-    });
-    line.append(box2, element("span", "", "\u56DE\u590D\u6570\u540E\u663E\u793A\u672C\u5730\u9690\u85CF\u6570\uFF08\u5DF2\u52A0\u8F7D\u7684\u8BC4\u8BBA\u4E2D\u88AB\u672C\u5730\u9ED1\u540D\u5355\u9690\u85CF\u4E86\u51E0\u6761\uFF09"));
     return line;
   }
   var appearancePages = () => ({ pages: { settings: { draw: (content) => content.append(appearancePage()) } } });
@@ -22303,12 +22349,122 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     };
   }
 
+  // src/ui/interface-page.ts
+  var pageSwitchChanged = "atelier-page-switch-changed";
+  function switchPage(here, luna, remember) {
+    const mode2 = here ? currentPageMode() : null;
+    if (mode2) mode2.setNative(!luna);
+    else remember(luna);
+  }
+  function interfacePage(signal) {
+    const page = element("div", "atelier-interface");
+    const syncs = [];
+    const paint2 = () => {
+      for (const update of syncs) update();
+    };
+    const sync = () => {
+      if (page.isConnected) paint2();
+    };
+    const group = (title, ...rows) => {
+      const box2 = element("section", "xp-groupbox atelier-interface-group");
+      box2.append(element("h3", "", title), ...rows);
+      return box2;
+    };
+    const check2 = (text4, read3, write) => {
+      const line = element("label", "atelier-interface-check");
+      const box2 = element("input");
+      box2.type = "checkbox";
+      box2.addEventListener("change", () => {
+        sound("select");
+        write(box2.checked);
+        sync();
+      });
+      line.append(box2, element("span", "", text4));
+      syncs.push(() => {
+        box2.checked = read3();
+      });
+      return line;
+    };
+    const opacity = (name, read3, write, enabled) => {
+      const line = element("label", "atelier-interface-slider");
+      const range = element("input"), output = element("output");
+      range.type = "range";
+      range.min = "10";
+      range.max = "100";
+      range.step = "5";
+      range.setAttribute("aria-label", name);
+      range.addEventListener("input", () => {
+        output.value = range.value + "%";
+        write(Number(range.value) / 100);
+      });
+      range.addEventListener("change", () => sound("select"));
+      line.append(element("span", "", "\u4E0D\u900F\u660E\u5EA6(O):"), range, output);
+      syncs.push(() => {
+        range.value = String(Math.round(read3() * 100));
+        output.value = range.value + "%";
+        range.disabled = !enabled();
+        line.toggleAttribute("data-disabled", range.disabled);
+      });
+      return line;
+    };
+    const feedWho = localFeedIdentity() === "guest" ? "\u672A\u767B\u5F55\u65F6" : "\u5F53\u524D\u8D26\u53F7";
+    page.append(
+      element("h2", "", "\u754C\u9762"),
+      group(
+        "Luna \u9875\u9762",
+        check2("\u89C6\u9891\u64AD\u653E\u9875\u4F7F\u7528 Luna \u754C\u9762", videoLunaEnabled, (on8) => switchPage(isLunaVideoLocation(), on8, setVideoLunaEnabled)),
+        check2("\u89C2\u770B\u5386\u53F2\u4F7F\u7528 Luna \u754C\u9762", historyLunaEnabled, (on8) => switchPage(isHistoryLocation(), on8, setHistoryLunaEnabled)),
+        check2(`\u52A8\u6001\u9875\u4F7F\u7528 Luna \u754C\u9762\uFF08${feedWho}\uFF09`, localFeedLuna, (on8) => switchPage(location.hostname === "t.bilibili.com", on8, setLocalFeedLuna)),
+        element("p", "luna-hint", "\u5173\u95ED\u540E\u663E\u793A B \u7AD9\u539F\u6765\u7684\u9875\u9762\u3002\u6B63\u5728\u770B\u7684\u5C31\u662F\u8FD9\u4E2A\u9875\u9762\u65F6\uFF0C\u4F1A\u50CF\u7535\u89C6\u83DC\u5355\u7684\u300C\u539F\u751F\u9875\u9762\u300D\u4E00\u6837\u5237\u65B0\u3002")
+      ),
+      group(
+        "\u89C6\u9891\u64AD\u653E",
+        check2("\u8FDB\u5165\u89C6\u9891\u65F6\u663E\u793A\u5C01\u9762\uFF08\u6307\u5411\u753B\u9762\u65F6\u663E\u793A\u9996\u5E27\uFF0C\u5F00\u59CB\u64AD\u653E\u540E\u4E0D\u518D\u663E\u793A\uFF09", videoCoverEnabled, setVideoCoverEnabled),
+        check2("\u663E\u793A\u9AD8\u80FD\u8FDB\u5EA6\u6761\uFF08\u548C\u64AD\u653E\u5668\u72B6\u6001\u680F\u300C\u5DE5\u5177\u300D\u5DE6\u8FB9\u7684\u52FE\u9009\u6846\u662F\u540C\u4E00\u4E2A\u8BBE\u7F6E\uFF09", pbpShown, setPbpShown),
+        opacity("\u9AD8\u80FD\u8FDB\u5EA6\u6761\u4E0D\u900F\u660E\u5EA6", () => readInterfacePrefs().pbpOpacity, (share2) => saveInterfacePrefs({ pbpOpacity: share2 }), pbpShown)
+      ),
+      group(
+        "\u8BC4\u8BBA\u533A",
+        check2("\u60AC\u505C\u5934\u50CF\u548C\u540D\u5B57\u65F6\u663E\u793A\u7528\u6237\u5361\u7247", () => readInterfacePrefs().userCard, (on8) => saveInterfacePrefs({ userCard: on8 })),
+        check2("\u8BC4\u8BBA\u533A\u548C\u52A8\u6001\u7684\u56FE\u7247\u5728\u9875\u5185\u6253\u5F00\uFF08\u5173\u95ED\u540E\u5728\u65B0\u6807\u7B7E\u9875\u6253\u5F00\uFF09", () => readInterfacePrefs().pictureWindow, (on8) => saveInterfacePrefs({ pictureWindow: on8 })),
+        check2("\u56DE\u590D\u6570\u540E\u663E\u793A\u672C\u5730\u9690\u85CF\u6570\uFF08\u5DF2\u52A0\u8F7D\u7684\u8BC4\u8BBA\u4E2D\u88AB\u672C\u5730\u9ED1\u540D\u5355\u9690\u85CF\u4E86\u51E0\u6761\uFF09", () => readUiPreferences().hiddenCount, (on8) => saveUiPreferences({ hiddenCount: on8 })),
+        check2("\u663E\u793A IP \u5C5E\u5730\uFF08B \u7AD9\u539F\u6765\u7684\u8BC4\u8BBA\u533A\u8981\u5237\u65B0\u540E\u751F\u6548\uFF09", () => readInterfacePrefs().ipLocation, (on8) => saveInterfacePrefs({ ipLocation: on8 }))
+      ),
+      group(
+        "\u5DF2\u770B",
+        check2("\u5DF2\u770B\u89C6\u9891\u7684\u5C01\u9762\u53D8\u6DE1", () => readInterfacePrefs().viewedDim, (on8) => saveInterfacePrefs({ viewedDim: on8 })),
+        opacity("\u5DF2\u770B\u5C01\u9762\u4E0D\u900F\u660E\u5EA6", () => readInterfacePrefs().viewedOpacity, (share2) => saveInterfacePrefs({ viewedOpacity: share2 }), () => readInterfacePrefs().viewedDim)
+      ),
+      element("p", "luna-hint", "\u8FD9\u4E9B\u8BBE\u7F6E\u53EA\u4FDD\u5B58\u5728\u8FD9\u53F0\u6D4F\u89C8\u5668\u91CC\uFF0C\u4E0D\u53C2\u4E0E\u540C\u6B65\uFF1B\u9664\u4E86 B \u7AD9\u539F\u6765\u8BC4\u8BBA\u533A\u7684 IP \u5C5E\u5730\uFF0C\u6539\u52A8\u5728\u5DF2\u6253\u5F00\u7684\u9875\u9762\u4E0A\u7ACB\u5373\u751F\u6548\u3002")
+    );
+    paint2();
+    for (const key6 of [videoLunaKey, historyLunaKey, localFeedPrefsKey()]) relayRemoteChanges(key6, pageSwitchChanged);
+    for (const event of [interfaceChanged, appearanceChanged, pbpShownChanged, videoCoverChanged, pageModeChanged, pageSwitchChanged]) window.addEventListener(event, sync, { signal });
+    return page;
+  }
+  function interfacePages(win) {
+    let drawn = null;
+    const drop = () => {
+      drawn?.abort();
+      drawn = null;
+    };
+    win.signal.addEventListener("abort", drop);
+    return {
+      pages: { interface: { draw: (content) => {
+        drop();
+        drawn = new AbortController();
+        content.append(interfacePage(drawn.signal));
+      } } },
+      dispose: drop
+    };
+  }
+
   // src/ui/atelier-pages.ts
-  var started8 = false;
+  var started9 = false;
   function startAtelierWindow() {
-    if (started8) return;
-    started8 = true;
-    for (const factory of [followingPages, dataPages, blockerPages, syncPages, appearancePages, soundPages]) registerAtelierPages(factory);
+    if (started9) return;
+    started9 = true;
+    for (const factory of [followingPages, dataPages, blockerPages, syncPages, appearancePages, interfacePages, soundPages]) registerAtelierPages(factory);
     registerAtelierNavigation({ open: openAtelierWindow, toggle: toggleAtelierWindow });
   }
 
@@ -22548,10 +22704,10 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       run();
       return;
     }
-    let started9 = false;
+    let started10 = false;
     const start2 = () => {
-      if (started9) return;
-      started9 = true;
+      if (started10) return;
+      started10 = true;
       observer.disconnect();
       run();
     };
@@ -22562,6 +22718,11 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     document.addEventListener("DOMContentLoaded", start2, { once: true });
   }
   var modules = [
+    // 设置 › 界面's opacities and switches, before anything draws.
+    { name: "\u754C\u9762\u8BBE\u7F6E", phase: "start", gm: {}, start() {
+      startInterfacePrefs();
+      relayUiPreferences();
+    } },
     // The Luna player page hides the blocks it replaces before Bilibili's page
     // renders, with a head stylesheet only; the windows come after hydration.
     { name: "Luna \u89C6\u9891\u9875\u9884\u5907", phase: "start", gm: {}, start: prepareVideoLuna },
