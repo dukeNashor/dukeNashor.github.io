@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.9.0
+// @version      0.9.1
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -114,9 +114,9 @@
   };
   var __copyProps = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
-      for (let key7 of __getOwnPropNames(from))
-        if (!__hasOwnProp.call(to, key7) && key7 !== except)
-          __defProp(to, key7, { get: () => from[key7], enumerable: !(desc = __getOwnPropDesc(from, key7)) || desc.enumerable });
+      for (let key5 of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key5) && key5 !== except)
+          __defProp(to, key5, { get: () => from[key5], enumerable: !(desc = __getOwnPropDesc(from, key5)) || desc.enumerable });
     }
     return to;
   };
@@ -1232,7 +1232,7 @@
       NumericData.prototype.getBitsLength = function getBitsLength() {
         return NumericData.getBitsLength(this.data.length);
       };
-      NumericData.prototype.write = function write3(bitBuffer) {
+      NumericData.prototype.write = function write(bitBuffer) {
         let i, group, value2;
         for (i = 0; i + 3 <= this.data.length; i += 3) {
           group = this.data.substr(i, 3);
@@ -1314,7 +1314,7 @@
       AlphanumericData.prototype.getBitsLength = function getBitsLength() {
         return AlphanumericData.getBitsLength(this.data.length);
       };
-      AlphanumericData.prototype.write = function write3(bitBuffer) {
+      AlphanumericData.prototype.write = function write(bitBuffer) {
         let i;
         for (i = 0; i + 2 <= this.data.length; i += 2) {
           let value2 = ALPHA_NUM_CHARS.indexOf(this.data[i]) * 45;
@@ -1459,11 +1459,11 @@
          */
         PriorityQueue: {
           make: function(opts) {
-            var T = dijkstra.PriorityQueue, t = {}, key7;
+            var T = dijkstra.PriorityQueue, t = {}, key5;
             opts = opts || {};
-            for (key7 in T) {
-              if (T.hasOwnProperty(key7)) {
-                t[key7] = T[key7];
+            for (key5 in T) {
+              if (T.hasOwnProperty(key5)) {
+                t[key5] = T[key5];
               }
             }
             t.queue = [];
@@ -1613,18 +1613,18 @@
           const currentNodeIds = [];
           for (let j = 0; j < nodeGroup.length; j++) {
             const node4 = nodeGroup[j];
-            const key7 = "" + i + j;
-            currentNodeIds.push(key7);
-            table[key7] = { node: node4, lastCount: 0 };
-            graph[key7] = {};
+            const key5 = "" + i + j;
+            currentNodeIds.push(key5);
+            table[key5] = { node: node4, lastCount: 0 };
+            graph[key5] = {};
             for (let n = 0; n < prevNodeIds.length; n++) {
               const prevNodeId = prevNodeIds[n];
               if (table[prevNodeId] && table[prevNodeId].node.mode === node4.mode) {
-                graph[prevNodeId][key7] = getSegmentBitsLength(table[prevNodeId].lastCount + node4.length, node4.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node4.mode);
+                graph[prevNodeId][key5] = getSegmentBitsLength(table[prevNodeId].lastCount + node4.length, node4.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node4.mode);
                 table[prevNodeId].lastCount += node4.length;
               } else {
                 if (table[prevNodeId]) table[prevNodeId].lastCount = node4.length;
-                graph[prevNodeId][key7] = getSegmentBitsLength(node4.length, node4.mode) + 4 + Mode.getCharCountIndicator(node4.mode, version);
+                graph[prevNodeId][key5] = getSegmentBitsLength(node4.length, node4.mode) + 4 + Mode.getCharCountIndicator(node4.mode, version);
               }
             }
           }
@@ -3887,7 +3887,7 @@
   var lunaSchemeNames = { blue: "\u9ED8\u8BA4\uFF08\u84DD\uFF09", olive: "\u6A44\u6984\u7EFF", silver: "\u94F6\u8272" };
   var isLunaScheme = (value2) => typeof value2 === "string" && Object.prototype.hasOwnProperty.call(lunaSchemes, value2);
   var theme = (scheme) => lunaSchemes[scheme].theme;
-  var value = (scheme, section, key7, fallback2) => theme(scheme)[section]?.[key7] || fallback2;
+  var value = (scheme, section, key5, fallback2) => theme(scheme)[section]?.[key5] || fallback2;
   var darkPalettes = {
     blue: { face: "#23272f", window: "#191c22", ink: "#e8eaee", muted: "#a3a9b5", edge: "#56678a", line: "#3a3f4a", light3d: "#3b414d", shadow3d: "#14171c", dark3d: "#0b0d10", lift: "#b7c3d9", gradient1: "#26355a", gradient2: "#1c2744", taskFill: "#2a3550", taskText: "#c7d6f5", taskLink: "#a9c1f2", groupText: "#9cb8ff" },
     olive: { face: "#2a2d22", window: "#1c1e16", ink: "#ecebdf", muted: "#b3b8a2", edge: "#76845a", line: "#3d4132", light3d: "#42473a", shadow3d: "#15170f", dark3d: "#0c0d08", lift: "#c8cfb0", gradient1: "#353c27", gradient2: "#282d1d", taskFill: "#343a28", taskText: "#d6dcbf", taskLink: "#c9d69f", groupText: "#c0d091" },
@@ -3895,7 +3895,7 @@
   };
   var dim = (hex, factor = 0.7) => "#" + [1, 3, 5].map((at) => Math.round(parseInt(hex.slice(at, at + 2), 16) * factor).toString(16).padStart(2, "0")).join("");
   function lunaTokens(scheme, dark) {
-    const sys = (key7, fallback2) => value(scheme, "SysMetrics", key7, fallback2);
+    const sys = (key5, fallback2) => value(scheme, "SysMetrics", key5, fallback2);
     const light = {
       face: sys("btnface", "#ece9d8"),
       window: sys("window", "#ffffff"),
@@ -3916,7 +3916,7 @@
     const base = dark ? darkPalettes[scheme] : light;
     const caption2 = sys("activecaption", "#0054e3"), inactive = sys("inactivecaption", "#7a96df");
     return {
-      ...Object.fromEntries(Object.entries(base).filter(([key7]) => key7 !== "lift")),
+      ...Object.fromEntries(Object.entries(base).filter(([key5]) => key5 !== "lift")),
       graytext: dark ? dim(sys("graytext", "#aca899")) : sys("graytext", "#aca899"),
       highlight: sys("highlight", "#316ac5"),
       "highlight-ink": sys("highlighttext", "#ffffff"),
@@ -4069,8 +4069,8 @@
   var px = (value2) => `${+value2.toFixed(4)}px`;
   var rendered = /* @__PURE__ */ new Map();
   function lunaImageVars(scheme, dark, dpr) {
-    const key7 = `${scheme}|${dark}|${dpr}`;
-    if (rendered.has(key7)) return rendered.get(key7);
+    const key5 = `${scheme}|${dark}|${dpr}`;
+    if (rendered.has(key5)) return rendered.get(key5);
     const work = (async () => {
       if (/jsdom/i.test(navigator.userAgent) || !document.createElement("canvas").getContext?.("2d")) return "";
       const loader = async (which) => {
@@ -4107,7 +4107,7 @@
       vars.push("--xp-fallback:transparent", "--xp-fallback-caption:transparent");
       return vars.join(";");
     })().catch(() => "");
-    rendered.set(key7, work);
+    rendered.set(key5, work);
     return work;
   }
 
@@ -4581,12 +4581,12 @@ ${xpControlCss}`);
     ensureCrispFilter(document);
     let current4 = "", fontDpr = 0;
     const update = () => {
-      const { scheme, dark, dpr } = appearanceState(), { scale: scale2, zoom } = currentPixelScale(), key7 = `${scheme}|${dark}|${dpr}|${scale2}`;
-      if (key7 === current4) {
+      const { scheme, dark, dpr } = appearanceState(), { scale: scale2, zoom } = currentPixelScale(), key5 = `${scheme}|${dark}|${dpr}|${scale2}`;
+      if (key5 === current4) {
         syncZoom();
         return;
       }
-      current4 = key7;
+      current4 = key5;
       const font = xpFontCss(dpr), drawn = scale2 ? xpFontCss(scale2) : null;
       if (fontDpr !== dpr) {
         fonts.textContent = font.faces;
@@ -4617,7 +4617,7 @@ ${unzoomedScope}{${font.vars};--atelier-zoom:1${images2 && ";" + images2}}
 ${zoomCss(zoom)}` : "");
       theme2.textContent = sheet();
       void Promise.all([lunaImageVars(scheme, dark, dpr), scale2 ? lunaImageVars(scheme, dark, scale2) : ""]).then(([images2, drawnImages]) => {
-        if (current4 === key7 && (images2 || drawnImages)) theme2.textContent = sheet(images2, drawnImages);
+        if (current4 === key5 && (images2 || drawnImages)) theme2.textContent = sheet(images2, drawnImages);
       });
       watchScale(dpr);
       syncZoom();
@@ -5510,7 +5510,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
   // src/modules/sounds/media.ts
   var pulseKey = "AtelierSounds_mediaPulse";
   function startSoundMediaMonitor(changed) {
-    const key7 = soundMediaPrefix + crypto.randomUUID();
+    const key5 = soundMediaPrefix + crypto.randomUUID();
     const media2 = /* @__PURE__ */ new Set(), roots2 = /* @__PURE__ */ new WeakSet(), frames = /* @__PURE__ */ new WeakSet();
     let suspended = false, playing = false, published = false;
     const events = new AbortController();
@@ -5524,12 +5524,12 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     function publish(force = false) {
       if (playing && !suspended) {
         if (force || !published) {
-          GM_setValue(key7, { version: 1, at: Date.now(), playing: true });
+          GM_setValue(key5, { version: 1, at: Date.now(), playing: true });
           signal();
         }
         published = true;
       } else if (published) {
-        GM_deleteValue(key7);
+        GM_deleteValue(key5);
         published = false;
         signal();
       }
@@ -5547,7 +5547,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
       const foundFrames = [...root2.querySelectorAll("iframe")];
       if (root2.tagName === "IFRAME") foundFrames.unshift(root2);
       for (const frame2 of foundFrames) {
-        const read4 = () => {
+        const read2 = () => {
           try {
             if (frame2.contentDocument) watch(frame2.contentDocument);
           } catch {
@@ -5555,9 +5555,9 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
         };
         if (!frames.has(frame2)) {
           frames.add(frame2);
-          frame2.addEventListener("load", read4, { signal: events.signal });
+          frame2.addEventListener("load", read2, { signal: events.signal });
         }
-        read4();
+        read2();
       }
     }
     function watch(root2) {
@@ -5596,7 +5596,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
       if (playing && !suspended) return true;
       const now = Date.now();
       for (const other of GM_listValues()) {
-        if (!other.startsWith(soundMediaPrefix) || other === key7) continue;
+        if (!other.startsWith(soundMediaPrefix) || other === key5) continue;
         if (activeMediaHeartbeat(GM_getValue(other), now)) return true;
       }
       return false;
@@ -6377,13 +6377,13 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
   var viewedKey = (id) => `v:${id}`;
   var uidKey = (uid) => `u:${String(uid).trim()}`;
   var nameKey = (name) => `n:${String(name).trim().toLowerCase()}`;
-  function validKey(key7) {
-    const value2 = key7.slice(2);
-    if (key7.startsWith("v:")) return isViewedId(value2);
-    if (key7.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
-    return key7.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
+  function validKey(key5) {
+    const value2 = key5.slice(2);
+    if (key5.startsWith("v:")) return isViewedId(value2);
+    if (key5.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
+    return key5.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
   }
-  var sameKeys = (a, b) => a.size === b.size && [...a].every((key7) => b.has(key7));
+  var sameKeys = (a, b) => a.size === b.size && [...a].every((key5) => b.has(key5));
 
   // src/modules/blocker/rules.ts
   var ruleDefinitions = [
@@ -6421,31 +6421,31 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     }
     return normalized;
   }
-  function readRuleList(key7) {
-    const integer = integerRuleKeys.has(key7);
-    return normalizeStoredRules(GM_getValue(key7, []), integer);
+  function readRuleList(key5) {
+    const integer = integerRuleKeys.has(key5);
+    return normalizeStoredRules(GM_getValue(key5, []), integer);
   }
   var syncedRules = { precise_uid: { prefix: "u:", key: uidKey }, precise_name: { prefix: "n:", key: nameKey } };
-  var isSyncedRule = (key7) => Object.prototype.hasOwnProperty.call(syncedRules, key7);
+  var isSyncedRule = (key5) => Object.prototype.hasOwnProperty.call(syncedRules, key5);
   var journal;
-  var keysOf = (key7, values) => new Set(values.map(syncedRules[key7].key).filter(validKey));
-  function writeRuleList(key7, values) {
-    const integer = integerRuleKeys.has(key7);
+  var keysOf = (key5, values) => new Set(values.map(syncedRules[key5].key).filter(validKey));
+  function writeRuleList(key5, values) {
+    const integer = integerRuleKeys.has(key5);
     const normalized = normalizeStoredRules(values, integer);
-    if (isSyncedRule(key7)) journal?.(keysOf(key7, readRuleList(key7)), keysOf(key7, normalized));
-    GM_setValue(key7, normalized);
+    if (isSyncedRule(key5)) journal?.(keysOf(key5, readRuleList(key5)), keysOf(key5, normalized));
+    GM_setValue(key5, normalized);
     return normalized;
   }
   var blockedUserSyncStore = {
     keys: () => /* @__PURE__ */ new Set([...keysOf("precise_uid", readRuleList("precise_uid")), ...keysOf("precise_name", readRuleList("precise_name"))]),
     applySync(desired) {
-      const mine = new Set([...desired].filter((key7) => key7.startsWith("u:") || key7.startsWith("n:")));
+      const mine = new Set([...desired].filter((key5) => key5.startsWith("u:") || key5.startsWith("n:")));
       if (sameKeys(mine, blockedUserSyncStore.keys())) return false;
-      for (const key7 of Object.keys(syncedRules)) {
-        const { prefix: prefix4, key: toKey } = syncedRules[key7];
-        const local = readRuleList(key7).filter((value2) => !validKey(toKey(value2)));
+      for (const key5 of Object.keys(syncedRules)) {
+        const { prefix: prefix4, key: toKey } = syncedRules[key5];
+        const local = readRuleList(key5).filter((value2) => !validKey(toKey(value2)));
         const synced = [...mine].filter((entry) => entry.startsWith(prefix4)).map((entry) => entry.slice(prefix4.length));
-        GM_setValue(key7, normalizeStoredRules([...local, ...synced], integerRuleKeys.has(key7)));
+        GM_setValue(key5, normalizeStoredRules([...local, ...synced], integerRuleKeys.has(key5)));
       }
       return true;
     },
@@ -6460,31 +6460,31 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     }
     return snapshot;
   }
-  function addRuleItem(key7, value2) {
-    const validation = validateRuleInput(value2, integerRuleKeys.has(key7));
+  function addRuleItem(key5, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key5));
     if (!validation.status) {
       return validation;
     }
-    const current4 = readRuleList(key7);
+    const current4 = readRuleList(key5);
     if (current4.includes(validation.res)) {
       return { status: false, res: "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" };
     }
     current4.push(validation.res);
-    writeRuleList(key7, current4);
+    writeRuleList(key5, current4);
     return { status: true, res: "\u6DFB\u52A0\u6210\u529F", value: validation.res };
   }
-  function removeRuleItem(key7, value2) {
-    const validation = validateRuleInput(value2, integerRuleKeys.has(key7));
+  function removeRuleItem(key5, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key5));
     if (!validation.status) {
       return validation;
     }
-    const current4 = readRuleList(key7);
+    const current4 = readRuleList(key5);
     const index = current4.findIndex((item) => item === validation.res);
     if (index < 0) {
       return { status: false, res: "\u89C4\u5219\u4E0D\u5B58\u5728" };
     }
     current4.splice(index, 1);
-    writeRuleList(key7, current4);
+    writeRuleList(key5, current4);
     return { status: true, res: "\u5DF2\u89E3\u9664\u5C4F\u853D", value: validation.res };
   }
   function importRuleSnapshot(data, mode2) {
@@ -8175,19 +8175,19 @@ ${concealCss}
       return false;
     }
   }
-  function readKey(key7) {
-    if (typeof key7 !== "string") throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
-    const parts2 = key7.split(":");
+  function readKey(key5) {
+    if (typeof key5 !== "string") throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
+    const parts2 = key5.split(":");
     if (parts2.length === 2 && parts2[0] === "follow" && validUid(parts2[1])) return { kind: "follow", uid: parts2[1] };
     if (parts2.length === 2 && parts2[0] === "group" && validUuid(parts2[1])) return { kind: "group", group: parts2[1] };
     if (parts2.length === 2 && parts2[0] === "group-icon" && validUuid(parts2[1])) return { kind: "icon", group: parts2[1] };
     if (parts2.length === 4 && parts2[0] === "member" && validUid(parts2[1]) && validUuid(parts2[2]) && validUuid(parts2[3]))
       return { kind: "member", uid: parts2[1], generation: parts2[2], group: parts2[3] };
-    if (key7 === "group-order") return { kind: "order" };
+    if (key5 === "group-order") return { kind: "order" };
     throw new Error("\u672C\u5730\u5173\u6CE8\u6761\u76EE\u952E\u635F\u574F");
   }
-  function readValue(key7, value2) {
-    switch (key7.kind) {
+  function readValue(key5, value2) {
+    switch (key5.kind) {
       case "follow":
         if (value2 === null) return null;
         if (fields(value2, ["name", "face", "addedAt"]) && typeof value2.name === "string" && validFace(value2.face) && typeof value2.addedAt === "number" && Number.isSafeInteger(value2.addedAt) && value2.addedAt >= 0)
@@ -8211,8 +8211,8 @@ ${concealCss}
   function readOperation(input) {
     if (!fields(input, ["id", "key", "value", "parents"]) || !validUuid(input.id) || !Array.isArray(input.parents) || !input.parents.every(validUuid) || new Set(input.parents).size !== input.parents.length || input.parents.includes(input.id))
       throw new Error("\u672C\u5730\u5173\u6CE8\u64CD\u4F5C\u635F\u574F");
-    const key7 = readKey(input.key);
-    return { id: input.id, key: input.key, value: readValue(key7, input.value), parents: [...input.parents].sort(lexical) };
+    const key5 = readKey(input.key);
+    return { id: input.id, key: input.key, value: readValue(key5, input.value), parents: [...input.parents].sort(lexical) };
   }
   function parseLocalFollowBatch(input) {
     if (!fields(input, ["schema", "version", "operations"]) || input.schema !== "bili-atelier-local-following" || input.version !== 1 && input.version !== 2 || !Array.isArray(input.operations) || input.operations.length > 1e4)
@@ -8243,14 +8243,14 @@ ${concealCss}
         if (!children.has(parentId)) children.set(parentId, []);
         children.get(parentId).push(op.id);
       }
-      const key7 = readKey(op.key);
-      if (key7.kind === "member") {
-        const generation = map.get(key7.generation);
-        if (!generation || generation.key !== `follow:${key7.uid}` || generation.value === null || !groupKeys.has(`group:${key7.group}`))
+      const key5 = readKey(op.key);
+      if (key5.kind === "member") {
+        const generation = map.get(key5.generation);
+        if (!generation || generation.key !== `follow:${key5.uid}` || generation.value === null || !groupKeys.has(`group:${key5.group}`))
           throw new Error("\u672C\u5730\u5173\u6CE8\u6210\u5458\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u8D26\u53F7\u4EE3\u6216\u5206\u7EC4");
       }
-      if (key7.kind === "icon" && !groupKeys.has(`group:${key7.group}`)) throw new Error("\u672C\u5730\u5173\u6CE8\u56FE\u6807\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
-      if (key7.kind === "order" && op.value.some((id) => !groupKeys.has(`group:${id}`)))
+      if (key5.kind === "icon" && !groupKeys.has(`group:${key5.group}`)) throw new Error("\u672C\u5730\u5173\u6CE8\u56FE\u6807\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
+      if (key5.kind === "order" && op.value.some((id) => !groupKeys.has(`group:${id}`)))
         throw new Error("\u672C\u5730\u5173\u6CE8\u6392\u5E8F\u5F15\u7528\u4E0D\u5B58\u5728\u7684\u5206\u7EC4");
     }
     const queue = [...degrees].filter(([, n]) => n === 0).map(([id]) => id);
@@ -8278,10 +8278,10 @@ ${concealCss}
   }
   function materializeLocalFollow(operations) {
     const heads = localFollowFrontier(operations), groupMap = /* @__PURE__ */ new Map();
-    for (const [key7, ops] of heads) if (key7.startsWith("group:")) {
+    for (const [key5, ops] of heads) if (key5.startsWith("group:")) {
       const value2 = winner(ops).value;
       if (value2 === null) continue;
-      const id = key7.slice(6), icon2 = heads.get(`group-icon:${id}`);
+      const id = key5.slice(6), icon2 = heads.get(`group-icon:${id}`);
       groupMap.set(id, icon2 ? { id, name: value2, icon: winner(icon2).value } : { id, name: value2 });
     }
     const orderHeads = heads.get("group-order");
@@ -8290,10 +8290,10 @@ ${concealCss}
     order.push(...[...groupMap.keys()].filter((id) => !ordered.has(id)).sort(lexical));
     const groups = order.map((id) => groupMap.get(id));
     const accounts = [];
-    for (const [key7, ops] of heads) if (key7.startsWith("follow:")) {
+    for (const [key5, ops] of heads) if (key5.startsWith("follow:")) {
       const chosen = winner(ops);
       if (chosen.value === null) continue;
-      const uid = key7.slice(7), generations = ops.map((o) => o.id);
+      const uid = key5.slice(7), generations = ops.map((o) => o.id);
       const groupIds = order.filter((group) => {
         const memberships = generations.flatMap((generation) => heads.get(`member:${uid}:${generation}:${group}`) || []);
         return memberships.some((o) => o.value === true) && !memberships.some((o) => o.value === false);
@@ -8309,7 +8309,7 @@ ${concealCss}
   var localFollowChangedEvent = "atelier-local-following-changed";
   var listeners = /* @__PURE__ */ new Set();
   var uuid = () => crypto.randomUUID();
-  var recordKeys = () => GM_listValues().filter((key7) => key7.startsWith(prefix + "record_") || key7.startsWith(prefix + "pull_")).sort();
+  var recordKeys = () => GM_listValues().filter((key5) => key5.startsWith(prefix + "record_") || key5.startsWith(prefix + "pull_")).sort();
   function localFollowRecords(keys = recordKeys()) {
     const result = /* @__PURE__ */ new Map();
     const add = (id, raw) => {
@@ -8321,10 +8321,10 @@ ${concealCss}
       }
       result.set(id, batch2);
     };
-    for (const key7 of keys) {
-      if (key7.startsWith(prefix + "record_")) add(key7.slice((prefix + "record_").length), GM_getValue(key7));
-      else if (key7.startsWith(prefix + "pull_")) {
-        const value2 = GM_getValue(key7);
+    for (const key5 of keys) {
+      if (key5.startsWith(prefix + "record_")) add(key5.slice((prefix + "record_").length), GM_getValue(key5));
+      else if (key5.startsWith(prefix + "pull_")) {
+        const value2 = GM_getValue(key5);
         if (!value2 || typeof value2 !== "object" || Array.isArray(value2)) throw new Error("\u672C\u5730\u5173\u6CE8\u62C9\u53D6\u65E5\u5FD7\u635F\u574F");
         for (const [id, raw] of Object.entries(value2)) add(id, raw);
       }
@@ -8409,10 +8409,10 @@ ${concealCss}
     if (!changes2.length) return;
     const heads = localFollowFrontier(known2);
     const operations = [];
-    for (const [key7, value2] of changes2) {
-      const operation = { id: uuid(), key: key7, value: value2, parents: (heads.get(key7) ?? []).map((head) => head.id).sort() };
+    for (const [key5, value2] of changes2) {
+      const operation = { id: uuid(), key: key5, value: value2, parents: (heads.get(key5) ?? []).map((head) => head.id).sort() };
       operations.push(operation);
-      heads.set(key7, [operation]);
+      heads.set(key5, [operation]);
     }
     mergeLocalFollowOperations(known2, operations);
     if (operations.length <= 1e4) GM_setValue(prefix + "record_" + uuid(), localFollowBatch(operations));
@@ -8601,10 +8601,10 @@ ${concealCss}
     return [a0, b0, c0, d0].flatMap((n) => [0, 8, 16, 24].map((shift) => (n >>> shift & 255).toString(16).padStart(2, "0"))).join("");
   }
   var mixin = [46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13];
-  function localFollowWbiQuery(params, key7, now = Date.now()) {
+  function localFollowWbiQuery(params, key5, now = Date.now()) {
     const values = { ...params, wts: String(Math.floor(now / 1e3)) };
     const query = Object.keys(values).sort().map((name) => `${encodeURIComponent(name)}=${encodeURIComponent(values[name].replace(/[!'()*]/g, ""))}`).join("&");
-    return `${query}&w_rid=${localFollowMd5(query + key7)}`;
+    return `${query}&w_rid=${localFollowMd5(query + key5)}`;
   }
   function successful(raw) {
     if (!raw || raw.code !== 0 || !raw.data || typeof raw.data !== "object") {
@@ -8657,9 +8657,9 @@ ${concealCss}
     }
     async dynamic(uid, signal, offset = "") {
       if (!normalizeLocalUid(uid)) throw new Error("\u65E0\u6548\u8D26\u53F7");
-      const key7 = await this.signingKey(signal);
+      const key5 = await this.signingKey(signal);
       if (signal.aborted) throw new DOMException("\u68C0\u67E5\u5DF2\u53D6\u6D88", "AbortError");
-      const query = localFollowWbiQuery({ host_mid: uid, offset, timezone_offset: String((/* @__PURE__ */ new Date()).getTimezoneOffset()), platform: "web", features: localFollowFeatures, web_location: "333.1387" }, key7);
+      const query = localFollowWbiQuery({ host_mid: uid, offset, timezone_offset: String((/* @__PURE__ */ new Date()).getTimezoneOffset()), platform: "web", features: localFollowFeatures, web_location: "333.1387" }, key5);
       const data = successful(await this.request(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?${query}`, signal));
       if (!Array.isArray(data.items)) throw new BiliReadError("\u52A8\u6001\u9875\u683C\u5F0F\u65E0\u6548\uFF0C\u4FDD\u7559\u5DF2\u6709\u8BB0\u5F55");
       return data;
@@ -9054,7 +9054,7 @@ ${concealCss}
     else options.batch.addEventListener("abort", stopAll, { once: true });
     const worker = async () => {
       while (!stopped && queue.length) {
-        const key7 = queue.shift(), controller = new AbortController();
+        const key5 = queue.shift(), controller = new AbortController();
         active2.add(controller);
         let timedOut = false;
         const timer2 = setTimeout(() => {
@@ -9063,12 +9063,12 @@ ${concealCss}
         }, timeout);
         const aborted = new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError")), { once: true }));
         try {
-          const value2 = await Promise.race([options.read(key7, controller.signal), aborted]);
-          if (!stopped && !controller.signal.aborted) options.onValue(key7, value2);
+          const value2 = await Promise.race([options.read(key5, controller.signal), aborted]);
+          if (!stopped && !controller.signal.aborted) options.onValue(key5, value2);
         } catch (error) {
           if (timedOut && !stopped) {
-            if (options.onError(key7, new LocalReadTimeout(timeout))) stopAll();
-          } else if (!stopped && !controller.signal.aborted && options.onError(key7, error)) stopAll();
+            if (options.onError(key5, new LocalReadTimeout(timeout))) stopAll();
+          } else if (!stopped && !controller.signal.aborted && options.onError(key5, error)) stopAll();
         } finally {
           clearTimeout(timer2);
           active2.delete(controller);
@@ -9245,9 +9245,9 @@ ${concealCss}
         const local = Object.fromEntries(Object.entries(entry.local ?? {}).filter(([uid, generation]) => live.get(uid) === generation));
         return entry.online || Object.keys(local).length ? [{ ...entry, local }] : [];
       });
-      for (const key7 of Object.keys(this.cache.cursors)) {
-        const [kind, uid, generation] = key7.split(":");
-        if (kind === "local" && live.get(uid) !== generation) delete this.cache.cursors[key7];
+      for (const key5 of Object.keys(this.cache.cursors)) {
+        const [kind, uid, generation] = key5.split(":");
+        if (kind === "local" && live.get(uid) !== generation) delete this.cache.cursors[key5];
       }
     }
     stale(source) {
@@ -9335,15 +9335,15 @@ ${concealCss}
       this.prune();
       let session = this.session;
       if (options.first || !session || session.type !== type) session = this.session = { id: Math.random().toString(36).slice(2, 10), type, delivered: /* @__PURE__ */ new Set(), baseline: "", pages: 0 };
-      let failed = 0, stopped = false, first2 = "", read4 = 0, total = 0;
+      let failed = 0, stopped = false, first2 = "", read2 = 0, total = 0;
       const failedKeys = /* @__PURE__ */ new Set();
       const tally = (result) => {
         failed += result.failed;
         stopped ||= result.stopped;
         first2 ||= result.first;
-        read4 += result.read;
+        read2 += result.read;
         total += result.total;
-        for (const key7 of result.failedKeys) failedKeys.add(key7);
+        for (const key5 of result.failedKeys) failedKeys.add(key5);
         return result;
       };
       if (options.first) {
@@ -9372,7 +9372,7 @@ ${concealCss}
       session.pages++;
       this.persist();
       const more = !stopped && !!slice.length && (this.continuation(type, failedKeys).length > 0 || pending2().length > 0);
-      this.status = stopped ? `\u670D\u52A1\u9650\u5236\uFF0C\u5DF2\u505C\u6B62\uFF1A${first2}` : failed ? `\u5DF2\u8BFB\u53D6 ${read4}/${total} \u4E2A\u6765\u6E90\uFF0C\u5931\u8D25 ${failed}\uFF08${first2}\uFF09` : total ? `\u5DF2\u8BFB\u53D6 ${read4} \u4E2A\u6765\u6E90` : "\u4F7F\u7528\u672C\u673A\u7F13\u5B58";
+      this.status = stopped ? `\u670D\u52A1\u9650\u5236\uFF0C\u5DF2\u505C\u6B62\uFF1A${first2}` : failed ? `\u5DF2\u8BFB\u53D6 ${read2}/${total} \u4E2A\u6765\u6E90\uFF0C\u5931\u8D25 ${failed}\uFF08${first2}\uFF09` : total ? `\u5DF2\u8BFB\u53D6 ${read2} \u4E2A\u6765\u6E90` : "\u4F7F\u7528\u672C\u673A\u7F13\u5B58";
       return { code: 0, message: "0", ttl: 1, data: { has_more: more, items: slice.map((entry) => entry.raw), offset: `${tokenPrefix}${session.id}:${session.pages}`, update_baseline: session.baseline, update_num: 0 } };
     }
     /** One UP's own stream, read from their space feed in their own order
@@ -9380,7 +9380,7 @@ ${concealCss}
      * cursors; re-selecting within 15 minutes replays it without a read. */
     async authorPage(uid, type, options) {
       const signal = options.signal ?? new AbortController().signal, kinds2 = typeKinds[type];
-      let error, read4 = 0;
+      let error, read2 = 0;
       const fetch2 = async (fromTop) => {
         let data;
         const stream2 = this.authors.get(uid);
@@ -9389,7 +9389,7 @@ ${concealCss}
           batch: signal,
           limit: 1,
           timeout: this.deps.timeout,
-          read: (key7, readSignal) => this.deps.api.dynamic(key7, readSignal, fromTop || !stream2 ? "" : stream2.offset),
+          read: (key5, readSignal) => this.deps.api.dynamic(key5, readSignal, fromTop || !stream2 ? "" : stream2.offset),
           onValue: (_, value2) => {
             data = value2;
           },
@@ -9399,7 +9399,7 @@ ${concealCss}
           }
         });
         if (!data) return false;
-        read4++;
+        read2++;
         (this.deps.observe ?? observeLocalFollowDynamics)(data, uid);
         const items = data.items.filter((raw) => raw && typeof raw.id_str === "string" && raw.id_str && author(raw) === uid);
         const offset = typeof data.offset === "string" ? data.offset : String(data.offset ?? "");
@@ -9437,7 +9437,7 @@ ${concealCss}
       const stream = this.authors.get(uid);
       const stopped = error instanceof BiliReadError && error.stopsBatch;
       const message = error instanceof Error ? error.message : error ? "\u8BFB\u53D6\u5931\u8D25" : "";
-      this.status = stopped ? `\u670D\u52A1\u9650\u5236\uFF0C\u5DF2\u505C\u6B62\uFF1A${message}` : message ? `\u8BFB\u53D6\u5931\u8D25\uFF1A${message}` : read4 ? "\u5DF2\u8BFB\u53D6 1 \u4E2A\u6765\u6E90" : "\u4F7F\u7528\u672C\u9875\u7F13\u5B58";
+      this.status = stopped ? `\u670D\u52A1\u9650\u5236\uFF0C\u5DF2\u505C\u6B62\uFF1A${message}` : message ? `\u8BFB\u53D6\u5931\u8D25\uFF1A${message}` : read2 ? "\u5DF2\u8BFB\u53D6 1 \u4E2A\u6765\u6E90" : "\u4F7F\u7528\u672C\u9875\u7F13\u5B58";
       const more = !stopped && !!slice.length && !!stream && (stream.next < stream.items.length || stream.hasMore);
       return { code: 0, message: "0", ttl: 1, data: { has_more: more, items: slice, offset: `${tokenPrefix}author:${uid}`, update_baseline: "", update_num: 0 } };
     }
@@ -9464,8 +9464,8 @@ ${concealCss}
       if (entries.length > localFeedCacheLimit) {
         const bound = time(entries[localFeedCacheLimit - 1].raw);
         entries = entries.filter((entry) => time(entry.raw) >= bound && time(entry.raw) > 0);
-        cursors2 = Object.fromEntries(Object.entries(cursors2).map(([key7, cursor]) => [
-          key7,
+        cursors2 = Object.fromEntries(Object.entries(cursors2).map(([key5, cursor]) => [
+          key5,
           cursor.frontier !== void 0 && cursor.frontier < bound ? { offset: "", hasMore: true, fetchedAt: cursor.fetchedAt } : cursor
         ]));
       }
@@ -9701,18 +9701,18 @@ ${concealCss}
     const content = card3.appendChild(body(raw));
     if (!nested) {
       const stat = raw?.modules?.module_stat ?? {}, actions = node("div", "adc-actions");
-      for (const [label, key7] of [["\u8F6C\u53D1", "forward"], ["\u8BC4\u8BBA", "comment"], ["\u70B9\u8D5E", "like"]]) {
-        const button5 = actions.appendChild(node("button", `adc-button atelier-control adc-${key7}`, label));
+      for (const [label, key5] of [["\u8F6C\u53D1", "forward"], ["\u8BC4\u8BBA", "comment"], ["\u70B9\u8D5E", "like"]]) {
+        const button5 = actions.appendChild(node("button", `adc-button atelier-control adc-${key5}`, label));
         button5.type = "button";
-        button5.dataset.action = key7;
+        button5.dataset.action = key5;
         button5.dataset.label = label;
-        button5.dataset.count = String(Math.max(0, Number(stat[key7]?.count) || 0));
-        const value2 = count(stat[key7]?.count);
+        button5.dataset.count = String(Math.max(0, Number(stat[key5]?.count) || 0));
+        const value2 = count(stat[key5]?.count);
         if (value2) button5.textContent = `${label} ${value2}`;
-        if (key7 === "like") button5.setAttribute("aria-pressed", String(stat.like?.status === true));
-        if (stat[key7]?.disabled || stat[key7]?.forbidden) {
+        if (key5 === "like") button5.setAttribute("aria-pressed", String(stat.like?.status === true));
+        if (stat[key5]?.disabled || stat[key5]?.forbidden) {
           button5.disabled = true;
-          button5.title = key7 === "comment" ? "\u8FD9\u6761\u52A8\u6001\u7684\u8BC4\u8BBA\u533A\u5DF2\u5173\u95ED" : key7 === "like" ? "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u70B9\u8D5E" : "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u8F6C\u53D1";
+          button5.title = key5 === "comment" ? "\u8FD9\u6761\u52A8\u6001\u7684\u8BC4\u8BBA\u533A\u5DF2\u5173\u95ED" : key5 === "like" ? "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u70B9\u8D5E" : "\u8FD9\u6761\u52A8\u6001\u4E0D\u80FD\u8F6C\u53D1";
         }
       }
       const last = node("div", "adc-last");
@@ -9802,9 +9802,9 @@ ${root} .btnView{z-index:3}
     return raw.data ?? {};
   }
   var FeedInteractions = class {
-    constructor(read4, write3, signingKey, mid) {
-      this.read = read4;
-      this.write = write3;
+    constructor(read2, write, signingKey, mid) {
+      this.read = read2;
+      this.write = write;
       this.signingKey = signingKey;
       this.mid = mid;
     }
@@ -11113,6 +11113,51 @@ ${on} aside.right>section.sticky{top:calc(${headerBottomCss} + 8px)!important}
   var currentPageLayout = () => layout;
   var notifyPageLayoutChanged = () => window.dispatchEvent(new Event(pageLayoutChanged));
 
+  // src/ui/screen-records.ts
+  function screenRecords(key5, legacyKey, parse3) {
+    const stored = () => typeof GM_getValue === "function" && typeof GM_setValue === "function";
+    const all = () => {
+      const value2 = stored() ? GM_getValue(key5, {}) : {};
+      return value2 && typeof value2 === "object" ? { ...value2 } : {};
+    };
+    let screen = ratioKey(screenRatio());
+    return {
+      /** The record for the screen the page is on now; save() writes that one. */
+      load() {
+        screen = ratioKey(screenRatio());
+        const records2 = all();
+        const legacy = stored() ? GM_getValue(legacyKey, void 0) : void 0;
+        if (legacy !== void 0) {
+          if (!(screen in records2)) records2[screen] = legacy;
+          GM_setValue(key5, records2);
+          if (typeof GM_deleteValue === "function") GM_deleteValue(legacyKey);
+        }
+        return parse3(records2[screen]);
+      },
+      /** Only this screen's record: another tab on another screen keeps its own. */
+      save(value2) {
+        if (stored()) GM_setValue(key5, { ...all(), [screen]: value2 });
+      }
+    };
+  }
+  function onScreenChange(change) {
+    let screen = ratioKey(screenRatio()), query;
+    const watch = () => {
+      query?.removeEventListener("change", check2);
+      query = window.matchMedia?.(`(resolution: ${screenRatio()}dppx)`);
+      query?.addEventListener("change", check2);
+    };
+    function check2() {
+      if (query && !query.matches) watch();
+      const next = ratioKey(screenRatio());
+      if (next === screen) return;
+      screen = next;
+      change();
+    }
+    watch();
+    window.addEventListener("resize", check2);
+  }
+
   // src/ui/side-bounds.ts
   var inside = 4;
   var outside = 2;
@@ -11174,7 +11219,8 @@ html[${attribute}=drag] *{user-select:none!important}
       const side = hitBound(m, x, y, headerScreenHeight(), innerHeight, zoomOf(document.body));
       return side && !covered(x, y) ? { m, side } : null;
     }
-    let dragging = false, hover = null, frame2 = 0;
+    let dragging = false, cancelDrag = null, hover = null, frame2 = 0;
+    onScreenChange(() => cancelDrag?.());
     const repaintHover = () => {
       frame2 = 0;
       if (dragging) return;
@@ -11226,11 +11272,12 @@ html[${attribute}=drag] *{user-select:none!important}
         window.removeEventListener("pointerup", up, true);
         window.removeEventListener("pointercancel", cancel, true);
         window.removeEventListener("blur", cancel);
-        window.removeEventListener("keydown", key7, true);
+        window.removeEventListener("keydown", key5, true);
         cancelAnimationFrame(moveFrame);
         sheet.remove();
         hide();
         dragging = false;
+        cancelDrag = null;
         setState("");
         if (apply) {
           blank = dragBlank(start, last - x, side, max);
@@ -11239,7 +11286,8 @@ html[${attribute}=drag] *{user-select:none!important}
         frame2 ||= requestAnimationFrame(repaintHover);
       };
       const up = () => finish(true), cancel = () => finish(false);
-      const key7 = (next) => {
+      cancelDrag = cancel;
+      const key5 = (next) => {
         if (next.key === "Escape") {
           next.preventDefault();
           next.stopImmediatePropagation();
@@ -11250,7 +11298,7 @@ html[${attribute}=drag] *{user-select:none!important}
       window.addEventListener("pointerup", up, true);
       window.addEventListener("pointercancel", cancel, true);
       window.addEventListener("blur", cancel);
-      window.addEventListener("keydown", key7, true);
+      window.addEventListener("keydown", key5, true);
     }, true);
     window.addEventListener("dblclick", (event) => {
       if (!hit(event.clientX, event.clientY)) return;
@@ -11523,11 +11571,11 @@ html[${attribute}=drag] *{user-select:none!important}
     return numbers === 0 && dots > 0 ? { count: 0, dot: true, entries } : { count: numbers, dot: false, entries };
   }
   function dynamicOffsets(cookie, mid) {
-    const read4 = (name) => {
+    const read2 = (name) => {
       const value2 = new RegExp(`(?:^|;\\s*)${name}_${mid}=([^;]*)`).exec(cookie)?.[1] ?? "";
       return value2 && value2 !== "undefined" ? decodeURIComponent(value2) : "";
     };
-    const offsets = { all: read4("bp_t_offset"), video: read4("bp_video_offset"), article: read4("bp_article_offset") };
+    const offsets = { all: read2("bp_t_offset"), video: read2("bp_video_offset"), article: read2("bp_article_offset") };
     return { ...offsets, first: !offsets.all && !offsets.video && !offsets.article };
   }
 
@@ -11550,9 +11598,9 @@ html[${attribute}=drag] *{user-select:none!important}
     node4.draggable = false;
     return node4;
   };
-  var titled = (label, key7) => {
+  var titled = (label, key5) => {
     const span = el("span");
-    span.append(label + "(", el("u", "", key7), ")");
+    span.append(label + "(", el("u", "", key5), ")");
     return span;
   };
   var newTab = (href) => window.open(href, "_blank", "noopener");
@@ -11570,7 +11618,7 @@ html[${attribute}=drag] *{user-select:none!important}
     else location.href = `https://passport.bilibili.com/login?gourl=${encodeURIComponent(location.href)}`;
   }
   function createLunaHeader(options) {
-    const { read: read4 } = options;
+    const { read: read2 } = options;
     const loggedIn = biliLoggedIn();
     const header = el("header", "lh");
     header.setAttribute("data-bili-blocker-ui", "true");
@@ -11595,17 +11643,17 @@ html[${attribute}=drag] *{user-select:none!important}
       else openFrom(anchor, items, align);
     };
     const openers = {};
-    const menu = (id, label2, key7, items) => {
+    const menu = (id, label2, key5, items) => {
       const button6 = menus.appendChild(el("button", "lh-menu-title"));
       button6.type = "button";
-      button6.append(titled(label2, key7));
+      button6.append(titled(label2, key5));
       button6.setAttribute("data-menu-anchor", "");
       button6.setAttribute("aria-haspopup", "menu");
       button6.addEventListener("click", () => toggleFrom(button6, items));
       button6.addEventListener("pointerenter", () => {
         if (chain.isOpen && active2 && active2 !== button6 && active2.classList.contains("lh-menu-title")) openFrom(button6, items);
       });
-      openers[key7.toLowerCase()] = () => openFrom(button6, items, "left", true);
+      openers[key5.toLowerCase()] = () => openFrom(button6, items, "left", true);
       return button6;
     };
     const brand = bar.appendChild(el("div", "lh-brand"));
@@ -11679,7 +11727,7 @@ html[${attribute}=drag] *{user-select:none!important}
       { label: "\u4E34\u65F6\u663E\u793A\u88AB\u5C4F\u853D\u9879", checked: isShowingBlocked(), action: toggleBlockedVisibility }
     ]);
     async function favorites2() {
-      const groups = await read4(`${api2}/x/v3/fav/folder/list4navigate`);
+      const groups = await read2(`${api2}/x/v3/fav/folder/list4navigate`);
       const folders = (Array.isArray(groups) ? groups : []).flatMap((group) => Array.isArray(group?.mediaListResponse?.list) ? group.mediaListResponse.list : []);
       return [
         { label: "\u6253\u5F00\u6211\u7684\u6536\u85CF\u5939", icon: ie_favorites_16_default, href: `https://space.bilibili.com/${me.mid}/favlist` },
@@ -11693,7 +11741,7 @@ html[${attribute}=drag] *{user-select:none!important}
       ];
     }
     async function folderItems(id, total) {
-      const data = await read4(`${api2}/x/v3/fav/resource/list4navigate?platform=web&media_id=${id}`);
+      const data = await read2(`${api2}/x/v3/fav/resource/list4navigate?platform=web&media_id=${id}`);
       const medias = Array.isArray(data?.medias) ? data.medias : Array.isArray(data) ? data : [];
       return [
         ...medias.slice(0, 10).map((media2) => ({ label: String(media2?.title ?? ""), icon: video(), href: media2?.bvid ? `https://www.bilibili.com/video/${media2.bvid}/` : String(media2?.link ?? `https://www.bilibili.com/`) })),
@@ -11762,7 +11810,7 @@ html[${attribute}=drag] *{user-select:none!important}
       const reset = button5(views_default, "\u91CD\u7F6E\u5E03\u5C40", async () => {
         const layout2 = currentPageLayout();
         if (!layout2 || layout2.isDefault()) return;
-        if (await atelierDialog({ title: "\u91CD\u7F6E\u5E03\u5C40", message: "\u8981\u628A\u8FD9\u4E9B\u7A97\u53E3\u7684\u5927\u5C0F\u90FD\u6062\u590D\u6210\u9ED8\u8BA4\u503C\u5417\uFF1F", confirmLabel: "\u662F", cancelLabel: "\u5426" }) === null) return;
+        if (await atelierDialog({ title: "\u91CD\u7F6E\u5E03\u5C40", message: "\u8981\u628A\u8FD9\u4E9B\u7A97\u53E3\u5728\u8FD9\u5757\u5C4F\u5E55\u4E0A\u7684\u5927\u5C0F\u90FD\u6062\u590D\u6210\u9ED8\u8BA4\u503C\u5417\uFF1F", confirmLabel: "\u662F", cancelLabel: "\u5426" }) === null) return;
         layout2.reset();
       });
       const paintReset = () => {
@@ -11790,7 +11838,7 @@ html[${attribute}=drag] *{user-select:none!important}
       ];
     }
     async function historyItems() {
-      const data = await read4(`${api2}/x/web-interface/history/cursor?ps=10&type=archive`);
+      const data = await read2(`${api2}/x/web-interface/history/cursor?ps=10&type=archive`);
       const list2 = Array.isArray(data?.list) ? data.list : [];
       return [
         ...list2.slice(0, 10).map((item) => {
@@ -11803,7 +11851,7 @@ html[${attribute}=drag] *{user-select:none!important}
       ];
     }
     async function laterItems() {
-      const data = await read4(`${api2}/x/v2/history/toview/web`);
+      const data = await read2(`${api2}/x/v2/history/toview/web`);
       const list2 = Array.isArray(data?.list) ? data.list : [], total = Number(data?.count) || list2.length;
       return [
         ...list2.slice(0, 10).map((item) => ({ label: String(item?.title ?? ""), icon: video(), href: `https://www.bilibili.com/list/watchlater?bvid=${encodeURIComponent(String(item?.bvid ?? ""))}&oid=${Number(item?.aid) || ""}` })),
@@ -11876,7 +11924,7 @@ html[${attribute}=drag] *{user-select:none!important}
         hideList();
         return;
       }
-      read4(`${api2}/x/web-interface/suggest?term=${encodeURIComponent(term)}&main_ver=v1`).then((data) => {
+      read2(`${api2}/x/web-interface/suggest?term=${encodeURIComponent(term)}&main_ver=v1`).then((data) => {
         if (mine !== ticket) return;
         suggestions = (Array.isArray(data?.result?.tag) ? data.result.tag : []).map((tag) => String(tag?.value ?? "")).filter(Boolean).slice(0, 10);
         pick = -1;
@@ -11944,16 +11992,16 @@ html[${attribute}=drag] *{user-select:none!important}
     paintBrand();
     header.addEventListener("keydown", (event) => {
       if (!event.altKey || event.ctrlKey || event.metaKey) return;
-      const key7 = event.key.toLowerCase();
-      if (key7 === "d") {
+      const key5 = event.key.toLowerCase();
+      if (key5 === "d") {
         event.preventDefault();
         field.focus();
         field.select();
         return;
       }
-      if (openers[key7]) {
+      if (openers[key5]) {
         event.preventDefault();
-        openers[key7]();
+        openers[key5]();
       }
     });
     let lastCounts = 0;
@@ -11962,10 +12010,10 @@ html[${attribute}=drag] *{user-select:none!important}
       lastCounts = Date.now();
       const seen = dynamicOffsets(document.cookie, me.mid);
       const [setting, feed, single, entrance] = await Promise.allSettled([
-        read4(`${vc}/link_setting/v1/link_setting/get?build=0&mobi_app=web&msg_notify=1&show_unfollowed_msg=1`),
-        read4(`${vc}/x/im/web/msgfeed/unread?build=0&mobi_app=web`),
-        read4(`${vc}/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0`),
-        read4(`${api2}/x/web-interface/dynamic/entrance?alltype_offset=${encodeURIComponent(seen.all)}&video_offset=${encodeURIComponent(seen.video)}&article_offset=${encodeURIComponent(seen.article)}`)
+        read2(`${vc}/link_setting/v1/link_setting/get?build=0&mobi_app=web&msg_notify=1&show_unfollowed_msg=1`),
+        read2(`${vc}/x/im/web/msgfeed/unread?build=0&mobi_app=web`),
+        read2(`${vc}/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0`),
+        read2(`${api2}/x/web-interface/dynamic/entrance?alltype_offset=${encodeURIComponent(seen.all)}&video_offset=${encodeURIComponent(seen.video)}&article_offset=${encodeURIComponent(seen.article)}`)
       ]);
       if (feed.status === "fulfilled" && single.status === "fulfilled") {
         unread = unreadBadge(feed.value, single.value, setting.status === "fulfilled" ? setting.value : null);
@@ -11979,7 +12027,7 @@ html[${attribute}=drag] *{user-select:none!important}
     async function loadAccount() {
       if (!loggedIn) return;
       try {
-        const data = await read4(`${api2}/x/web-interface/nav`);
+        const data = await read2(`${api2}/x/web-interface/nav`);
         if (data?.isLogin) {
           me = { mid: String(data.mid ?? me.mid), name: String(data.uname ?? ""), face: String(data.face ?? ""), level: Number(data.level_info?.current_level) || 0 };
           paintBrand();
@@ -12251,7 +12299,7 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     if (typeof GM_listValues !== "function") {
       return [];
     }
-    return GM_listValues().filter((key7) => String(key7).startsWith("BiliViewed_"));
+    return GM_listValues().filter((key5) => String(key5).startsWith("BiliViewed_"));
   }
   function readViewedGroup(groupId, fallback2 = null) {
     return GM_getValue(viewedGroupStorageKey(groupId), fallback2);
@@ -12263,13 +12311,13 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     GM_setValue(viewedGroupStorageKey(groupId), values);
   }
   function putGroups(groups, mode2) {
-    if (mode2 === "overwrite") for (const key7 of listViewedGroupKeys()) GM_deleteValue(key7);
+    if (mode2 === "overwrite") for (const key5 of listViewedGroupKeys()) GM_deleteValue(key5);
     for (const [groupId, values] of Object.entries(groups)) GM_setValue(viewedGroupStorageKey(groupId), values);
   }
   function readViewedStorage() {
     const groups = {};
-    for (const key7 of listViewedGroupKeys()) {
-      const groupId = String(key7).slice("BiliViewed_".length);
+    for (const key5 of listViewedGroupKeys()) {
+      const groupId = String(key5).slice("BiliViewed_".length);
       groups[groupId] = flattenViewedGroups({ [groupId]: readViewedGroup(groupId, []) });
     }
     return { items: flattenViewedGroups(groups), groups };
@@ -12285,10 +12333,10 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
   var viewedSyncStore = {
     keys: () => keysOf2(readViewedStorage().items),
     applySync(desired) {
-      const wanted = new Set([...desired].filter((key7) => key7.startsWith("v:")));
+      const wanted = new Set([...desired].filter((key5) => key5.startsWith("v:")));
       if (sameKeys(wanted, viewedSyncStore.keys())) return false;
       const unsyncable = readViewedStorage().items.filter((id) => !isViewedId(id));
-      putGroups(groupViewedItems([...unsyncable, ...[...wanted].map((key7) => key7.slice(2))]), "overwrite");
+      putGroups(groupViewedItems([...unsyncable, ...[...wanted].map((key5) => key5.slice(2))]), "overwrite");
       return true;
     },
     setJournal(next) {
@@ -12296,15 +12344,15 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     }
   };
   function isLegacyViewedExport(value2) {
-    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key7) => key7.startsWith("BiliViewed_"));
+    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key5) => key5.startsWith("BiliViewed_"));
   }
   function normalizeLegacyViewedExport(value2) {
     const groups = {};
-    for (const [key7, items] of Object.entries(value2)) {
-      if (!key7.startsWith("BiliViewed_") || !Array.isArray(items)) {
+    for (const [key5, items] of Object.entries(value2)) {
+      if (!key5.startsWith("BiliViewed_") || !Array.isArray(items)) {
         continue;
       }
-      const groupId = key7.slice("BiliViewed_".length);
+      const groupId = key5.slice("BiliViewed_".length);
       groups[groupId] = flattenViewedGroups({ [groupId]: items });
     }
     return { items: flattenViewedGroups(groups), groups };
@@ -12501,7 +12549,7 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       closeMenu();
       stop();
     };
-    const key7 = (event) => {
+    const key5 = (event) => {
       if (event.key === "Escape") {
         event.preventDefault();
         closeMenu();
@@ -12517,13 +12565,13 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       document.removeEventListener("pointerdown", close, true);
       window.removeEventListener("scroll", close, true);
       window.removeEventListener("resize", close);
-      document.removeEventListener("keydown", key7, true);
+      document.removeEventListener("keydown", key5, true);
     };
     window.setTimeout(() => {
       document.addEventListener("pointerdown", close, true);
       window.addEventListener("scroll", close, true);
       window.addEventListener("resize", close);
-      document.addEventListener("keydown", key7, true);
+      document.addEventListener("keydown", key5, true);
     }, 0);
     buttons2.find((button5) => !button5.disabled)?.focus({ preventScroll: true });
   }
@@ -12610,14 +12658,11 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
   }
 
   // src/modules/video-luna/layout.ts
-  var layoutKey = "BiliAtelier_VideoLayout";
-  function readSaved() {
-    const value2 = typeof GM_getValue === "function" ? GM_getValue(layoutKey, {}) : {};
-    return value2 && typeof value2 === "object" ? value2 : {};
-  }
-  var writeSaved = (saved) => {
-    if (typeof GM_setValue === "function") GM_setValue(layoutKey, saved);
-  };
+  var layouts = () => screenRecords(
+    "BiliAtelier_VideoLayoutByScreen",
+    "BiliAtelier_VideoLayout",
+    (value2) => value2 && typeof value2 === "object" ? value2 : {}
+  );
   var rightMin = 300;
   var playerMin = 480;
   var frameWidth = 4;
@@ -12745,7 +12790,8 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     const style = document.createElement("style");
     style.id = "atelier-video-layout";
     (document.head || root2).append(style);
-    let saved = readSaved();
+    const records2 = layouts();
+    let saved = records2.load();
     const grips = [], lists = /* @__PURE__ */ new Map();
     const mode2 = () => root2.getAttribute("data-atelier-screen") || "normal";
     const folded = (box) => box.hasAttribute("data-folded") || box.classList.contains("bui-collapse-wrap-folded");
@@ -12850,7 +12896,7 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       paint2();
     }
     function save() {
-      writeSaved(saved);
+      records2.save(saved);
       notifyPageLayoutChanged();
     }
     const setHeight = (name, height) => {
@@ -12948,7 +12994,7 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       }
       return null;
     }
-    let dragging = false, hover = null, hoverFrame = 0;
+    let dragging = false, cancelDrag = null, hover = null, hoverFrame = 0;
     window.addEventListener("pointermove", (event) => {
       if (dragging) return;
       hover = event;
@@ -12979,21 +13025,24 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
           drag.move(...last);
         });
       };
-      const finish = () => {
+      const stop = (apply) => {
         window.removeEventListener("pointermove", move, true);
         window.removeEventListener("pointerup", finish, true);
         window.removeEventListener("pointercancel", finish, true);
         window.removeEventListener("blur", finish);
         cancelAnimationFrame(frame2);
-        if (moved2) {
+        if (apply && moved2) {
           drag.move(...last);
           drag.end();
         }
         sheet.remove();
         dragging = false;
+        cancelDrag = null;
         root2.removeAttribute("data-vl-resizing");
         setCursor("");
       };
+      const finish = () => stop(true);
+      cancelDrag = () => stop(false);
       window.addEventListener("pointermove", move, true);
       window.addEventListener("pointerup", finish, true);
       window.addEventListener("pointercancel", finish, true);
@@ -13031,6 +13080,14 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
         save();
         window.dispatchEvent(new Event("resize"));
       }
+    });
+    onScreenChange(() => {
+      cancelDrag?.();
+      saved = records2.load();
+      markViewport();
+      measureColumns();
+      notifyPageLayoutChanged();
+      window.dispatchEvent(new Event("resize"));
     });
     function markViewport() {
       const width = innerWidth / zoom(), marks = [1680, 2221, 2560].filter((at) => width >= at).map((at) => `w${at}`).join(" ");
@@ -13130,19 +13187,14 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
   }
 
   // src/modules/local-following/feed-layout.ts
-  var key4 = "BiliAtelier_FeedLayout";
   var feedLeftMin = 200;
   var feedMainMin = 480;
-  function read2() {
-    const value2 = typeof GM_getValue === "function" ? GM_getValue(key4, {}) : {};
+  function parse(value2) {
     const saved = {};
     if (Number.isFinite(value2?.blank)) saved.blank = Math.max(0, value2.blank);
     if (Number.isFinite(value2?.left)) saved.left = Math.max(feedLeftMin, value2.left);
     return saved;
   }
-  var write = (saved) => {
-    if (typeof GM_setValue === "function") GM_setValue(key4, saved);
-  };
   function feedColumns(native2, saved, stage, zoom = 1) {
     const fixed = native2.right + 2 * native2.gap, want = Math.max(saved.left ?? native2.left, feedLeftMin);
     let content = native2.left + native2.main + fixed;
@@ -13163,7 +13215,8 @@ html[${resizeAttribute}=drag] *{user-select:none!important}
   var covers2 = "dialog,[role=dialog],[role=menu],header.lh,.vl-menu-host,.xp-tooltip";
   function startFeedLayout() {
     const root2 = document.documentElement;
-    let saved = read2(), native2 = null;
+    const records2 = screenRecords("BiliAtelier_FeedLayoutByScreen", "BiliAtelier_FeedLayout", parse);
+    let saved = records2.load(), native2 = null;
     const style = document.createElement("style");
     style.id = "atelier-feed-layout";
     style.textContent = `${on5} .bili-dyn-home--member>aside.left[style*="--alf-left:"]{width:var(--alf-left)!important;flex:none!important;min-width:0!important}
@@ -13203,7 +13256,7 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
       mark2(part("main"), "--alf-main", now?.main);
     }
     const save = () => {
-      write(saved);
+      records2.save(saved);
       notifyPageLayoutChanged();
     };
     const relayout = () => {
@@ -13257,7 +13310,7 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
       if (!state2) root2.removeAttribute(resizeAttribute);
       else if (root2.getAttribute(resizeAttribute) !== state2) root2.setAttribute(resizeAttribute, state2);
     };
-    let dragging = false, hover = null, frame2 = 0;
+    let dragging = false, cancelDrag = null, hover = null, frame2 = 0;
     window.addEventListener("pointermove", (event) => {
       if (dragging) return;
       hover = event;
@@ -13291,7 +13344,7 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
         last = next.clientX;
         moveFrame ||= requestAnimationFrame(apply);
       };
-      const finish = () => {
+      const stop = (keep) => {
         window.removeEventListener("pointermove", move, true);
         window.removeEventListener("pointerup", finish, true);
         window.removeEventListener("pointercancel", finish, true);
@@ -13299,8 +13352,9 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
         cancelAnimationFrame(moveFrame);
         sheet.remove();
         dragging = false;
+        cancelDrag = null;
         setState("");
-        if (last !== x) {
+        if (keep && last !== x) {
           apply();
           if (saved.blank === void 0 && native2 && saved.left === Math.round(native2.left)) {
             const { left: _left, ...rest } = saved;
@@ -13310,6 +13364,8 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
           save();
         }
       };
+      const finish = () => stop(true);
+      cancelDrag = () => stop(false);
       window.addEventListener("pointermove", move, true);
       window.addEventListener("pointerup", finish, true);
       window.addEventListener("pointercancel", finish, true);
@@ -13340,6 +13396,12 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
         paint2();
         save();
       }
+    });
+    onScreenChange(() => {
+      cancelDrag?.();
+      saved = records2.load();
+      relayout();
+      notifyPageLayoutChanged();
     });
     relayout();
     return { relayout };
@@ -13459,7 +13521,7 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
       }
     }
     const cell = (row, column) => table.querySelector(`[data-row="${row}"][data-column="${column}"]`);
-    const byKey = (key7) => [...table.querySelectorAll("[data-key]")].find((node4) => node4.dataset.key === key7);
+    const byKey = (key5) => [...table.querySelectorAll("[data-key]")].find((node4) => node4.dataset.key === key5);
     const header = (group) => byKey(`group:${group}`);
     function focusCell(target) {
       if (!target) return;
@@ -13833,7 +13895,7 @@ ${w2} .xp-status{flex:none}
   var tabs = [["all", "\u5168\u90E8"], ["video", "\u6295\u7A3F"], ["pgc", "\u8FFD\u756A"], ["article", "\u4E13\u680F"]];
   function localFeedPageWorld() {
     const original = window.fetch, base = "/x/polymer/web-dynamic/v1/feed/";
-    const parse = (value2) => {
+    const parse3 = (value2) => {
       try {
         return new URL(String(value2), location.href);
       } catch {
@@ -13846,7 +13908,7 @@ ${w2} .xp-status{flex:none}
       return url.pathname === base + "all" ? { code: 0, message: "0", ttl: 1, data: { has_more: false, items: [], offset: "", update_baseline: "", update_num: 0 } } : null;
     };
     window.fetch = function(...args) {
-      const body2 = empty(parse(args[0] instanceof Request ? args[0].url : args[0]));
+      const body2 = empty(parse3(args[0] instanceof Request ? args[0].url : args[0]));
       return body2 ? Promise.resolve(new Response(JSON.stringify(body2), { status: 200, headers: { "content-type": "application/json" } })) : original.apply(this, args);
     };
     const urls = /* @__PURE__ */ new WeakMap(), open = XMLHttpRequest.prototype.open, send = XMLHttpRequest.prototype.send;
@@ -13855,7 +13917,7 @@ ${w2} .xp-status{flex:none}
       return open.apply(this, args);
     };
     XMLHttpRequest.prototype.send = function(...args) {
-      const url = parse(urls.get(this)), body2 = empty(url), xhr = this;
+      const url = parse3(urls.get(this)), body2 = empty(url), xhr = this;
       if (!body2) return send.apply(this, args);
       setTimeout(() => {
         const text4 = JSON.stringify(body2);
@@ -15074,14 +15136,14 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       this.base = `${prefix4}${directory}/`;
     }
     /** The files whose IDs `known` lacks, parsed; null when `stopped`. */
-    async newFiles(known2, parse, stopped) {
+    async newFiles(known2, parse3, stopped) {
       const files = [];
       for (const file of await this.b2.listDirectory(this.directory)) {
         if (stopped()) return null;
         if (!file.fileName.startsWith(this.base)) throw new Error(this.messages.mismatch);
         const match = file.fileName.slice(this.base.length).match(fileName);
         if (!match) throw new Error(this.messages.unknown);
-        if (!known2.has(match[1])) files.push([match[1], parse(await this.b2.download(file.fileId))]);
+        if (!known2.has(match[1])) files.push([match[1], parse3(await this.b2.download(file.fileId))]);
       }
       return files;
     }
@@ -15119,11 +15181,11 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   function splitLegacyBlockerExport(value2) {
     const rules = {};
     const legacySettings = {};
-    for (const [key7, data] of Object.entries(value2)) {
-      if (ruleKeySet.has(key7) && Array.isArray(data)) {
-        rules[key7] = data;
-      } else if (!key7.startsWith("BiliViewed_")) {
-        legacySettings[key7] = data;
+    for (const [key5, data] of Object.entries(value2)) {
+      if (ruleKeySet.has(key5) && Array.isArray(data)) {
+        rules[key5] = data;
+      } else if (!key5.startsWith("BiliViewed_")) {
+        legacySettings[key5] = data;
       }
     }
     return { rules, legacySettings };
@@ -15191,7 +15253,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   }
 
   // src/modules/sync/protocol.ts
-  var seedId = (key7) => `seed:${key7}`;
+  var seedId = (key5) => `seed:${key5}`;
   function batch(operations) {
     return { schema: "bili-atelier-sync", version: 1, operations };
   }
@@ -15240,15 +15302,15 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     return result;
   }
   function materialize(operations) {
-    return new Set([...frontier(operations)].filter(([, ops]) => ops.every((o) => o.present)).map(([key7]) => key7));
+    return new Set([...frontier(operations)].filter(([, ops]) => ops.every((o) => o.present)).map(([key5]) => key5));
   }
   function changes(before, after, known2, uuid2) {
     const heads = frontier(known2);
-    return [.../* @__PURE__ */ new Set([...before, ...after])].filter((k) => validKey(k) && before.has(k) !== after.has(k)).map((key7) => ({
+    return [.../* @__PURE__ */ new Set([...before, ...after])].filter((k) => validKey(k) && before.has(k) !== after.has(k)).map((key5) => ({
       id: uuid2(),
-      key: key7,
-      present: after.has(key7),
-      parents: [.../* @__PURE__ */ new Set([seedId(key7), ...(heads.get(key7) || []).map((o) => o.id)])]
+      key: key5,
+      present: after.has(key5),
+      parents: [.../* @__PURE__ */ new Set([seedId(key5), ...(heads.get(key5) || []).map((o) => o.id)])]
     }));
   }
 
@@ -15281,7 +15343,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     if (!GM_getValue(`${prefix2}initialized`, false)) {
       if (!viewedJournalBackup()) GM_setValue(`${prefix2}backup`, exportAtelierDataPackage());
       const keys = new Set(stores.flatMap((store) => [...store.keys()]));
-      saveOperations([...keys].map((key7) => ({ id: seedId(key7), key: key7, present: true, parents: [] })));
+      saveOperations([...keys].map((key5) => ({ id: seedId(key5), key: key5, present: true, parents: [] })));
       GM_setValue(`${prefix2}initialized`, true);
     }
     applyViewedJournal();
@@ -15479,17 +15541,17 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     const fields2 = /* @__PURE__ */ new Map();
     const cleanupPixels = observeCrispText(root2);
     const c = getConfig();
-    for (const [key7, label, value2] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
+    for (const [key5, label, value2] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
       const row = document.createElement("label");
       row.textContent = label;
       const input = document.createElement("input");
-      input.name = key7;
-      input.type = key7 === "applicationKey" ? "password" : "text";
+      input.name = key5;
+      input.type = key5 === "applicationKey" ? "password" : "text";
       input.autocomplete = "off";
       input.spellcheck = false;
       input.value = value2;
       input.addEventListener("input", () => hideSecrets());
-      fields2.set(key7, input);
+      fields2.set(key5, input);
       row.append(input);
       root2.querySelector(".fields").append(row);
     }
@@ -15627,9 +15689,9 @@ ${message}` : ""}`;
   };
   var api3 = "https://api.bilibili.com";
   var VideoActions = class {
-    constructor(read4, write3) {
-      this.read = read4;
-      this.write = write3;
+    constructor(read2, write) {
+      this.read = read2;
+      this.write = write;
     }
     get(path) {
       return this.read(api3 + path, new AbortController().signal).then(ok2, (error) => {
@@ -15849,8 +15911,8 @@ ${message}` : ""}`;
     let client = null;
     const queryClient = () => {
       if (client) return client;
-      const root2 = document.getElementById("__next"), key7 = root2 && Object.keys(root2).find((name) => name.startsWith("__reactContainer"));
-      const stack = key7 ? [root2[key7]] : [];
+      const root2 = document.getElementById("__next"), key5 = root2 && Object.keys(root2).find((name) => name.startsWith("__reactContainer"));
+      const stack = key5 ? [root2[key5]] : [];
       for (let seen = 0; stack.length && seen < 2e4; seen++) {
         const fiber = stack.pop();
         if (!fiber) continue;
@@ -15873,7 +15935,7 @@ ${message}` : ""}`;
       const queries = cache.getAll().filter((query) => query.state?.status === "success");
       const data = (name, match) => queries.find((query) => query.queryKey?.[0] === name && match(query.state.data, query.queryKey[1]))?.state.data;
       const seasonId = Number(manifest?.seasonId) || 0;
-      const season = data("pgc/view/web/simple/season", (value2, key7) => seasonId ? Number(value2?.season_id) === seasonId : key7?.ep_id === epId);
+      const season = data("pgc/view/web/simple/season", (value2, key5) => seasonId ? Number(value2?.season_id) === seasonId : key5?.ep_id === epId);
       if (!epId || !season) return;
       const sid = Number(season.season_id);
       const next = clone({
@@ -15883,9 +15945,9 @@ ${message}` : ""}`;
         aid: Number(manifest?.aid) || 0,
         cid: Number(manifest?.cid) || 0,
         season,
-        episode: data("pgc/season/episode/web/info", (_value, key7) => Number(key7) === epId) ?? null,
-        related: data("/pgc/season/web/related/recommend", (_value, key7) => Number(key7) === sid)?.season ?? [],
-        rating: data("pgc/review/user", (_value, key7) => Number(key7) === Number(season.media_id)) ?? null
+        episode: data("pgc/season/episode/web/info", (_value, key5) => Number(key5) === epId) ?? null,
+        related: data("/pgc/season/web/related/recommend", (_value, key5) => Number(key5) === sid)?.season ?? [],
+        rating: data("pgc/review/user", (_value, key5) => Number(key5) === Number(season.media_id)) ?? null
       });
       const text4 = JSON.stringify(next);
       if (text4 === signature) return;
@@ -15976,7 +16038,7 @@ ${message}` : ""}`;
         post({ kind: "command-result", id: data.id, ok: true });
       } else if (data.kind === "list") {
         const list = actionList(), done = (ok4) => post({ kind: "command-result", id: data.id, ok: ok4 });
-        const has = (key7) => (Array.isArray(list?.visibleResourceList) ? list.visibleResourceList : []).some((item) => `${item.type}_${item.oid}` === key7);
+        const has = (key5) => (Array.isArray(list?.visibleResourceList) ? list.visibleResourceList : []).some((item) => `${item.type}_${item.oid}` === key5);
         if (!list) {
           done(false);
           return;
@@ -15993,15 +16055,15 @@ ${message}` : ""}`;
             const was = !!list.isFaved;
             Promise.resolve(list.handleCollect()).then(() => done(!!list.isFaved !== was), () => done(false));
           } else if (data.op === "remove") {
-            const key7 = String(data.key ?? "");
-            const wrap = [...document.querySelectorAll(".action-list-item-wrap")].find((node4) => node4.getAttribute("data-index") === key7);
+            const key5 = String(data.key ?? "");
+            const wrap = [...document.querySelectorAll(".action-list-item-wrap")].find((node4) => node4.getAttribute("data-index") === key5);
             const item = wrap?.querySelector(".action-list-item")?.__vue__;
             if (!item || typeof item.itemDelete !== "function") {
               done(false);
               return;
             }
             const started7 = Date.now(), wait = () => {
-              if (!has(key7)) done(true);
+              if (!has(key5)) done(true);
               else if (Date.now() - started7 > 3e3) done(false);
               else window.setTimeout(wait, 100);
             };
@@ -16424,8 +16486,8 @@ ${message}` : ""}`;
     return {
       element: win.root,
       render(next) {
-        const bangumi = next.kind === "bangumi", key7 = (value2) => value2 ? value2.kind === "bangumi" ? `ep${value2.epId}` : value2.bvid : "";
-        const switched = key7(next) !== key7(state2);
+        const bangumi = next.kind === "bangumi", key5 = (value2) => value2 ? value2.kind === "bangumi" ? `ep${value2.epId}` : value2.bvid : "";
+        const switched = key5(next) !== key5(state2);
         state2 = next;
         const video2 = next.videoData ?? {}, stat = video2.stat ?? {};
         if (switched) {
@@ -17180,9 +17242,9 @@ ${message}` : ""}`;
       if (at < 0) return;
       const ends = [[false, at >= size - 3 && !list.tail], [true, at <= 2 && !list.head]];
       for (const [ahead, wanted] of ends) {
-        const key7 = `${state2.bvid}|${ahead}|${size}`;
-        if (!wanted || tried.has(key7)) continue;
-        tried.add(key7);
+        const key5 = `${state2.bvid}|${ahead}|${size}`;
+        if (!wanted || tried.has(key5)) continue;
+        tried.add(key5);
         void more(ahead);
         return;
       }
@@ -17332,12 +17394,12 @@ ${message}` : ""}`;
     let visible = [];
     const loaded = /* @__PURE__ */ new Map();
     const seasonOf = (id) => id === Number(state2?.seasonId) && state2?.bangumi?.full ? Promise.resolve(state2.bangumi.full) : loaded.get(id) ?? (() => {
-      const read4 = context.actions.bangumiSeason(id).catch((error) => {
+      const read2 = context.actions.bangumiSeason(id).catch((error) => {
         loaded.delete(id);
         throw error;
       });
-      loaded.set(id, read4);
-      return read4;
+      loaded.set(id, read2);
+      return read2;
     })();
     const counted = /* @__PURE__ */ new Map();
     let data = null;
@@ -17697,9 +17759,9 @@ ${message}` : ""}`;
   var tinted = /* @__PURE__ */ new Map();
   function mediaArt(scheme, dark) {
     if (scheme === "blue" && !dark) return Promise.resolve({ ...art });
-    const key7 = `${scheme}:${dark}`;
-    if (!tinted.has(key7)) tinted.set(key7, tint(scheme, dark).catch(() => ({ ...art })));
-    return tinted.get(key7);
+    const key5 = `${scheme}:${dark}`;
+    if (!tinted.has(key5)) tinted.set(key5, tint(scheme, dark).catch(() => ({ ...art })));
+    return tinted.get(key5);
   }
   async function tint(scheme, dark) {
     const [blueHue, blueSaturation] = hsl(lunaTokens("blue", false).highlight), [hue, saturation] = hsl(lunaTokens(scheme, false).highlight);
@@ -17820,17 +17882,17 @@ ${message}` : ""}`;
     };
     const rate = tool2("\u500D\u901F"), quality = tool2("\u753B\u8D28"), subtitle = tool2("\u5B57\u5E55");
     const screens = [["pip", "\u753B\u4E2D\u753B"], ["wide", "\u5BBD\u5C4F"], ["web", "\u7F51\u9875\u5168\u5C4F"], ["full", "\u5168\u5C4F\uFF08F\uFF09"]];
-    const screenTools = screens.map(([key7, title]) => [key7, tool2(title, glyphs[key7])]);
+    const screenTools = screens.map(([key5, title]) => [key5, tool2(title, glyphs[key5])]);
     let clockState = null, around = {};
     let seeking = null;
     root2.classList.add("vl-wmp-art");
     let painted = "";
     function paintArt() {
-      const { scheme, dark } = appearanceState(), key7 = `${scheme}:${dark}`;
-      if (key7 === painted) return;
-      painted = key7;
+      const { scheme, dark } = appearanceState(), key5 = `${scheme}:${dark}`;
+      if (key5 === painted) return;
+      painted = key5;
       void mediaArt(scheme, dark).then((urls) => {
-        if (painted !== key7) return;
+        if (painted !== key5) return;
         let style = document.getElementById("atelier-wmp-art");
         if (!style) {
           style = document.createElement("style");
@@ -17969,7 +18031,7 @@ ${message}` : ""}`;
     mute.addEventListener("click", () => {
       if (clockState) context.bridge.player({ op: "mute", value: !clockState.muted });
     });
-    for (const [key7, node4] of screenTools) node4.addEventListener("click", () => native(`.bpx-player-ctrl-${key7}`)?.click());
+    for (const [key5, node4] of screenTools) node4.addEventListener("click", () => native(`.bpx-player-ctrl-${key5}`)?.click());
     const choose = (item) => {
       item.click();
       window.setTimeout(paint2, 100);
@@ -18048,7 +18110,7 @@ ${message}` : ""}`;
       quality.firstElementChild.textContent = activeQuality ? qualityLabel(activeQuality).split(/[\s(（]/)[0] : "\u753B\u8D28";
       subtitle.firstElementChild.textContent = "\u5B57\u5E55";
       subtitle.hidden = !native(".bpx-player-ctrl-subtitle");
-      for (const [key7, node4] of screenTools) node4.hidden = !native(`.bpx-player-ctrl-${key7}`);
+      for (const [key5, node4] of screenTools) node4.hidden = !native(`.bpx-player-ctrl-${key5}`);
     }
     const fit = () => {
       seek.style.setProperty("--track", `${seek.clientWidth}px`);
@@ -18327,7 +18389,7 @@ ${message}` : ""}`;
     const win = xpWindow({ className: "vl-small vl-rec-window vl-season-rec-window", icon: shellIcon(224, 16), title: "\u76F8\u5173\u63A8\u8350" });
     foldable(win, "rec");
     const tiles = win.body.appendChild(el2("div", "vl-tiles"));
-    let key7 = "";
+    let key5 = "";
     function tile(season) {
       const id = Number(season?.season_id) || 0, url = bangumiUrl(`ss${id}`), viewedId = bangumiViewedId("ss", id);
       const node4 = el2("div", "vl-tile vl-season-tile");
@@ -18380,8 +18442,8 @@ ${message}` : ""}`;
       render(next) {
         const seasons = (Array.isArray(next.bangumi?.related) ? next.bangumi.related : []).filter((season) => Number(season?.season_id) > 0);
         const now = seasons.map((season) => season.season_id).join();
-        if (now === key7) return;
-        key7 = now;
+        if (now === key5) return;
+        key5 = now;
         tiles.replaceChildren(...seasons.map(tile));
         if (!seasons.length) tiles.append(el2("p", "vl-empty vl-muted", "\u6CA1\u6709\u76F8\u5173\u63A8\u8350"));
       }
@@ -18581,14 +18643,14 @@ ${message}` : ""}`;
       if (nextSeason === id) return;
       nextSeason = id;
       coming.hidden = true;
-      const key7 = type;
-      let read4 = timelines.get(key7);
-      if (!read4) {
-        read4 = context.actions.bangumiTimeline(key7).then((days) => (Array.isArray(days) ? days : []).flatMap((day) => Array.isArray(day?.episodes) ? day.episodes : []));
-        read4.catch(() => timelines.delete(key7));
-        timelines.set(key7, read4);
+      const key5 = type;
+      let read2 = timelines.get(key5);
+      if (!read2) {
+        read2 = context.actions.bangumiTimeline(key5).then((days) => (Array.isArray(days) ? days : []).flatMap((day) => Array.isArray(day?.episodes) ? day.episodes : []));
+        read2.catch(() => timelines.delete(key5));
+        timelines.set(key5, read2);
       }
-      read4.then((episodes) => {
+      read2.then((episodes) => {
         if (Number(state2?.seasonId) !== id) return;
         const next = episodes.filter((item) => Number(item?.season_id) === id && !Number(item?.published)).sort((a, b) => Number(a.pub_ts) - Number(b.pub_ts))[0];
         if (!next) return;
@@ -18600,9 +18662,9 @@ ${message}` : ""}`;
     }
     function paintStats(stat) {
       stats.hidden = !stat;
-      const key7 = stat ? JSON.stringify([...counters.map(([, , field]) => stat[field]), stat.follow_text]) : "";
-      if (!stat || key7 === statKey) return;
-      statKey = key7;
+      const key5 = stat ? JSON.stringify([...counters.map(([, , field]) => stat[field]), stat.follow_text]) : "";
+      if (!stat || key5 === statKey) return;
+      statKey = key5;
       stats.replaceChildren(...counters.map(([label, icon2, field]) => {
         const item = el2("li", "xp-button vl-counter");
         const image7 = item.appendChild(el2("img"));
@@ -19263,7 +19325,7 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
     face.referrerPolicy = "no-referrer";
     const win = xpWindow({ className: "vl-small vl-up-window", icon: face, title: "", label: "UP \u4E3B" });
     foldable(win, "up");
-    let people2 = [], states = {}, key7 = "", generation = 0;
+    let people2 = [], states = {}, key5 = "", generation = 0;
     function followButton(person, className) {
       const button5 = xpButton("", () => void clickFollow(person, button5), className);
       const paint2 = () => {
@@ -19425,9 +19487,9 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
         people2 = staff.length > 1 ? staff.map((member) => ({ mid: String(member.mid), name: String(member.name ?? ""), face: String(member.face ?? ""), role: String(member.title ?? "") })) : [{ mid: String(up.mid ?? owner.mid ?? ""), name: String(up.name ?? owner.name ?? ""), face: String(up.face ?? owner.face ?? ""), sign: typeof up.sign === "string" ? up.sign : "", fans: Number.isFinite(Number(up.fans)) ? Number(up.fans) : void 0 }];
         people2 = people2.filter((person) => /^\d+$/.test(person.mid));
         const next = people2.map((person) => person.mid).join(",") + "|" + people2.map((person) => person.fans ?? "").join(",");
-        if (next === key7) return;
-        const sameAccounts = key7.split("|")[0] === next.split("|")[0];
-        key7 = next;
+        if (next === key5) return;
+        const sameAccounts = key5.split("|")[0] === next.split("|")[0];
+        key5 = next;
         draw();
         if (!sameAccounts) {
           states = {};
@@ -19790,8 +19852,8 @@ ${skin} .bpx-player-dm-btn-send.bui-disabled .bui-area{color:var(--xp-graytext)!
     return bvid && index >= 0 ? viewedIdFromBvid(bvid, index + 1) : "";
   }
   function collectionBvid(item) {
-    const key7 = item?.getAttribute("data-key");
-    if (isBvid(key7)) return key7;
+    const key5 = item?.getAttribute("data-key");
+    if (isBvid(key5)) return key5;
     return /\/video\/(BV1[0-9A-Za-z]{9})/i.exec(item?.querySelector('a[href*="/video/BV"]')?.getAttribute("href") ?? "")?.[1] ?? "";
   }
   var mainVideo = {
@@ -20127,31 +20189,30 @@ ${page.css ?? ""}`;
   var pausedUrl = `${api4}/x/v2/history/shadow`;
 
   // src/modules/watch-history/bounds.ts
-  var key5 = "BiliAtelier_HistoryLayout";
   var historyLeast = 212 + 216 + 24 + 8;
   var historyNarrow = 760;
   var blankProperty = "--ahp-blank";
-  function read3() {
-    const value2 = typeof GM_getValue === "function" ? GM_getValue(key5, {}) : {};
-    return value2 && typeof value2 === "object" && Number.isFinite(value2.blank) ? { blank: Math.max(0, value2.blank) } : {};
-  }
-  var write2 = (saved) => {
-    if (typeof GM_setValue === "function") GM_setValue(key5, saved);
-  };
+  var parse2 = (value2) => value2 && typeof value2 === "object" && Number.isFinite(value2.blank) ? { blank: Math.max(0, value2.blank) } : {};
   function startHistoryBounds(win) {
-    let saved = read3();
+    const records2 = screenRecords("BiliAtelier_HistoryLayoutByScreen", "BiliAtelier_HistoryLayout", parse2);
+    let saved = records2.load();
     const paint2 = () => {
       if (saved.blank === void 0) win.style.removeProperty(blankProperty);
       else win.style.setProperty(blankProperty, `${+(saved.blank / zoomOf(win)).toFixed(3)}px`);
     };
     const change = (next) => {
       saved = next;
-      write2(saved);
+      records2.save(saved);
       paint2();
       notifyPageLayoutChanged();
     };
     paint2();
     window.addEventListener(zoomChanged, paint2);
+    onScreenChange(() => {
+      saved = records2.load();
+      paint2();
+      notifyPageLayoutChanged();
+    });
     startSideBounds({
       measure() {
         const stage = win.parentElement;
@@ -20167,15 +20228,15 @@ ${page.css ?? ""}`;
   }
 
   // src/modules/watch-history/prefs.ts
-  var key6 = "BiliAtelier_HistoryLuna";
+  var key4 = "BiliAtelier_HistoryLuna";
   var historyAttribute = "data-atelier-history";
   var isHistoryLocation = (where = location) => where.hostname === "www.bilibili.com" && /^\/(?:account\/)?history(?:\/|$)/.test(where.pathname);
   function historyLunaEnabled() {
-    const stored = typeof GM_getValue === "function" ? GM_getValue(key6, null) : null;
+    const stored = typeof GM_getValue === "function" ? GM_getValue(key4, null) : null;
     return stored?.enabled !== false;
   }
   function setHistoryLunaEnabled(enabled) {
-    if (typeof GM_setValue === "function") GM_setValue(key6, { enabled });
+    if (typeof GM_setValue === "function") GM_setValue(key4, { enabled });
   }
   var hideCss = `html[${historyAttribute}=drawn] #app{display:none!important}`;
   function prepareWatchHistory() {
@@ -20449,7 +20510,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     };
     paintFilters();
     const selectAll = toolButton("\u5168\u9009", () => {
-      for (const key7 of cards2.keys()) selected.add(key7);
+      for (const key5 of cards2.keys()) selected.add(key5);
       paintSelection();
     });
     const deleteSelected = toolButton("\u5220\u9664\u6240\u9009", () => void removeSelected(), shellIcon(240, 16));
@@ -20486,8 +20547,8 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       recordPane.textContent = paused2 === null ? "" : paused2 ? "\u5DF2\u6682\u505C\u8BB0\u5F55\u5386\u53F2" : "\u6B63\u5728\u8BB0\u5F55\u5386\u53F2";
     }
     function paintSelection() {
-      for (const [key7, entry] of cards2) {
-        const on7 = selected.has(key7);
+      for (const [key5, entry] of cards2) {
+        const on7 = selected.has(key5);
         entry.check.checked = on7;
         entry.element.toggleAttribute("data-selected", on7);
         entry.element.setAttribute("aria-selected", String(on7));
@@ -20606,7 +20667,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       }
       paintCount();
     }
-    async function read4(url, mine) {
+    async function read2(url, mine) {
       const stop = new AbortController(), timer2 = window.setTimeout(() => stop.abort(), 15e3);
       try {
         const body2 = await relay.read(url, stop.signal);
@@ -20623,7 +20684,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       paintFoot("\u6B63\u5728\u52A0\u8F7D\u2026");
       const mine = generation;
       try {
-        const body2 = await read4(keyword ? searchUrl(type, keyword, page) : cursorUrl(type, cursor), mine);
+        const body2 = await read2(keyword ? searchUrl(type, keyword, page) : cursorUrl(type, cursor), mine);
         if (!body2) return;
         if (Number(body2.code) === -101) {
           paintFoot("\u767B\u5F55\u5DF2\u5931\u6548\uFF0C\u8BF7\u91CD\u65B0\u767B\u5F55");
@@ -20669,7 +20730,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       paintSelection();
       return more();
     }
-    async function write3(op, body2, fallback2) {
+    async function write(op, body2, fallback2) {
       const answer = await relay.write(op, { body: body2 });
       if (!ok3(answer)) throw new Error(failure3(answer, fallback2));
       return answer;
@@ -20678,19 +20739,19 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       if (!keys.length) return;
       const feedback = soundTask();
       try {
-        await write3("history-delete", { kid: keys.join(",") }, "\u5220\u9664\u5931\u8D25");
+        await write("history-delete", { kid: keys.join(",") }, "\u5220\u9664\u5931\u8D25");
       } catch (error) {
         feedback.finish("error");
         showInfoLog(`\u5220\u9664\u5931\u8D25\uFF1A${error.message}`, "error");
         return;
       }
-      for (const key7 of keys) {
-        const entry = cards2.get(key7);
+      for (const key5 of keys) {
+        const entry = cards2.get(key5);
         if (!entry) continue;
         const grid = entry.element.parentElement;
         entry.element.remove();
-        cards2.delete(key7);
-        selected.delete(key7);
+        cards2.delete(key5);
+        selected.delete(key5);
         if (grid && !grid.childElementCount) {
           grid.parentElement?.remove();
           if (grid === lastGrid) {
@@ -20705,7 +20766,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       else if (!done && foot.getBoundingClientRect().top < innerHeight + 600) void more();
     }
     async function removeSelected() {
-      const keys = [...cards2.keys()].filter((key7) => selected.has(key7));
+      const keys = [...cards2.keys()].filter((key5) => selected.has(key5));
       if (!keys.length) return;
       if (!await atelierConfirm(`\u786E\u5B9E\u8981\u4ECE\u5386\u53F2\u8BB0\u5F55\u4E2D\u5220\u9664\u8FD9 ${keys.length} \u9879\u5417\uFF1F`, "\u786E\u8BA4\u5220\u9664")) return;
       await remove(keys);
@@ -20715,7 +20776,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       const what = type === "all" ? "\u5168\u90E8\u5386\u53F2\u8BB0\u5F55" : `\u6240\u6709${historyTypes.find(([value2]) => value2 === type)[1]}\u5386\u53F2\u8BB0\u5F55`;
       if (!await atelierConfirm(`\u786E\u5B9E\u8981\u6E05\u7A7A${what}\u5417\uFF1F\u6B64\u64CD\u4F5C\u4E0D\u80FD\u64A4\u9500\u3002`, "\u6E05\u7A7A\u5386\u53F2")) return;
       const feedback = soundTask();
-      const results = await Promise.allSettled(clearBusinesses(type).map((business) => write3("history-clear", { business }, "\u6E05\u7A7A\u5931\u8D25")));
+      const results = await Promise.allSettled(clearBusinesses(type).map((business) => write("history-clear", { business }, "\u6E05\u7A7A\u5931\u8D25")));
       const failed = results.find((result) => result.status === "rejected");
       if (failed && results.every((result) => result.status === "rejected")) {
         feedback.finish("error");
@@ -20728,7 +20789,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     }
     async function readPaused() {
       try {
-        const body2 = await read4(pausedUrl, generation);
+        const body2 = await read2(pausedUrl, generation);
         if (body2 && ok3(body2)) {
           paused2 = body2.data === true;
           paintPaused();
@@ -20740,7 +20801,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       if (paused2 === null) return;
       const next = !paused2;
       try {
-        await write3("history-pause", { switch: String(next) }, next ? "\u6682\u505C\u5931\u8D25" : "\u6062\u590D\u5931\u8D25");
+        await write("history-pause", { switch: String(next) }, next ? "\u6682\u505C\u5931\u8D25" : "\u6062\u590D\u5931\u8D25");
       } catch (error) {
         showInfoLog(error.message, "error");
         return;
@@ -20751,7 +20812,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     }
     async function watchLater2(card3) {
       try {
-        await write3("watchlater", { aid: String(card3.aid) }, "\u6DFB\u52A0\u5931\u8D25");
+        await write("watchlater", { aid: String(card3.aid) }, "\u6DFB\u52A0\u5931\u8D25");
         showInfoLog("\u5DF2\u6DFB\u52A0\u5230\u7A0D\u540E\u518D\u770B", "success");
       } catch (error) {
         showInfoLog(`\u7A0D\u540E\u518D\u770B\uFF1A${error.message}`, "error");
@@ -21053,7 +21114,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     const fields2 = /* @__PURE__ */ new Map();
     const saved = /* @__PURE__ */ new Map();
     let selectedKey = "title";
-    const isDirty = () => [...fields2].some(([key7, field]) => field.value !== saved.get(key7));
+    const isDirty = () => [...fields2].some(([key5, field]) => field.value !== saved.get(key5));
     for (const rule of ruleDefinitions) {
       const field = element("textarea", "luna-editor");
       field.id = "bili-rule-" + rule.key;
@@ -21112,33 +21173,33 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
           editorHost.setAttribute("role", "tabpanel");
           editorHost.id = "bili-atelier-rule-editor";
           const modeButtons = /* @__PURE__ */ new Map();
-          function selectMode(key7, user = false) {
-            if (user && selectedKey !== key7) sound("select");
-            selectedKey = key7;
+          function selectMode(key5, user = false) {
+            if (user && selectedKey !== key5) sound("select");
+            selectedKey = key5;
             for (const [mode2, node4] of modeButtons) {
-              node4.setAttribute("aria-selected", String(mode2 === key7));
-              node4.tabIndex = mode2 === key7 ? 0 : -1;
+              node4.setAttribute("aria-selected", String(mode2 === key5));
+              node4.tabIndex = mode2 === key5 ? 0 : -1;
             }
-            editorHost.setAttribute("aria-labelledby", "bili-atelier-mode-" + key7);
-            editorHost.replaceChildren(fields2.get(key7));
+            editorHost.setAttribute("aria-labelledby", "bili-atelier-mode-" + key5);
+            editorHost.replaceChildren(fields2.get(key5));
           }
-          for (const key7 of category.keys) {
-            const tab = button4(modeLabels[key7], () => selectMode(key7, true), "luna-rule-tab");
+          for (const key5 of category.keys) {
+            const tab = button4(modeLabels[key5], () => selectMode(key5, true), "luna-rule-tab");
             const mark2 = element("span", "luna-radio");
             mark2.setAttribute("aria-hidden", "true");
             tab.prepend(mark2);
-            tab.id = "bili-atelier-mode-" + key7;
+            tab.id = "bili-atelier-mode-" + key5;
             tab.setAttribute("role", "tab");
             tab.setAttribute("aria-controls", editorHost.id);
             tab.addEventListener("keydown", (event) => {
               if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
               event.preventDefault();
-              const index = category.keys.indexOf(key7);
+              const index = category.keys.indexOf(key5);
               const next = event.key === "Home" ? 0 : event.key === "End" ? category.keys.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + category.keys.length) % category.keys.length;
               selectMode(category.keys[next], true);
               modeButtons.get(category.keys[next]).focus();
             });
-            modeButtons.set(key7, tab);
+            modeButtons.set(key5, tab);
             tabs2.appendChild(tab);
           }
           selectMode(selectedKey);
@@ -21170,7 +21231,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       },
       status() {
         if (!isDirty() && !categories.some((category) => category.id === win.current())) return "";
-        const count2 = [...fields2].reduce((sum, [key7, field]) => sum + parseRuleText(field.value, ruleDefinitions.find((rule) => rule.key === key7)?.integer).length, 0);
+        const count2 = [...fields2].reduce((sum, [key5, field]) => sum + parseRuleText(field.value, ruleDefinitions.find((rule) => rule.key === key5)?.integer).length, 0);
         return count2 + " \u6761\u89C4\u5219 \xB7 " + (isDirty() ? "\u6709\u672A\u4FDD\u5B58\u7684\u4FEE\u6539" : "\u5DF2\u4FDD\u5B58");
       },
       isDirty,
@@ -21346,9 +21407,9 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     };
     const choice = (options, value2, change) => {
       const node4 = element("select");
-      for (const [key7, text4] of options) {
+      for (const [key5, text4] of options) {
         const option = element("option", "", text4);
-        option.value = key7;
+        option.value = key5;
         node4.append(option);
       }
       node4.value = value2;
