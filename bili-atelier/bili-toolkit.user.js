@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.9.6
+// @version      0.9.7
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -14652,7 +14652,7 @@ ${w2} .xp-status{flex:none}
     });
   }
   var pbpColours = { played: "#00ff00", ahead: "#008000" };
-  function createPbpDots(context) {
+  function createPbpDots(context, track = () => null) {
     const element2 = el("div", "vl-pbp");
     element2.hidden = true;
     element2.setAttribute("data-bili-blocker-ui", "true");
@@ -14684,8 +14684,27 @@ ${w2} .xp-status{flex:none}
       drawn = "";
       draw();
     }
+    const watched = /* @__PURE__ */ new WeakSet();
+    const resized = typeof ResizeObserver === "function" ? new ResizeObserver(() => draw()) : null;
+    function align() {
+      const seek = track(), area = element2.parentElement;
+      for (const node4 of [seek, area]) if (node4 && resized && !watched.has(node4)) {
+        watched.add(node4);
+        resized.observe(node4);
+      }
+      const from = seek?.isConnected ? seek.getBoundingClientRect() : null, box3 = area?.getBoundingClientRect();
+      if (!from?.width || !box3) {
+        element2.style.removeProperty("left");
+        element2.style.removeProperty("width");
+        return;
+      }
+      const inset = 12 * zoomOf(seek), z = zoomOf(element2);
+      element2.style.left = `${+((from.left + inset - box3.left) / z).toFixed(3)}px`;
+      element2.style.width = `${+(Math.max(0, from.width - 2 * inset) / z).toFixed(3)}px`;
+    }
     function draw() {
       if (!data || element2.hidden || !element2.isConnected) return;
+      align();
       const rect = element2.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
       const ratio = window.devicePixelRatio || 1, unit = Math.max(1, Math.round(currentPixelScale().drawn)), pitch = 3 * unit;
@@ -14705,7 +14724,8 @@ ${w2} .xp-status{flex:none}
         for (let row = 0; row < lit; row++) paintCanvas.fillRect(left + column * pitch, height - row * pitch - 2 * unit, 2 * unit, 2 * unit);
       });
     }
-    if (typeof ResizeObserver === "function") new ResizeObserver(() => draw()).observe(element2);
+    resized?.observe(element2);
+    window.addEventListener("resize", () => draw());
     return {
       element: element2,
       toggle,
@@ -14741,7 +14761,7 @@ ${w2} .xp-status{flex:none}
     };
   }
   var pbpDotsCss = (on8, full2) => `${on8} .bpx-player-pbp{display:none!important}
-.vl-pbp{position:absolute;left:0;right:0;bottom:0;height:28px;z-index:71;pointer-events:none}
+.vl-pbp{position:absolute;left:0;width:100%;bottom:0;height:28px;z-index:71;pointer-events:none}
 .vl-pbp[hidden],html[data-atelier-screen=mini] .vl-pbp{display:none}
 .vl-pbp>canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:auto;cursor:pointer;image-rendering:pixelated}
 ${full2} .bpx-player-container:not([data-ctrl-hidden=true]) .vl-pbp,${full2} .bpx-player-video-area:has(>.vl-wmp-fs[data-pinned])>.vl-pbp{bottom:91px}
@@ -20269,7 +20289,10 @@ ${message}` : ""}`;
     observeCrispText(bar.element);
     observeCrispText(fullscreen.element);
     startEndingClicks();
-    const pbp = createPbpDots(context);
+    const pbp = createPbpDots(context, () => {
+      const full2 = /^(web|full)$/.test(root2.getAttribute("data-atelier-screen") ?? "");
+      return (full2 ? fullBar : bar)?.element.querySelector(".vl-wmp-seek") ?? null;
+    });
     player.status.insertBefore(pbp.toggle, player.status.querySelector(".vl-status-tools"));
     const barFailed = (error) => {
       bar?.element.remove();
