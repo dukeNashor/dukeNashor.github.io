@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.9.5
+// @version      0.9.6
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -8100,7 +8100,9 @@ ${concealCss}
           "/pgc/view/web/season",
           "/pgc/view/web/ep/list",
           "/pgc/web/timeline"
-        ]
+        ],
+        // The 高能进度条's counts, read without cookies.
+        "bvc.bilivideo.com": ["/pbp/data"]
       },
       writes: {
         like: ["/x/web-interface/archive/like", "form", "body", 1],
@@ -8948,7 +8950,8 @@ ${concealCss}
         }
         const controller = new AbortController();
         reading.set(data.id, controller);
-        original.call(window, url.href, { credentials: "include", signal: controller.signal }).then(async (response) => post({ kind: "read-result", id: data.id, status: response.status, body: response.ok ? await response.json() : null })).catch((error) => post({ kind: "read-result", id: data.id, status: 0, error: String(error?.message || error) })).finally(() => reading.delete(data.id));
+        const credentials = /(^|\.)bilibili\.com$/.test(url.hostname) ? "include" : "omit";
+        original.call(window, url.href, { credentials, signal: controller.signal }).then(async (response) => post({ kind: "read-result", id: data.id, status: response.status, body: response.ok ? await response.json() : null })).catch((error) => post({ kind: "read-result", id: data.id, status: 0, error: String(error?.message || error) })).finally(() => reading.delete(data.id));
       } else if (data.kind === "write") {
         const spec = Object.prototype.hasOwnProperty.call(writes, data.op) ? writes[data.op] : null;
         const answer = (message) => post({ kind: "write-result", id: data.id, ...message });
@@ -14634,82 +14637,116 @@ ${w2} .xp-status{flex:none}
   }
 
   // src/modules/video-luna/pbp-dots.ts
-  function parsePbpPath(d) {
-    const points = [];
-    const height = (y) => Math.min(1, Math.max(0, (100 - y) / 100));
-    const start2 = /L\s*0\s+(-?[\d.]+)/.exec(d);
-    if (start2) points.push({ x: 0, h: height(Number(start2[1])) });
-    for (const match of d.matchAll(/C\s*-?[\d.]+\s+-?[\d.]+\s*,\s*-?[\d.]+\s+-?[\d.]+\s*,\s*(-?[\d.]+)\s+(-?[\d.]+)/g)) {
-      points.push({ x: Math.min(1, Math.max(0, Number(match[1]) / 1e3)), h: height(Number(match[2])) });
-    }
-    return points;
+  function parsePbp(raw) {
+    const module = (Array.isArray(raw?.modules) ? raw.modules : []).find((item) => item?.load_mode === "pbp");
+    const data = module?.params?.data, step = Number(data?.step_sec), values = data?.events?.default;
+    if (!(step > 0) || !Array.isArray(values) || !values.length) return null;
+    return { step, values: values.map((value2) => Math.max(0, Number(value2) || 0)) };
   }
-  function pbpDots(points, columns3, rows) {
-    if (!points.length || columns3 <= 0 || rows <= 0) return [];
-    let at = 0;
+  function pbpDots(data, duration, columns3, rows) {
+    if (columns3 <= 0 || rows <= 0) return [];
+    const steps = Math.max(data.values.length, Math.floor(duration / data.step)), loudest = Math.max(...data.values) || 1;
     return Array.from({ length: columns3 }, (_, column) => {
-      const x = (column + 0.5) / columns3;
-      while (at + 1 < points.length && Math.abs(points[at + 1].x - x) <= Math.abs(points[at].x - x)) at++;
-      return Math.max(1, Math.min(rows, Math.round(points[at].h * rows)));
+      const value2 = data.values[Math.floor((column + 0.5) / columns3 * steps)] ?? 0;
+      return Math.max(1, Math.min(rows, Math.round((0.2 + 0.8 * value2 / loudest) * rows)));
     });
   }
   var pbpColours = { played: "#00ff00", ahead: "#008000" };
-  function startPbpDots() {
-    const attached = /* @__PURE__ */ new WeakMap();
-    let played = 0;
-    const scan = () => {
-      for (const pbp of document.querySelectorAll(".bpx-player-pbp")) if (!attached.has(pbp)) attached.set(pbp, attach(pbp));
-    };
-    function attach(pbp) {
-      const canvas = document.createElement("canvas");
-      canvas.className = "vl-pbp-dots";
-      canvas.setAttribute("aria-hidden", "true");
-      pbp.prepend(canvas);
-      let path = "", points = [], drawn = "";
-      const draw = () => {
-        const svg = pbp.querySelector("svg"), d = pbp.querySelector('clipPath[id$="-curve-path"] path')?.getAttribute("d") ?? "";
-        if (!svg || !d || !canvas.isConnected) return;
-        if (d !== path) {
-          path = d;
-          points = parsePbpPath(d);
-          drawn = "";
-        }
-        const box2 = svg.getBoundingClientRect(), outer = pbp.getBoundingClientRect(), z = zoomOf(pbp);
-        if (!box2.width || !box2.height) return;
-        const ratio = window.devicePixelRatio || 1, unit = Math.max(1, Math.round(currentPixelScale().drawn)), pitch = 3 * unit;
-        const width = Math.round(box2.width * ratio), height = Math.round(box2.height * ratio);
-        const columns3 = Math.floor((width + unit) / pitch), rows = Math.floor((height + unit) / pitch);
-        const reached = Math.round(played * columns3), key5 = [width, height, unit, reached, path.length].join();
-        if (key5 === drawn) return;
-        drawn = key5;
-        Object.assign(canvas.style, { left: `${(box2.left - outer.left) / z}px`, top: `${(box2.top - outer.top) / z}px`, width: `${box2.width / z}px`, height: `${box2.height / z}px` });
-        if (canvas.width !== width) canvas.width = width;
-        if (canvas.height !== height) canvas.height = height;
-        const context = canvas.getContext("2d");
-        if (!context) return;
-        context.clearRect(0, 0, width, height);
-        const left = Math.floor((width - (columns3 * pitch - unit)) / 2);
-        pbpDots(points, columns3, rows).forEach((lit, column) => {
-          context.fillStyle = column < reached ? pbpColours.played : pbpColours.ahead;
-          for (let row = 0; row < lit; row++) context.fillRect(left + column * pitch, height - row * pitch - 2 * unit, 2 * unit, 2 * unit);
-        });
-      };
-      if (typeof ResizeObserver === "function") new ResizeObserver(() => draw()).observe(pbp);
+  function createPbpDots(context) {
+    const element2 = el("div", "vl-pbp");
+    element2.hidden = true;
+    element2.setAttribute("data-bili-blocker-ui", "true");
+    const canvas = element2.appendChild(el("canvas"));
+    canvas.title = "\u5355\u51FB\u8DF3\u5230\u8FD9\u91CC";
+    const toggle = el("label", "xp-status-pane vl-status-check");
+    toggle.hidden = true;
+    const box2 = toggle.appendChild(el("input", "xp-check"));
+    box2.type = "checkbox";
+    toggle.append(el("span", "", "\u9AD8\u80FD\u8FDB\u5EA6\u6761"));
+    let shown2 = readFolded("high-energy", true);
+    box2.checked = shown2;
+    box2.addEventListener("change", () => {
+      shown2 = box2.checked;
+      writeFolded("high-energy", shown2);
+      sound("click");
+      paint2();
+    });
+    for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup", "click", "dblclick", "contextmenu", "wheel"]) element2.addEventListener(type, (event) => event.stopPropagation());
+    canvas.addEventListener("click", (event) => {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width && duration > 0) context.bridge.seek(Math.min(duration, Math.max(0, (event.clientX - rect.left) / rect.width * duration)));
+    });
+    let data = null, key5 = "", duration = 0, played = 0, drawn = "";
+    const reads2 = /* @__PURE__ */ new Map();
+    function paint2() {
+      toggle.hidden = !data;
+      element2.hidden = !(shown2 && data);
+      drawn = "";
       draw();
-      return draw;
     }
-    scan();
-    window.setInterval(scan, 1e3);
+    function draw() {
+      if (!data || element2.hidden || !element2.isConnected) return;
+      const rect = element2.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const ratio = window.devicePixelRatio || 1, unit = Math.max(1, Math.round(currentPixelScale().drawn)), pitch = 3 * unit;
+      const width = Math.round(rect.width * ratio), height = Math.round(rect.height * ratio);
+      const columns3 = Math.floor((width + unit) / pitch), rows = Math.floor((height + unit) / pitch);
+      const reached = Math.round(played * columns3), next = [width, height, unit, reached, duration].join();
+      if (next === drawn) return;
+      drawn = next;
+      if (canvas.width !== width) canvas.width = width;
+      if (canvas.height !== height) canvas.height = height;
+      const paintCanvas = canvas.getContext("2d");
+      if (!paintCanvas) return;
+      paintCanvas.clearRect(0, 0, width, height);
+      const left = Math.floor((width - (columns3 * pitch - unit)) / 2);
+      pbpDots(data, duration, columns3, rows).forEach((lit, column) => {
+        paintCanvas.fillStyle = column < reached ? pbpColours.played : pbpColours.ahead;
+        for (let row = 0; row < lit; row++) paintCanvas.fillRect(left + column * pitch, height - row * pitch - 2 * unit, 2 * unit, 2 * unit);
+      });
+    }
+    if (typeof ResizeObserver === "function") new ResizeObserver(() => draw()).observe(element2);
     return {
+      element: element2,
+      toggle,
+      /** A new video (or part) reads its data once. */
+      render(state2) {
+        const aid = Number(state2?.aid) || 0, cid = Number(state2?.cid) || 0, bvid = String(state2?.bvid ?? ""), next = cid ? `${aid}:${cid}` : "";
+        if (next === key5) return;
+        key5 = next;
+        data = null;
+        paint2();
+        if (!next) return;
+        let read3 = reads2.get(next);
+        if (!read3) {
+          read3 = context.actions.pbp(aid, cid, bvid).then(parsePbp, () => {
+            reads2.delete(next);
+            return null;
+          });
+          reads2.set(next, read3);
+        }
+        void read3.then((result) => {
+          if (key5 === next) {
+            data = result;
+            paint2();
+          }
+        });
+      },
       /** Where the video is: the dots light up to there. */
       playback(state2) {
+        duration = state2?.duration ?? 0;
         played = state2 && state2.duration > 0 ? Math.min(1, Math.max(0, state2.time / state2.duration)) : 0;
-        for (const pbp of document.querySelectorAll(".bpx-player-pbp")) attached.get(pbp)?.();
+        draw();
       }
     };
   }
-  var pbpDotsCss = `.bpx-player-pbp:has(>.vl-pbp-dots)>svg{opacity:0}
-.vl-pbp-dots{position:absolute;pointer-events:none;image-rendering:pixelated}`;
+  var pbpDotsCss = (on8, full2) => `${on8} .bpx-player-pbp{display:none!important}
+.vl-pbp{position:absolute;left:0;right:0;bottom:0;height:28px;z-index:71;pointer-events:none}
+.vl-pbp[hidden],html[data-atelier-screen=mini] .vl-pbp{display:none}
+.vl-pbp>canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:auto;cursor:pointer;image-rendering:pixelated}
+${full2} .bpx-player-container:not([data-ctrl-hidden=true]) .vl-pbp,${full2} .bpx-player-video-area:has(>.vl-wmp-fs[data-pinned])>.vl-pbp{bottom:91px}
+.vl-player-status>.vl-status-check{display:inline-flex;align-items:center;gap:3px;padding:0 4px;cursor:default}
+.vl-player-status>.vl-status-check[hidden]{display:none}`;
 
   // src/modules/video-luna/styles.ts
   var on7 = `html[${videoAttribute}=luna]`;
@@ -14791,7 +14828,7 @@ ${wide} .vl-player-status{width:var(--vl-player-w)}
 /* The picture window (image-window.ts), over the page. */
 ${imageWindowCss}
 /* The \u9AD8\u80FD\u8FDB\u5EA6\u6761 as LED dots (pbp-dots.ts). */
-${pbpDotsCss}
+${pbpDotsCss(on7, full)}
 .vl-status-grip{flex:none;align-self:flex-end;width:var(--xp-gripper-w,13px);height:var(--xp-gripper-h,13px);background:var(--xp-gripper-0) right bottom no-repeat}
 
 /* The Media Player bar (media-bar.ts) under the player, inside its frame.
@@ -17192,6 +17229,11 @@ ${message}` : ""}`;
     /** Moves the account into these groups; none means 默认分组. */
     setUserTags(mid, tags) {
       return this.send("follow-tags", { fids: mid, tagids: tags.length ? tags.join(",") : "0" });
+    }
+    /** The 高能进度条's counts, as Bilibili's player reads them: from its
+     * video CDN, without cookies (it answers any origin). */
+    pbp(aid, cid, bvid) {
+      return this.read(`https://bvc.bilivideo.com/pbp/data?aid=${aid}&cid=${cid}&bvid=${encodeURIComponent(bvid)}&r=loader`, new AbortController().signal);
     }
     watchLater(aid) {
       return this.send("watchlater", { aid });
@@ -20227,7 +20269,8 @@ ${message}` : ""}`;
     observeCrispText(bar.element);
     observeCrispText(fullscreen.element);
     startEndingClicks();
-    const pbp = startPbpDots();
+    const pbp = createPbpDots(context);
+    player.status.insertBefore(pbp.toggle, player.status.querySelector(".vl-status-tools"));
     const barFailed = (error) => {
       bar?.element.remove();
       fullscreen?.element.remove();
@@ -20262,6 +20305,7 @@ ${message}` : ""}`;
         }
       }
       cover.render(latest);
+      pbp.render(latest);
       try {
         bar?.render(latest);
         fullBar?.render(latest);
@@ -20287,6 +20331,7 @@ ${message}` : ""}`;
       const infoAfter = !bangumi && player.status.isConnected && player.status.parentElement === under?.parentElement ? player.status : under;
       const area = wrap.querySelector(".bpx-player-video-area");
       if (fullscreen && area && fullscreen.element.parentElement !== area) area.append(fullscreen.element);
+      if (area && pbp.element.parentElement !== area) area.append(pbp.element);
       if (!failed.has("info") && infoAfter && info.element.previousElementSibling !== infoAfter) infoAfter.after(info.element);
       const above = inner.querySelector(":scope > .video-pod-above-modules") ?? inner.querySelector(":scope > #danmukuBox");
       if (!failed.has("up")) {
