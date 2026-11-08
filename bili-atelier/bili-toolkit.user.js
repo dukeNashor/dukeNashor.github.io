@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.9.1
+// @version      0.9.3
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -12541,7 +12541,8 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     observeCrispText(menu);
     const rect = anchor?.getBoundingClientRect(), point = rect ? { x: rect.left, y: rect.bottom } : at;
     const width = screenWidth(menu), height = screenHeight(menu);
-    placeFixed(menu, { left: Math.max(2, Math.min(point.x, innerWidth - width - 2)), top: point.y + height > innerHeight - 2 ? Math.max(2, (rect ? rect.top : point.y) - height) : point.y });
+    const across = document.documentElement.clientWidth || innerWidth, down = document.documentElement.clientHeight || innerHeight;
+    placeFixed(menu, { left: Math.max(2, Math.min(point.x, across - width - 2)), top: point.y + height > down - 2 ? Math.max(2, (rect ? rect.top : point.y) - height) : point.y });
     sound("menu");
     const close = (event) => {
       if (event.type === "pointerdown" && host.contains(event.target)) return;
@@ -18275,7 +18276,16 @@ ${message}` : ""}`;
       const text4 = anchor.appendChild(el2("span", "vl-tile-info"));
       text4.append(el2("span", "vl-tile-title", String(item?.title ?? "")));
       const owner = text4.appendChild(el2("span", "vl-tile-up"));
-      owner.append(el2("span", "vl-up-badge", "UP"), document.createTextNode(String(item?.owner?.name ?? "")));
+      const mid = Number(item?.owner?.mid), name = String(item?.owner?.name ?? ""), space = mid > 0 ? `https://space.bilibili.com/${mid}` : "";
+      const up = space ? owner.appendChild(link2("vl-tile-up-link", "", space)) : owner;
+      up.append(el2("span", "vl-up-badge", "UP"), document.createTextNode(name));
+      if (space) up.title = "";
+      const onName = (event) => !!space && !!event.target?.closest?.(".vl-tile-up-link");
+      const blockUp = { label: `\u5C4F\u853D UP \u4E3B\uFF1A${name}`, disabled: !config.blocker.enabled || !mid && !name, action: () => {
+        const result = mid ? addRuleItem("precise_uid", mid) : addRuleItem("precise_name", name);
+        void atelierAlert(String(result.res));
+        if (result.status) context.rescan();
+      } };
       const view = formatCount(item?.stat?.view), danmaku = formatCount(item?.stat?.danmaku);
       text4.append(el2("span", "vl-tile-stats", [view && `${view}\u64AD\u653E`, danmaku && `${danmaku}\u5F39\u5E55`].filter(Boolean).join(" \xB7 ")));
       const date2 = dateLine(Number(item?.aid));
@@ -18283,14 +18293,25 @@ ${message}` : ""}`;
       anchor.title = String(item?.title ?? "");
       if (id) node4.append(viewedButton(id));
       anchor.addEventListener("click", (event) => {
-        if (redirect || state2.list || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        if (onName(event) || redirect || state2.list || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
         event.preventDefault();
         context.open({ aid: Number(item.aid), bvid, cid: Number(item.cid), spm: `333.788.recommend_more_video.${index}`, url });
       });
       anchor.addEventListener("contextmenu", (event) => {
         if (event.shiftKey) return;
         event.preventDefault();
-        const seen = !!id && isViewedVideo(id), mid = Number(item?.owner?.mid);
+        if (onName(event)) {
+          openMenu([
+            { label: "\u5728\u65B0\u6807\u7B7E\u9875\u4E2D\u6253\u5F00\u4E2A\u4EBA\u7A7A\u95F4", bold: true, action: () => {
+              window.open(space, "_blank", "noopener");
+            } },
+            { label: "\u590D\u5236\u94FE\u63A5", action: () => void navigator.clipboard.writeText(space).then(() => note("\u5DF2\u590D\u5236\u94FE\u63A5", "success")) },
+            "separator",
+            blockUp
+          ], { x: event.clientX, y: event.clientY });
+          return;
+        }
+        const seen = !!id && isViewedVideo(id);
         openMenu([
           { label: "\u5728\u65B0\u6807\u7B7E\u9875\u4E2D\u6253\u5F00", bold: true, action: () => {
             window.open(url, "_blank", "noopener");
@@ -18309,11 +18330,7 @@ ${message}` : ""}`;
             setViewedVideo(id, !seen);
           } },
           "separator",
-          { label: `\u5C4F\u853D UP \u4E3B\uFF1A${item?.owner?.name ?? ""}`, disabled: !config.blocker.enabled || !mid && !item?.owner?.name, action: () => {
-            const result = mid ? addRuleItem("precise_uid", mid) : addRuleItem("precise_name", String(item.owner.name));
-            void atelierAlert(String(result.res));
-            if (result.status) context.rescan();
-          } }
+          blockUp
         ], { x: event.clientX, y: event.clientY });
       });
       return node4;
@@ -19026,8 +19043,9 @@ ${on6} .main-container .plp-r.sticky{top:var(--vl-hold-top,var(--vl-stick,min(va
 .vl-tile-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 .vl-tile-up,.vl-tile-stats,.vl-tile-date{color:var(--xp-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vl-up-badge{display:inline-block;margin-right:4px;padding:0 2px;border:1px solid currentColor;line-height:1}
+.vl-tile-up-link{color:inherit!important;text-decoration:none!important}.vl-tile-up-link:hover{color:var(--xp-task-link)!important;text-decoration:underline!important}
 .vl-tile[data-viewed] .vl-tile-link,.vl-tile[data-viewed] .vl-tile-link :is(.vl-tile-up,.vl-tile-stats,.vl-tile-date){color:var(--xp-graytext)!important}
-.vl-tile[data-viewed] .vl-cover img{filter:grayscale(1);opacity:.6}
+.vl-tile[data-viewed] .vl-cover img{opacity:.45}
 .vl-tile[data-blocked]{outline:1px dashed #a33024;outline-offset:-1px}
 .vl-tile>.vl-viewed{position:absolute;top:9px;left:calc(5px + 140px - 4px);transform:translateX(-100%);min-width:0!important;min-height:21px!important;padding:1px 6px!important;z-index:1}
 .vl-expand{display:flex;justify-content:center;padding:6px 0 10px}
