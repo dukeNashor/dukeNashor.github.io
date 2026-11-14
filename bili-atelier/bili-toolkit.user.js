@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.9.8
+// @version      0.9.9
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -2286,7 +2286,8 @@
       viewedOpacity: share(stored.viewedOpacity, 0.45),
       userCard: stored.userCard !== false,
       pictureWindow: stored.pictureWindow !== false,
-      ipLocation: stored.ipLocation !== false
+      ipLocation: stored.ipLocation !== false,
+      compactBar: stored.compactBar !== false
     };
   }
   function saveInterfacePrefs(change) {
@@ -12167,266 +12168,6 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
 .alf-quick-top img{width:24px;height:24px;image-rendering:pixelated}
 `;
 
-  // src/modules/local-following/feed-columns.ts
-  var searchIcon = 23;
-  var on = "html[data-atelier-feed=drawn]";
-  function mountFeedColumns(quick) {
-    const caption2 = (icon2, title) => {
-      const header = document.createElement("header");
-      header.className = "xp-caption alf-column-caption";
-      header.setAttribute("data-bili-blocker-ui", "true");
-      header.append(icon2, Object.assign(document.createElement("h2"), { textContent: title }));
-      return header;
-    };
-    const info = document.querySelector("aside.left .bili-dyn-my-info");
-    const card4 = info?.parentElement;
-    if (info && card4 && !card4.classList.contains("alf-me")) {
-      card4.classList.add("alf-me", "xp-window");
-      card4.prepend(caption2(Object.assign(document.createElement("img"), { src: atelierIcons.following, alt: "" }), "\u6211\u7684\u4FE1\u606F"));
-      observeCrispText(card4);
-    }
-    const trends = document.querySelector("aside.right .bili-dyn-search-trendings");
-    if (trends && !trends.classList.contains("alf-trends")) {
-      trends.classList.add("alf-trends", "xp-window");
-      trends.prepend(caption2(shellIcon(searchIcon, 16), "bilibili\u70ED\u641C"));
-      observeCrispText(trends);
-    }
-    const sticky = trends?.parentElement;
-    if (sticky && quick.parentElement !== sticky) sticky.append(quick);
-  }
-  var feedColumnsCss = `
-${on} aside.right>section:has(>.bili-dyn-banner),html[data-atelier-list=drawn] .bili-dyn-sidebar{display:none!important}
-.alf-column-caption h2{margin:0;font:bold var(--xp-caption-size)/var(--xp-line) var(--xp-caption-font);color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-${on} :is(.alf-me,.alf-trends){margin:0 0 8px;padding:0;border-radius:0;box-shadow:none;${xpFont};text-align:left}
-${on} .alf-me>.bili-dyn-my-info{margin:0;padding:8px 10px;border:1px solid var(--xp-edge);border-radius:0;background:var(--xp-window);box-shadow:none}
-${on} .alf-me .bili-dyn-my-info__header{margin:0;padding:0}
-${on} .alf-me .bili-dyn-my-info__header .avatar{border-radius:0;border:1px solid var(--xp-line)}
-${on} .alf-me .info__name{font:bold var(--xp-font-size)/var(--xp-line) var(--xp-font)!important}
-${on} .alf-me .info__label-text{border-radius:0!important;padding:0 3px!important;font:var(--xp-font-size)/var(--xp-line) var(--xp-font)!important}
-${on} .alf-me .bili-dyn-my-info__content{margin:6px 0 0;padding:6px 0 0;border-top:1px solid var(--xp-line)}
-${on} .alf-me .bili-dyn-my-info__stat__item{color:var(--xp-task-link)!important;text-decoration:none!important;cursor:pointer}
-${on} .alf-me .bili-dyn-my-info__stat__item:hover{text-decoration:underline!important}
-${on} .alf-me :is(.item-num,.item-desc){font:var(--xp-font-size)/var(--xp-line) var(--xp-font)!important;color:inherit!important}
-${on} .alf-me .item-num{font-weight:bold!important}
-${on} .alf-trends>.title{display:none!important}
-${on} .alf-trends>.trending-list{margin:0;padding:2px;border:1px solid var(--xp-edge);background:var(--xp-window)}
-${on} .alf-trends a.trending{display:flex;align-items:center;gap:6px;height:auto!important;min-height:0!important;margin:0;padding:2px 6px;border-radius:0;color:var(--xp-ink)!important;text-decoration:none!important;background:none}
-${on} .alf-trends a.trending:hover{background:var(--xp-highlight);color:var(--xp-highlight-ink)!important}
-${on} .alf-trends a.trending :is(.prefix,.text){font:var(--xp-font-size)/var(--xp-line) var(--xp-font)!important;color:inherit!important;background:none!important}
-${on} .alf-trends a.trending .prefix{flex:none;width:2em;height:auto!important;text-align:right;color:var(--xp-muted)!important}
-${on} .alf-trends a.trending:hover .prefix{color:inherit!important}
-${on} .alf-trends a.trending .text{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-${on} .alf-trends a.trending .mark{flex:none}
-${on} aside.right>section.sticky{top:calc(${headerBottomCss} + 8px)!important}
-`;
-
-  // src/ui/page-layout.ts
-  var pageLayoutChanged = "atelier-page-layout-changed";
-  var layout = null;
-  function registerPageLayout(next) {
-    layout = next;
-    notifyPageLayoutChanged();
-  }
-  var currentPageLayout = () => layout;
-  var notifyPageLayoutChanged = () => window.dispatchEvent(new Event(pageLayoutChanged));
-
-  // src/ui/screen-records.ts
-  function screenRecords(key6, legacyKey, parse3) {
-    const stored = () => typeof GM_getValue === "function" && typeof GM_setValue === "function";
-    const all = () => {
-      const value2 = stored() ? GM_getValue(key6, {}) : {};
-      return value2 && typeof value2 === "object" ? { ...value2 } : {};
-    };
-    let screen = ratioKey(screenRatio());
-    return {
-      /** The record for the screen the page is on now; save() writes that one. */
-      load() {
-        screen = ratioKey(screenRatio());
-        const records2 = all();
-        const legacy = stored() ? GM_getValue(legacyKey, void 0) : void 0;
-        if (legacy !== void 0) {
-          if (!(screen in records2)) records2[screen] = legacy;
-          GM_setValue(key6, records2);
-          if (typeof GM_deleteValue === "function") GM_deleteValue(legacyKey);
-        }
-        return parse3(records2[screen]);
-      },
-      /** Only this screen's record: another tab on another screen keeps its own. */
-      save(value2) {
-        if (stored()) GM_setValue(key6, { ...all(), [screen]: value2 });
-      }
-    };
-  }
-  function onScreenChange(change) {
-    let screen = ratioKey(screenRatio()), query;
-    const watch = () => {
-      query?.removeEventListener("change", check2);
-      query = window.matchMedia?.(`(resolution: ${screenRatio()}dppx)`);
-      query?.addEventListener("change", check2);
-    };
-    function check2() {
-      if (query && !query.matches) watch();
-      const next = ratioKey(screenRatio());
-      if (next === screen) return;
-      screen = next;
-      change();
-    }
-    watch();
-    window.addEventListener("resize", check2);
-  }
-
-  // src/ui/side-bounds.ts
-  var inside = 4;
-  var outside = 2;
-  var blankOf = (m) => (m.content.left - m.stage.left + (m.stage.right - m.content.right)) / 2;
-  var blankMax = (m) => Math.max(0, (m.stage.right - m.stage.left - m.least) / 2);
-  function dragBlank(start2, dx, side, max) {
-    return Math.round(Math.min(Math.max(start2 + (side === "left" ? dx : -dx), 0), max));
-  }
-  function hitBound(m, x, y, top, bottom, unit = 1) {
-    if (y < top || y >= bottom) return null;
-    if (x >= m.content.left - outside * unit && x < m.content.left + inside * unit) return "left";
-    if (x >= m.content.right - inside * unit && x < m.content.right + outside * unit) return "right";
-    return null;
-  }
-  var attribute = "data-atelier-bounds";
-  var sideBoundsCss = `
-.atelier-bound-bar{position:fixed;z-index:2147483646;width:${inside}px;margin:0;padding:0;border:0;pointer-events:none;background:repeating-conic-gradient(#fff 0 25%,#000 0 50%) 0 0/2px 2px;mix-blend-mode:difference}
-:is(html[${attribute}],html[${attribute}] *){cursor:ew-resize!important}
-html[${attribute}=drag] *{user-select:none!important}
-.atelier-bound-sheet{position:fixed;inset:0;z-index:2147483647}
-`;
-  var covers = "dialog,[role=dialog],[role=menu],header.lh,.vl-menu-host,.xp-tooltip";
-  function startSideBounds(host) {
-    const root2 = document.documentElement;
-    if (!document.getElementById("atelier-side-bounds")) {
-      const style = document.createElement("style");
-      style.id = "atelier-side-bounds";
-      style.textContent = sideBoundsCss;
-      (document.head || root2).append(style);
-    }
-    const bars = [0, 1].map(() => {
-      const bar = document.createElement("div");
-      bar.className = "atelier-bound-bar";
-      bar.setAttribute("aria-hidden", "true");
-      bar.setAttribute("data-bili-blocker-ui", "true");
-      return bar;
-    });
-    const show = (left, right) => {
-      const top = headerScreenHeight(), height = Math.max(0, innerHeight - top);
-      const dot = currentPixelScale().scale ? 1 : 1 / (window.devicePixelRatio || 1), tile = `${2 * dot}px`;
-      bars.forEach((bar, index) => {
-        if (!bar.isConnected) document.body.append(bar);
-        bar.style.backgroundSize = `${tile} ${tile}`;
-        placeFixed(bar, { left: index ? right - inside * zoomOf(bar) : left, top, height });
-      });
-    };
-    const hide = () => {
-      for (const bar of bars) bar.remove();
-    };
-    const setState = (state2) => {
-      if (state2) {
-        if (root2.getAttribute(attribute) !== state2) root2.setAttribute(attribute, state2);
-      } else root2.removeAttribute(attribute);
-    };
-    const covered = (x, y) => !!document.elementFromPoint?.(x, y)?.closest(covers);
-    function hit(x, y) {
-      const m = host.measure();
-      if (!m) return null;
-      const side = hitBound(m, x, y, headerScreenHeight(), innerHeight, zoomOf(document.body));
-      return side && !covered(x, y) ? { m, side } : null;
-    }
-    let dragging = false, cancelDrag = null, hover = null, frame2 = 0;
-    onScreenChange(() => cancelDrag?.());
-    const repaintHover = () => {
-      frame2 = 0;
-      if (dragging) return;
-      const found = hover && hover.pointerType !== "touch" && !hover.buttons ? hit(hover.clientX, hover.clientY) : null;
-      if (found) {
-        show(found.m.content.left, found.m.content.right);
-        setState("hover");
-      } else if (root2.getAttribute(attribute) === "hover") {
-        hide();
-        setState("");
-      }
-    };
-    window.addEventListener("pointermove", (event) => {
-      hover = event;
-      frame2 ||= requestAnimationFrame(repaintHover);
-    }, { passive: true });
-    document.addEventListener("pointerleave", () => {
-      hover = null;
-      frame2 ||= requestAnimationFrame(repaintHover);
-    });
-    window.addEventListener("scroll", () => {
-      if (hover) frame2 ||= requestAnimationFrame(repaintHover);
-    }, { passive: true });
-    window.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0 || dragging) return;
-      const found = hit(event.clientX, event.clientY);
-      if (!found) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      const { m, side } = found, start2 = blankOf(m), max = blankMax(m), x = event.clientX;
-      const sheet = document.body.appendChild(document.createElement("div"));
-      sheet.className = "atelier-bound-sheet";
-      sheet.setAttribute("data-bili-blocker-ui", "true");
-      dragging = true;
-      setState("drag");
-      let blank = Math.round(start2), moveFrame = 0, last = x;
-      const place3 = () => {
-        moveFrame = 0;
-        blank = dragBlank(start2, last - x, side, max);
-        show(m.stage.left + blank, m.stage.right - blank);
-      };
-      show(m.content.left, m.content.right);
-      const move = (next) => {
-        last = next.clientX;
-        moveFrame ||= requestAnimationFrame(place3);
-      };
-      const finish = (apply) => {
-        window.removeEventListener("pointermove", move, true);
-        window.removeEventListener("pointerup", up, true);
-        window.removeEventListener("pointercancel", cancel, true);
-        window.removeEventListener("blur", cancel);
-        window.removeEventListener("keydown", key6, true);
-        cancelAnimationFrame(moveFrame);
-        sheet.remove();
-        hide();
-        dragging = false;
-        cancelDrag = null;
-        setState("");
-        if (apply) {
-          blank = dragBlank(start2, last - x, side, max);
-          if (Math.abs(blank - start2) >= 1) host.commit(blank);
-        }
-        frame2 ||= requestAnimationFrame(repaintHover);
-      };
-      const up = () => finish(true), cancel = () => finish(false);
-      cancelDrag = cancel;
-      const key6 = (next) => {
-        if (next.key === "Escape") {
-          next.preventDefault();
-          next.stopImmediatePropagation();
-          cancel();
-        }
-      };
-      window.addEventListener("pointermove", move, true);
-      window.addEventListener("pointerup", up, true);
-      window.addEventListener("pointercancel", cancel, true);
-      window.addEventListener("blur", cancel);
-      window.addEventListener("keydown", key6, true);
-    }, true);
-    window.addEventListener("dblclick", (event) => {
-      if (!hit(event.clientX, event.clientY)) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      hide();
-      setState("");
-      host.reset();
-    }, true);
-  }
-
   // src/modules/luna-header/bridge.ts
   function startHeaderBridge() {
     const relay = startPageRelay("header", endpoints.header);
@@ -12474,8 +12215,36 @@ html[${attribute}=drag] *{user-select:none!important}
   // src/ui/assets/xp-icons/ie-favorites-16.png
   var ie_favorites_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB+ElEQVR42q2RW0jTcRTHP2sby60NpwmxFs0L5S0cSUQiYQ+9JfgiFETs6R8+hEYvEUF7jJIW0YVfL92gRj1oYReIaFkjMVfipTKnjiJnIf3H1NFydXqpcJGLpPN4vt/z4Zzzhb/UwAVEaeQvpi/LNRw8XNZmr2rHusIUWBJgTbEj4ClbicttaVgSAICZexQ55zxKw/NPAKXhBSBxB5fbAvDHLQwAnUe3BGxOt9dqGssy1e08Da/rwV7BlXOjodLq6iw9bajqNACEVdlEXeNuD44qsBVDxgGZWfh4FvQgODfBqkNgLodUL8xFQb4RunkLE8BQJLrta8p/pLISX2H5Vli+GmZeQXIY8txgWwumEZh/Bp8eEB98wuNH6f5Egv2/393Qc4YX6admkcFCkecWkVi9yOxBEVGSHN8j908U6EqjLefjuy826/K2TWTYJfJhl0jmpMiX49J3tUJ+PXexFJRGk3fHsXySt8HqgbwNYKyB1DvWrQegKSegpLa51U4IJEFs/DM32lUo/gYwb8duek9JqbGVHNl7JkceirzcKAPXikRp+H/0fWN913XRO2QyVCNKw7cYwJ8cOyXdAXSlZa+qNLzh4L4JmY/J5QPWjp9940JTYy39Q+G76elpWvaep2eh1hVhanNB76V4tD+tx0dVV4Qp/kd9B558zOMZgZROAAAAAElFTkSuQmCC";
 
+  // src/ui/assets/xp-icons/ie-home-16.png
+  var ie_home_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAChklEQVR42o2TzUtUURjGf3OnZrKZexsZwjArqRBxUSPVqsLpY9NAUbhp4UJo0dZlm9L+gqI2UQsxwkWLPugDWjnSBxGpE2URaZbal9F458u55557z2lxTZqM6N28cM75Pe9zDs8J8x/VB80t0LMDmkcg9/te6G+AvrrnHLFYCssapr7+1uWdlxPAUKZrOxuuvQj9U0AP7O4nHu/GNME0wTBwP//g85P31JXCrLs0VsMYNfBguh/T7MaywLKCxfl5IrLMppZVhDdHed3bkVrmQA+mE0A/sdhRTBPicfA8KBTAtvFLFfSeMxSqYUYHztul6op9nVfu5QDCejCdIBQaIh5PY1kBLATYNhQKeIUK/t5ejNYMbmIjKtawam7q0/FjB488uPEw+zWk7x7RQHDfujpwnKXJoiSg4wzh1gxFx0VIRdX1+fLqFe8fjdje6nX7QgCjty+MtTe+TFEuB3CxiFMUkO4j0nYIu+ri+ZqK8BCeZkEqZsc/8m2qlDUAnrodqZu6B8d2YX6esu3itHYRbctQcuQyWPgKa+t6nufGh1f8es1I0xauc5GmynXy5ho693cHtj3F49FpJscmyOfL7DqQon59kgWpAFgScKUmkljDzLYTSKkpOi7S1ywIn8mxCd69mQVAKkXVU7i+qs2BEAohFFLqoC/alkrVBM31NcILRJYEwnnZXpmcs6W7CEsVwL6m7C4eNAyi0Sg+xnIHJ0/uzNnjH9rLb2dyUiqEo/CUpiKDDpBMJmloaKBaEsy+mOLN/WdZIFuT676+OwnDNIdCW1tTh3fU4fqKL7M2c5N5it9L2UgkMmzbdvb06Uz2n7/x1Nl7/WuTK5snxqeHGxsba4A/6ydoemL8GnAskQAAAABJRU5ErkJggg==";
+
+  // src/ui/assets/xp-icons/ie-media-16.png
+  var ie_media_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACj0lEQVR42sWTO2gTcRzHP5fc9dIr1rT2LcVCq25SaAfBwYqDXZS6KSLVxcknooMWoouTQkWqWAQzqJtEEB+4VBxErdWItNCHmtqmNrnY/u8uuUcuDwcJCOom+J2+y+/Dly+/L/xvSRXztlzunv1+P+IU9IGk+Y2EEMyt2mL+65Wr61pqh7vuxAaqqszB6enxq2/ejDyo3AUAnmRnDz2aHXqfzU8N1Ic0GjWVNepHsvnH4cRSLjL5Pjn2pSi2b9zY3Fdb2x7bv//hyQog+LZc7hsZPxCrUdK01HTRoHVQp3YyJ+IsmDIr2Ubc3K0WyXrdvbW1H9NUCYXq+ru6dhlTU/dfydeeTp+IGzZKMIumzCE8h6pAK7n8dfRcK/mq8xCKEgr2o6qNVFd7wjAS4UxmJgIMy/NJbeBr+jha9VGE+5yQLFMsRUnlWlkySpTcd2CDpjVSKkkYxvyOTGZmzLb1MIC8lLLJiw0k9DZ0u0BAWovlNWNZHkXjKeRfggeSL5HNrhKLDcZ7eo6cAgYB5OL3VUpCQkzeRdS/gLVnwNsH1hVwLMCELJTtEqapV7pLAHsBZIlyglS6A88DuxfMHlDGaMsfY1voHqr9gVTgGTkrhd9QAGBiYvR5hSSr65svBuOJ20XHAUWBmp3s7NjK5YNDNDVpxOOg61t4WXiC6+Z+e6TA5OnOaP3mTdG2YBDFsmgqOOzZcBbL0kgmwffB90uoqsri4qffADKAfqP3cPulzHz38nKk3d2E4xT4/PlnINeFdHoBIb7huqb4IwBg4VzDhYULyeFxvdgXnnkXMYzmbkVRcRyDlZUlhFjG973oX7fwq3bvvhlWVTUmSYU+37exrAyelxt2HOvixMSo+Kdz/AEJzzxOgI4ZHAAAAABJRU5ErkJggg==";
+
+  // src/ui/assets/xp-icons/ie-mail-16.png
+  var ie_mail_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACNklEQVR42oWTy04TcRSHPzq9CKQITMS0AVttbUIMxjDdWDeNuO3KBxAXpq+hT+C6q/oKxJ0LKYm3RUmIRqFIBEOhVDq9zXSmc3fBJUBBz+oszvfl/P75nyGuqEKhnAWeAXFgCXiTz6fbF+eGroAXRVErZuZ3EUc1KpVJPq/H1oDn+Xx67Z+CQqG8KE5qxdyTCkHbBt2DnofcHKb0K4Gsjb7K59MvLxUUCuVFcUIr5hYqBC3rCNY8MDxwPUzVZvXgFt868dLxNjv+s7AkbhalTAq3MY6Ni63WweizXfdTN++imtcwbAEgSyCwDQz5Tx4sFHReR+/FICLhi0j4gCO7wSw607WvBOwO79/JiNEM8mEfAB8AgcCyYQrjrmGeCeQCCqABOuGbN/jyI4yTyBKTIqdTpxEWcik+fqqSsMrMzSUI+rvI9Qb7NRVTN5FbAlr4DslsnHZNGRSMRMI8ejrL+mqNpbcVrodUfOEkU9E4w6LA3tYOycwUugt9i0FBD7CBiBTBAgTT5v7DGUzAAh7kUnz/UGUynUA/8518J41yLGnKGq2dNtNSlAbQBFqAPTHCRFJkf2WTVsO6ZAMd+j2HveXfJB/H6PoFHAssC0wTTAPsMZHQDOhb1UHBnzqoG/uMxUX6wgjdw2PQAsMAy/Rwuj3cjgmOA4JwXiBvNREUHSc1w8HBEWArOm5HAUUBVQXHKQErQCn/Yr50TuDtVnFvx2lu1E+A9jngwhENRMCy2u7mz/8CF+svLp4XvdlCNHgAAAAASUVORK5CYII=";
+
+  // src/ui/assets/xp-icons/ie-history-16.png
+  var ie_history_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACtElEQVR42q2TW2gTCRiFv8mMSTtTx0mr46WNnYLQYtk6RHfdIgrig0i7iggi+lKLKL55eelLUakv4oOL6ELqZfGKRCRRkC3u0ktcswhV25dIxV4UbWJtbLrTRjuTTnxYKl765p7Hw38O/zn8P3wnhNnIUChk6Lo++DXf19fnb2pqynzOiV8PRSKRvKIoBwLLA1i5KYrnV4DzHr/fj+u6O0zT7Oro6EjNukFbW9vvvW5vw9XEBSaltzgT0zjZQtZV7afe2IbndQLnQzYzMDCwvqWlpQdAmhGHw+GGC4PnG2LTf7CwtIjKzCq2/7QTo8SgP5shnRnGXx7ETsQ0VVUjQMUXEeQf5cif3NF+riljsHeM7kMJqgImcomBVynl2tHjZCfzBMwg0+lhrbq6+kU8Hu/xzJT2l9Vm1JplPPk7yem6S4wCb4ARy+Lkvn0U6ZXUNexl2YoggiSjaQu2fIpg27bxeReyrGEB/3R28uTePVKvkvwWCvH4aZK68YckhDy6XqEBCKXNC/MzwvqtS8m7c7h7u59li2qolTby6n4PvoCJPHcuAMdX61x/msInl3Y2Nm5eL62tWEdWTzBf91KkKKiqyi9bC8i9XEP9xsOMbvrPPJeDJYWQLQF1PMZw/zMAPDcabwryyHJGR2wURUEUvTzuEtlWe4TMGIgiODlwc/BDMQyl03inC0ml+m8DeABuNN4U2tufRx1H4PLFRxzZHkZwYcqGySxoEmwogwkBetsf4LpkLOtd9JMBwMTE1O5zZx4M7Zq3h7GXSdQCWFmYYfPl3Zg6JJ0s0VtRyotr6O6+c6y1tXXom0tsbm42VVWN+Hw+A3keRYsXgwckV0K0RJSCErq6rvx66tSJg7P+QiwWSwWDwUu2bU9JedHwOpJW4PiYHP0XazwdjcfD+8+ePR3i/8RHHNYIneXTQyAAAAAASUVORK5CYII=";
+
+  // src/ui/assets/xp-icons/ie-notes-16.png
+  var ie_notes_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAt0lEQVR42q2SOwrCQBRFzxg3oCtQrA0ILsI9mEIrl6QL0N7CJbgCAxZWgoWFMKbJkN8kFmJQAkZ9XhiY9+AezsCAMApgt2wXv5RdT6vmY+iPT4D9uOyvOgCUAAoNKvva4glwBZVIABfACAD5GZxQALApOLkAkESQRwJAbO4WMgMrNMjef0h/u6jsGuUtMmBqDtAbzbGZDVxPq1eDNAalapUPm2kwmJhW5QmH/bq2nIT6OJzR5Z+5AbhrTYfB1LaWAAAAAElFTkSuQmCC";
+
   // src/ui/assets/xp-icons/views.png
   var views_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABuElEQVR42u2VsUscQRjFf7fZFTQW9smBjY2FCLGKWBxcIWEDpgtoYTXWKWzSSBqLNOmvskwVSdjY2QTS5Zr8B3JF4NCgeMux485NitmdmT2S3F64dD5Y+PaxfO+b973dhXtMQAPxbR04BZZn2PcaeEVn4yQAjmbcHGAJeAcQEkU7LMxDFM1W4vJqyQgA+u3KP/XIcshHkClQ2tyXaB5eARD87yWH40Sn07W1EE9s/fCoZ+vBmyZgpl88aVi+91JPFqgDWViRqSqvRsxGIC8aqbGBpaoh4NviIy1s+TmsTt7fMyr9FGSdEyRJYus4jm398VNCOfBmO7ZWfT1P0Bo0sLoZTxbwm/pxbG/HNo7lDoZ3sLYVI5WxrZZFvPYEjt3Ui087lr44F2YXGtIPLkX5sylTpAsb8tHvUzQ+sZw2RdJ7Uysp0tU0TRfTY7PkVALeZ6D/xdjy49ZNLhVQ2HKTAarWm+y8frEn7Ek+v3f8xnNh6+9njn/UEn8X0MDuviBTJiGl17fSNZXKnUBpeNwSSAXaS5ePYHyhJeZC1yRswEIEYQBzDxw/kO75kTZceVVO0Djo3v/b/4hfZb7EzJo6c74AAAAASUVORK5CYII=";
+
+  // src/ui/assets/xp-icons/views-16.png
+  var views_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABQUlEQVR42sWSv07CUBTGf63gnyAR0rpoTNwd1LiQ6IKLS5+D+ABOLCQaH8IORjc2SXTxHWyIo3FkcJAO2NDKvb2tQ6EiAkocPMu5X3K+c873nQt/DA2AysOOkZ9vzkp2PVHOAKDrTddXs4/X9ZukQRSBaczeoO0WMoN3fL75Y30MdAWEMfgC1k9c9NEi23awbSfFuVqLXK0FgFSQv9IoXmuEUV/Fb7cVCoLwE3dFkjOjhSvmyxd8uf0IQBBuIBXUzVsgkTF8xji+2Bs7OQih3YXFLLzLPvZhToPSmTNdwvDKA3IqKZoggaqVkE/vEAoK+zYAT/cVhIJeQ2MBeD2Mp5soFHi+mGjiwINvGzRKxwCUJHTePOrVtVSOVPBcTExcGneFnoLykUUgIYwgu2ywdWClZF/C6q6FL0j/QXoF/is+ANIkhLsM1FQLAAAAAElFTkSuQmCC";
+
+  // src/ui/page-layout.ts
+  var pageLayoutChanged = "atelier-page-layout-changed";
+  var layout = null;
+  function registerPageLayout(next) {
+    layout = next;
+    notifyPageLayoutChanged();
+  }
+  var currentPageLayout = () => layout;
+  var notifyPageLayoutChanged = () => window.dispatchEvent(new Event(pageLayoutChanged));
 
   // src/ui/page-mode.ts
   var pageModeChanged = "atelier-page-mode-changed";
@@ -12776,22 +12545,29 @@ html[${attribute}=drag] *{user-select:none!important}
     const brand = bar.appendChild(el2("div", "lh-brand"));
     const fold = bar.insertBefore(el2("button", "lh-fold"), brand);
     fold.type = "button";
+    const compact = el2("div", "lh-compact");
+    compact.setAttribute("role", "toolbar");
+    compact.setAttribute("aria-label", "\u7D27\u51D1\u5DE5\u5177\u680F");
+    compact.setAttribute("data-bili-blocker-ui", "true");
     let folded = typeof GM_getValue === "function" && GM_getValue(foldKey2, false) === true;
     const paintFold = () => {
       header.toggleAttribute("data-folded", folded);
       fold.title = folded ? "\u5C55\u5F00\u5DE5\u5177\u680F" : "\u6298\u53E0\u5DE5\u5177\u680F";
       fold.setAttribute("aria-label", fold.title);
       fold.setAttribute("aria-expanded", String(!folded));
+      compact.hidden = !folded || !readInterfacePrefs().compactBar;
     };
-    fold.addEventListener("click", () => {
+    const toggleFold = () => {
       folded = !folded;
       chain.close();
       sound(folded ? "minimize" : "restore");
       if (typeof GM_setValue === "function") GM_setValue(foldKey2, folded);
       paintFold();
       header.dispatchEvent(new Event(headerFoldEvent));
-    });
+    };
+    fold.addEventListener("click", toggleFold);
     paintFold();
+    window.addEventListener(interfaceChanged, paintFold);
     const channels = [
       { label: "\u9996\u9875", href: "https://www.bilibili.com/" },
       "-",
@@ -12888,8 +12664,8 @@ html[${attribute}=drag] *{user-select:none!important}
       control.append(image3(icon2), label(text4));
       return control;
     };
-    const split = (main, text4, items) => {
-      const arrow = toolbar.appendChild(el2("button", "xp-tool lh-split"));
+    const split = (main, text4, items, parent = toolbar) => {
+      const arrow = parent.appendChild(el2("button", "xp-tool lh-split"));
       arrow.type = "button";
       arrow.setAttribute("aria-label", `${text4}\u5217\u8868`);
       arrow.setAttribute("data-menu-anchor", "");
@@ -12903,37 +12679,83 @@ html[${attribute}=drag] *{user-select:none!important}
       });
       main.classList.add("lh-split-main");
     };
-    const separator = () => toolbar.appendChild(el2("span", "xp-tool-separator"));
+    const separator = (parent = toolbar) => parent.appendChild(el2("span", "xp-tool-separator"));
     button6(ie_back_default, "\u540E\u9000", () => history.back());
     button6(ie_forward_default, "\u524D\u8FDB", () => history.forward(), false);
     separator();
     link3(ie_home_default, "\u9996\u9875", "https://www.bilibili.com/");
     const dynamic = link3(ie_media_default, "\u52A8\u6001", "https://t.bilibili.com/");
-    const messages2 = button6(ie_mail_default, "\u6D88\u606F", () => {
+    const openMessages = (anchor) => {
       if (!loggedIn) {
         openBiliLogin();
         return;
       }
-      toggleFrom(messages2, () => refreshCounts(true).then(messageItems, messageItems));
-    });
+      toggleFrom(anchor, () => refreshCounts(true).then(messageItems, messageItems));
+    };
+    const messages2 = button6(ie_mail_default, "\u6D88\u606F", () => openMessages(messages2));
     messages2.setAttribute("data-menu-anchor", "");
     messages2.setAttribute("aria-haspopup", "menu");
     split(link3(ie_history_default, "\u5386\u53F2", "https://www.bilibili.com/history"), "\u5386\u53F2", historyItems);
     split(link3(ie_notes_default, "\u7A0D\u540E\u518D\u770B", "https://www.bilibili.com/watchlater/#/list"), "\u7A0D\u540E\u518D\u770B", laterItems);
     separator();
     link3(ie_new_window_default, "\u6295\u7A3F", "https://member.bilibili.com/platform/upload/video/frame");
-    if (options.page === "video" || options.page === "history" || options.page === "feed") {
+    const resettable = options.page === "video" || options.page === "history" || options.page === "feed";
+    const resetLayout = async () => {
+      const layout2 = currentPageLayout();
+      if (!layout2 || layout2.isDefault()) return;
+      if (await atelierDialog({ title: "\u91CD\u7F6E\u5E03\u5C40", message: "\u8981\u628A\u8FD9\u4E9B\u7A97\u53E3\u5728\u8FD9\u5757\u5C4F\u5E55\u4E0A\u7684\u5927\u5C0F\u90FD\u6062\u590D\u6210\u9ED8\u8BA4\u503C\u5417\uFF1F", confirmLabel: "\u662F", cancelLabel: "\u5426" }) === null) return;
+      layout2.reset();
+    };
+    const resets = [];
+    if (resettable) {
       const line = separator();
-      const reset = button6(views_default, "\u91CD\u7F6E\u5E03\u5C40", async () => {
-        const layout2 = currentPageLayout();
-        if (!layout2 || layout2.isDefault()) return;
-        if (await atelierDialog({ title: "\u91CD\u7F6E\u5E03\u5C40", message: "\u8981\u628A\u8FD9\u4E9B\u7A97\u53E3\u5728\u8FD9\u5757\u5C4F\u5E55\u4E0A\u7684\u5927\u5C0F\u90FD\u6062\u590D\u6210\u9ED8\u8BA4\u503C\u5417\uFF1F", confirmLabel: "\u662F", cancelLabel: "\u5426" }) === null) return;
-        layout2.reset();
-      });
+      resets.push([line, button6(views_default, "\u91CD\u7F6E\u5E03\u5C40", resetLayout)]);
+    }
+    const mini = (control, icon2, text4) => {
+      control.classList.add("xp-tool", "lh-tool", "lh-mini");
+      control.append(image3(icon2, 16));
+      control.title = text4;
+      control.setAttribute("aria-label", text4);
+      return compact.appendChild(control);
+    };
+    const miniLink = (icon2, text4, href) => {
+      const control = mini(el2("a"), icon2, text4);
+      control.href = href;
+      control.target = "_blank";
+      control.rel = "noopener noreferrer";
+      return control;
+    };
+    const miniButton = (icon2, text4, action) => {
+      const control = mini(el2("button"), icon2, text4);
+      control.type = "button";
+      control.addEventListener("click", action);
+      return control;
+    };
+    miniLink(ie_home_16_default, "\u9996\u9875", "https://www.bilibili.com/");
+    const miniDynamic = miniLink(ie_media_16_default, "\u52A8\u6001", "https://t.bilibili.com/");
+    const miniMessages = miniButton(ie_mail_16_default, "\u6D88\u606F", () => openMessages(miniMessages));
+    miniMessages.setAttribute("data-menu-anchor", "");
+    miniMessages.setAttribute("aria-haspopup", "menu");
+    split(miniLink(ie_history_16_default, "\u5386\u53F2", "https://www.bilibili.com/history"), "\u5386\u53F2", historyItems, compact);
+    split(miniLink(ie_notes_16_default, "\u7A0D\u540E\u518D\u770B", "https://www.bilibili.com/watchlater/#/list"), "\u7A0D\u540E\u518D\u770B", laterItems, compact);
+    if (resettable) {
+      const line = separator(compact);
+      resets.push([line, miniButton(views_16_default, "\u91CD\u7F6E\u5E03\u5C40", resetLayout)]);
+    }
+    compact.append(el2("span", "lh-compact-gap"));
+    const unfold = compact.appendChild(el2("button", "lh-fold"));
+    unfold.type = "button";
+    unfold.title = "\u5C55\u5F00\u5DE5\u5177\u680F";
+    unfold.setAttribute("aria-label", unfold.title);
+    unfold.setAttribute("aria-expanded", "false");
+    unfold.addEventListener("click", toggleFold);
+    if (resettable) {
       const paintReset = () => {
         const layout2 = currentPageLayout();
-        line.hidden = reset.hidden = !layout2;
-        reset.disabled = !layout2 || layout2.isDefault();
+        for (const [line, reset] of resets) {
+          line.hidden = reset.hidden = !layout2;
+          reset.disabled = !layout2 || layout2.isDefault();
+        }
       };
       paintReset();
       window.addEventListener(pageLayoutChanged, paintReset);
@@ -12981,6 +12803,14 @@ html[${attribute}=drag] *{user-select:none!important}
       target.replaceChildren(text4);
       target.classList.toggle("lh-bold", count2 > 0 || dot);
       if (count2 > 0 && !dot) target.append(el2("span", "lh-count", ` (${count2 > 99 ? "99+" : count2})`));
+    };
+    const paintMini = (control, text4, count2, dot, unit, some) => {
+      control.querySelector(".lh-count")?.remove();
+      const news = dot ? "\u2022" : count2 > 0 ? count2 > 99 ? "99+" : String(count2) : "";
+      if (news) control.append(el2("span", "lh-count", news));
+      const tip = dot ? `${text4}\uFF08${some}\uFF09` : count2 > 0 ? `${text4}\uFF08${count2} ${unit}\uFF09` : text4;
+      control.title = tip;
+      control.setAttribute("aria-label", tip);
     };
     const address = header.appendChild(el2("form", "lh-band lh-address"));
     address.setAttribute("role", "search");
@@ -13135,10 +12965,12 @@ html[${attribute}=drag] *{user-select:none!important}
       if (feed.status === "fulfilled" && single.status === "fulfilled") {
         unread = unreadBadge(feed.value, single.value, setting.status === "fulfilled" ? setting.value : null);
         paintCount(messages2, "\u6D88\u606F", unread.count, unread.dot);
+        paintMini(miniMessages, "\u6D88\u606F", unread.count, unread.dot, "\u6761\u672A\u8BFB", "\u6709\u672A\u8BFB");
       }
       if (entrance.status === "fulfilled") {
         const count2 = Math.max(0, Number(entrance.value?.update_info?.item?.count) || 0);
         paintCount(dynamic, "\u52A8\u6001", count2, seen.first && count2 > 0);
+        paintMini(miniDynamic, "\u52A8\u6001", count2, seen.first && count2 > 0, "\u6761\u66F4\u65B0", "\u6709\u66F4\u65B0");
       }
     }
     async function loadAccount() {
@@ -13160,7 +12992,7 @@ html[${attribute}=drag] *{user-select:none!important}
     window.setInterval(() => {
       if (document.visibilityState === "visible") void refreshCounts();
     }, 6e4);
-    return { element: header, close: () => {
+    return { element: header, compact, close: () => {
       chain.close();
       hideList();
     } };
@@ -13168,10 +13000,10 @@ html[${attribute}=drag] *{user-select:none!important}
 
   // src/modules/luna-header/styles.ts
   var lunaHeaderAttribute = "data-luna-header";
-  var on2 = `html[${lunaHeaderAttribute}]`;
+  var on = `html[${lunaHeaderAttribute}]`;
   var lunaHeaderHideCss = `
-${on2} :is(#biliMainHeader,#bili-header-container){height:var(${headerHeightVar},88px)!important;min-height:0!important}
-${on2} :is(#biliMainHeader,#bili-header-container) .bili-header{visibility:hidden!important}
+${on} :is(#biliMainHeader,#bili-header-container){height:var(${headerHeightVar},88px)!important;min-height:0!important}
+${on} :is(#biliMainHeader,#bili-header-container) .bili-header{visibility:hidden!important}
 `;
   var lunaHeaderCss = `
 .lh{position:fixed;top:0;left:0;right:0;z-index:1002;display:flex;flex-direction:column;${xpFont};color:var(--xp-ink);text-align:left;background:var(--xp-face);border-bottom:1px solid var(--xp-shadow3d);box-shadow:0 1px var(--xp-light3d),0 2px 3px #0002;user-select:none}
@@ -13193,6 +13025,20 @@ ${on2} :is(#biliMainHeader,#bili-header-container) .bili-header{visibility:hidde
 .lh[data-folded]>:is(.lh-toolbar,.lh-address),.lh[data-folded] .lh-autocomplete{display:none!important}
 .lh[data-folded] .lh-fold{visibility:visible;background-image:var(--xp-arrow-4)}.lh[data-folded] .lh-fold:hover{background-image:var(--xp-arrow-5)}.lh[data-folded] .lh-fold:active{background-image:var(--xp-arrow-6)}
 html:is([data-atelier-screen=web],[data-atelier-screen=full]) .lh[data-folded] .lh-fold{visibility:hidden}
+/* Menus opened from the compact bar show though the folded header does not. */
+.lh[data-folded] .lh-pop{visibility:visible}
+/* The compact bar (header.ts, part 4) at the top of the page's right column:
+   a band of the header in small, sticky, so the column scrolls under it as
+   the page does under the header. Its arrow takes the fold button's place. */
+.lh-compact{position:sticky;top:0;z-index:3;box-sizing:border-box;display:flex;flex-wrap:nowrap;align-items:center;gap:1px;min-width:0;margin:0 0 8px;padding:2px 2px 2px 3px;overflow:hidden;${xpFont};color:var(--xp-ink);text-align:left;letter-spacing:normal;background:var(--xp-face);border:1px solid;border-color:var(--xp-light3d) var(--xp-shadow3d) var(--xp-shadow3d) var(--xp-light3d);border-radius:0;box-shadow:none;pointer-events:auto;user-select:none}
+.lh-compact *{box-sizing:border-box}
+.lh-compact [hidden],.lh-compact[hidden],html:is([data-atelier-screen=web],[data-atelier-screen=full]) .lh-compact{display:none!important}
+html:has(.lh-compact:not([hidden])) .lh[data-folded] .lh-fold{visibility:hidden}
+.lh-compact .lh-mini{flex:none;gap:2px;min-height:22px;padding:2px 3px}
+.lh-compact .lh-split{flex:none;min-height:22px;padding:0 3px}
+.lh-compact .lh-split-main{padding-right:2px}
+.lh-compact-gap{flex:1 1 0;min-width:4px}
+.lh-compact .lh-fold{margin:0 1px 0 2px;background-image:var(--xp-arrow-4)}.lh-compact .lh-fold:hover{background-image:var(--xp-arrow-5)}.lh-compact .lh-fold:active{background-image:var(--xp-arrow-6)}
 .lh-brand{flex:none;align-self:stretch;display:flex;align-items:center;justify-content:center;width:42px;border-left:1px solid var(--xp-shadow3d);box-shadow:inset 1px 0 var(--xp-light3d);background:var(--xp-window)}
 .lh-brand-guest{width:auto;padding:0 3px;background:var(--xp-face)}
 .lh-face-button{display:flex;align-items:center;justify-content:center;width:100%;height:100%;padding:0;margin:0;border:0;background:transparent;cursor:default}
@@ -13247,6 +13093,12 @@ a.lh-item{color:var(--xp-ink)}
     (document.head || document.documentElement).append(style);
   }
   var current2 = null;
+  var compactBar = () => current2?.compact ?? null;
+  function dockCompactBar(column) {
+    const bar = current2?.compact;
+    if (!bar || !column || column.firstElementChild === bar) return;
+    column.prepend(bar);
+  }
   var read2 = null;
   function mountLunaHeader(page) {
     if (current2) return;
@@ -13255,6 +13107,7 @@ a.lh-item{color:var(--xp-ink)}
     const root2 = document.documentElement;
     const fail = (error) => {
       current2?.element.remove();
+      current2?.compact.remove();
       current2 = null;
       zoomWholePage(false);
       root2.removeAttribute(lunaHeaderAttribute);
@@ -13281,6 +13134,7 @@ a.lh-item{color:var(--xp-ink)}
         current2 = createLunaHeader({ page, read: read2 });
         document.body.append(current2.element);
         observeCrispText(current2.element);
+        observeCrispText(current2.compact);
         window.clearTimeout(timer2);
         const measure = () => {
           const element2 = current2?.element;
@@ -13313,6 +13167,258 @@ a.lh-item{color:var(--xp-ink)}
       }
     };
     for (const delay of [500, 2e3, 6e3]) window.setTimeout(fix, delay);
+  }
+
+  // src/modules/local-following/feed-columns.ts
+  var searchIcon = 23;
+  var on2 = "html[data-atelier-feed=drawn]";
+  function mountFeedColumns(quick) {
+    const caption2 = (icon2, title) => {
+      const header = document.createElement("header");
+      header.className = "xp-caption alf-column-caption";
+      header.setAttribute("data-bili-blocker-ui", "true");
+      header.append(icon2, Object.assign(document.createElement("h2"), { textContent: title }));
+      return header;
+    };
+    const info = document.querySelector("aside.left .bili-dyn-my-info");
+    const card4 = info?.parentElement;
+    if (info && card4 && !card4.classList.contains("alf-me")) {
+      card4.classList.add("alf-me", "xp-window");
+      card4.prepend(caption2(Object.assign(document.createElement("img"), { src: atelierIcons.following, alt: "" }), "\u6211\u7684\u4FE1\u606F"));
+      observeCrispText(card4);
+    }
+    const trends = document.querySelector("aside.right .bili-dyn-search-trendings");
+    if (trends && !trends.classList.contains("alf-trends")) {
+      trends.classList.add("alf-trends", "xp-window");
+      trends.prepend(caption2(shellIcon(searchIcon, 16), "bilibili\u70ED\u641C"));
+      observeCrispText(trends);
+    }
+    const sticky = trends?.parentElement;
+    if (sticky && quick.parentElement !== sticky) sticky.append(quick);
+    dockCompactBar(sticky);
+  }
+  var feedColumnsCss = `
+${on2} aside.right>section:has(>.bili-dyn-banner),html[data-atelier-list=drawn] .bili-dyn-sidebar{display:none!important}
+.alf-column-caption h2{margin:0;font:bold var(--xp-caption-size)/var(--xp-line) var(--xp-caption-font);color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+${on2} :is(.alf-me,.alf-trends){margin:0 0 8px;padding:0;border-radius:0;box-shadow:none;${xpFont};text-align:left}
+${on2} .alf-me>.bili-dyn-my-info{margin:0;padding:8px 10px;border:1px solid var(--xp-edge);border-radius:0;background:var(--xp-window);box-shadow:none}
+${on2} .alf-me .bili-dyn-my-info__header{margin:0;padding:0}
+${on2} .alf-me .bili-dyn-my-info__header .avatar{border-radius:0;border:1px solid var(--xp-line)}
+${on2} .alf-me .info__name{font:bold var(--xp-font-size)/var(--xp-line) var(--xp-font)!important}
+${on2} .alf-me .info__label-text{border-radius:0!important;padding:0 3px!important;font:var(--xp-font-size)/var(--xp-line) var(--xp-font)!important}
+${on2} .alf-me .bili-dyn-my-info__content{margin:6px 0 0;padding:6px 0 0;border-top:1px solid var(--xp-line)}
+${on2} .alf-me .bili-dyn-my-info__stat__item{color:var(--xp-task-link)!important;text-decoration:none!important;cursor:pointer}
+${on2} .alf-me .bili-dyn-my-info__stat__item:hover{text-decoration:underline!important}
+${on2} .alf-me :is(.item-num,.item-desc){font:var(--xp-font-size)/var(--xp-line) var(--xp-font)!important;color:inherit!important}
+${on2} .alf-me .item-num{font-weight:bold!important}
+${on2} .alf-trends>.title{display:none!important}
+${on2} .alf-trends>.trending-list{margin:0;padding:2px;border:1px solid var(--xp-edge);background:var(--xp-window)}
+${on2} .alf-trends a.trending{display:flex;align-items:center;gap:6px;height:auto!important;min-height:0!important;margin:0;padding:2px 6px;border-radius:0;color:var(--xp-ink)!important;text-decoration:none!important;background:none}
+${on2} .alf-trends a.trending:hover{background:var(--xp-highlight);color:var(--xp-highlight-ink)!important}
+${on2} .alf-trends a.trending :is(.prefix,.text){font:var(--xp-font-size)/var(--xp-line) var(--xp-font)!important;color:inherit!important;background:none!important}
+${on2} .alf-trends a.trending .prefix{flex:none;width:2em;height:auto!important;text-align:right;color:var(--xp-muted)!important}
+${on2} .alf-trends a.trending:hover .prefix{color:inherit!important}
+${on2} .alf-trends a.trending .text{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+${on2} .alf-trends a.trending .mark{flex:none}
+${on2} aside.right>section.sticky{top:calc(${headerBottomCss} + 8px)!important}
+${on2} aside.right>section.sticky:has(>.lh-compact:not([hidden])){top:${headerBottomCss}!important}
+`;
+
+  // src/ui/screen-records.ts
+  function screenRecords(key6, legacyKey, parse3) {
+    const stored = () => typeof GM_getValue === "function" && typeof GM_setValue === "function";
+    const all = () => {
+      const value2 = stored() ? GM_getValue(key6, {}) : {};
+      return value2 && typeof value2 === "object" ? { ...value2 } : {};
+    };
+    let screen = ratioKey(screenRatio());
+    return {
+      /** The record for the screen the page is on now; save() writes that one. */
+      load() {
+        screen = ratioKey(screenRatio());
+        const records2 = all();
+        const legacy = stored() ? GM_getValue(legacyKey, void 0) : void 0;
+        if (legacy !== void 0) {
+          if (!(screen in records2)) records2[screen] = legacy;
+          GM_setValue(key6, records2);
+          if (typeof GM_deleteValue === "function") GM_deleteValue(legacyKey);
+        }
+        return parse3(records2[screen]);
+      },
+      /** Only this screen's record: another tab on another screen keeps its own. */
+      save(value2) {
+        if (stored()) GM_setValue(key6, { ...all(), [screen]: value2 });
+      }
+    };
+  }
+  function onScreenChange(change) {
+    let screen = ratioKey(screenRatio()), query;
+    const watch = () => {
+      query?.removeEventListener("change", check2);
+      query = window.matchMedia?.(`(resolution: ${screenRatio()}dppx)`);
+      query?.addEventListener("change", check2);
+    };
+    function check2() {
+      if (query && !query.matches) watch();
+      const next = ratioKey(screenRatio());
+      if (next === screen) return;
+      screen = next;
+      change();
+    }
+    watch();
+    window.addEventListener("resize", check2);
+  }
+
+  // src/ui/side-bounds.ts
+  var inside = 4;
+  var outside = 2;
+  var blankOf = (m) => (m.content.left - m.stage.left + (m.stage.right - m.content.right)) / 2;
+  var blankMax = (m) => Math.max(0, (m.stage.right - m.stage.left - m.least) / 2);
+  function dragBlank(start2, dx, side, max) {
+    return Math.round(Math.min(Math.max(start2 + (side === "left" ? dx : -dx), 0), max));
+  }
+  function hitBound(m, x, y, top, bottom, unit = 1) {
+    if (y < top || y >= bottom) return null;
+    if (x >= m.content.left - outside * unit && x < m.content.left + inside * unit) return "left";
+    if (x >= m.content.right - inside * unit && x < m.content.right + outside * unit) return "right";
+    return null;
+  }
+  var attribute = "data-atelier-bounds";
+  var sideBoundsCss = `
+.atelier-bound-bar{position:fixed;z-index:2147483646;width:${inside}px;margin:0;padding:0;border:0;pointer-events:none;background:repeating-conic-gradient(#fff 0 25%,#000 0 50%) 0 0/2px 2px;mix-blend-mode:difference}
+:is(html[${attribute}],html[${attribute}] *){cursor:ew-resize!important}
+html[${attribute}=drag] *{user-select:none!important}
+.atelier-bound-sheet{position:fixed;inset:0;z-index:2147483647}
+`;
+  var covers = "dialog,[role=dialog],[role=menu],header.lh,.vl-menu-host,.xp-tooltip";
+  function startSideBounds(host) {
+    const root2 = document.documentElement;
+    if (!document.getElementById("atelier-side-bounds")) {
+      const style = document.createElement("style");
+      style.id = "atelier-side-bounds";
+      style.textContent = sideBoundsCss;
+      (document.head || root2).append(style);
+    }
+    const bars = [0, 1].map(() => {
+      const bar = document.createElement("div");
+      bar.className = "atelier-bound-bar";
+      bar.setAttribute("aria-hidden", "true");
+      bar.setAttribute("data-bili-blocker-ui", "true");
+      return bar;
+    });
+    const show = (left, right) => {
+      const top = headerScreenHeight(), height = Math.max(0, innerHeight - top);
+      const dot = currentPixelScale().scale ? 1 : 1 / (window.devicePixelRatio || 1), tile = `${2 * dot}px`;
+      bars.forEach((bar, index) => {
+        if (!bar.isConnected) document.body.append(bar);
+        bar.style.backgroundSize = `${tile} ${tile}`;
+        placeFixed(bar, { left: index ? right - inside * zoomOf(bar) : left, top, height });
+      });
+    };
+    const hide = () => {
+      for (const bar of bars) bar.remove();
+    };
+    const setState = (state2) => {
+      if (state2) {
+        if (root2.getAttribute(attribute) !== state2) root2.setAttribute(attribute, state2);
+      } else root2.removeAttribute(attribute);
+    };
+    const covered = (x, y) => !!document.elementFromPoint?.(x, y)?.closest(covers);
+    function hit(x, y) {
+      const m = host.measure();
+      if (!m) return null;
+      const side = hitBound(m, x, y, headerScreenHeight(), innerHeight, zoomOf(document.body));
+      return side && !covered(x, y) ? { m, side } : null;
+    }
+    let dragging = false, cancelDrag = null, hover = null, frame2 = 0;
+    onScreenChange(() => cancelDrag?.());
+    const repaintHover = () => {
+      frame2 = 0;
+      if (dragging) return;
+      const found = hover && hover.pointerType !== "touch" && !hover.buttons ? hit(hover.clientX, hover.clientY) : null;
+      if (found) {
+        show(found.m.content.left, found.m.content.right);
+        setState("hover");
+      } else if (root2.getAttribute(attribute) === "hover") {
+        hide();
+        setState("");
+      }
+    };
+    window.addEventListener("pointermove", (event) => {
+      hover = event;
+      frame2 ||= requestAnimationFrame(repaintHover);
+    }, { passive: true });
+    document.addEventListener("pointerleave", () => {
+      hover = null;
+      frame2 ||= requestAnimationFrame(repaintHover);
+    });
+    window.addEventListener("scroll", () => {
+      if (hover) frame2 ||= requestAnimationFrame(repaintHover);
+    }, { passive: true });
+    window.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || dragging) return;
+      const found = hit(event.clientX, event.clientY);
+      if (!found) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const { m, side } = found, start2 = blankOf(m), max = blankMax(m), x = event.clientX;
+      const sheet = document.body.appendChild(document.createElement("div"));
+      sheet.className = "atelier-bound-sheet";
+      sheet.setAttribute("data-bili-blocker-ui", "true");
+      dragging = true;
+      setState("drag");
+      let blank = Math.round(start2), moveFrame = 0, last = x;
+      const place3 = () => {
+        moveFrame = 0;
+        blank = dragBlank(start2, last - x, side, max);
+        show(m.stage.left + blank, m.stage.right - blank);
+      };
+      show(m.content.left, m.content.right);
+      const move = (next) => {
+        last = next.clientX;
+        moveFrame ||= requestAnimationFrame(place3);
+      };
+      const finish = (apply) => {
+        window.removeEventListener("pointermove", move, true);
+        window.removeEventListener("pointerup", up, true);
+        window.removeEventListener("pointercancel", cancel, true);
+        window.removeEventListener("blur", cancel);
+        window.removeEventListener("keydown", key6, true);
+        cancelAnimationFrame(moveFrame);
+        sheet.remove();
+        hide();
+        dragging = false;
+        cancelDrag = null;
+        setState("");
+        if (apply) {
+          blank = dragBlank(start2, last - x, side, max);
+          if (Math.abs(blank - start2) >= 1) host.commit(blank);
+        }
+        frame2 ||= requestAnimationFrame(repaintHover);
+      };
+      const up = () => finish(true), cancel = () => finish(false);
+      cancelDrag = cancel;
+      const key6 = (next) => {
+        if (next.key === "Escape") {
+          next.preventDefault();
+          next.stopImmediatePropagation();
+          cancel();
+        }
+      };
+      window.addEventListener("pointermove", move, true);
+      window.addEventListener("pointerup", up, true);
+      window.addEventListener("pointercancel", cancel, true);
+      window.addEventListener("blur", cancel);
+      window.addEventListener("keydown", key6, true);
+    }, true);
+    window.addEventListener("dblclick", (event) => {
+      if (!hit(event.clientX, event.clientY)) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      hide();
+      setState("");
+      host.reset();
+    }, true);
   }
 
   // src/modules/video-luna/prefs.ts
@@ -15045,6 +15151,13 @@ ${commentAreaStyles("#atelier-video-comments")}
 
 /* Right column */
 ${wide} .vl-up-window{margin-top:calc(var(--vl-head-h,0px) + var(--vl-player-h,0px) + var(--vl-wmp-h,0px) + var(--vl-status-h,0px) + 12px)}
+/* The folded header's compact bar over the UP window takes that place under
+   the \u5BBD\u5C4F player; it sticks at the top once the page scrolls to it. */
+${wide} .lh-compact:not([hidden]):has(~.vl-up-window){margin-top:calc(var(--vl-head-h,0px) + var(--vl-player-h,0px) + var(--vl-wmp-h,0px) + var(--vl-status-h,0px) + 12px)}
+${wide} .lh-compact:not([hidden])~.vl-up-window{margin-top:0}
+/* On the \u756A\u5267 page Bilibili's cashier keeps 14 px above it: under the bar the
+   column's windows start 8 px down, as on the other player pages. */
+${on7} .plp-r>.lh-compact:not([hidden])~#pc-cashier-wrapper-normal{margin-top:0!important}
 .vl-up{display:flex;gap:9px;padding:9px 9px 6px}
 .vl-up-face{flex:none;display:block;width:48px;height:48px;border:1px solid var(--xp-edge)}
 .vl-up-face img{display:block;width:100%;height:100%;object-fit:cover}
@@ -20454,6 +20567,7 @@ ${message}` : ""}`;
         if (after?.isConnected && pane.element.previousElementSibling !== after) after.after(pane.element);
         after = pane.element;
       }
+      dockCompactBar(inner);
       placed = true;
       return true;
     }
@@ -20486,8 +20600,9 @@ ${message}` : ""}`;
     const screen = new MutationObserver(paintScreen);
     const readers = {
       "--vl-player-w": () => [player.element, bar?.element, player.status],
-      "--vl-player-h": () => [player.element, up.element, list?.element],
-      "--vl-head-h": () => [up.element]
+      // The compact bar, above the UP window, takes its 宽屏 offset.
+      "--vl-player-h": () => [player.element, up.element, list?.element, compactBar()],
+      "--vl-head-h": () => [up.element, compactBar()]
     };
     const share2 = (name, value2) => {
       for (const target of readers[name]()) if (target && target.style.getPropertyValue(name) !== value2) target.style.setProperty(name, value2);
@@ -20840,9 +20955,6 @@ ${page.css ?? ""}`;
     window.addEventListener("atelier-sync-applied", repaintAll);
     scan();
   }
-
-  // src/ui/assets/xp-icons/ie-history-16.png
-  var ie_history_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACtElEQVR42q2TW2gTCRiFv8mMSTtTx0mr46WNnYLQYtk6RHfdIgrig0i7iggi+lKLKL55eelLUakv4oOL6ELqZfGKRCRRkC3u0ktcswhV25dIxV4UbWJtbLrTRjuTTnxYKl765p7Hw38O/zn8P3wnhNnIUChk6Lo++DXf19fnb2pqynzOiV8PRSKRvKIoBwLLA1i5KYrnV4DzHr/fj+u6O0zT7Oro6EjNukFbW9vvvW5vw9XEBSaltzgT0zjZQtZV7afe2IbndQLnQzYzMDCwvqWlpQdAmhGHw+GGC4PnG2LTf7CwtIjKzCq2/7QTo8SgP5shnRnGXx7ETsQ0VVUjQMUXEeQf5cif3NF+riljsHeM7kMJqgImcomBVynl2tHjZCfzBMwg0+lhrbq6+kU8Hu/xzJT2l9Vm1JplPPk7yem6S4wCb4ARy+Lkvn0U6ZXUNexl2YoggiSjaQu2fIpg27bxeReyrGEB/3R28uTePVKvkvwWCvH4aZK68YckhDy6XqEBCKXNC/MzwvqtS8m7c7h7u59li2qolTby6n4PvoCJPHcuAMdX61x/msInl3Y2Nm5eL62tWEdWTzBf91KkKKiqyi9bC8i9XEP9xsOMbvrPPJeDJYWQLQF1PMZw/zMAPDcabwryyHJGR2wURUEUvTzuEtlWe4TMGIgiODlwc/BDMQyl03inC0ml+m8DeABuNN4U2tufRx1H4PLFRxzZHkZwYcqGySxoEmwogwkBetsf4LpkLOtd9JMBwMTE1O5zZx4M7Zq3h7GXSdQCWFmYYfPl3Zg6JJ0s0VtRyotr6O6+c6y1tXXom0tsbm42VVWN+Hw+A3keRYsXgwckV0K0RJSCErq6rvx66tSJg7P+QiwWSwWDwUu2bU9JedHwOpJW4PiYHP0XazwdjcfD+8+ePR3i/8RHHNYIneXTQyAAAAAASUVORK5CYII=";
 
   // src/modules/watch-history/model.ts
   var historyTypes = [["all", "\u5168\u90E8"], ["archive", "\u89C6\u9891"], ["live", "\u76F4\u64AD"], ["article", "\u4E13\u680F"]];
@@ -22416,6 +22528,10 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
         check2("\u89C2\u770B\u5386\u53F2\u4F7F\u7528 Luna \u754C\u9762", historyLunaEnabled, (on8) => switchPage(isHistoryLocation(), on8, setHistoryLunaEnabled)),
         check2(`\u52A8\u6001\u9875\u4F7F\u7528 Luna \u754C\u9762\uFF08${feedWho}\uFF09`, localFeedLuna, (on8) => switchPage(location.hostname === "t.bilibili.com", on8, setLocalFeedLuna)),
         element("p", "luna-hint", "\u5173\u95ED\u540E\u663E\u793A B \u7AD9\u539F\u6765\u7684\u9875\u9762\u3002\u6B63\u5728\u770B\u7684\u5C31\u662F\u8FD9\u4E2A\u9875\u9762\u65F6\uFF0C\u4F1A\u50CF\u7535\u89C6\u83DC\u5355\u7684\u300C\u539F\u751F\u9875\u9762\u300D\u4E00\u6837\u5237\u65B0\u3002")
+      ),
+      group(
+        "\u9876\u680F",
+        check2("\u6298\u53E0\u9876\u680F\u540E\uFF0C\u5728\u53F3\u680F\u9876\u90E8\u663E\u793A\u7D27\u51D1\u5DE5\u5177\u680F\uFF08\u89C6\u9891\u64AD\u653E\u9875\u548C\u52A8\u6001\u9875\uFF09", () => readInterfacePrefs().compactBar, (on8) => saveInterfacePrefs({ compactBar: on8 }))
       ),
       group(
         "\u89C6\u9891\u64AD\u653E",
