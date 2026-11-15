@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.9.9
+// @version      0.9.10
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -8125,7 +8125,11 @@ ${concealCss}
     /** The drawn 动态 feed on t.bilibili.com. */
     feed: {
       // A commenter's card: whether, and how, the viewer follows them, and their groups.
-      reads: { [api]: [...followReads, "/x/relation", "/x/relation/tags", "/x/relation/tag/user"] },
+      reads: {
+        [api]: [...followReads, "/x/relation", "/x/relation/tags", "/x/relation/tag/user"],
+        // 正在直播: whether local follows are live, a batch of UIDs at a time.
+        "api.live.bilibili.com": ["/room/v1/Room/get_status_info_by_uids"]
+      },
       writes: {
         like: ["/x/dynamic/feed/dyn/thumb", "json", "query", 0],
         follow: ["/x/relation/modify", "form", "body", 0],
@@ -11666,8 +11670,57 @@ ${userCardCss}
   function parseLiveCopy(value2) {
     const raw = value2;
     if (!raw || !Array.isArray(raw.list)) return null;
-    const list = livePeople(raw.list.map((person) => ({ mid: person?.uid, uname: person?.name, face: person?.face, room_id: person?.room, title: person?.title })));
+    const list = raw.list.flatMap((person) => livePeople([{ mid: person?.uid, uname: person?.name, face: person?.face, room_id: person?.room, title: person?.title }]).map((each) => withSince(each, person?.since)));
     return { at: Number(raw.at) || 0, count: Math.max(list.length, Number(raw.count) || 0), list };
+  }
+  function withSince(person, value2) {
+    const seconds2 = typeof value2 === "string" && !/^\d+$/.test(value2) ? Math.floor(Date.parse(value2.replace(" ", "T") + "+08:00") / 1e3) : Number(value2);
+    return Number.isFinite(seconds2) && seconds2 > 0 ? { ...person, since: seconds2 } : person;
+  }
+  var roomsBatch = 100;
+  var roomsUrl = (uids) => `https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids?${uids.map((uid) => `uids[]=${uid}`).join("&")}`;
+  async function readRoomLives(request2, uids, signal) {
+    const batches = [];
+    for (let index = 0; index < uids.length; index += roomsBatch) batches.push(uids.slice(index, index + roomsBatch));
+    const list = [];
+    let failure4;
+    await runConcurrentReads({
+      keys: batches,
+      batch: signal,
+      limit: 4,
+      read: (batch2, readSignal) => request2(roomsUrl(batch2), readSignal),
+      onValue: (_, raw) => {
+        if (raw?.code !== 0) {
+          const code = Math.abs(Number(raw?.code));
+          throw new BiliReadError(typeof raw?.message === "string" && raw.message ? raw.message : "\u76F4\u64AD\u95F4\u72B6\u6001\u683C\u5F0F\u65E0\u6548", [412, 429].includes(code) ? code : 0);
+        }
+        const rooms = raw.data && typeof raw.data === "object" ? Object.values(raw.data) : [];
+        for (const room of rooms) if (Number(room?.live_status) === 1)
+          list.push(...livePeople([{ ...room, mid: room.uid }]).map((person) => withSince(person, room.live_time)));
+      },
+      onError: (_, error) => {
+        failure4 ??= error;
+        return error instanceof BiliReadError && error.stopsBatch;
+      }
+    });
+    if (failure4) throw failure4;
+    if (signal.aborted) throw new DOMException("\u8BFB\u53D6\u5DF2\u505C\u6B62", "AbortError");
+    return { at: Date.now(), count: list.length, list: list.sort(newestStart) };
+  }
+  var newestStart = (a, b) => (b.since ?? 0) - (a.since ?? 0);
+  function liveGroup(options) {
+    const { view, portal, rooms, localUids, followingUids } = options;
+    const used = (view === "online" ? [portal] : view === "local" ? [rooms] : [portal, rooms]).filter((source) => !!source);
+    if (!used.length) return null;
+    const portalList = portal?.copy?.list ?? [], onPortal = new Set(portalList.map((person) => person.uid));
+    const extra = (rooms?.copy?.list ?? []).filter((person) => localUids.has(person.uid) && !onPortal.has(person.uid)).sort(newestStart);
+    const tile = (person) => ({ ...person, local: !onPortal.has(person.uid) && !followingUids.has(person.uid) });
+    const list = (view === "online" ? portalList : view === "local" ? [...portalList.filter((person) => localUids.has(person.uid)), ...extra] : [...portalList, ...extra]).map(tile);
+    const portalCount = Math.max(portalList.length, portal?.copy?.count ?? 0);
+    const count2 = view === "local" ? list.length : Math.max(list.length, portalCount + (view === "mixed" ? extra.filter((person) => !followingUids.has(person.uid)).length : 0));
+    const failed = used.filter((source) => source.error);
+    const never = failed.length === used.length && used.every((source) => !source.copy);
+    return { list, count: count2, error: failed.map((source) => source.error).join("\uFF1B"), stale: failed.length > 0 && !never };
   }
   function parseFollowingsCopy(value2) {
     const raw = value2;
@@ -11811,13 +11864,13 @@ ${userCardCss}
       anchor.title = kind === "person" ? `${person.name || person.uid}
 UID\uFF1A${person.uid}
 \u6700\u8FD1\u53D1\u5E03\uFF1A${when2}${person.online && person.local ? "\n\u8D26\u53F7\u5173\u6CE8 \xB7 \u672C\u5730\u5173\u6CE8" : person.local ? "\n\u672C\u5730\u5173\u6CE8" : ""}` : kind === "live" ? `${person.name}
-${person.title || "\u6B63\u5728\u76F4\u64AD"}` : person.name;
+${person.title || "\u6B63\u5728\u76F4\u64AD"}${person.local ? "\n\u672C\u5730\u5173\u6CE8" : ""}` : person.name;
       const face2 = anchor.appendChild(document.createElement("span"));
       face2.className = "afp-face";
       face2.append(picture2);
       if (person.fresh) face2.append(Object.assign(document.createElement("i"), { className: "afp-dot", title: "\u6709\u65B0\u52A8\u6001" }));
       if (kind === "live") face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-live", textContent: "\u76F4\u64AD" }));
-      if (kind === "person" && person.local && !person.online) face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-local", textContent: "\u672C" }));
+      if (kind === "person" ? person.local && !person.online : kind === "live" && person.local) face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-local", textContent: "\u672C" }));
       const name = anchor.appendChild(document.createElement("span"));
       name.className = "afp-name";
       for (const line of tileLines(person.name || person.uid)) name.append(Object.assign(document.createElement("span"), { className: "afp-line", textContent: line }));
@@ -12019,6 +12072,8 @@ ${p} .afp-tile[aria-selected=true] .afp-face::after{content:"";position:absolute
 ${p} .afp-dot{position:absolute;top:-2px;right:-3px;width:7px;height:7px;background:#3fb34f;border:1px solid var(--xp-window)}
 ${p} .afp-badge{position:absolute;${xpFont};font-weight:bold;font-style:normal;color:var(--xp-caption-ink);background:var(--xp-caption);border:1px solid var(--xp-window);padding:0 1px;white-space:nowrap}
 ${p} .afp-local{left:-3px;bottom:-2px}${p} .afp-live{right:-6px;bottom:-3px}
+/* \u76F4\u64AD is wide: on a live tile \u672C takes the top corner instead. */
+${p} .afp-tile-live .afp-local{top:-2px;bottom:auto}
 ${p} .afp-name{display:flex;flex-direction:column;align-items:center;max-width:100%;padding:0 1px;text-align:center;outline:1px dotted transparent;outline-offset:0}
 ${p} .afp-line{white-space:nowrap}
 ${p} .afp-empty{margin:4px 6px 0;color:var(--xp-muted)}
@@ -15538,9 +15593,44 @@ ${skin} .bpx-player-video-inputbar{flex:1;min-width:0;display:flex!important;ali
 ${skin} .bpx-player-video-inputbar-wrap{flex:1;min-width:0;display:flex!important;align-items:center;gap:2px;height:23px!important;background:var(--xp-window)!important;border:1px solid var(--xp-edge)!important;border-radius:0!important}
 ${skin} .bpx-player-video-btn-dm{flex:none;display:inline-flex!important;align-items:center;justify-content:center;width:22px!important;height:21px!important;margin:0!important;cursor:default}
 ${skin} .bpx-player-video-btn-dm{position:relative!important}
-${skin} .bpx-player-video-btn-dm>*{position:absolute!important;inset:0;z-index:1;width:100%!important;height:100%!important;margin:0!important;opacity:0!important}
+/* Only the icon: the player appends its \u5B57\u53F7/\u6A21\u5F0F/\u989C\u8272 popup inside the
+   button too, and a stretched transparent popup never shows. */
+${skin} .bpx-player-video-btn-dm>.bpx-player-iconfont{position:absolute!important;inset:0;z-index:1;width:100%!important;height:100%!important;margin:0!important;opacity:0!important}
 ${skin} .bpx-player-video-btn-dm::before{content:"";width:16px;height:16px;background:var(--vl-icon-font) no-repeat}
 ${skin} .bpx-player-video-btn-dm:hover{${image4("tool", 1)}}
+/* Its \u5B57\u53F7/\u6A21\u5F0F/\u989C\u8272 popup, opened on hover: a menu box like \u8BBE\u7F6E's,
+   standing on the button so the pointer never leaves the hover. Choices
+   are toolbar toggles, the colours XP swatches. The toggles' bitmap sits
+   on a layer behind the text: pixelated scaling, inherited, breaks the
+   XP glyphs in this popup (and \u5C0F/\u6807\u51C6 are bare text). */
+${skin} .bpx-player-mode-selection-container{bottom:100%!important;background:var(--xp-face)!important;border:1px solid var(--xp-shadow3d);border-radius:0!important;box-shadow:2px 2px 2px #0006;${xpFont};color:var(--xp-ink)}
+${skin} .bpx-player-mode-selection-container *{font-family:var(--xp-font)!important}
+${skin} .bpx-player-mode-selection-container::after{background:var(--xp-shadow3d)!important;box-shadow:1px 0 var(--xp-light3d)}
+${skin} .bpx-player-mode-selection-row .row-title{color:var(--xp-ink)!important;${crisp}}
+${skin} .bpx-player-mode-selection-row .selection-span{position:relative;box-sizing:border-box;fill:var(--xp-ink)!important;color:var(--xp-ink)!important;background:transparent!important;border-radius:0!important;cursor:default!important}
+${skin} .bpx-player-mode-selection-row .selection-span::before{content:"";position:absolute;inset:0;z-index:-1;border:0 solid transparent;image-rendering:pixelated;pointer-events:none}
+${skin} .bpx-player-mode-selection-row .selection-span:not([data-type=mode]){line-height:20px}
+/* Room for the frame around icon and name; the icon stays on the title's edge. */
+${skin} .bpx-player-mode-selection-row.mode .selection-span{padding:3px 4px;margin:-3px 14px 3px -4px!important}
+${skin} .bpx-player-mode-selection-row .selection-span:hover::before{${image4("tool", 1)}}
+${skin} .bpx-player-mode-selection-row .selection-span:active::before{${image4("tool", 2)}}
+${skin} .bpx-player-mode-selection-row .selection-span.active::before{${image4("tool", 4)}}
+${skin} .bpx-player-mode-selection-row .selection-span.active:hover::before{border-image-source:var(--xp-tool-5)}
+${skin} .bpx-player-mode-selection-row .selection-span.disabled{fill:var(--xp-graytext)!important;color:var(--xp-graytext)!important}
+${skin} .bpx-player-mode-selection-row .selection-span.disabled::before{border-image:none!important}
+${skin} .bpx-player-mode-selection-row .selection-name{${crisp}}
+${skin} .bpx-player-mode-selection-row .selection-span-mask span{padding:1px 4px 2px!important;color:var(--xp-info-ink)!important;background:var(--xp-info)!important;border:1px solid var(--xp-ink);border-radius:0!important;box-shadow:2px 2px 2px #0005}
+${skin} .bpx-player-mode-selection-row .selection-span-mask span::before{display:none}
+${skin} .bpx-player-mode-selection-row .bui-input-wrap{height:100%;background:var(--xp-window)!important;border:1px solid var(--xp-edge)!important;border-radius:0!important;box-shadow:none!important}
+${skin} .bpx-player-mode-selection-row .bui-input-input{height:100%!important;padding:0 3px!important;border:0!important;border-radius:0!important;background:transparent!important;${xpFont};color:var(--xp-ink)!important}
+${skin} .bpx-player-mode-selection-row .bui-color-picker-display{border-radius:0!important;${sunken}}
+${skin} .bpx-player-mode-selection-row :is(.bui-color-picker-option,.vip-danmaku-color li){border:1px solid var(--xp-shadow3d)!important;border-radius:0!important;box-shadow:none!important}
+${skin} .bpx-player-mode-selection-row :is(.bui-color-picker-option-active,.vip-danmaku-color .active){outline:1px solid var(--xp-ink);outline-offset:1px}
+${skin} .bpx-player-mode-selection-mask{background:color-mix(in srgb,var(--xp-face) 85%,transparent)!important}
+${skin} .bpx-player-mode-selection-mask-warning{padding:2px 9px;${button3}}
+${skin} .bpx-player-mode-selection-mask-warning:hover{border-image-source:var(--xp-button-1)}
+${skin} .bpx-player-mode-selection-mask-warning:active{border-image-source:var(--xp-button-2)}
+${skin} .bpx-player-mode-selection-mask-warning .bui-area{${buttonInside};image-rendering:auto}
 ${skin} .bpx-player-dm-input{${xpFont};height:21px!important;padding:0 3px!important;color:var(--xp-ink)!important;background:transparent!important}
 ${skin} .bpx-player-dm-input::placeholder{color:var(--xp-graytext)!important}
 ${skin} .bpx-player-dm-wrap{${xpFont};color:var(--xp-graytext)!important}
@@ -15739,21 +15829,39 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       const set = members();
       return set ? people2.filter((person) => set.has(person.uid)) : people2;
     };
-    const liveKey = `BiliAtelier_LiveUsers_${identity}`;
+    const liveKey = `BiliAtelier_LiveUsers_${identity}`, roomsKey = "BiliAtelier_LocalLiveUsers";
     let live = parseLiveCopy(GM_getValue(liveKey, null)), liveError = "", liveReading = false;
+    let rooms = parseLiveCopy(GM_getValue(roomsKey, null)), roomsError = "", roomsReading = false;
+    const readFailure = (error) => error instanceof Error ? error.message : "\u8BFB\u53D6\u5931\u8D25";
+    const localUids = () => new Set(localFollowSnapshot().accounts.map((account) => account.uid));
     function refreshLive() {
-      if (!loggedIn || liveReading) return;
-      liveReading = true;
-      void readLiveUsers(request2, new AbortController().signal).then((copy) => {
-        live = copy;
-        liveError = "";
-        GM_setValue(liveKey, copy);
-      }, (error) => {
-        liveError = error instanceof Error ? error.message : "\u8BFB\u53D6\u5931\u8D25";
-      }).finally(() => {
-        liveReading = false;
-        renderPanel();
-      });
+      if (loggedIn && !liveReading) {
+        liveReading = true;
+        void readLiveUsers(request2, new AbortController().signal).then((copy) => {
+          live = copy;
+          liveError = "";
+          GM_setValue(liveKey, copy);
+        }, (error) => {
+          liveError = readFailure(error);
+        }).finally(() => {
+          liveReading = false;
+          renderPanel();
+        });
+      }
+      const uids = [...localUids()];
+      if (uids.length && !roomsReading) {
+        roomsReading = true;
+        void readRoomLives(request2, uids, new AbortController().signal).then((copy) => {
+          rooms = copy;
+          roomsError = "";
+          GM_setValue(roomsKey, copy);
+        }, (error) => {
+          roomsError = readFailure(error);
+        }).finally(() => {
+          roomsReading = false;
+          renderPanel();
+        });
+      }
     }
     function openFolder(id) {
       if (id === prefs.group && !author2) return;
@@ -15782,9 +15890,17 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
         void reload();
       },
       live: () => {
-        if (!loggedIn) return null;
-        const list2 = shown2(live?.list ?? []);
-        return { list: list2, count: folder() ? list2.length : live?.count ?? 0, error: liveError, stale: !!liveError && !!live };
+        const local = localUids();
+        const group = liveGroup({
+          view: prefs.view,
+          localUids: local,
+          portal: loggedIn ? { copy: live, error: liveError } : null,
+          rooms: local.size ? { copy: rooms, error: roomsError } : null,
+          followingUids: new Set(followings?.list.map((person) => person.uid))
+        });
+        if (!group) return null;
+        const list2 = shown2(group.list);
+        return { ...group, list: list2, count: folder() ? list2.length : group.count };
       },
       retryLive: refreshLive,
       folders: () => prefs.view === "online" ? [] : [
