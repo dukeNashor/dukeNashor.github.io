@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.9.10
+// @version      0.9.11
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -65,6 +65,8 @@
 // @resource     atelier_xpshutdn_wav https://dukenashor.github.io/bili-atelier/resources/xpshutdn.3d937337075a647950f6aa557bca23dea6e17cf6d14814ca7dbc55b827678a0b.wav#sha256=3d937337075a647950f6aa557bca23dea6e17cf6d14814ca7dbc55b827678a0b
 // @resource     atelier_xpstart_wav https://dukenashor.github.io/bili-atelier/resources/xpstart.d5712a8963eb3e1e181b25649ecff3080ede89c96350eb07e7d7cad429e959ea.wav#sha256=d5712a8963eb3e1e181b25649ecff3080ede89c96350eb07e7d7cad429e959ea
 // @resource     atelier_xpstartu_wav https://dukenashor.github.io/bili-atelier/resources/xpstartu.8f859ebb90247036ced11db854848abe1434dc3ffdfa5795f7c5f06db9a423d5.wav#sha256=8f859ebb90247036ced11db854848abe1434dc3ffdfa5795f7c5f06db9a423d5
+// @resource     atelier_bliss_night_jpg https://dukenashor.github.io/bili-atelier/resources/bliss-night.14889633de9fbdeb5d8e638edc8e96d4e6657507a5173d85d5edfdf108a8cca7.jpg#sha256=14889633de9fbdeb5d8e638edc8e96d4e6657507a5173d85d5edfdf108a8cca7
+// @resource     atelier_bliss_jpg https://dukenashor.github.io/bili-atelier/resources/bliss.aecf72dc2cb3efd15575f081af8907ff5138d5c342d76b23d3bdb5e4db567720.jpg#sha256=aecf72dc2cb3efd15575f081af8907ff5138d5c342d76b23d3bdb5e4db567720
 // @downloadURL  https://dukenashor.github.io/bili-atelier/bili-toolkit.user.js
 // @updateURL    https://dukenashor.github.io/bili-atelier/bili-toolkit.meta.js
 // ==/UserScript==
@@ -95,7 +97,7 @@
 //    以上两个库的许可证全文附在脚本末尾。
 // 3. Fugue Icons，作者 Yusuke Kamiyamane（https://p.yusukekamiyamane.com/），
 //    CC BY 3.0 许可证（https://creativecommons.org/licenses/by/3.0/）。
-// 4. Windows XP 的 Luna 主题图案、图标、声音和 Windows Media Player 9 的按钮
+// 4. Windows XP 的《Bliss》壁纸、Luna 主题图案、图标、声音和 Windows Media Player 9 的按钮
 //    图案，归 Microsoft 所有；XP 宋体（SimSun）的点阵字形，归其字体权利人所有。
 //    来源见 src/ui/assets 下各目录的 NOTICE.md 和 manifest.json。
 (() => {
@@ -4635,6 +4637,7 @@ ${xpControlCss}`);
         return;
       }
       current4 = key6;
+      document.documentElement.dataset.atelierBrightness = dark ? "dark" : "light";
       const font = xpFontCss(dpr), drawn = scale2 ? xpFontCss(scale2) : null;
       if (fontDpr !== dpr) {
         fonts.textContent = font.faces;
@@ -13509,7 +13512,17 @@ html[${attribute}=drag] *{user-select:none!important}
   }
   var on3 = `html[${videoAttribute}=luna]`;
   var unless = (area) => `${on3}:not([${nativeAttribute}~=${area}])`;
+  function wallpaperCss(brightness, resource) {
+    const url = readCachedResourceUrl(resource);
+    if (!url) return "";
+    const desktop = `${on3}[data-atelier-brightness=${brightness}]:not([data-atelier-screen=web],[data-atelier-screen=full])`;
+    return `
+${desktop} :is(#app.app-v1,#app.playlist-app,#__next){background:url("${url}") center / cover no-repeat fixed!important}
+${desktop} #__next .home-container>.main-container{background:transparent!important}
+`;
+  }
   var videoHideCss = `
+${on3} #bilibili-player{background-color:#000!important}
 ${unless("head")} :is(#viewbox_report,.playlist-container--left>.video-info-container){display:none!important}
 ${unless("info")} :is(#v_desc,#bgm-entry,.video-tag-container,#commentapp,.playlist-container--left>.video-desc-container,.plp-l #comment-module){display:none!important}
 ${unless("info")} :is(#arc_toolbar_report,#playlistToolbar,.plp-l .toolbar){height:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;visibility:hidden!important}
@@ -13526,7 +13539,7 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     if (!document.getElementById("atelier-video-hide")) {
       const style = document.createElement("style");
       style.id = "atelier-video-hide";
-      style.textContent = videoHideCss;
+      style.textContent = videoHideCss + wallpaperCss("light", "atelier_bliss_jpg") + wallpaperCss("dark", "atelier_bliss_night_jpg");
       (document.head || document.documentElement).append(style);
     }
     return true;

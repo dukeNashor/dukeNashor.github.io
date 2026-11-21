@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.9.10
+// @version      0.9.11
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -65,6 +65,8 @@
 // @resource     atelier_xpshutdn_wav https://dukenashor.github.io/bili-atelier/resources/xpshutdn.3d937337075a647950f6aa557bca23dea6e17cf6d14814ca7dbc55b827678a0b.wav#sha256=3d937337075a647950f6aa557bca23dea6e17cf6d14814ca7dbc55b827678a0b
 // @resource     atelier_xpstart_wav https://dukenashor.github.io/bili-atelier/resources/xpstart.d5712a8963eb3e1e181b25649ecff3080ede89c96350eb07e7d7cad429e959ea.wav#sha256=d5712a8963eb3e1e181b25649ecff3080ede89c96350eb07e7d7cad429e959ea
 // @resource     atelier_xpstartu_wav https://dukenashor.github.io/bili-atelier/resources/xpstartu.8f859ebb90247036ced11db854848abe1434dc3ffdfa5795f7c5f06db9a423d5.wav#sha256=8f859ebb90247036ced11db854848abe1434dc3ffdfa5795f7c5f06db9a423d5
+// @resource     atelier_bliss_night_jpg https://dukenashor.github.io/bili-atelier/resources/bliss-night.14889633de9fbdeb5d8e638edc8e96d4e6657507a5173d85d5edfdf108a8cca7.jpg#sha256=14889633de9fbdeb5d8e638edc8e96d4e6657507a5173d85d5edfdf108a8cca7
+// @resource     atelier_bliss_jpg https://dukenashor.github.io/bili-atelier/resources/bliss.aecf72dc2cb3efd15575f081af8907ff5138d5c342d76b23d3bdb5e4db567720.jpg#sha256=aecf72dc2cb3efd15575f081af8907ff5138d5c342d76b23d3bdb5e4db567720
 // @downloadURL  https://dukenashor.github.io/bili-atelier/bili-toolkit.user.js
 // @updateURL    https://dukenashor.github.io/bili-atelier/bili-toolkit.meta.js
 // ==/UserScript==

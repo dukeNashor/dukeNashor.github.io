@@ -1,13 +1,13 @@
 {
-  "version": "0.9.10",
+  "version": "0.9.11",
   "baseUrl": "https://dukenashor.github.io/bili-atelier",
   "script": {
     "file": "bili-toolkit.user.js",
-    "sha256": "7f5ee9a3acd69236442b98f100695b29aa95b66f82c925677a11aa367fb78f6e"
+    "sha256": "e4b21795c24a5c27aa777ccbaee4303375e8f91d87c3cbb3136a596fb91e3e09"
   },
   "metadata": {
     "file": "bili-toolkit.meta.js",
-    "sha256": "ec8e067bc546152cec0d5d748d6c2a2402e45fce9ea0cd9bec8c15b6374edadc"
+    "sha256": "fae7d35c5575c59128c5bfa44280f260b8c148efdf0deb92de018525a556e506"
   },
   "resources": [
     {
@@ -351,6 +351,24 @@
       "bytes": 424644,
       "mimeType": "audio/wav",
       "url": "https://dukenashor.github.io/bili-atelier/resources/xpstartu.8f859ebb90247036ced11db854848abe1434dc3ffdfa5795f7c5f06db9a423d5.wav"
+    },
+    {
+      "name": "atelier_bliss_night_jpg",
+      "source": "src/ui/assets/xp-wallpapers/bliss-night.jpg",
+      "file": "resources/bliss-night.14889633de9fbdeb5d8e638edc8e96d4e6657507a5173d85d5edfdf108a8cca7.jpg",
+      "sha256": "14889633de9fbdeb5d8e638edc8e96d4e6657507a5173d85d5edfdf108a8cca7",
+      "bytes": 228585,
+      "mimeType": "image/jpeg",
+      "url": "https://dukenashor.github.io/bili-atelier/resources/bliss-night.14889633de9fbdeb5d8e638edc8e96d4e6657507a5173d85d5edfdf108a8cca7.jpg"
+    },
+    {
+      "name": "atelier_bliss_jpg",
+      "source": "src/ui/assets/xp-wallpapers/bliss.jpg",
+      "file": "resources/bliss.aecf72dc2cb3efd15575f081af8907ff5138d5c342d76b23d3bdb5e4db567720.jpg",
+      "sha256": "aecf72dc2cb3efd15575f081af8907ff5138d5c342d76b23d3bdb5e4db567720",
+      "bytes": 51127,
+      "mimeType": "image/jpeg",
+      "url": "https://dukenashor.github.io/bili-atelier/resources/bliss.aecf72dc2cb3efd15575f081af8907ff5138d5c342d76b23d3bdb5e4db567720.jpg"
     }
   ]
 }
