@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.10.0
+// @version      0.10.1
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -2276,1109 +2276,76 @@
     document.addEventListener("DOMContentLoaded", check2);
   }
 
-  // src/ui/assets/xp-sounds/catalog.json
-  var catalog_default = {
-    schema: "bili-atelier-xp-sounds",
-    version: 1,
-    defaultVolume: 0.55,
-    source: {
-      imageName: "xp sp3 official.iso",
-      bytes: 630237184,
-      volume: "GRTMPVOL_CN"
-    },
-    categories: [
-      {
-        id: "navigation",
-        name: "\u5BFC\u822A\u4E0E\u7A97\u53E3",
-        sample: "xpstart",
-        defaultVolume: 1,
-        defaultEnabled: true
-      },
-      {
-        id: "controls",
-        name: "\u6309\u94AE\u4E0E\u9009\u62E9",
-        sample: "xpmenu",
-        defaultVolume: 1,
-        defaultEnabled: true
-      }
-    ],
-    cues: {
-      control: {
-        sound: "xpmenu",
-        category: "controls",
-        priority: 10
-      },
-      navigate: {
-        sound: "xpstart",
-        category: "navigation",
-        priority: 40
-      },
-      open: {
-        sound: "xprestor",
-        category: "navigation",
-        priority: 40
-      },
-      close: {
-        sound: "xpmin",
-        category: "navigation",
-        priority: 40
-      },
-      expand: {
-        sound: "xprestor",
-        category: "navigation",
-        priority: 40
-      },
-      collapse: {
-        sound: "xpmin",
-        category: "navigation",
-        priority: 40
-      }
-    },
-    sounds: [
-      {
-        id: "xpballn",
-        file: "xpballn.wav",
-        name: "Windows XP \u6C14\u7403",
-        previewOnly: true,
-        durationMs: 144,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -18.24,
-        rmsDbFS: -33.71,
-        gain: 0.81655,
-        bytes: 6400,
-        sha256: "c9de87a87b68dd754fa29f2989c240949ad9b1f0423d019ca68afcd86e107639",
-        source: "I386/XPBALLN.WA_",
-        compressedSha256: "1c8d7665108ad4af42bec4ef940d3dad949d4053d9418e63616284a2d1ad5ffb"
-      },
-      {
-        id: "xpbatcrt",
-        file: "xpbatcrt.wav",
-        name: "Windows XP \u7535\u6C60\u7535\u529B\u4E25\u91CD\u77ED\u7F3A",
-        previewOnly: true,
-        durationMs: 836,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -0.17,
-        rmsDbFS: -12.84,
-        gain: 0.10194,
-        bytes: 36910,
-        sha256: "cb02dd9f8b4d18aab9a5c51a26faac12e861dd362800a12292f243432a982325",
-        source: "I386/XPBATCRT.WA_",
-        compressedSha256: "aa2b39585f31ae73645fe7a5e3b986a2e44e0c4722712da9ee00daf32c6ffc3f"
-      },
-      {
-        id: "xpbatlow",
-        file: "xpbatlow.wav",
-        name: "Windows XP \u7535\u6C60\u4E0D\u8DB3",
-        previewOnly: true,
-        durationMs: 1220,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -1.31,
-        rmsDbFS: -16.43,
-        gain: 0.11624,
-        bytes: 53864,
-        sha256: "bd4a58b1e2b8e93bcf5b76df3e4a9f67ce0926107a5702ed6bac0e63466a22fd",
-        source: "I386/XPBATLOW.WA_",
-        compressedSha256: "f002dee050cb80f908c08eb7b713aa1c75096419537342533571781e4c1c4fdc"
-      },
-      {
-        id: "xpblkpop",
-        file: "xpblkpop.wav",
-        name: "Windows XP \u5F39\u51FA\u7A97\u53E3\u5DF2\u963B\u6B62",
-        previewOnly: true,
-        durationMs: 167,
-        channels: 2,
-        sampleRate: 44100,
-        bits: 16,
-        peakDbFS: -13.98,
-        rmsDbFS: -34.22,
-        gain: 0.50005,
-        bytes: 29444,
-        sha256: "df7cad111688dadb00469203dd7228df99e49e86ae7ba937e308d947cd9790f2",
-        source: "I386/XPBLKPOP.WA_",
-        compressedSha256: "baae17740810abd3d43d5c703ff801df8be3ebf63726a02d2c29f424ba55a0b0"
-      },
-      {
-        id: "xpcrtstp",
-        file: "xpcrtstp.wav",
-        name: "Windows XP \u5173\u952E\u6027\u7EC8\u6B62",
-        previewOnly: true,
-        durationMs: 892,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -3.2,
-        rmsDbFS: -16.48,
-        gain: 0.14448,
-        bytes: 39382,
-        sha256: "1b86a1b8b7b5925f9346b64115b0b92744a142b06b09f44263a57419bc2bb6e6",
-        source: "I386/XPCRTSTP.WA_",
-        compressedSha256: "8dff0499e501012337f14551e4350d017a2a88fa5f36b7ee84c7c6442cd62b8e"
-      },
-      {
-        id: "xpdef",
-        file: "xpdef.wav",
-        name: "Windows XP \u9ED8\u8BA4\u503C",
-        previewOnly: true,
-        durationMs: 555,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -9.77,
-        rmsDbFS: -27.31,
-        gain: 0.30791,
-        bytes: 24530,
-        sha256: "d0426433cb153f860f02320408a1922558742bc3d170eb47715192ff86a66a16",
-        source: "I386/XPDEF.WA_",
-        compressedSha256: "1d3258f9f2b9070370d49a069d3cf79ca5a89163063b84f479af7a0d641d3fa7"
-      },
-      {
-        id: "xpding",
-        file: "xpding.wav",
-        name: "Windows XP \u53EE\u5F53\u58F0",
-        previewOnly: true,
-        durationMs: 387,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -11.74,
-        rmsDbFS: -21.34,
-        gain: 0.38651,
-        bytes: 17132,
-        sha256: "20fc59d9f846bc32b899880fae0878208856718b75e6158526308b900af8a9bd",
-        source: "I386/XPDING.WA_",
-        compressedSha256: "3fa29e9bcb7f38b6dfc1aec0865270840ae69c9261ecc48eea4c5e81d0fdecd7"
-      },
-      {
-        id: "xperror",
-        file: "xperror.wav",
-        name: "Windows XP \u9519\u8BEF",
-        previewOnly: true,
-        durationMs: 1e3,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -6.98,
-        rmsDbFS: -23.56,
-        gain: 0.22343,
-        bytes: 44136,
-        sha256: "4b51ec1b1b14889bc2c2cdad8c80dafc974d78b9292c3ccb344e44e93383cac4",
-        source: "I386/XPERROR.WA_",
-        compressedSha256: "cb1b985cab19466befd27b5d9628165dda8a1cabbc880dc3c9bfec68a26ae8d1"
-      },
-      {
-        id: "xpexcl",
-        file: "xpexcl.wav",
-        name: "Windows XP \u60CA\u53F9\u53F7",
-        previewOnly: true,
-        durationMs: 964,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -16.42,
-        rmsDbFS: -32.09,
-        gain: 0.66185,
-        bytes: 42576,
-        sha256: "b57b8e8818c424452ca4fb8abb219ae01c0e31db2f955e1f85d9fcb5a0dabfbe",
-        source: "I386/XPEXCL.WA_",
-        compressedSha256: "0bc7bb68966af22cac6444392a3ea9956cb98177ef2648dbc8d025051118eea6"
-      },
-      {
-        id: "xphdfail",
-        file: "xphdfail.wav",
-        name: "Windows XP \u786C\u4EF6\u6545\u969C",
-        previewOnly: true,
-        durationMs: 829,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -12.98,
-        rmsDbFS: -25.32,
-        gain: 0.44558,
-        bytes: 36614,
-        sha256: "fe6e852ff646c0a896995632f76a3e390bea6163b40639c87bf45c1d8a7475c2",
-        source: "I386/XPHDFAIL.WA_",
-        compressedSha256: "7daa31c4f966dd10d85f992b6f601f9ec107a2f4d6c44539474ee3a6e6a97678"
-      },
-      {
-        id: "xphdinst",
-        file: "xphdinst.wav",
-        name: "Windows XP \u786C\u4EF6\u63D2\u5165",
-        previewOnly: true,
-        durationMs: 830,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -14.91,
-        rmsDbFS: -28.67,
-        gain: 0.55624,
-        bytes: 36636,
-        sha256: "a3e44db9179591a705baed6daa00efb988197c0698a9747980126d5939e9d506",
-        source: "I386/XPHDINST.WA_",
-        compressedSha256: "59692e7ac46240e9cf8b9ad16007bc837b4f05a9a81787cf79120ae855ab9d79"
-      },
-      {
-        id: "xphdrem",
-        file: "xphdrem.wav",
-        name: "Windows XP \u786C\u4EF6\u5220\u9664",
-        previewOnly: true,
-        durationMs: 828,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -15.55,
-        rmsDbFS: -28.3,
-        gain: 0.59938,
-        bytes: 36538,
-        sha256: "c4d09c6ad6a9090c4e611330a7501f7a84abc7c777c6e3d1915179f8d1ed45f3",
-        source: "I386/XPHDREM.WA_",
-        compressedSha256: "1af16d0041acfdc07c2268ed2186a6dd16c1e602c11e39e4ef17b27d9e7e57fb"
-      },
-      {
-        id: "xpinfbar",
-        file: "xpinfbar.wav",
-        name: "Windows XP \u4FE1\u606F\u680F",
-        previewOnly: true,
-        durationMs: 109,
-        channels: 2,
-        sampleRate: 44100,
-        bits: 16,
-        peakDbFS: -4.2,
-        rmsDbFS: -11.08,
-        gain: 0.16218,
-        bytes: 20336,
-        sha256: "b4dfbdfd8d6a102123a7966da358781bd32bb6d78e833514705cb7de76efa410",
-        source: "I386/XPINFBAR.WA_",
-        compressedSha256: "17ec22ddf2a76dd9b77a42271491228a905accbf0cd1028691fbc89d248b071e"
-      },
-      {
-        id: "xplogoff",
-        file: "xplogoff.wav",
-        name: "Windows XP \u6CE8\u9500\u97F3",
-        previewOnly: true,
-        durationMs: 2037,
-        channels: 2,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -10.39,
-        rmsDbFS: -27.7,
-        gain: 0.33066,
-        bytes: 179704,
-        sha256: "e0c0e5dea2550c8f235c0bb1584d9011a35ca23bc18597bf7ac6581efcd7b7aa",
-        source: "I386/XPLOGOFF.WA_",
-        compressedSha256: "47fbfa45e605ca3c84a13243267b02972c33f0ef879b31133412c2b528555f53"
-      },
-      {
-        id: "xplogon",
-        file: "xplogon.wav",
-        name: "Windows XP \u767B\u5F55\u97F3",
-        previewOnly: true,
-        durationMs: 2156,
-        channels: 2,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -10.04,
-        rmsDbFS: -27.67,
-        gain: 0.31758,
-        bytes: 190208,
-        sha256: "8d71fba4267fb3454030c7289079421a08fc3e773caa47107d832f855ae85396",
-        source: "I386/XPLOGON.WA_",
-        compressedSha256: "3e48b114a7a3956ced53f0a469a7d85717bd00b77522c335d85b77b3726e5f03"
-      },
-      {
-        id: "xpmenu",
-        file: "xpmenu.wav",
-        name: "Windows XP \u83DC\u5355\u547D\u4EE4",
-        previewOnly: false,
-        durationMs: 31,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -20.6,
-        rmsDbFS: -36.23,
-        gain: 1,
-        bytes: 1404,
-        sha256: "da4fc6f8917b97725e6de85bb45b574c7895ec46672e6eb439a462cfd9940ac7",
-        source: "I386/XPMENU.WA_",
-        compressedSha256: "2c73d31fdd47a2f456b64682f568ab6362a7ce8f6a6b6d38cc0ee8132b59d8f5"
-      },
-      {
-        id: "xpmin",
-        file: "xpmin.wav",
-        name: "Windows XP \u6700\u5C0F\u5316",
-        previewOnly: false,
-        durationMs: 511,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -24.38,
-        rmsDbFS: -37.4,
-        gain: 1,
-        bytes: 22580,
-        sha256: "974da6baee4187c37e514186b99691132988140cca95402589c6fdc1417e5926",
-        source: "I386/XPMIN.WA_",
-        compressedSha256: "37a5861aa70198e03c83ecdd5252e51d8a6be4cf13e241dda491e46bd4201de2"
-      },
-      {
-        id: "xpnotify",
-        file: "xpnotify.wav",
-        name: "Windows XP \u901A\u77E5",
-        previewOnly: true,
-        durationMs: 1110,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -18.71,
-        rmsDbFS: -36.89,
-        gain: 0.86164,
-        bytes: 48988,
-        sha256: "760cdd5685008255d6e188a8c528ebcb74daf806bb24a81c2a36086df6a95c76",
-        source: "I386/XPNOTIFY.WA_",
-        compressedSha256: "2f9684cd2952a85245a86b9d06973b13e7149ff6cf3ffafe82bcdce16a2dc1f3"
-      },
-      {
-        id: "xpprint",
-        file: "xpprint.wav",
-        name: "Windows XP \u6253\u5370\u7ED3\u675F",
-        previewOnly: true,
-        durationMs: 991,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -18.3,
-        rmsDbFS: -34.52,
-        gain: 0.82249,
-        bytes: 43762,
-        sha256: "e411c02471876c4d1075ec8fcd406e99ac7c9a5e0c6322ed579de50c8ca3b844",
-        source: "I386/XPPRINT.WA_",
-        compressedSha256: "324d91096b47c0f0fc35e65ab37e067ba403793b7eb211feb9a56288b119c763"
-      },
-      {
-        id: "xprecycl",
-        file: "xprecycl.wav",
-        name: "Windows XP \u56DE\u6536",
-        previewOnly: true,
-        durationMs: 516,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -17.06,
-        rmsDbFS: -38.1,
-        gain: 0.71312,
-        bytes: 22816,
-        sha256: "a8a7028f9fe989cdde61bf22b73f0ff23ae291dbf8e056bb09682a7487c49ad7",
-        source: "I386/XPRECYCL.WA_",
-        compressedSha256: "a2b79e1e62ec0b453982b30a38ad861838e7e09bc1498717466ca480abfe78e6"
-      },
-      {
-        id: "xprestor",
-        file: "xprestor.wav",
-        name: "Windows XP \u8FD8\u539F",
-        previewOnly: false,
-        durationMs: 440,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -24.36,
-        rmsDbFS: -37.68,
-        gain: 1,
-        bytes: 19458,
-        sha256: "480dea5b1808dd67c5a5946e7a47e8e582d5cb1c7fdce4b037140157da0ecadf",
-        source: "I386/XPRESTOR.WA_",
-        compressedSha256: "bf362bfb0c53d25d64075f046d9406da9b071c688f066c1c9edfc38174dd231e"
-      },
-      {
-        id: "xpringin",
-        file: "xpringin.wav",
-        name: "Windows XP \u7535\u8BDD\u62E8\u5165\u58F0",
-        previewOnly: true,
-        durationMs: 882,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -22.82,
-        rmsDbFS: -34.27,
-        gain: 1,
-        bytes: 38930,
-        sha256: "b2cd4e4a977606abb8c35b7d446d6c322ee4bda4c0c722ef240f0c51d7ddc713",
-        source: "I386/XPRINGIN.WA_",
-        compressedSha256: "4061db3507f25e2cefdd4b7bbf9f73042c45525c01f4bdb017e354bd43c552da"
-      },
-      {
-        id: "xprngout",
-        file: "xprngout.wav",
-        name: "Windows XP \u7535\u8BDD\u62E8\u51FA\u58F0",
-        previewOnly: true,
-        durationMs: 499,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -20.25,
-        rmsDbFS: -26.76,
-        gain: 1,
-        bytes: 22070,
-        sha256: "d994081372c2794642da68212d49c6a64263f88a9fde5cc96583b43574c26bb0",
-        source: "I386/XPRNGOUT.WA_",
-        compressedSha256: "32da90bd18459eb03356f9e977df35e9440e52b5baf3df727e343c666c75e8a8"
-      },
-      {
-        id: "xpshutdn",
-        file: "xpshutdn.wav",
-        name: "Windows XP \u5173\u673A",
-        previewOnly: true,
-        durationMs: 3204,
-        channels: 2,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -5.08,
-        rmsDbFS: -21.12,
-        gain: 0.17957,
-        bytes: 282608,
-        sha256: "3d937337075a647950f6aa557bca23dea6e17cf6d14814ca7dbc55b827678a0b",
-        source: "I386/XPSHUTDN.WA_",
-        compressedSha256: "dbd8c3522091971481245e330803b9dca3ad96f17ef289ef781e84fc4770d8c2"
-      },
-      {
-        id: "xpstart",
-        file: "xpstart.wav",
-        name: "Windows XP \u5F00\u59CB",
-        previewOnly: false,
-        durationMs: 49,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -19.66,
-        rmsDbFS: -36.72,
-        gain: 0.96122,
-        bytes: 2202,
-        sha256: "d5712a8963eb3e1e181b25649ecff3080ede89c96350eb07e7d7cad429e959ea",
-        source: "I386/XPSTART.WA_",
-        compressedSha256: "501e2d3dd60d27514d2cf4e0349a360e5b09ce149427e8c9642dd665dc9add18"
-      },
-      {
-        id: "xpstartu",
-        file: "xpstartu.wav",
-        name: "Windows XP \u542F\u52A8",
-        previewOnly: true,
-        durationMs: 4814,
-        channels: 2,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -5.32,
-        rmsDbFS: -20.9,
-        gain: 0.18453,
-        bytes: 424644,
-        sha256: "8f859ebb90247036ced11db854848abe1434dc3ffdfa5795f7c5f06db9a423d5",
-        source: "I386/XPSTARTU.WA_",
-        compressedSha256: "2e19628930cbe38457bd186747793f5cb29c6e360206303c219bdce514032559"
-      }
-    ]
-  };
-
-  // src/ui/resource-cache.ts
-  var warned = false;
-  function unavailable() {
-    if (warned) return;
-    warned = true;
-    console.warn("[Bili Atelier] \u90E8\u5206\u754C\u9762\u8D44\u6E90\u4E0D\u53EF\u7528\uFF0C\u8BF7\u68C0\u67E5 Tampermonkey \u7684\u811A\u672C\u66F4\u65B0\u3002\u6587\u5B57\u63A7\u4EF6\u548C\u6570\u636E\u529F\u80FD\u4ECD\u53EF\u4F7F\u7528\u3002");
+  // src/modules/viewed/id.ts
+  var strict = /^(?:1[0-9A-Za-z]{9}(?:-[1-9][0-9]*)?|(?:ep|ss)[1-9][0-9]*)$/;
+  var isViewedId = (value2) => typeof value2 === "string" && strict.test(value2);
+  var withoutBv = (value2) => value2.trim().replace(/^BV/i, "");
+  function parseViewedId(value2) {
+    if (typeof value2 !== "string") return null;
+    const id = withoutBv(value2);
+    return strict.test(id) ? id : null;
   }
-  function readCachedResourceUrl(name) {
-    try {
-      const url = GM_getResourceURL(name);
-      if (typeof url === "string" && /^(?:data:|blob:)/.test(url)) return url;
-    } catch {
-    }
-    unavailable();
+  function viewedIdFromBvid(bvid, part) {
+    const body2 = String(bvid ?? "");
+    return parseViewedId(part && Number.isSafeInteger(part) && part > 0 ? `${body2}-${part}` : body2) ?? "";
+  }
+  function viewedGroup(value2) {
+    const id = String(value2 ?? "");
+    if (/^(ep|ss)[1-9][0-9]*$/.test(id)) return `${id.slice(0, 2)}${id.slice(-1)}`;
+    if (id.length < 5) return "";
+    if (id.startsWith("ep") || id.startsWith("ss")) return `${id.slice(0, 2)}${id.slice(-1)}`;
+    if (id.length === 10 || id.length > 10 && id.indexOf("-") === 10) return id.charAt(1);
     return "";
   }
-
-  // src/ui/assets/xp-sounds/xpballn.wav
-  var xpballn_default = readCachedResourceUrl("atelier_xpballn_wav");
-
-  // src/ui/assets/xp-sounds/xpbatcrt.wav
-  var xpbatcrt_default = readCachedResourceUrl("atelier_xpbatcrt_wav");
-
-  // src/ui/assets/xp-sounds/xpbatlow.wav
-  var xpbatlow_default = readCachedResourceUrl("atelier_xpbatlow_wav");
-
-  // src/ui/assets/xp-sounds/xpblkpop.wav
-  var xpblkpop_default = readCachedResourceUrl("atelier_xpblkpop_wav");
-
-  // src/ui/assets/xp-sounds/xpcrtstp.wav
-  var xpcrtstp_default = readCachedResourceUrl("atelier_xpcrtstp_wav");
-
-  // src/ui/assets/xp-sounds/xpdef.wav
-  var xpdef_default = readCachedResourceUrl("atelier_xpdef_wav");
-
-  // src/ui/assets/xp-sounds/xpding.wav
-  var xpding_default = readCachedResourceUrl("atelier_xpding_wav");
-
-  // src/ui/assets/xp-sounds/xperror.wav
-  var xperror_default = readCachedResourceUrl("atelier_xperror_wav");
-
-  // src/ui/assets/xp-sounds/xpexcl.wav
-  var xpexcl_default = readCachedResourceUrl("atelier_xpexcl_wav");
-
-  // src/ui/assets/xp-sounds/xphdfail.wav
-  var xphdfail_default = readCachedResourceUrl("atelier_xphdfail_wav");
-
-  // src/ui/assets/xp-sounds/xphdinst.wav
-  var xphdinst_default = readCachedResourceUrl("atelier_xphdinst_wav");
-
-  // src/ui/assets/xp-sounds/xphdrem.wav
-  var xphdrem_default = readCachedResourceUrl("atelier_xphdrem_wav");
-
-  // src/ui/assets/xp-sounds/xpinfbar.wav
-  var xpinfbar_default = readCachedResourceUrl("atelier_xpinfbar_wav");
-
-  // src/ui/assets/xp-sounds/xplogoff.wav
-  var xplogoff_default = readCachedResourceUrl("atelier_xplogoff_wav");
-
-  // src/ui/assets/xp-sounds/xplogon.wav
-  var xplogon_default = readCachedResourceUrl("atelier_xplogon_wav");
-
-  // src/ui/assets/xp-sounds/xpmenu.wav
-  var xpmenu_default = readCachedResourceUrl("atelier_xpmenu_wav");
-
-  // src/ui/assets/xp-sounds/xpmin.wav
-  var xpmin_default = readCachedResourceUrl("atelier_xpmin_wav");
-
-  // src/ui/assets/xp-sounds/xpnotify.wav
-  var xpnotify_default = readCachedResourceUrl("atelier_xpnotify_wav");
-
-  // src/ui/assets/xp-sounds/xpprint.wav
-  var xpprint_default = readCachedResourceUrl("atelier_xpprint_wav");
-
-  // src/ui/assets/xp-sounds/xprecycl.wav
-  var xprecycl_default = readCachedResourceUrl("atelier_xprecycl_wav");
-
-  // src/ui/assets/xp-sounds/xprestor.wav
-  var xprestor_default = readCachedResourceUrl("atelier_xprestor_wav");
-
-  // src/ui/assets/xp-sounds/xpringin.wav
-  var xpringin_default = readCachedResourceUrl("atelier_xpringin_wav");
-
-  // src/ui/assets/xp-sounds/xprngout.wav
-  var xprngout_default = readCachedResourceUrl("atelier_xprngout_wav");
-
-  // src/ui/assets/xp-sounds/xpshutdn.wav
-  var xpshutdn_default = readCachedResourceUrl("atelier_xpshutdn_wav");
-
-  // src/ui/assets/xp-sounds/xpstart.wav
-  var xpstart_default = readCachedResourceUrl("atelier_xpstart_wav");
-
-  // src/ui/assets/xp-sounds/xpstartu.wav
-  var xpstartu_default = readCachedResourceUrl("atelier_xpstartu_wav");
-
-  // src/modules/sounds/assets.ts
-  var soundSources = { xpballn: xpballn_default, xpbatcrt: xpbatcrt_default, xpbatlow: xpbatlow_default, xpblkpop: xpblkpop_default, xpcrtstp: xpcrtstp_default, xpdef: xpdef_default, xpding: xpding_default, xperror: xperror_default, xpexcl: xpexcl_default, xphdfail: xphdfail_default, xphdinst: xphdinst_default, xphdrem: xphdrem_default, xpinfbar: xpinfbar_default, xplogoff: xplogoff_default, xplogon: xplogon_default, xpmenu: xpmenu_default, xpmin: xpmin_default, xpnotify: xpnotify_default, xpprint: xpprint_default, xprecycl: xprecycl_default, xprestor: xprestor_default, xpringin: xpringin_default, xprngout: xprngout_default, xpshutdn: xpshutdn_default, xpstart: xpstart_default, xpstartu: xpstartu_default };
-
-  // src/modules/sounds/engine.ts
-  var soundCategories = ["navigation", "controls"];
-  var volume = (value2, fallback2) => typeof value2 === "number" && Number.isFinite(value2) ? Math.max(0, Math.min(1, value2)) : fallback2;
-  function normalizeSoundPreferences(raw) {
-    const value2 = raw;
-    return {
-      enabled: typeof value2?.enabled === "boolean" ? value2.enabled : true,
-      volume: volume(value2?.volume, 0.55),
-      categories: Object.fromEntries(soundCategories.map((category) => [category, {
-        enabled: typeof value2?.categories?.[category]?.enabled === "boolean" ? value2.categories[category].enabled : true,
-        volume: volume(value2?.categories?.[category]?.volume, 1)
-      }]))
-    };
+  function parseStoredViewedId(value2) {
+    const id = withoutBv(String(value2 || ""));
+    return id && viewedGroup(id) ? id : null;
   }
-  var SoundEngine = class {
-    constructor(transport2, preferences, allowed, now, defer) {
-      this.transport = transport2;
-      this.preferences = preferences;
-      this.allowed = allowed;
-      this.now = now;
-      this.defer = defer;
-      this.scheduled = false;
-      this.lastId = "";
-      this.lastAt = -Infinity;
+  var alphabet = "FcwAPNKTMug3GV5Lj7EJnHpWsx4tb8haYeviqBz6rkCy12mUSDQX9RdoZf";
+  function bvidFromAid(aid) {
+    if (!Number.isSafeInteger(aid) || aid <= 0 || aid >= 2 ** 51) return "";
+    let rest = (BigInt(aid) | 1n << 51n) ^ 23442827791579n;
+    const digits = [];
+    for (let i = 0; i < 9; i++) {
+      digits.unshift(alphabet[Number(rest % 58n)]);
+      rest /= 58n;
     }
-    request(request2, action, valid = () => true) {
-      if (!soundCategories.includes(request2.category)) return;
-      if (!valid() || !this.allowed() || request2.asset.previewOnly && !request2.preview) return;
-      if (!this.pending || this.pending.action !== action || request2.priority >= this.pending.request.priority) this.pending = { request: request2, action, valid };
-      if (!this.scheduled) {
-        this.scheduled = true;
-        this.defer(() => this.flush());
-      }
-    }
-    stop() {
-      this.pending = void 0;
-      this.transport.stop();
-    }
-    flush() {
-      this.scheduled = false;
-      const pending3 = this.pending;
-      this.pending = void 0;
-      if (!pending3 || !pending3.valid() || !this.allowed()) return;
-      const { request: request2 } = pending3, prefs = this.preferences(), category = prefs.categories[request2.category];
-      if (!prefs.enabled || !category.enabled) return;
-      const gain = prefs.volume * category.volume * request2.asset.gain;
-      if (!(gain > 0) || !this.transport.ready(request2.asset.id)) return;
-      const now = this.now();
-      if (!request2.preview && now - this.lastAt < (this.lastId === request2.asset.id ? 180 : 55)) return;
-      if (this.transport.playing()) this.transport.stop();
-      if (this.transport.play(request2.asset.id, gain)) {
-        this.lastAt = now;
-        this.lastId = request2.asset.id;
-      }
-    }
-  };
-  var soundMediaPrefix = "AtelierSounds_media_";
-  var soundMediaLeaseMs = 15e4;
-  function activeMediaHeartbeat(raw, now) {
-    const value2 = raw;
-    return value2?.version === 1 && value2.playing === true && typeof value2.at === "number" && Number.isFinite(value2.at) && value2.at <= now + 5e3 && now - value2.at <= soundMediaLeaseMs;
+    [digits[0], digits[6]] = [digits[6], digits[0]];
+    [digits[1], digits[4]] = [digits[4], digits[1]];
+    return "BV1" + digits.join("");
   }
-
-  // src/modules/sounds/media.ts
-  var pulseKey = "AtelierSounds_mediaPulse";
-  function startSoundMediaMonitor(changed) {
-    const key6 = soundMediaPrefix + crypto.randomUUID();
-    const media2 = /* @__PURE__ */ new Set(), roots2 = /* @__PURE__ */ new WeakSet(), frames = /* @__PURE__ */ new WeakSet();
-    let suspended = false, playing = false, published = false;
-    const events = new AbortController();
-    const observer = new MutationObserver((records2) => {
-      for (const record of records2) for (const node4 of record.addedNodes) if (node4.nodeType === 1) discover(node4);
-      update();
-    });
-    function signal() {
-      GM_setValue(pulseKey, crypto.randomUUID());
-    }
-    function publish(force = false) {
-      if (playing && !suspended) {
-        if (force || !published) {
-          GM_setValue(key6, { version: 1, at: Date.now(), playing: true });
-          signal();
-        }
-        published = true;
-      } else if (published) {
-        GM_deleteValue(key6);
-        published = false;
-        signal();
-      }
-    }
-    function track(node4) {
-      if (media2.has(node4)) return;
-      media2.add(node4);
-      for (const name of ["play", "playing", "pause", "ended", "emptied", "abort"]) node4.addEventListener(name, update, { signal: events.signal });
-    }
-    function discover(root2) {
-      if (root2 instanceof HTMLMediaElement) track(root2);
-      if (root2.shadowRoot) watch(root2.shadowRoot);
-      for (const node4 of root2.querySelectorAll("video,audio")) track(node4);
-      for (const node4 of root2.querySelectorAll("*")) if (node4.shadowRoot) watch(node4.shadowRoot);
-      const foundFrames = [...root2.querySelectorAll("iframe")];
-      if (root2.tagName === "IFRAME") foundFrames.unshift(root2);
-      for (const frame2 of foundFrames) {
-        const read3 = () => {
-          try {
-            if (frame2.contentDocument) watch(frame2.contentDocument);
-          } catch {
-          }
-        };
-        if (!frames.has(frame2)) {
-          frames.add(frame2);
-          frame2.addEventListener("load", read3, { signal: events.signal });
-        }
-        read3();
-      }
-    }
-    function watch(root2) {
-      if (roots2.has(root2)) return;
-      roots2.add(root2);
-      observer.observe(root2, { childList: true, subtree: true });
-      root2.addEventListener("play", (event) => {
-        const target = event.target;
-        if (target && (target.tagName === "VIDEO" || target.tagName === "AUDIO" || target instanceof HTMLMediaElement)) track(target);
-        update();
-      }, { capture: true, signal: events.signal });
-      discover(root2);
-    }
-    function update() {
-      let next = false;
-      for (const node4 of media2) {
-        let connected = node4.isConnected;
-        try {
-          const frame2 = node4.ownerDocument.defaultView?.frameElement;
-          if (frame2 && !frame2.isConnected) connected = false;
-        } catch {
-        }
-        if (!connected) {
-          media2.delete(node4);
-          continue;
-        }
-        if (!node4.paused && !node4.ended) next = true;
-      }
-      const was = playing;
-      playing = next;
-      publish();
-      if (was !== next) changed();
-    }
-    function blocked() {
-      if (!suspended) update();
-      if (playing && !suspended) return true;
-      const now = Date.now();
-      for (const other of GM_listValues()) {
-        if (!other.startsWith(soundMediaPrefix) || other === key6) continue;
-        if (activeMediaHeartbeat(GM_getValue(other), now)) return true;
-      }
-      return false;
-    }
-    watch(document);
-    update();
-    const heartbeat = window.setInterval(() => {
-      if (!suspended) {
-        discover(document);
-        update();
-        publish(true);
-      }
-    }, 1e4);
-    if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(pulseKey, (_, __, ___, remote) => {
-      if (remote) changed();
-    });
-    window.addEventListener("pagehide", () => {
-      suspended = true;
-      publish();
-      changed();
-    }, { signal: events.signal });
-    window.addEventListener("pageshow", () => {
-      suspended = false;
-      discover(document);
-      update();
-      publish(true);
-    }, { signal: events.signal });
-    for (const old of GM_listValues()) if (old.startsWith(soundMediaPrefix) && !activeMediaHeartbeat(GM_getValue(old), Date.now())) GM_deleteValue(old);
-    return { blocked, dispose() {
-      suspended = true;
-      publish();
-      events.abort();
-      observer.disconnect();
-      window.clearInterval(heartbeat);
-    } };
-  }
-
-  // src/modules/sounds/service.ts
-  var aliases = { folder: "navigate", open: "open", close: "close", minimize: "collapse", maximize: "expand", restore: "expand", menu: "control", select: "control", click: "control", start: "control", cancel: "control" };
-  var preferenceKey = "AtelierSounds_preferences";
-  var soundPreferencesChanged = "atelier-sound-preferences-changed";
-  var clips = new Map(catalog_default.sounds.map((asset) => [asset.id, asset]));
-  var WebAudioTransport = class {
-    constructor() {
-      this.buffers = /* @__PURE__ */ new Map();
-      this.loading = /* @__PURE__ */ new Set();
-      this.failures = /* @__PURE__ */ new Map();
-      this.supported = typeof window.AudioContext === "function";
-    }
-    /** Decodes every clip not decoded or on its way. A bad clip disables that
-     * clip only; it is never replaced by a download. */
-    prepare(decoder) {
-      for (const [id, source] of Object.entries(soundSources)) {
-        if (this.buffers.has(id) || this.loading.has(id)) continue;
-        const scheme = /^(blob|data):/.exec(source)?.[1] ?? "";
-        const fail = (stage) => (error) => {
-          this.loading.delete(id);
-          const { name, message } = error ?? {};
-          const text4 = typeof message === "string" ? typeof name === "string" && name !== "Error" ? `${name}: ${message}` : message : String(error);
-          this.failures.set(id, { stage, scheme, message: text4 });
-        };
-        const decode2 = (bytes) => decoder.decodeAudioData(bytes).then((buffer) => {
-          this.loading.delete(id);
-          this.failures.delete(id);
-          this.buffers.set(id, buffer);
-        }, fail("\u89E3\u7801"));
-        this.loading.add(id);
-        try {
-          if (scheme === "blob") {
-            void fetch(source).then((response) => {
-              if (!response.ok) throw new Error(`HTTP ${response.status}`);
-              return response.arrayBuffer();
-            }).then(decode2, fail("\u8BFB\u53D6"));
-          } else if (scheme === "data") {
-            const binary = atob(source.slice(source.indexOf(",") + 1));
-            void decode2(Uint8Array.from(binary, (character) => character.charCodeAt(0)).buffer);
-          } else fail("\u8BFB\u53D6")(new Error("Tampermonkey \u6CA1\u6709\u7ED9\u51FA\u8FD9\u4E2A\u8D44\u6E90"));
-        } catch (error) {
-          fail("\u8BFB\u53D6")(error);
-        }
-      }
-    }
-    preload() {
-      try {
-        if (typeof window.OfflineAudioContext === "function") this.prepare(new OfflineAudioContext(1, 1, 44100));
-      } catch {
-      }
-    }
-    unlock() {
-      if (!this.supported) return;
-      try {
-        if (!this.context) {
-          this.context = new AudioContext();
-          this.prepare(this.context);
-        }
-        if (this.context.state !== "running") void this.context.resume().catch(() => {
-        });
-      } catch {
-        this.supported = false;
-      }
-    }
-    clips() {
-      return { total: Object.keys(soundSources).length, loaded: this.buffers.size, loading: this.loading.size, failure: [...this.failures.values()][0] };
-    }
-    available() {
-      return this.supported;
-    }
-    unlocked() {
-      return this.context?.state === "running";
-    }
-    ready(id) {
-      return this.unlocked() && this.buffers.has(id);
-    }
-    playing() {
-      return !!this.source;
-    }
-    play(id, gain) {
-      if (!this.ready(id)) return false;
-      try {
-        const source = this.context.createBufferSource(), volume2 = this.context.createGain();
-        source.buffer = this.buffers.get(id);
-        volume2.gain.value = gain;
-        source.connect(volume2);
-        volume2.connect(this.context.destination);
-        this.source = source;
-        source.onended = () => {
-          source.disconnect();
-          volume2.disconnect();
-          if (this.source === source) this.source = void 0;
-        };
-        source.start();
-        return true;
-      } catch {
-        this.source = void 0;
-        return false;
-      }
-    }
-    stop() {
-      const source = this.source;
-      this.source = void 0;
-      if (source) try {
-        source.stop();
-      } catch {
-      }
-    }
-  };
-  var engine;
-  var transport;
-  var monitor;
-  var gesture = 0;
-  var sequence = 0;
-  var foregroundEpoch = 0;
-  var started = false;
-  var previewPlaying = false;
-  var foreground = () => window.top === window.self && !document.hidden && document.hasFocus();
-  var readSoundPreferences = () => normalizeSoundPreferences(typeof GM_getValue === "function" ? GM_getValue(preferenceKey, null) : null);
-  function writeSoundPreferences(value2) {
-    GM_setValue(preferenceKey, normalizeSoundPreferences(value2));
-    engine?.stop();
-    window.dispatchEvent(new Event(soundPreferencesChanged));
-  }
-  function request(cue) {
-    const alias = aliases[cue];
-    if (!alias) return;
-    const value2 = catalog_default.cues[alias];
-    return { asset: clips.get(value2.sound), category: value2.category, priority: value2.priority };
-  }
-  function enqueue(cue, action, valid) {
-    if (!action) return;
+  var bvidPattern = /^BV1[0-9A-Za-z]{9}$/i;
+  var isBvid = (value2) => typeof value2 === "string" && bvidPattern.test(value2);
+  function viewedIdFromHref(href) {
+    if (!href) return "";
+    let url;
     try {
-      const mapped = request(cue);
-      if (!mapped) return;
-      if (previewPlaying) {
-        engine?.stop();
-        previewPlaying = false;
-      }
-      engine?.request(mapped, action, valid);
+      url = new URL(href, location.href);
     } catch {
+      return "";
     }
-  }
-  function sound(cue) {
-    try {
-      enqueue(cue, gesture);
-    } catch {
+    const host = url.hostname;
+    if (host === "b23.tv") {
+      const code = url.pathname.split("/")[1];
+      return isBvid(code) ? viewedIdFromBvid(code) : "";
     }
-  }
-  function soundTask(startCue, owner2) {
-    const action = gesture, epoch = foregroundEpoch;
-    let finished = false;
-    const valid = () => epoch === foregroundEpoch && (!owner2 || (typeof owner2 === "function" ? owner2() : owner2.isConnected && !owner2.hidden));
-    if (startCue) enqueue(startCue, action, valid);
-    return {
-      finish(cue) {
-        if (finished) return;
-        finished = true;
-        if (["folder", "open", "close", "minimize", "maximize", "restore", "cancel"].includes(cue)) enqueue(cue, action, valid);
-      },
-      cancel() {
-        finished = true;
-      }
-    };
-  }
-  function previewSound(id, category) {
-    const asset = clips.get(id);
-    if (!asset || !gesture) return;
-    previewPlaying = true;
-    engine?.request({ asset, category, priority: 100, preview: true }, gesture);
-  }
-  function stopSoundPreview() {
-    if (previewPlaying) {
-      engine?.stop();
-      previewPlaying = false;
+    if (!/(^|\.)bilibili\.com$/.test(host)) return "";
+    const [, section, value2 = ""] = url.pathname.split("/");
+    if (section === "video") {
+      if (isBvid(value2)) return viewedIdFromBvid(value2);
+      const av = /^av(\d+)$/i.exec(value2);
+      return av ? viewedIdFromBvid(bvidFromAid(Number(av[1]))) : "";
     }
-  }
-  function soundPlaybackStatus() {
-    const prefs = readSoundPreferences();
-    if (!prefs.enabled) return "\u97F3\u6548\u5DF2\u5173\u95ED";
-    if (prefs.volume === 0) return "\u603B\u97F3\u91CF\u4E3A\u96F6";
-    if (transport && !transport.available()) return "\u5F53\u524D\u6D4F\u89C8\u5668\u65E0\u6CD5\u4F7F\u7528 Web Audio";
-    const clips2 = transport?.clips();
-    if (clips2 && !clips2.loading && clips2.failure) {
-      const { stage, scheme, message } = clips2.failure;
-      return `\u58F0\u97F3\u6CA1\u6709\u8F7D\u5165\uFF08${clips2.loaded}/${clips2.total}\uFF09\uFF1A${scheme ? `${scheme}: \u5730\u5740${stage}\u5931\u8D25` : "\u6CA1\u6709\u62FF\u5230\u8D44\u6E90\u5730\u5740"}\uFF08${message}\uFF09`;
+    if (section === "list") {
+      const bvid = url.searchParams.get("bvid");
+      return isBvid(bvid) ? viewedIdFromBvid(bvid) : "";
     }
-    if (monitor?.blocked()) return "\u68C0\u6D4B\u5230\u5A92\u4F53\u64AD\u653E\uFF0C\u97F3\u6548\u6682\u65F6\u5B89\u9759";
-    if (!foreground()) return "\u53EA\u5728\u5F53\u524D\u524D\u53F0\u7A97\u53E3\u64AD\u653E";
-    if (!transport?.unlocked()) return "\u9996\u6B21\u70B9\u51FB\u540E\u53EF\u64AD\u653E\uFF1B\u6D4F\u89C8\u5668\u963B\u6B62\u7684\u58F0\u97F3\u4E0D\u4F1A\u8865\u64AD";
-    if (clips2?.loading) return `\u58F0\u97F3\u8F7D\u5165\u4E2D\uFF08${clips2.loaded}/${clips2.total}\uFF09`;
-    return `\u5DF2\u5C31\u7EEA \xB7 ${clips2?.loaded ?? 0}/${clips2?.total ?? 0} \u4E2A\u58F0\u97F3\u5DF2\u8F7D\u5165 \xB7 \u8BD5\u542C\u4E5F\u9075\u5B88\u97F3\u91CF\u3001\u5206\u7C7B\u5F00\u5173\u548C\u5A92\u4F53\u907F\u8BA9`;
-  }
-  function startSounds() {
-    if (started) return;
-    started = true;
-    try {
-      transport = new WebAudioTransport();
-      transport.preload();
-      monitor = startSoundMediaMonitor(() => {
-        if (monitor?.blocked()) engine?.stop();
-      });
-      engine = new SoundEngine(transport, readSoundPreferences, () => foreground() && !monitor.blocked(), Date.now, (run) => {
-        window.setTimeout(() => {
-          try {
-            run();
-          } catch {
-            transport?.stop();
-          }
-        }, 0);
-      });
-      const activate = (event) => {
-        if (!event.isTrusted || !foreground()) return;
-        transport.unlock();
-        const current4 = gesture = ++sequence;
-        window.setTimeout(() => {
-          if (gesture === current4) gesture = 0;
-        }, 0);
-      };
-      for (const name of ["pointerdown", "click", "keydown", "change", "submit"]) document.addEventListener(name, activate, true);
-      const leave = () => {
-        foregroundEpoch++;
-        gesture = 0;
-        engine?.stop();
-      };
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) leave();
-      });
-      window.addEventListener("pagehide", leave);
-      window.addEventListener("blur", () => {
-        window.setTimeout(() => {
-          if (!document.hasFocus()) leave();
-        }, 0);
-      });
-      if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(preferenceKey, (_, __, ___, remote) => {
-        if (remote) {
-          engine?.stop();
-          window.dispatchEvent(new Event(soundPreferencesChanged));
-        }
-      });
-    } catch {
-      transport?.stop();
+    if (section === "bangumi") {
+      const episode = /^\/bangumi\/play\/((?:ep|ss)[1-9]\d*)\/?$/.exec(url.pathname);
+      return episode ? episode[1] : "";
     }
+    return "";
   }
-
-  // src/ui/atelier-dom.ts
-  function element(tag, className = "", text4 = "") {
-    const node4 = document.createElement(tag);
-    node4.className = className;
-    node4.textContent = text4;
-    return node4;
-  }
-  function icon(src, size = 28) {
-    const image6 = element("img");
-    image6.src = src;
-    image6.alt = "";
-    image6.width = image6.height = size;
-    return image6;
-  }
-  function button(text4, action, className = "luna-button") {
-    const node4 = element("button", className, text4);
-    node4.type = "button";
-    node4.addEventListener("click", () => {
-      sound("click");
-      action();
-    });
-    return node4;
-  }
-  function downloadJson(value2, fileName2) {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(value2, null, 2)], { type: "application/json;charset=utf-8" }));
-    const link3 = element("a");
-    link3.href = url;
-    link3.download = fileName2;
-    document.body.appendChild(link3);
-    link3.click();
-    link3.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1e3);
-  }
-
-  // src/ui/assets/xp-icons/atelier-icon.png
-  var atelier_icon_default = readCachedResourceUrl("atelier_atelier_icon_png");
-
-  // src/ui/assets/xp-icons/nav-users.png
-  var nav_users_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAh1SURBVFhH7VZbbFxXFV3zHs94ZjwTOx6/YydOnTRxE2Pixk3btG6TWi2QRwnQqOXRSKiqwhcfCImPUoR4fEBVQPCBCg0qEWoa0ZQ0jxKalLyITZImsRPjOI7tmfGMPe/XvXPv3Ms617Fxqn4ghAQf3dKaM3Nn77vX3mfvfQ4+kf+1mO6s/xX5+R68XB1csa2h/f41ZTmLXGIqe/Pm8HtnrhV+tP8MPqRKkdAN5TvycQT8xPNLly7dVltba1FV1TQxMTGVz+dP8/lrRI5QibvkF3vw+rqeJ59tXdsPi9OHspSGko8hN3MD1y7/tbDveOiFtwfwDlVThGYYUSx31nl5tKGh4eyuXbs+s2PHjuYNGzY0tre3N65cuXK13+/fmkgkviBJ0m3qTRGChBGNiLzjns699Y3t4id0pQCbawngqEI+E6OTkm2pK91/6VbpQrqAaarIhiJlMYGvtba2Hujr63PSGaxWq4G6ujo0NzfD6XTCbDb7w+HwFkVRBqg/Q8g//Qr8FXbr74N1zQ6TrpBWAWabExaHByaTBbHoFCRVg5ybtapyrurybfyddgmiTCwQaG1qajrY1dXl1DSNhib4fD4EAgE4HA4MDAzg4sWLiEQi8Hq9FcXMTGupjPO0iz/ZhS+2NdV/fjoaoZ2Z4WsITQwhdeMEpNETqMiMwyonUTTZIRUSnpNDuEA7kUFRD7CKD5vN9tvly5f7SqUSmGLY7XZw33H+/HmMXvkQXflpbPXb4a+04kK5jLdslu6cXO6kaZhF9MiW3l6U+DwcjXEtoWNVEzxObgcDAZ+DQbWlM0gl4wEg2UQ7HxEXvgWBVhbbg7quQxAQEYto1xZuYXuLG90bHHAHGuEJuuGpdmK3qmDjudv2Vz9I9F0IYXBZXV0bDWG32bCsvm7OqRC+bwEkEahwoqHKaeM/JIEKQ4fCnOF5phWyLBvIZrNYVzGNX7+4Ars/V4+1jwfRdn8tahqdcNrKsNhNCLptaHJhFW2DqqpZobIemTlB5C7wfVBYFwL8PRrmXsz5XBAz090loi8Wi0b6Q6EQvrTWg2yhzHQyK5IKNS9BLpSQySisA24RbGAiRDRLipJs/ljn844FiZIgoGB0OpOnTYagwpyYWel+4VigUCgYGWissCCdVhCLyYbDcLjIVcbsbAm5nIpUqgRNNWaIfSiUughZOBXOuAqHC7hDht8j8TiGp1TRgqIDjAIUYqbj7DwBkYUacxH5vGoQEEilFCSTc9+TybksJLgmqEb7ciqPq+OxGB3RochEcRGM6ElAKeHKRFg9M4IR2kQJMcwMMbPtjiwmMJ7V7jguGatwmMvd/TsUySOcB72i8Oq7OHhpMhyd2wbhcBHkORKhRAK/ORu/zSEkhtiksBPOhYg5EGH1P8Ped4sHoh6cagn1ds6vksZt1PhuzfheLGpIksjViZz05zROUn2QGAsG5FzAo/dXsn0VVnyJRSlQZA2Mp1LYNzCe/NlR/Th1zxGXCVEHhggCBTod48x/jNkw2uPqrAwHe9dnNqFMx5JUvgMN18fSOJXUhiJiED2AvHe795vl3u4XhtMOhy9+C2XaZRh1nNkc4b6/NTODV/6mXSnNQpwlHxBiCBlTUIggIA6GEEkMkkQVx6xH0VE5wX3ucJphYxuL6AWBick8Ligd0mlJOYWHJGfPcz0/3PnUzs7ezl7HTL4Fn9ryK8TyWST5gnjVemRWfx1/sEpoe6KlIWKOWNUh9RB9iVZcIDB/Gore9Jq8nZ2mpt3fbqy/d+v60V+iYfJPqGBHaJoOyeSFbfM3cKZ6p5i2iJgP4Yk90wgGPBwyAdw8O4XvbfsJW5cRCdJc9+5/Bu3dQeh2HeORcRx+/fDp0hulPfR1i2CR/Oss0C3db1QsXfH0m/0PPdW7/r4OXLbdi84XvwtPTz9cjz6H6q9+HzV9/bg9kcSn71mFemsPjh1won0jZ71NQ2J2Fk/f91l47YDHAbzy3kswNSjw+r3IlXLQrTo0j9YcjUbNCOEqfWYJbWEqVbpq3n94de8ar8MLi27FIz1rcPjcOIKPbUawbzMCbX5U8qZg5fjhEOIMt6G7fiNOHqxFXsljJDlilLZ465nJSzgSOoLq2mrDuVyWUeARXdVYBd8m37NUWUt4iLmxaNnw5str6lZ3mlROOLatcGChg1XNbTh69AZcLiwgNqUYOmxtOOCCnmhBWk7DwdCPjbxvEPjO4W9h0wObkCwmDQIGlBw7RIG7xe1BKx6nWq3wbxBwOzxftvLsVmTdcF7kW6SsjprKAMKjOsbGZuecx9I8Eb2QOEZkjiGlLFqtaDiqaajBoUt/xA/eeQnuBjtSUordkDHIJSUex9TLyTTk9jB9DfysIWwGgQq7qynNO1yWEDoKy6PATi2kgc5lK7F/303OBwWnTk3C71hiEFBLOjISbQpZxJIxFLQCBqN/wbv/+B1sPhsnZcJAvBA30p/mFU1kIjXLGxn50C2rBRajC7wPHtfrfLWotLuxxB1gEXm41ybwYgMzyzRFNhWtU7hxqYT2ynVQOGRmc3Fcj1xW46Efj+rVJyRr0Oq1Vlk9lTWVbm+T11XW5jpNY8vIqoz8VF6SIlKmfLU8hmEc419vE1cMAvaeA8M+V3WH31UFl90FHwm4HW7YrXZYzcadBYMsLJvFBgt3LRQdzOViZyN67MiQXhi/zr9FW4moKglRXGIVQ22+y4QIRqJOxVVumBC35Jn5OdBiqtu+1+RqfpjHnNil+ecLosvRPORoWs9ei6CUEMNklpggRgkx3URfi7QKe7GK43rxezgdjGNYkODmGoeZOq8g2DYSy4hqQrzgoyIiEFGKQhdX63mI3zx17r7v/7uymKFIlyDy0dTNixjZ4iouIhUQhP4jp5/I/5EA/wThuHXkPk14XgAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/xp-icons/nav-control-panel.png
-  var nav_control_panel_default = "data:image/png;base64,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";
-
-  // src/ui/assets/xp-icons/nav-recent-documents.png
-  var nav_recent_documents_default = "data:image/png;base64,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";
-
-  // src/ui/assets/xp-icons/nav-computer.png
-  var nav_computer_default = "data:image/png;base64,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";
-
-  // src/ui/assets/xp-icons/app.png
-  var app_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADMUlEQVR4nLWVS0hUURjHf+c+us2jx2gWGZGz0FWFsylMTEqj2vQk2lUEEUWvXUQUFQRSmww3ta2IQKJd0CYopHRRiW0KJXupWKHNTcfJmXPjzD13vJhBqf2Hc8/c75zzPf7f950rmBnqgDmTZD+BpzPUSw3QBHh/GE16TxEngQb9PzpJmQ04QAI4DWwBBpQiC7yEnrHwSOjZN6L2pIyQojxwBrig3yuBJHAL2AH067VFwJIUcBvoBmqDmNTLHaW2cH4JsDjsaSnQB2wATgEPgcvam4NAB3BER+C1gefpsUntacAr/p4Vo2goRCDhRA+swx+Pgc3AOeBrBC6WwRPgAJADFqozYyHPCkrCXIQWA7FIwncJ2yRcAbZK6H8Kj0agshFWAm3A9eDgfM2Z8uYL+vFYC9XiZEgoldAnYYOEYxIeSrikKEhNQdE+8NZMVUEpPPZPUCS0/hPL4d0H6BLQq5RriuoysGA13O7x613l0wXu+scsYF5BZFk55sXBHfZ51GgsUvQRvgvYBlwxYKsB/XXwKAaVPVNQ5JfKRB3V1EB3D9y5Bym/in6DYu4DsB44BDwAzurE7gtR1OiH3xYUkQcbvfp6PM/zx/PnExRZOgPHly799LWsrGFPZ+fbl/F4/GpJScll13UVJdeSyeQr27YP9Pb21gkhVqTTaeBHqFxsHCdCLmcxPj7GyMh40WudA3m4peXz+Z07R/PptIxlMploIpH4NjQ0VBqLxVzTNPOGYcjBwcFyx3Ey2Ww24nOvmlzBxbbHyeVGaG4+yt69b9i+3c+BjsC4UVvbvru8fM0mwxggkVC3AssikYia5wbeVFRUqKkgBOWl1CtxhLBpb++ko8NlLNQH2gCHXrx4vbaqahVdXV0IERTX38NxHFx3gNFRg/v3fzegNBb02rY9LQOWZWEYJqYpMsBHoEpd5UGZ3qyurn7GLMAwjCFgF3AReBNEQD6fN2fDgJRSXffvg1s5fEXNFrzwV64YgYJpmirEaeXA+MO5ooFoNFpoQ7VJbf5XCCEKBaKcnNJAa2vrQtWhw8PD0zYghCCbzaomKoYSjmm//kTOFKrNmgFVrv8fvwAWxReLASdSmAAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/xp-icons/history.png
-  var history_default = "data:image/png;base64,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";
-
-  // src/ui/assets/xp-icons/folder.png
-  var folder_default = "data:image/png;base64,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";
-
-  // src/ui/assets/xp-icons/up.png
-  var up_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADgElEQVR42s2VXWhbZRjHfzlvmo/TpjlLGjeDLf3akM4O1wbGxEpx80YEOwoOQViH2gqCbOiloOCVeCF6IdQL227CLmRU8EJhzma2m462EF2r27SsrsE0sSWn+TznJCfxol9rk7ULKvjCe/M87/v/P/8/7/O88B8vUfGNfnro5Ac6iTJNaLfjlgrBFQR33Iftij5voi3lg8BpPmX+31HQyQWlzfG4y2PnkSY3ex5yNGbiub5ce0Fnmh//mYJ+ehx11tG6dhmPLGMXAq/TiWTCHzcTzM7EQmtqQpUr6EeRrJYx3+Fqh7emegPcLgQ+Vw2NDQp+f+0+VdVfSz9qWJgmuH5VesD6h5T9DqWutpqiVqRW2LALgUeWqZIkIpEks7N/YbdbAd6hn6H7WjQ1iOL1Pxm/N9b01QTCKalmthACaGh2dx97upkqScJisXD16iIzb4TL2m3dHnB7D8VdB15GaexC2GTgT9JHTea+6R0+9FL4LID0Zqq4FM3g97uQZXlH6SUEkrDhbekAcXkjJntaqD/y/pm50Q/PAHzvbmVkcRJZlhFCVEZgkapAurEtOIfSoqC0vgpAMzByYRIhBLJzVcHcaKC4fjwemzoRGODLsgTFQg4KiTK1LANgGlkWxs5hGAVk56YC35EPAHA93E3oM+coaJayBKapw4qA4nIJRWZlkdjNK9Qfv4TtYhdCCJyycw34CQCSkcs7W1QwNUgnwUyhLv2OGru1JV9//BLCNo4FcMpOhBCYqg1YWrXq6+cw89qe+xKYeQ0yKTLqHZIFP43PfgJEgAyQBcY3u1QIQqEFTrY+BixjJCMABAZQdyDIgJFlOTLD3mPvAhdLrBoeG9sYBNeCt/j4xdeBFL988TxmXmva8ipLLdIxchq5Kg+2ahNyuZL93sR3vHCyi/Pnx3n7qWdQHFZM4y6STR4ODGydrNZyBLqRpqahB/TbYOpbq5+cZG+9wuDgt/T49tPX0QHxFW583oeZ1z7atQ8KhRzpZBhP21uQLrVn5Pp1fo1EGOrtpaetDTQNIxFd9z60KwFAOhtnn9WEeLokd+rgQc51d2LN3OV2cIJMIoqZ1+aB0w/UyQA231FI/Ay6jpnXSaphkithUuoC7ckosQghIAj8BAS3+74rgffAKeavvUIy/huGlmAN7AqsAt/7DCv+k6cGWZ8pZ4FQYGDz8/hfrr8BOS1Vngza8EsAAAAASUVORK5CYII=";
-
-  // src/ui/assets/xp-icons/up-16.png
-  var up_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACQ0lEQVR42o2TT0gUURzHP5O7zs7k6tQoKVSuqWgLitTWoT9gRVAQlOcudigL79EhqA4hdMkORnQIPHayJOrQwS0TpVxckXJTJ9eUTTZHZ3dnt3HdcbvolrpJv9N7vN/38z7vB09gu7rGQ6AJuMJTwvlaCrYJN4tKwZMy707PSsxutRuzywQY2twm/COs7HAKIxVH3J5ytQjFITIbijMxrgfXbILbGxymY3eNfG7vvmLKZJldskR9dSkul7M8Gk1et5tWBQL4ARzrGa3Hl11fV78ZxlrIoC0tUnJIRKl04XQ6GRj4HlbKXB4Jxx0D624OoPX4siXeqyieoyQyOhq3cjLntWkO1uxBkiSAsHHfqvpbNmeg1jaC8BGlEJRLDwAVSLJ0+yySJCFLMooDxdj02hyA9DQI6bXNZwC+ve6majWLLMkkkyucrG1u6uwxswDVLcPCRkB8CTs9Tyo2j6mHWbYsSrztyNozRFFkYlLndMNFDpxpZ+LVBf9Wg5hJRBvEXXeDCu8JIA7ozCS/Isn7CQRm6LhcT+JHL4nI+0dbAPZyGoobUTwC0AtAWNdxqy5GR+c47irFU5Rm6kNX2NfGiy2AxYUxVG87JD7lpLr9fiwrw+jbSfpaW0npI8RmB+/lHWImk0aWRTB/5Q47+/tprqzkccsx7MgY8z+nDPhz+8YZuOshHoJUgoQxh2nM8rxBRLVDRIZCYcAPvPS1YeQFFCp1jPfdJGVGAYKAX4V3QNDXlv8nbgDEvnSRMqOn1gIG/1m/AexC1pfIkDVeAAAAAElFTkSuQmCC";
-
-  // src/ui/atelier-assets.ts
-  var atelierIcons = { tv: atelier_icon_default || app_default, app: app_default, folder: folder_default, following: nav_users_default, settings: nav_control_panel_default, viewed: nav_recent_documents_default, data: nav_computer_default, video: history_default, up: up_default, up16: up_16_default };
 
   // src/ui/interface-prefs.ts
   var key = "BiliAtelier_Interface";
@@ -3411,10 +2378,10 @@
   function interfaceCss(prefs = readInterfacePrefs()) {
     return `:root{--atelier-pbp-opacity:${prefs.pbpOpacity};--atelier-viewed-opacity:${prefs.viewedDim ? prefs.viewedOpacity : 1}}` + (prefs.ipLocation ? "" : "\n.acm-where{display:none!important}");
   }
-  var started2 = false;
+  var started = false;
   function startInterfacePrefs() {
-    if (started2) return;
-    started2 = true;
+    if (started) return;
+    started = true;
     const style = document.createElement("style");
     style.id = "atelier-interface";
     const paint2 = () => {
@@ -3424,6 +2391,23 @@
     paint2();
     window.addEventListener(interfaceChanged, paint2);
     relayRemoteChanges(key, interfaceChanged);
+  }
+
+  // src/ui/resource-cache.ts
+  var warned = false;
+  function unavailable() {
+    if (warned) return;
+    warned = true;
+    console.warn("[Bili Atelier] \u90E8\u5206\u754C\u9762\u8D44\u6E90\u4E0D\u53EF\u7528\uFF0C\u8BF7\u68C0\u67E5 Tampermonkey \u7684\u811A\u672C\u66F4\u65B0\u3002\u6587\u5B57\u63A7\u4EF6\u548C\u6570\u636E\u529F\u80FD\u4ECD\u53EF\u4F7F\u7528\u3002");
+  }
+  function readCachedResourceUrl(name) {
+    try {
+      const url = GM_getResourceURL(name);
+      if (typeof url === "string" && /^(?:data:|blob:)/.test(url)) return url;
+    } catch {
+    }
+    unavailable();
+    return "";
   }
 
   // src/ui/assets/luna/blue.png
@@ -5479,13 +4463,13 @@ ${unzoomedScope}{zoom:${back}}`;
         watched.add(element2);
       }
     };
-    const targets = () => !selector ? [root2] : [...root2 instanceof Element && root2.matches(selector) ? [root2] : [], ...root2.querySelectorAll(selector)];
+    const targets2 = () => !selector ? [root2] : [...root2 instanceof Element && root2.matches(selector) ? [root2] : [], ...root2.querySelectorAll(selector)];
     const snap = () => {
       snapping = 0;
       if (disposed) return;
       watchAncestors();
       const dpr = window.devicePixelRatio || 1;
-      const spans = targets().flatMap((target) => [...target.querySelectorAll(".xp-text")]);
+      const spans = targets2().flatMap((target) => [...target.querySelectorAll(".xp-text")]);
       const moves = spans.map((span) => {
         const rects = span.getClientRects();
         if (!rects.length) return null;
@@ -5505,7 +4489,7 @@ ${unzoomedScope}{zoom:${back}}`;
       queued = false;
       if (disposed) return;
       const nodes = [];
-      for (const target of targets()) {
+      for (const target of targets2()) {
         const walker = document.createTreeWalker(target, NodeFilter.SHOW_TEXT);
         while (walker.nextNode()) nodes.push(walker.currentNode);
       }
@@ -5702,10 +4686,10 @@ ${xpButtonCss(".atelier-control", true)}
     const { theme: theme2, scheme } = readUiPreferences();
     return { scheme, dark: theme2 === "dark" || theme2 === "page" && pageIsDark(), dpr: window.devicePixelRatio || 1 };
   }
-  var started3 = false;
+  var started2 = false;
   function ensureAppearance() {
-    if (started3) return;
-    started3 = true;
+    if (started2) return;
+    started2 = true;
     const styles = ["atelier-appearance", "atelier-fonts", "atelier-controls"].map((id) => {
       const style = document.createElement("style");
       style.id = id;
@@ -5793,6 +4777,1300 @@ ${zoomCss(zoom)}` : "");
     update();
   }
 
+  // src/core/info-log.ts
+  var rootId = "bili-atelier-info-log";
+  var styleId = "bili-atelier-info-log-style";
+  var maxItems = 6;
+  function ensureInfoLogStyle() {
+    ensureAppearance();
+    if (document.getElementById(styleId)) {
+      return;
+    }
+    const style = document.createElement("style");
+    style.id = styleId;
+    setZoomedCss(style, `
+#${rootId} {
+  position: fixed;
+  top: 84px;
+  right: 24px;
+  z-index: 2147483640;
+  width: min(360px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  pointer-events: none;
+  font: var(--xp-font-size)/var(--xp-line) var(--xp-font);
+}
+#${rootId} .bili-atelier-info-log-item {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 180px;
+  padding: 5px 8px 6px 10px;
+  border: 1px solid var(--xp-ink);
+  border-left: 4px solid var(--xp-highlight);
+  background: var(--xp-info);
+  color: var(--xp-info-ink);
+  box-shadow: 2px 2px 2px #0005;
+  opacity: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+#${rootId} .bili-atelier-info-log-item.is-visible { opacity: 1; }
+#${rootId} .bili-atelier-info-log-item.is-leaving { display: none; }
+#${rootId} .bili-atelier-info-log-success { border-left-color: #3fb34f; }
+#${rootId} .bili-atelier-info-log-warning { border-left-color: #f7b500; }
+#${rootId} .bili-atelier-info-log-error { border-left-color: var(--xp-danger); }
+`);
+    (document.head || document.documentElement).appendChild(style);
+  }
+  function ensureInfoLogRoot() {
+    if (!document.body) {
+      return null;
+    }
+    ensureInfoLogStyle();
+    let root2 = document.getElementById(rootId);
+    if (!root2) {
+      root2 = document.createElement("div");
+      root2.id = rootId;
+      root2.setAttribute("data-bili-blocker-ui", "true");
+      root2.setAttribute("data-bili-atelier-ui", "info-log");
+      root2.setAttribute("role", "status");
+      root2.setAttribute("aria-live", "polite");
+      document.body.appendChild(root2);
+    }
+    return root2;
+  }
+  function showInfoLog(message, tone = "info", durationMs = 3600) {
+    const text4 = String(message || "").replace(/\s+/g, " ").trim();
+    if (!text4) {
+      return;
+    }
+    const root2 = ensureInfoLogRoot();
+    if (!root2) {
+      document.addEventListener("DOMContentLoaded", () => showInfoLog(text4, tone, durationMs), { once: true });
+      return;
+    }
+    const item = document.createElement("div");
+    item.className = `bili-atelier-info-log-item bili-atelier-info-log-${tone}`;
+    const label = item.appendChild(document.createElement("span"));
+    label.className = "xp-text";
+    label.textContent = text4;
+    root2.prepend(item);
+    item.style.maxHeight = `${Math.max(48, item.scrollHeight + 20)}px`;
+    window.requestAnimationFrame(() => item.classList.add("is-visible"));
+    while (root2.children.length > maxItems) {
+      root2.lastElementChild?.remove();
+    }
+    window.setTimeout(() => {
+      item.classList.add("is-leaving");
+      window.setTimeout(() => item.remove(), 320);
+    }, durationMs);
+  }
+
+  // src/ui/assets/xp-sounds/catalog.json
+  var catalog_default = {
+    schema: "bili-atelier-xp-sounds",
+    version: 1,
+    defaultVolume: 0.55,
+    source: {
+      imageName: "xp sp3 official.iso",
+      bytes: 630237184,
+      volume: "GRTMPVOL_CN"
+    },
+    categories: [
+      {
+        id: "navigation",
+        name: "\u5BFC\u822A\u4E0E\u7A97\u53E3",
+        sample: "xpstart",
+        defaultVolume: 1,
+        defaultEnabled: true
+      },
+      {
+        id: "controls",
+        name: "\u6309\u94AE\u4E0E\u9009\u62E9",
+        sample: "xpmenu",
+        defaultVolume: 1,
+        defaultEnabled: true
+      }
+    ],
+    cues: {
+      control: {
+        sound: "xpmenu",
+        category: "controls",
+        priority: 10
+      },
+      navigate: {
+        sound: "xpstart",
+        category: "navigation",
+        priority: 40
+      },
+      open: {
+        sound: "xprestor",
+        category: "navigation",
+        priority: 40
+      },
+      close: {
+        sound: "xpmin",
+        category: "navigation",
+        priority: 40
+      },
+      expand: {
+        sound: "xprestor",
+        category: "navigation",
+        priority: 40
+      },
+      collapse: {
+        sound: "xpmin",
+        category: "navigation",
+        priority: 40
+      }
+    },
+    sounds: [
+      {
+        id: "xpballn",
+        file: "xpballn.wav",
+        name: "Windows XP \u6C14\u7403",
+        previewOnly: true,
+        durationMs: 144,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -18.24,
+        rmsDbFS: -33.71,
+        gain: 0.81655,
+        bytes: 6400,
+        sha256: "c9de87a87b68dd754fa29f2989c240949ad9b1f0423d019ca68afcd86e107639",
+        source: "I386/XPBALLN.WA_",
+        compressedSha256: "1c8d7665108ad4af42bec4ef940d3dad949d4053d9418e63616284a2d1ad5ffb"
+      },
+      {
+        id: "xpbatcrt",
+        file: "xpbatcrt.wav",
+        name: "Windows XP \u7535\u6C60\u7535\u529B\u4E25\u91CD\u77ED\u7F3A",
+        previewOnly: true,
+        durationMs: 836,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -0.17,
+        rmsDbFS: -12.84,
+        gain: 0.10194,
+        bytes: 36910,
+        sha256: "cb02dd9f8b4d18aab9a5c51a26faac12e861dd362800a12292f243432a982325",
+        source: "I386/XPBATCRT.WA_",
+        compressedSha256: "aa2b39585f31ae73645fe7a5e3b986a2e44e0c4722712da9ee00daf32c6ffc3f"
+      },
+      {
+        id: "xpbatlow",
+        file: "xpbatlow.wav",
+        name: "Windows XP \u7535\u6C60\u4E0D\u8DB3",
+        previewOnly: true,
+        durationMs: 1220,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -1.31,
+        rmsDbFS: -16.43,
+        gain: 0.11624,
+        bytes: 53864,
+        sha256: "bd4a58b1e2b8e93bcf5b76df3e4a9f67ce0926107a5702ed6bac0e63466a22fd",
+        source: "I386/XPBATLOW.WA_",
+        compressedSha256: "f002dee050cb80f908c08eb7b713aa1c75096419537342533571781e4c1c4fdc"
+      },
+      {
+        id: "xpblkpop",
+        file: "xpblkpop.wav",
+        name: "Windows XP \u5F39\u51FA\u7A97\u53E3\u5DF2\u963B\u6B62",
+        previewOnly: true,
+        durationMs: 167,
+        channels: 2,
+        sampleRate: 44100,
+        bits: 16,
+        peakDbFS: -13.98,
+        rmsDbFS: -34.22,
+        gain: 0.50005,
+        bytes: 29444,
+        sha256: "df7cad111688dadb00469203dd7228df99e49e86ae7ba937e308d947cd9790f2",
+        source: "I386/XPBLKPOP.WA_",
+        compressedSha256: "baae17740810abd3d43d5c703ff801df8be3ebf63726a02d2c29f424ba55a0b0"
+      },
+      {
+        id: "xpcrtstp",
+        file: "xpcrtstp.wav",
+        name: "Windows XP \u5173\u952E\u6027\u7EC8\u6B62",
+        previewOnly: true,
+        durationMs: 892,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -3.2,
+        rmsDbFS: -16.48,
+        gain: 0.14448,
+        bytes: 39382,
+        sha256: "1b86a1b8b7b5925f9346b64115b0b92744a142b06b09f44263a57419bc2bb6e6",
+        source: "I386/XPCRTSTP.WA_",
+        compressedSha256: "8dff0499e501012337f14551e4350d017a2a88fa5f36b7ee84c7c6442cd62b8e"
+      },
+      {
+        id: "xpdef",
+        file: "xpdef.wav",
+        name: "Windows XP \u9ED8\u8BA4\u503C",
+        previewOnly: true,
+        durationMs: 555,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -9.77,
+        rmsDbFS: -27.31,
+        gain: 0.30791,
+        bytes: 24530,
+        sha256: "d0426433cb153f860f02320408a1922558742bc3d170eb47715192ff86a66a16",
+        source: "I386/XPDEF.WA_",
+        compressedSha256: "1d3258f9f2b9070370d49a069d3cf79ca5a89163063b84f479af7a0d641d3fa7"
+      },
+      {
+        id: "xpding",
+        file: "xpding.wav",
+        name: "Windows XP \u53EE\u5F53\u58F0",
+        previewOnly: true,
+        durationMs: 387,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -11.74,
+        rmsDbFS: -21.34,
+        gain: 0.38651,
+        bytes: 17132,
+        sha256: "20fc59d9f846bc32b899880fae0878208856718b75e6158526308b900af8a9bd",
+        source: "I386/XPDING.WA_",
+        compressedSha256: "3fa29e9bcb7f38b6dfc1aec0865270840ae69c9261ecc48eea4c5e81d0fdecd7"
+      },
+      {
+        id: "xperror",
+        file: "xperror.wav",
+        name: "Windows XP \u9519\u8BEF",
+        previewOnly: true,
+        durationMs: 1e3,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -6.98,
+        rmsDbFS: -23.56,
+        gain: 0.22343,
+        bytes: 44136,
+        sha256: "4b51ec1b1b14889bc2c2cdad8c80dafc974d78b9292c3ccb344e44e93383cac4",
+        source: "I386/XPERROR.WA_",
+        compressedSha256: "cb1b985cab19466befd27b5d9628165dda8a1cabbc880dc3c9bfec68a26ae8d1"
+      },
+      {
+        id: "xpexcl",
+        file: "xpexcl.wav",
+        name: "Windows XP \u60CA\u53F9\u53F7",
+        previewOnly: true,
+        durationMs: 964,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -16.42,
+        rmsDbFS: -32.09,
+        gain: 0.66185,
+        bytes: 42576,
+        sha256: "b57b8e8818c424452ca4fb8abb219ae01c0e31db2f955e1f85d9fcb5a0dabfbe",
+        source: "I386/XPEXCL.WA_",
+        compressedSha256: "0bc7bb68966af22cac6444392a3ea9956cb98177ef2648dbc8d025051118eea6"
+      },
+      {
+        id: "xphdfail",
+        file: "xphdfail.wav",
+        name: "Windows XP \u786C\u4EF6\u6545\u969C",
+        previewOnly: true,
+        durationMs: 829,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -12.98,
+        rmsDbFS: -25.32,
+        gain: 0.44558,
+        bytes: 36614,
+        sha256: "fe6e852ff646c0a896995632f76a3e390bea6163b40639c87bf45c1d8a7475c2",
+        source: "I386/XPHDFAIL.WA_",
+        compressedSha256: "7daa31c4f966dd10d85f992b6f601f9ec107a2f4d6c44539474ee3a6e6a97678"
+      },
+      {
+        id: "xphdinst",
+        file: "xphdinst.wav",
+        name: "Windows XP \u786C\u4EF6\u63D2\u5165",
+        previewOnly: true,
+        durationMs: 830,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -14.91,
+        rmsDbFS: -28.67,
+        gain: 0.55624,
+        bytes: 36636,
+        sha256: "a3e44db9179591a705baed6daa00efb988197c0698a9747980126d5939e9d506",
+        source: "I386/XPHDINST.WA_",
+        compressedSha256: "59692e7ac46240e9cf8b9ad16007bc837b4f05a9a81787cf79120ae855ab9d79"
+      },
+      {
+        id: "xphdrem",
+        file: "xphdrem.wav",
+        name: "Windows XP \u786C\u4EF6\u5220\u9664",
+        previewOnly: true,
+        durationMs: 828,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -15.55,
+        rmsDbFS: -28.3,
+        gain: 0.59938,
+        bytes: 36538,
+        sha256: "c4d09c6ad6a9090c4e611330a7501f7a84abc7c777c6e3d1915179f8d1ed45f3",
+        source: "I386/XPHDREM.WA_",
+        compressedSha256: "1af16d0041acfdc07c2268ed2186a6dd16c1e602c11e39e4ef17b27d9e7e57fb"
+      },
+      {
+        id: "xpinfbar",
+        file: "xpinfbar.wav",
+        name: "Windows XP \u4FE1\u606F\u680F",
+        previewOnly: true,
+        durationMs: 109,
+        channels: 2,
+        sampleRate: 44100,
+        bits: 16,
+        peakDbFS: -4.2,
+        rmsDbFS: -11.08,
+        gain: 0.16218,
+        bytes: 20336,
+        sha256: "b4dfbdfd8d6a102123a7966da358781bd32bb6d78e833514705cb7de76efa410",
+        source: "I386/XPINFBAR.WA_",
+        compressedSha256: "17ec22ddf2a76dd9b77a42271491228a905accbf0cd1028691fbc89d248b071e"
+      },
+      {
+        id: "xplogoff",
+        file: "xplogoff.wav",
+        name: "Windows XP \u6CE8\u9500\u97F3",
+        previewOnly: true,
+        durationMs: 2037,
+        channels: 2,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -10.39,
+        rmsDbFS: -27.7,
+        gain: 0.33066,
+        bytes: 179704,
+        sha256: "e0c0e5dea2550c8f235c0bb1584d9011a35ca23bc18597bf7ac6581efcd7b7aa",
+        source: "I386/XPLOGOFF.WA_",
+        compressedSha256: "47fbfa45e605ca3c84a13243267b02972c33f0ef879b31133412c2b528555f53"
+      },
+      {
+        id: "xplogon",
+        file: "xplogon.wav",
+        name: "Windows XP \u767B\u5F55\u97F3",
+        previewOnly: true,
+        durationMs: 2156,
+        channels: 2,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -10.04,
+        rmsDbFS: -27.67,
+        gain: 0.31758,
+        bytes: 190208,
+        sha256: "8d71fba4267fb3454030c7289079421a08fc3e773caa47107d832f855ae85396",
+        source: "I386/XPLOGON.WA_",
+        compressedSha256: "3e48b114a7a3956ced53f0a469a7d85717bd00b77522c335d85b77b3726e5f03"
+      },
+      {
+        id: "xpmenu",
+        file: "xpmenu.wav",
+        name: "Windows XP \u83DC\u5355\u547D\u4EE4",
+        previewOnly: false,
+        durationMs: 31,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -20.6,
+        rmsDbFS: -36.23,
+        gain: 1,
+        bytes: 1404,
+        sha256: "da4fc6f8917b97725e6de85bb45b574c7895ec46672e6eb439a462cfd9940ac7",
+        source: "I386/XPMENU.WA_",
+        compressedSha256: "2c73d31fdd47a2f456b64682f568ab6362a7ce8f6a6b6d38cc0ee8132b59d8f5"
+      },
+      {
+        id: "xpmin",
+        file: "xpmin.wav",
+        name: "Windows XP \u6700\u5C0F\u5316",
+        previewOnly: false,
+        durationMs: 511,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -24.38,
+        rmsDbFS: -37.4,
+        gain: 1,
+        bytes: 22580,
+        sha256: "974da6baee4187c37e514186b99691132988140cca95402589c6fdc1417e5926",
+        source: "I386/XPMIN.WA_",
+        compressedSha256: "37a5861aa70198e03c83ecdd5252e51d8a6be4cf13e241dda491e46bd4201de2"
+      },
+      {
+        id: "xpnotify",
+        file: "xpnotify.wav",
+        name: "Windows XP \u901A\u77E5",
+        previewOnly: true,
+        durationMs: 1110,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -18.71,
+        rmsDbFS: -36.89,
+        gain: 0.86164,
+        bytes: 48988,
+        sha256: "760cdd5685008255d6e188a8c528ebcb74daf806bb24a81c2a36086df6a95c76",
+        source: "I386/XPNOTIFY.WA_",
+        compressedSha256: "2f9684cd2952a85245a86b9d06973b13e7149ff6cf3ffafe82bcdce16a2dc1f3"
+      },
+      {
+        id: "xpprint",
+        file: "xpprint.wav",
+        name: "Windows XP \u6253\u5370\u7ED3\u675F",
+        previewOnly: true,
+        durationMs: 991,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -18.3,
+        rmsDbFS: -34.52,
+        gain: 0.82249,
+        bytes: 43762,
+        sha256: "e411c02471876c4d1075ec8fcd406e99ac7c9a5e0c6322ed579de50c8ca3b844",
+        source: "I386/XPPRINT.WA_",
+        compressedSha256: "324d91096b47c0f0fc35e65ab37e067ba403793b7eb211feb9a56288b119c763"
+      },
+      {
+        id: "xprecycl",
+        file: "xprecycl.wav",
+        name: "Windows XP \u56DE\u6536",
+        previewOnly: true,
+        durationMs: 516,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -17.06,
+        rmsDbFS: -38.1,
+        gain: 0.71312,
+        bytes: 22816,
+        sha256: "a8a7028f9fe989cdde61bf22b73f0ff23ae291dbf8e056bb09682a7487c49ad7",
+        source: "I386/XPRECYCL.WA_",
+        compressedSha256: "a2b79e1e62ec0b453982b30a38ad861838e7e09bc1498717466ca480abfe78e6"
+      },
+      {
+        id: "xprestor",
+        file: "xprestor.wav",
+        name: "Windows XP \u8FD8\u539F",
+        previewOnly: false,
+        durationMs: 440,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -24.36,
+        rmsDbFS: -37.68,
+        gain: 1,
+        bytes: 19458,
+        sha256: "480dea5b1808dd67c5a5946e7a47e8e582d5cb1c7fdce4b037140157da0ecadf",
+        source: "I386/XPRESTOR.WA_",
+        compressedSha256: "bf362bfb0c53d25d64075f046d9406da9b071c688f066c1c9edfc38174dd231e"
+      },
+      {
+        id: "xpringin",
+        file: "xpringin.wav",
+        name: "Windows XP \u7535\u8BDD\u62E8\u5165\u58F0",
+        previewOnly: true,
+        durationMs: 882,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -22.82,
+        rmsDbFS: -34.27,
+        gain: 1,
+        bytes: 38930,
+        sha256: "b2cd4e4a977606abb8c35b7d446d6c322ee4bda4c0c722ef240f0c51d7ddc713",
+        source: "I386/XPRINGIN.WA_",
+        compressedSha256: "4061db3507f25e2cefdd4b7bbf9f73042c45525c01f4bdb017e354bd43c552da"
+      },
+      {
+        id: "xprngout",
+        file: "xprngout.wav",
+        name: "Windows XP \u7535\u8BDD\u62E8\u51FA\u58F0",
+        previewOnly: true,
+        durationMs: 499,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -20.25,
+        rmsDbFS: -26.76,
+        gain: 1,
+        bytes: 22070,
+        sha256: "d994081372c2794642da68212d49c6a64263f88a9fde5cc96583b43574c26bb0",
+        source: "I386/XPRNGOUT.WA_",
+        compressedSha256: "32da90bd18459eb03356f9e977df35e9440e52b5baf3df727e343c666c75e8a8"
+      },
+      {
+        id: "xpshutdn",
+        file: "xpshutdn.wav",
+        name: "Windows XP \u5173\u673A",
+        previewOnly: true,
+        durationMs: 3204,
+        channels: 2,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -5.08,
+        rmsDbFS: -21.12,
+        gain: 0.17957,
+        bytes: 282608,
+        sha256: "3d937337075a647950f6aa557bca23dea6e17cf6d14814ca7dbc55b827678a0b",
+        source: "I386/XPSHUTDN.WA_",
+        compressedSha256: "dbd8c3522091971481245e330803b9dca3ad96f17ef289ef781e84fc4770d8c2"
+      },
+      {
+        id: "xpstart",
+        file: "xpstart.wav",
+        name: "Windows XP \u5F00\u59CB",
+        previewOnly: false,
+        durationMs: 49,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -19.66,
+        rmsDbFS: -36.72,
+        gain: 0.96122,
+        bytes: 2202,
+        sha256: "d5712a8963eb3e1e181b25649ecff3080ede89c96350eb07e7d7cad429e959ea",
+        source: "I386/XPSTART.WA_",
+        compressedSha256: "501e2d3dd60d27514d2cf4e0349a360e5b09ce149427e8c9642dd665dc9add18"
+      },
+      {
+        id: "xpstartu",
+        file: "xpstartu.wav",
+        name: "Windows XP \u542F\u52A8",
+        previewOnly: true,
+        durationMs: 4814,
+        channels: 2,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -5.32,
+        rmsDbFS: -20.9,
+        gain: 0.18453,
+        bytes: 424644,
+        sha256: "8f859ebb90247036ced11db854848abe1434dc3ffdfa5795f7c5f06db9a423d5",
+        source: "I386/XPSTARTU.WA_",
+        compressedSha256: "2e19628930cbe38457bd186747793f5cb29c6e360206303c219bdce514032559"
+      }
+    ]
+  };
+
+  // src/ui/assets/xp-sounds/xpballn.wav
+  var xpballn_default = readCachedResourceUrl("atelier_xpballn_wav");
+
+  // src/ui/assets/xp-sounds/xpbatcrt.wav
+  var xpbatcrt_default = readCachedResourceUrl("atelier_xpbatcrt_wav");
+
+  // src/ui/assets/xp-sounds/xpbatlow.wav
+  var xpbatlow_default = readCachedResourceUrl("atelier_xpbatlow_wav");
+
+  // src/ui/assets/xp-sounds/xpblkpop.wav
+  var xpblkpop_default = readCachedResourceUrl("atelier_xpblkpop_wav");
+
+  // src/ui/assets/xp-sounds/xpcrtstp.wav
+  var xpcrtstp_default = readCachedResourceUrl("atelier_xpcrtstp_wav");
+
+  // src/ui/assets/xp-sounds/xpdef.wav
+  var xpdef_default = readCachedResourceUrl("atelier_xpdef_wav");
+
+  // src/ui/assets/xp-sounds/xpding.wav
+  var xpding_default = readCachedResourceUrl("atelier_xpding_wav");
+
+  // src/ui/assets/xp-sounds/xperror.wav
+  var xperror_default = readCachedResourceUrl("atelier_xperror_wav");
+
+  // src/ui/assets/xp-sounds/xpexcl.wav
+  var xpexcl_default = readCachedResourceUrl("atelier_xpexcl_wav");
+
+  // src/ui/assets/xp-sounds/xphdfail.wav
+  var xphdfail_default = readCachedResourceUrl("atelier_xphdfail_wav");
+
+  // src/ui/assets/xp-sounds/xphdinst.wav
+  var xphdinst_default = readCachedResourceUrl("atelier_xphdinst_wav");
+
+  // src/ui/assets/xp-sounds/xphdrem.wav
+  var xphdrem_default = readCachedResourceUrl("atelier_xphdrem_wav");
+
+  // src/ui/assets/xp-sounds/xpinfbar.wav
+  var xpinfbar_default = readCachedResourceUrl("atelier_xpinfbar_wav");
+
+  // src/ui/assets/xp-sounds/xplogoff.wav
+  var xplogoff_default = readCachedResourceUrl("atelier_xplogoff_wav");
+
+  // src/ui/assets/xp-sounds/xplogon.wav
+  var xplogon_default = readCachedResourceUrl("atelier_xplogon_wav");
+
+  // src/ui/assets/xp-sounds/xpmenu.wav
+  var xpmenu_default = readCachedResourceUrl("atelier_xpmenu_wav");
+
+  // src/ui/assets/xp-sounds/xpmin.wav
+  var xpmin_default = readCachedResourceUrl("atelier_xpmin_wav");
+
+  // src/ui/assets/xp-sounds/xpnotify.wav
+  var xpnotify_default = readCachedResourceUrl("atelier_xpnotify_wav");
+
+  // src/ui/assets/xp-sounds/xpprint.wav
+  var xpprint_default = readCachedResourceUrl("atelier_xpprint_wav");
+
+  // src/ui/assets/xp-sounds/xprecycl.wav
+  var xprecycl_default = readCachedResourceUrl("atelier_xprecycl_wav");
+
+  // src/ui/assets/xp-sounds/xprestor.wav
+  var xprestor_default = readCachedResourceUrl("atelier_xprestor_wav");
+
+  // src/ui/assets/xp-sounds/xpringin.wav
+  var xpringin_default = readCachedResourceUrl("atelier_xpringin_wav");
+
+  // src/ui/assets/xp-sounds/xprngout.wav
+  var xprngout_default = readCachedResourceUrl("atelier_xprngout_wav");
+
+  // src/ui/assets/xp-sounds/xpshutdn.wav
+  var xpshutdn_default = readCachedResourceUrl("atelier_xpshutdn_wav");
+
+  // src/ui/assets/xp-sounds/xpstart.wav
+  var xpstart_default = readCachedResourceUrl("atelier_xpstart_wav");
+
+  // src/ui/assets/xp-sounds/xpstartu.wav
+  var xpstartu_default = readCachedResourceUrl("atelier_xpstartu_wav");
+
+  // src/modules/sounds/assets.ts
+  var soundSources = { xpballn: xpballn_default, xpbatcrt: xpbatcrt_default, xpbatlow: xpbatlow_default, xpblkpop: xpblkpop_default, xpcrtstp: xpcrtstp_default, xpdef: xpdef_default, xpding: xpding_default, xperror: xperror_default, xpexcl: xpexcl_default, xphdfail: xphdfail_default, xphdinst: xphdinst_default, xphdrem: xphdrem_default, xpinfbar: xpinfbar_default, xplogoff: xplogoff_default, xplogon: xplogon_default, xpmenu: xpmenu_default, xpmin: xpmin_default, xpnotify: xpnotify_default, xpprint: xpprint_default, xprecycl: xprecycl_default, xprestor: xprestor_default, xpringin: xpringin_default, xprngout: xprngout_default, xpshutdn: xpshutdn_default, xpstart: xpstart_default, xpstartu: xpstartu_default };
+
+  // src/modules/sounds/engine.ts
+  var soundCategories = ["navigation", "controls"];
+  var volume = (value2, fallback2) => typeof value2 === "number" && Number.isFinite(value2) ? Math.max(0, Math.min(1, value2)) : fallback2;
+  function normalizeSoundPreferences(raw) {
+    const value2 = raw;
+    return {
+      enabled: typeof value2?.enabled === "boolean" ? value2.enabled : true,
+      volume: volume(value2?.volume, 0.55),
+      categories: Object.fromEntries(soundCategories.map((category) => [category, {
+        enabled: typeof value2?.categories?.[category]?.enabled === "boolean" ? value2.categories[category].enabled : true,
+        volume: volume(value2?.categories?.[category]?.volume, 1)
+      }]))
+    };
+  }
+  var SoundEngine = class {
+    constructor(transport2, preferences, allowed, now, defer) {
+      this.transport = transport2;
+      this.preferences = preferences;
+      this.allowed = allowed;
+      this.now = now;
+      this.defer = defer;
+      this.scheduled = false;
+      this.lastId = "";
+      this.lastAt = -Infinity;
+    }
+    request(request2, action, valid = () => true) {
+      if (!soundCategories.includes(request2.category)) return;
+      if (!valid() || !this.allowed() || request2.asset.previewOnly && !request2.preview) return;
+      if (!this.pending || this.pending.action !== action || request2.priority >= this.pending.request.priority) this.pending = { request: request2, action, valid };
+      if (!this.scheduled) {
+        this.scheduled = true;
+        this.defer(() => this.flush());
+      }
+    }
+    stop() {
+      this.pending = void 0;
+      this.transport.stop();
+    }
+    flush() {
+      this.scheduled = false;
+      const pending3 = this.pending;
+      this.pending = void 0;
+      if (!pending3 || !pending3.valid() || !this.allowed()) return;
+      const { request: request2 } = pending3, prefs = this.preferences(), category = prefs.categories[request2.category];
+      if (!prefs.enabled || !category.enabled) return;
+      const gain = prefs.volume * category.volume * request2.asset.gain;
+      if (!(gain > 0) || !this.transport.ready(request2.asset.id)) return;
+      const now = this.now();
+      if (!request2.preview && now - this.lastAt < (this.lastId === request2.asset.id ? 180 : 55)) return;
+      if (this.transport.playing()) this.transport.stop();
+      if (this.transport.play(request2.asset.id, gain)) {
+        this.lastAt = now;
+        this.lastId = request2.asset.id;
+      }
+    }
+  };
+  var soundMediaPrefix = "AtelierSounds_media_";
+  var soundMediaLeaseMs = 15e4;
+  function activeMediaHeartbeat(raw, now) {
+    const value2 = raw;
+    return value2?.version === 1 && value2.playing === true && typeof value2.at === "number" && Number.isFinite(value2.at) && value2.at <= now + 5e3 && now - value2.at <= soundMediaLeaseMs;
+  }
+
+  // src/modules/sounds/media.ts
+  var pulseKey = "AtelierSounds_mediaPulse";
+  function startSoundMediaMonitor(changed) {
+    const key6 = soundMediaPrefix + crypto.randomUUID();
+    const media2 = /* @__PURE__ */ new Set(), roots2 = /* @__PURE__ */ new WeakSet(), frames = /* @__PURE__ */ new WeakSet();
+    let suspended = false, playing = false, published = false;
+    const events = new AbortController();
+    const observer = new MutationObserver((records2) => {
+      for (const record of records2) for (const node4 of record.addedNodes) if (node4.nodeType === 1) discover(node4);
+      update();
+    });
+    function signal() {
+      GM_setValue(pulseKey, crypto.randomUUID());
+    }
+    function publish(force = false) {
+      if (playing && !suspended) {
+        if (force || !published) {
+          GM_setValue(key6, { version: 1, at: Date.now(), playing: true });
+          signal();
+        }
+        published = true;
+      } else if (published) {
+        GM_deleteValue(key6);
+        published = false;
+        signal();
+      }
+    }
+    function track(node4) {
+      if (media2.has(node4)) return;
+      media2.add(node4);
+      for (const name of ["play", "playing", "pause", "ended", "emptied", "abort"]) node4.addEventListener(name, update, { signal: events.signal });
+    }
+    function discover(root2) {
+      if (root2 instanceof HTMLMediaElement) track(root2);
+      if (root2.shadowRoot) watch(root2.shadowRoot);
+      for (const node4 of root2.querySelectorAll("video,audio")) track(node4);
+      for (const node4 of root2.querySelectorAll("*")) if (node4.shadowRoot) watch(node4.shadowRoot);
+      const foundFrames = [...root2.querySelectorAll("iframe")];
+      if (root2.tagName === "IFRAME") foundFrames.unshift(root2);
+      for (const frame2 of foundFrames) {
+        const read3 = () => {
+          try {
+            if (frame2.contentDocument) watch(frame2.contentDocument);
+          } catch {
+          }
+        };
+        if (!frames.has(frame2)) {
+          frames.add(frame2);
+          frame2.addEventListener("load", read3, { signal: events.signal });
+        }
+        read3();
+      }
+    }
+    function watch(root2) {
+      if (roots2.has(root2)) return;
+      roots2.add(root2);
+      observer.observe(root2, { childList: true, subtree: true });
+      root2.addEventListener("play", (event) => {
+        const target = event.target;
+        if (target && (target.tagName === "VIDEO" || target.tagName === "AUDIO" || target instanceof HTMLMediaElement)) track(target);
+        update();
+      }, { capture: true, signal: events.signal });
+      discover(root2);
+    }
+    function update() {
+      let next = false;
+      for (const node4 of media2) {
+        let connected = node4.isConnected;
+        try {
+          const frame2 = node4.ownerDocument.defaultView?.frameElement;
+          if (frame2 && !frame2.isConnected) connected = false;
+        } catch {
+        }
+        if (!connected) {
+          media2.delete(node4);
+          continue;
+        }
+        if (!node4.paused && !node4.ended) next = true;
+      }
+      const was = playing;
+      playing = next;
+      publish();
+      if (was !== next) changed();
+    }
+    function blocked() {
+      if (!suspended) update();
+      if (playing && !suspended) return true;
+      const now = Date.now();
+      for (const other of GM_listValues()) {
+        if (!other.startsWith(soundMediaPrefix) || other === key6) continue;
+        if (activeMediaHeartbeat(GM_getValue(other), now)) return true;
+      }
+      return false;
+    }
+    watch(document);
+    update();
+    const heartbeat = window.setInterval(() => {
+      if (!suspended) {
+        discover(document);
+        update();
+        publish(true);
+      }
+    }, 1e4);
+    if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(pulseKey, (_, __, ___, remote) => {
+      if (remote) changed();
+    });
+    window.addEventListener("pagehide", () => {
+      suspended = true;
+      publish();
+      changed();
+    }, { signal: events.signal });
+    window.addEventListener("pageshow", () => {
+      suspended = false;
+      discover(document);
+      update();
+      publish(true);
+    }, { signal: events.signal });
+    for (const old of GM_listValues()) if (old.startsWith(soundMediaPrefix) && !activeMediaHeartbeat(GM_getValue(old), Date.now())) GM_deleteValue(old);
+    return { blocked, dispose() {
+      suspended = true;
+      publish();
+      events.abort();
+      observer.disconnect();
+      window.clearInterval(heartbeat);
+    } };
+  }
+
+  // src/modules/sounds/service.ts
+  var aliases = { folder: "navigate", open: "open", close: "close", minimize: "collapse", maximize: "expand", restore: "expand", menu: "control", select: "control", click: "control", start: "control", cancel: "control" };
+  var preferenceKey = "AtelierSounds_preferences";
+  var soundPreferencesChanged = "atelier-sound-preferences-changed";
+  var clips = new Map(catalog_default.sounds.map((asset) => [asset.id, asset]));
+  var WebAudioTransport = class {
+    constructor() {
+      this.buffers = /* @__PURE__ */ new Map();
+      this.loading = /* @__PURE__ */ new Set();
+      this.failures = /* @__PURE__ */ new Map();
+      this.supported = typeof window.AudioContext === "function";
+    }
+    /** Decodes every clip not decoded or on its way. A bad clip disables that
+     * clip only; it is never replaced by a download. */
+    prepare(decoder) {
+      for (const [id, source] of Object.entries(soundSources)) {
+        if (this.buffers.has(id) || this.loading.has(id)) continue;
+        const scheme = /^(blob|data):/.exec(source)?.[1] ?? "";
+        const fail = (stage) => (error) => {
+          this.loading.delete(id);
+          const { name, message } = error ?? {};
+          const text4 = typeof message === "string" ? typeof name === "string" && name !== "Error" ? `${name}: ${message}` : message : String(error);
+          this.failures.set(id, { stage, scheme, message: text4 });
+        };
+        const decode2 = (bytes) => decoder.decodeAudioData(bytes).then((buffer) => {
+          this.loading.delete(id);
+          this.failures.delete(id);
+          this.buffers.set(id, buffer);
+        }, fail("\u89E3\u7801"));
+        this.loading.add(id);
+        try {
+          if (scheme === "blob") {
+            void fetch(source).then((response) => {
+              if (!response.ok) throw new Error(`HTTP ${response.status}`);
+              return response.arrayBuffer();
+            }).then(decode2, fail("\u8BFB\u53D6"));
+          } else if (scheme === "data") {
+            const binary = atob(source.slice(source.indexOf(",") + 1));
+            void decode2(Uint8Array.from(binary, (character) => character.charCodeAt(0)).buffer);
+          } else fail("\u8BFB\u53D6")(new Error("Tampermonkey \u6CA1\u6709\u7ED9\u51FA\u8FD9\u4E2A\u8D44\u6E90"));
+        } catch (error) {
+          fail("\u8BFB\u53D6")(error);
+        }
+      }
+    }
+    preload() {
+      try {
+        if (typeof window.OfflineAudioContext === "function") this.prepare(new OfflineAudioContext(1, 1, 44100));
+      } catch {
+      }
+    }
+    unlock() {
+      if (!this.supported) return;
+      try {
+        if (!this.context) {
+          this.context = new AudioContext();
+          this.prepare(this.context);
+        }
+        if (this.context.state !== "running") void this.context.resume().catch(() => {
+        });
+      } catch {
+        this.supported = false;
+      }
+    }
+    clips() {
+      return { total: Object.keys(soundSources).length, loaded: this.buffers.size, loading: this.loading.size, failure: [...this.failures.values()][0] };
+    }
+    available() {
+      return this.supported;
+    }
+    unlocked() {
+      return this.context?.state === "running";
+    }
+    ready(id) {
+      return this.unlocked() && this.buffers.has(id);
+    }
+    playing() {
+      return !!this.source;
+    }
+    play(id, gain) {
+      if (!this.ready(id)) return false;
+      try {
+        const source = this.context.createBufferSource(), volume2 = this.context.createGain();
+        source.buffer = this.buffers.get(id);
+        volume2.gain.value = gain;
+        source.connect(volume2);
+        volume2.connect(this.context.destination);
+        this.source = source;
+        source.onended = () => {
+          source.disconnect();
+          volume2.disconnect();
+          if (this.source === source) this.source = void 0;
+        };
+        source.start();
+        return true;
+      } catch {
+        this.source = void 0;
+        return false;
+      }
+    }
+    stop() {
+      const source = this.source;
+      this.source = void 0;
+      if (source) try {
+        source.stop();
+      } catch {
+      }
+    }
+  };
+  var engine;
+  var transport;
+  var monitor;
+  var gesture = 0;
+  var sequence = 0;
+  var foregroundEpoch = 0;
+  var started3 = false;
+  var previewPlaying = false;
+  var foreground = () => window.top === window.self && !document.hidden && document.hasFocus();
+  var readSoundPreferences = () => normalizeSoundPreferences(typeof GM_getValue === "function" ? GM_getValue(preferenceKey, null) : null);
+  function writeSoundPreferences(value2) {
+    GM_setValue(preferenceKey, normalizeSoundPreferences(value2));
+    engine?.stop();
+    window.dispatchEvent(new Event(soundPreferencesChanged));
+  }
+  function request(cue) {
+    const alias = aliases[cue];
+    if (!alias) return;
+    const value2 = catalog_default.cues[alias];
+    return { asset: clips.get(value2.sound), category: value2.category, priority: value2.priority };
+  }
+  function enqueue(cue, action, valid) {
+    if (!action) return;
+    try {
+      const mapped = request(cue);
+      if (!mapped) return;
+      if (previewPlaying) {
+        engine?.stop();
+        previewPlaying = false;
+      }
+      engine?.request(mapped, action, valid);
+    } catch {
+    }
+  }
+  function sound(cue) {
+    try {
+      enqueue(cue, gesture);
+    } catch {
+    }
+  }
+  function soundTask(startCue, owner2) {
+    const action = gesture, epoch = foregroundEpoch;
+    let finished = false;
+    const valid = () => epoch === foregroundEpoch && (!owner2 || (typeof owner2 === "function" ? owner2() : owner2.isConnected && !owner2.hidden));
+    if (startCue) enqueue(startCue, action, valid);
+    return {
+      finish(cue) {
+        if (finished) return;
+        finished = true;
+        if (["folder", "open", "close", "minimize", "maximize", "restore", "cancel"].includes(cue)) enqueue(cue, action, valid);
+      },
+      cancel() {
+        finished = true;
+      }
+    };
+  }
+  function previewSound(id, category) {
+    const asset = clips.get(id);
+    if (!asset || !gesture) return;
+    previewPlaying = true;
+    engine?.request({ asset, category, priority: 100, preview: true }, gesture);
+  }
+  function stopSoundPreview() {
+    if (previewPlaying) {
+      engine?.stop();
+      previewPlaying = false;
+    }
+  }
+  function soundPlaybackStatus() {
+    const prefs = readSoundPreferences();
+    if (!prefs.enabled) return "\u97F3\u6548\u5DF2\u5173\u95ED";
+    if (prefs.volume === 0) return "\u603B\u97F3\u91CF\u4E3A\u96F6";
+    if (transport && !transport.available()) return "\u5F53\u524D\u6D4F\u89C8\u5668\u65E0\u6CD5\u4F7F\u7528 Web Audio";
+    const clips2 = transport?.clips();
+    if (clips2 && !clips2.loading && clips2.failure) {
+      const { stage, scheme, message } = clips2.failure;
+      return `\u58F0\u97F3\u6CA1\u6709\u8F7D\u5165\uFF08${clips2.loaded}/${clips2.total}\uFF09\uFF1A${scheme ? `${scheme}: \u5730\u5740${stage}\u5931\u8D25` : "\u6CA1\u6709\u62FF\u5230\u8D44\u6E90\u5730\u5740"}\uFF08${message}\uFF09`;
+    }
+    if (monitor?.blocked()) return "\u68C0\u6D4B\u5230\u5A92\u4F53\u64AD\u653E\uFF0C\u97F3\u6548\u6682\u65F6\u5B89\u9759";
+    if (!foreground()) return "\u53EA\u5728\u5F53\u524D\u524D\u53F0\u7A97\u53E3\u64AD\u653E";
+    if (!transport?.unlocked()) return "\u9996\u6B21\u70B9\u51FB\u540E\u53EF\u64AD\u653E\uFF1B\u6D4F\u89C8\u5668\u963B\u6B62\u7684\u58F0\u97F3\u4E0D\u4F1A\u8865\u64AD";
+    if (clips2?.loading) return `\u58F0\u97F3\u8F7D\u5165\u4E2D\uFF08${clips2.loaded}/${clips2.total}\uFF09`;
+    return `\u5DF2\u5C31\u7EEA \xB7 ${clips2?.loaded ?? 0}/${clips2?.total ?? 0} \u4E2A\u58F0\u97F3\u5DF2\u8F7D\u5165 \xB7 \u8BD5\u542C\u4E5F\u9075\u5B88\u97F3\u91CF\u3001\u5206\u7C7B\u5F00\u5173\u548C\u5A92\u4F53\u907F\u8BA9`;
+  }
+  function startSounds() {
+    if (started3) return;
+    started3 = true;
+    try {
+      transport = new WebAudioTransport();
+      transport.preload();
+      monitor = startSoundMediaMonitor(() => {
+        if (monitor?.blocked()) engine?.stop();
+      });
+      engine = new SoundEngine(transport, readSoundPreferences, () => foreground() && !monitor.blocked(), Date.now, (run) => {
+        window.setTimeout(() => {
+          try {
+            run();
+          } catch {
+            transport?.stop();
+          }
+        }, 0);
+      });
+      const activate = (event) => {
+        if (!event.isTrusted || !foreground()) return;
+        transport.unlock();
+        const current4 = gesture = ++sequence;
+        window.setTimeout(() => {
+          if (gesture === current4) gesture = 0;
+        }, 0);
+      };
+      for (const name of ["pointerdown", "click", "keydown", "change", "submit"]) document.addEventListener(name, activate, true);
+      const leave = () => {
+        foregroundEpoch++;
+        gesture = 0;
+        engine?.stop();
+      };
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) leave();
+      });
+      window.addEventListener("pagehide", leave);
+      window.addEventListener("blur", () => {
+        window.setTimeout(() => {
+          if (!document.hasFocus()) leave();
+        }, 0);
+      });
+      if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(preferenceKey, (_, __, ___, remote) => {
+        if (remote) {
+          engine?.stop();
+          window.dispatchEvent(new Event(soundPreferencesChanged));
+        }
+      });
+    } catch {
+      transport?.stop();
+    }
+  }
+
+  // src/modules/sync/keys.ts
+  var viewedKey = (id) => `v:${id}`;
+  var uidKey = (uid) => `u:${String(uid).trim()}`;
+  var nameKey = (name) => `n:${String(name).trim().toLowerCase()}`;
+  function validKey(key6) {
+    const value2 = key6.slice(2);
+    if (key6.startsWith("v:")) return isViewedId(value2);
+    if (key6.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
+    return key6.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
+  }
+  var sameKeys = (a, b) => a.size === b.size && [...a].every((key6) => b.has(key6));
+
+  // src/modules/viewed/storage.ts
+  function groupViewedItems(values) {
+    const groups = {};
+    const seen = /* @__PURE__ */ new Set();
+    for (const value2 of values) {
+      const id = parseStoredViewedId(value2);
+      if (!id || seen.has(id)) {
+        continue;
+      }
+      seen.add(id);
+      const groupId = viewedGroup(id);
+      if (!groups[groupId]) {
+        groups[groupId] = [];
+      }
+      groups[groupId].push(id);
+    }
+    return groups;
+  }
+  function flattenViewedGroups(groups) {
+    const items = [];
+    const seen = /* @__PURE__ */ new Set();
+    for (const value2 of Object.values(groups)) {
+      if (!Array.isArray(value2)) {
+        continue;
+      }
+      for (const item of value2) {
+        const id = parseStoredViewedId(item);
+        if (!id || seen.has(id)) {
+          continue;
+        }
+        seen.add(id);
+        items.push(id);
+      }
+    }
+    return items;
+  }
+  function viewedGroupStorageKey(groupId) {
+    return `BiliViewed_${groupId}`;
+  }
+  function listViewedGroupKeys() {
+    if (typeof GM_listValues !== "function") {
+      return [];
+    }
+    return GM_listValues().filter((key6) => String(key6).startsWith("BiliViewed_"));
+  }
+  function readViewedGroup(groupId, fallback2 = null) {
+    return GM_getValue(viewedGroupStorageKey(groupId), fallback2);
+  }
+  var journal;
+  var keysOf = (values) => new Set((Array.isArray(values) ? values : []).map(String).filter(isViewedId).map(viewedKey));
+  function writeViewedGroup(groupId, values) {
+    journal?.(keysOf(readViewedGroup(groupId, [])), keysOf(values));
+    GM_setValue(viewedGroupStorageKey(groupId), values);
+  }
+  function putGroups(groups, mode2) {
+    if (mode2 === "overwrite") for (const key6 of listViewedGroupKeys()) GM_deleteValue(key6);
+    for (const [groupId, values] of Object.entries(groups)) GM_setValue(viewedGroupStorageKey(groupId), values);
+  }
+  function readViewedStorage() {
+    const groups = {};
+    for (const key6 of listViewedGroupKeys()) {
+      const groupId = String(key6).slice("BiliViewed_".length);
+      groups[groupId] = flattenViewedGroups({ [groupId]: readViewedGroup(groupId, []) });
+    }
+    return { items: flattenViewedGroups(groups), groups };
+  }
+  function writeViewedStorage(snapshot, mode2) {
+    const incomingItems = snapshot.items?.length ? snapshot.items : snapshot.groups ? flattenViewedGroups(snapshot.groups) : [];
+    const currentItems = mode2 === "append" ? readViewedStorage().items : [];
+    const groups = groupViewedItems(currentItems.concat(incomingItems));
+    journal?.(keysOf(readViewedStorage().items), keysOf(flattenViewedGroups(groups)));
+    putGroups(groups, mode2);
+    return { items: flattenViewedGroups(groups), groups };
+  }
+  var viewedSyncStore = {
+    keys: () => keysOf(readViewedStorage().items),
+    applySync(desired) {
+      const wanted = new Set([...desired].filter((key6) => key6.startsWith("v:")));
+      if (sameKeys(wanted, viewedSyncStore.keys())) return false;
+      const unsyncable = readViewedStorage().items.filter((id) => !isViewedId(id));
+      putGroups(groupViewedItems([...unsyncable, ...[...wanted].map((key6) => key6.slice(2))]), "overwrite");
+      return true;
+    },
+    setJournal(next) {
+      journal = next;
+    }
+  };
+  function isLegacyViewedExport(value2) {
+    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key6) => key6.startsWith("BiliViewed_"));
+  }
+  function normalizeLegacyViewedExport(value2) {
+    const groups = {};
+    for (const [key6, items] of Object.entries(value2)) {
+      if (!key6.startsWith("BiliViewed_") || !Array.isArray(items)) {
+        continue;
+      }
+      const groupId = key6.slice("BiliViewed_".length);
+      groups[groupId] = flattenViewedGroups({ [groupId]: items });
+    }
+    return { items: flattenViewedGroups(groups), groups };
+  }
+
+  // src/modules/viewed/marks.ts
+  var viewedMarksChanged = "atelier-viewed-marks-changed";
+  var groupOf = (id) => isViewedId(id) ? viewedGroup(id) : "";
+  function viewedLookup() {
+    const groups = /* @__PURE__ */ new Map();
+    return (id) => {
+      const group = groupOf(id);
+      if (!group) return false;
+      let set = groups.get(group);
+      if (!set) {
+        const values = readViewedGroup(group, []);
+        set = new Set(Array.isArray(values) ? values.map(String) : []);
+        groups.set(group, set);
+      }
+      return set.has(id);
+    };
+  }
+  var isViewedVideo = (id) => viewedLookup()(id);
+  function setViewedVideo(id, viewed2) {
+    const group = groupOf(id);
+    if (!group) return false;
+    const stored = readViewedGroup(group, null), values = Array.isArray(stored) ? stored.map(String) : [];
+    const present = values.includes(id);
+    if (present === viewed2) return false;
+    writeViewedGroup(group, viewed2 ? [id, ...values] : values.filter((value2) => value2 !== id));
+    window.dispatchEvent(new CustomEvent(viewedMarksChanged, { detail: { id, viewed: viewed2 } }));
+    return true;
+  }
+  function toggleViewedVideo(id) {
+    const viewed2 = !isViewedVideo(id), changed = setViewedVideo(id, viewed2);
+    showInfoLog((viewed2 ? "\u5DF2\u6807\u8BB0\u5DF2\u770B\uFF1A" : "\u5DF2\u6807\u8BB0\u672A\u770B\uFF1A") + id, "success");
+    sound("click");
+    return viewed2;
+  }
+
+  // src/ui/atelier-dom.ts
+  function element(tag, className = "", text4 = "") {
+    const node4 = document.createElement(tag);
+    node4.className = className;
+    node4.textContent = text4;
+    return node4;
+  }
+  function icon(src, size = 28) {
+    const image6 = element("img");
+    image6.src = src;
+    image6.alt = "";
+    image6.width = image6.height = size;
+    return image6;
+  }
+  function button(text4, action, className = "luna-button") {
+    const node4 = element("button", className, text4);
+    node4.type = "button";
+    node4.addEventListener("click", () => {
+      sound("click");
+      action();
+    });
+    return node4;
+  }
+  function downloadJson(value2, fileName2) {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(value2, null, 2)], { type: "application/json;charset=utf-8" }));
+    const link3 = element("a");
+    link3.href = url;
+    link3.download = fileName2;
+    document.body.appendChild(link3);
+    link3.click();
+    link3.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1e3);
+  }
+
   // src/ui/luna-theme.ts
   var atelierPanelId = "bili-atelier-blocker-panel";
   function ensureLunaTheme() {
@@ -5802,6 +6080,11 @@ ${zoomCss(zoom)}` : "");
     style.id = "bili-atelier-luna-style";
     const id = `#${atelierPanelId}`;
     setZoomedCss(style, `
+.vl-menu-host{position:fixed;inset:0 auto auto 0;z-index:2147483646}
+.vl-menu{position:fixed;min-width:180px;${xpFont}}
+.vl-menu .xp-menu-item{padding-left:2px}
+.vl-menu-check{flex:none;width:16px;text-align:center}
+.vl-menu-default{font-weight:bold}
 ${id}{position:fixed;z-index:2147483600;inset:32px 0 auto;margin:auto;width:min(1000px,calc(100vw - 48px));height:min(720px,calc(100vh - 64px));isolation:isolate;${xpFont};color:var(--xp-ink);text-align:left;letter-spacing:normal;text-transform:none;white-space:normal}
 ${id},${id} *{box-sizing:border-box}${id} [hidden]{display:none!important}
 ${id} :is(h1,h2,h3,p){margin:0;padding:0;color:inherit;font:inherit}${id} :is(h2,h3){font-weight:bold}
@@ -5877,6 +6160,140 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
 `);
     (document.head || document.documentElement).appendChild(style);
   }
+
+  // src/ui/context-menu.ts
+  var clearMenuEvents;
+  var openMenuHost = null;
+  var openMenuAnchor = null;
+  function closeMenu() {
+    clearMenuEvents?.();
+    clearMenuEvents = void 0;
+    openMenuHost?.remove();
+    openMenuHost = null;
+    openMenuAnchor?.removeAttribute("data-menu-open");
+    openMenuAnchor?.setAttribute("aria-expanded", "false");
+    openMenuAnchor = null;
+  }
+  function swallowClick(target) {
+    const swallow = (event) => {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      done();
+    };
+    const done = () => {
+      target.removeEventListener("click", swallow, true);
+      window.clearTimeout(timer2);
+    };
+    target.addEventListener("click", swallow, true);
+    const timer2 = window.setTimeout(done, 600);
+  }
+  function openMenu(items, at) {
+    closeMenu();
+    ensureLunaTheme();
+    const anchor = at instanceof HTMLElement ? at : null;
+    if (anchor) {
+      openMenuAnchor = anchor;
+      anchor.setAttribute("data-menu-open", "");
+      anchor.setAttribute("aria-expanded", "true");
+    }
+    const host = element("div", "vl-menu-host");
+    host.setAttribute("data-bili-blocker-ui", "true");
+    const menu = host.appendChild(element("div", "xp-menu vl-menu"));
+    menu.setAttribute("role", "menu");
+    const buttons2 = [];
+    for (const item of items) {
+      if (item === "separator") {
+        menu.append(element("div", "xp-menu-separator"));
+        continue;
+      }
+      const button6 = menu.appendChild(element("button", "xp-menu-item"));
+      button6.type = "button";
+      button6.setAttribute("role", item.checked === void 0 ? "menuitem" : item.radio ? "menuitemradio" : "menuitemcheckbox");
+      if (item.checked !== void 0) button6.setAttribute("aria-checked", String(item.checked));
+      button6.append(element("span", "vl-menu-check", item.checked ? item.radio ? "\u2022" : "\u2713" : ""), element("span", item.bold ? "vl-menu-default" : "", item.label));
+      button6.disabled = !!item.disabled;
+      if (item.title) button6.title = item.title;
+      button6.addEventListener("click", () => {
+        closeMenu();
+        sound("click");
+        item.action?.();
+      });
+      buttons2.push(button6);
+    }
+    (document.fullscreenElement ?? document.body).append(host);
+    openMenuHost = host;
+    const releasePixels = observeCrispText(menu);
+    const rect = anchor?.getBoundingClientRect(), point = rect ? { x: rect.left, y: rect.bottom } : at;
+    const width = screenWidth(menu), height = screenHeight(menu);
+    const across = document.documentElement.clientWidth || innerWidth, down = document.documentElement.clientHeight || innerHeight;
+    placeFixed(menu, { left: Math.max(2, Math.min(point.x, across - width - 2)), top: point.y + height > down - 2 ? Math.max(2, (rect ? rect.top : point.y) - height) : point.y });
+    sound("menu");
+    const close2 = (event) => {
+      if (event.type === "pointerdown" && host.contains(event.target)) return;
+      if (event.type === "pointerdown" && anchor?.contains(event.target)) swallowClick(anchor);
+      closeMenu();
+    };
+    const key6 = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeMenu();
+      }
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        const live = buttons2.filter((button6) => !button6.disabled), index = live.indexOf(document.activeElement);
+        live[(index + (event.key === "ArrowUp" ? -1 : 1) + live.length) % live.length]?.focus();
+      }
+    };
+    const stop = () => {
+      releasePixels();
+      document.removeEventListener("pointerdown", close2, true);
+      window.removeEventListener("scroll", close2, true);
+      window.removeEventListener("resize", close2);
+      document.removeEventListener("keydown", key6, true);
+    };
+    clearMenuEvents = stop;
+    window.setTimeout(() => {
+      if (openMenuHost !== host) return;
+      document.addEventListener("pointerdown", close2, true);
+      window.addEventListener("scroll", close2, true);
+      window.addEventListener("resize", close2);
+      document.addEventListener("keydown", key6, true);
+    }, 0);
+    buttons2.find((button6) => !button6.disabled)?.focus({ preventScroll: true });
+  }
+
+  // src/ui/assets/xp-icons/atelier-icon.png
+  var atelier_icon_default = readCachedResourceUrl("atelier_atelier_icon_png");
+
+  // src/ui/assets/xp-icons/nav-users.png
+  var nav_users_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/nav-control-panel.png
+  var nav_control_panel_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/nav-recent-documents.png
+  var nav_recent_documents_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/nav-computer.png
+  var nav_computer_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/app.png
+  var app_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADMUlEQVR4nLWVS0hUURjHf+c+us2jx2gWGZGz0FWFsylMTEqj2vQk2lUEEUWvXUQUFQRSmww3ta2IQKJd0CYopHRRiW0KJXupWKHNTcfJmXPjzD13vJhBqf2Hc8/c75zzPf7f950rmBnqgDmTZD+BpzPUSw3QBHh/GE16TxEngQb9PzpJmQ04QAI4DWwBBpQiC7yEnrHwSOjZN6L2pIyQojxwBrig3yuBJHAL2AH067VFwJIUcBvoBmqDmNTLHaW2cH4JsDjsaSnQB2wATgEPgcvam4NAB3BER+C1gefpsUntacAr/p4Vo2goRCDhRA+swx+Pgc3AOeBrBC6WwRPgAJADFqozYyHPCkrCXIQWA7FIwncJ2yRcAbZK6H8Kj0agshFWAm3A9eDgfM2Z8uYL+vFYC9XiZEgoldAnYYOEYxIeSrikKEhNQdE+8NZMVUEpPPZPUCS0/hPL4d0H6BLQq5RriuoysGA13O7x613l0wXu+scsYF5BZFk55sXBHfZ51GgsUvQRvgvYBlwxYKsB/XXwKAaVPVNQ5JfKRB3V1EB3D9y5Bym/in6DYu4DsB44BDwAzurE7gtR1OiH3xYUkQcbvfp6PM/zx/PnExRZOgPHly799LWsrGFPZ+fbl/F4/GpJScll13UVJdeSyeQr27YP9Pb21gkhVqTTaeBHqFxsHCdCLmcxPj7GyMh40WudA3m4peXz+Z07R/PptIxlMploIpH4NjQ0VBqLxVzTNPOGYcjBwcFyx3Ey2Ww24nOvmlzBxbbHyeVGaG4+yt69b9i+3c+BjsC4UVvbvru8fM0mwxggkVC3AssikYia5wbeVFRUqKkgBOWl1CtxhLBpb++ko8NlLNQH2gCHXrx4vbaqahVdXV0IERTX38NxHFx3gNFRg/v3fzegNBb02rY9LQOWZWEYJqYpMsBHoEpd5UGZ3qyurn7GLMAwjCFgF3AReBNEQD6fN2fDgJRSXffvg1s5fEXNFrzwV64YgYJpmirEaeXA+MO5ooFoNFpoQ7VJbf5XCCEKBaKcnNJAa2vrQtWhw8PD0zYghCCbzaomKoYSjmm//kTOFKrNmgFVrv8fvwAWxReLASdSmAAAAABJRU5ErkJggg==";
+
+  // src/ui/assets/xp-icons/history.png
+  var history_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/folder.png
+  var folder_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/up.png
+  var up_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADgElEQVR42s2VXWhbZRjHfzlvmo/TpjlLGjeDLf3akM4O1wbGxEpx80YEOwoOQViH2gqCbOiloOCVeCF6IdQL227CLmRU8EJhzma2m462EF2r27SsrsE0sSWn+TznJCfxol9rk7ULKvjCe/M87/v/P/8/7/O88B8vUfGNfnro5Ac6iTJNaLfjlgrBFQR33Iftij5voi3lg8BpPmX+31HQyQWlzfG4y2PnkSY3ex5yNGbiub5ce0Fnmh//mYJ+ehx11tG6dhmPLGMXAq/TiWTCHzcTzM7EQmtqQpUr6EeRrJYx3+Fqh7emegPcLgQ+Vw2NDQp+f+0+VdVfSz9qWJgmuH5VesD6h5T9DqWutpqiVqRW2LALgUeWqZIkIpEks7N/YbdbAd6hn6H7WjQ1iOL1Pxm/N9b01QTCKalmthACaGh2dx97upkqScJisXD16iIzb4TL2m3dHnB7D8VdB15GaexC2GTgT9JHTea+6R0+9FL4LID0Zqq4FM3g97uQZXlH6SUEkrDhbekAcXkjJntaqD/y/pm50Q/PAHzvbmVkcRJZlhFCVEZgkapAurEtOIfSoqC0vgpAMzByYRIhBLJzVcHcaKC4fjwemzoRGODLsgTFQg4KiTK1LANgGlkWxs5hGAVk56YC35EPAHA93E3oM+coaJayBKapw4qA4nIJRWZlkdjNK9Qfv4TtYhdCCJyycw34CQCSkcs7W1QwNUgnwUyhLv2OGru1JV9//BLCNo4FcMpOhBCYqg1YWrXq6+cw89qe+xKYeQ0yKTLqHZIFP43PfgJEgAyQBcY3u1QIQqEFTrY+BixjJCMABAZQdyDIgJFlOTLD3mPvAhdLrBoeG9sYBNeCt/j4xdeBFL988TxmXmva8ipLLdIxchq5Kg+2ahNyuZL93sR3vHCyi/Pnx3n7qWdQHFZM4y6STR4ODGydrNZyBLqRpqahB/TbYOpbq5+cZG+9wuDgt/T49tPX0QHxFW583oeZ1z7atQ8KhRzpZBhP21uQLrVn5Pp1fo1EGOrtpaetDTQNIxFd9z60KwFAOhtnn9WEeLokd+rgQc51d2LN3OV2cIJMIoqZ1+aB0w/UyQA231FI/Ay6jpnXSaphkithUuoC7ckosQghIAj8BAS3+74rgffAKeavvUIy/huGlmAN7AqsAt/7DCv+k6cGWZ8pZ4FQYGDz8/hfrr8BOS1Vngza8EsAAAAASUVORK5CYII=";
+
+  // src/ui/assets/xp-icons/up-16.png
+  var up_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACQ0lEQVR42o2TT0gUURzHP5O7zs7k6tQoKVSuqWgLitTWoT9gRVAQlOcudigL79EhqA4hdMkORnQIPHayJOrQwS0TpVxckXJTJ9eUTTZHZ3dnt3HdcbvolrpJv9N7vN/38z7vB09gu7rGQ6AJuMJTwvlaCrYJN4tKwZMy707PSsxutRuzywQY2twm/COs7HAKIxVH3J5ytQjFITIbijMxrgfXbILbGxymY3eNfG7vvmLKZJldskR9dSkul7M8Gk1et5tWBQL4ARzrGa3Hl11fV78ZxlrIoC0tUnJIRKl04XQ6GRj4HlbKXB4Jxx0D624OoPX4siXeqyieoyQyOhq3cjLntWkO1uxBkiSAsHHfqvpbNmeg1jaC8BGlEJRLDwAVSLJ0+yySJCFLMooDxdj02hyA9DQI6bXNZwC+ve6majWLLMkkkyucrG1u6uwxswDVLcPCRkB8CTs9Tyo2j6mHWbYsSrztyNozRFFkYlLndMNFDpxpZ+LVBf9Wg5hJRBvEXXeDCu8JIA7ozCS/Isn7CQRm6LhcT+JHL4nI+0dbAPZyGoobUTwC0AtAWNdxqy5GR+c47irFU5Rm6kNX2NfGiy2AxYUxVG87JD7lpLr9fiwrw+jbSfpaW0npI8RmB+/lHWImk0aWRTB/5Q47+/tprqzkccsx7MgY8z+nDPhz+8YZuOshHoJUgoQxh2nM8rxBRLVDRIZCYcAPvPS1YeQFFCp1jPfdJGVGAYKAX4V3QNDXlv8nbgDEvnSRMqOn1gIG/1m/AexC1pfIkDVeAAAAAElFTkSuQmCC";
+
+  // src/ui/atelier-assets.ts
+  var atelierIcons = { tv: atelier_icon_default || app_default, app: app_default, folder: folder_default, following: nav_users_default, settings: nav_control_panel_default, viewed: nav_recent_documents_default, data: nav_computer_default, video: history_default, up: up_default, up16: up_16_default };
 
   // src/ui/dialogs.ts
   var pending = Promise.resolve();
@@ -6309,89 +6726,6 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
     return null;
   }
 
-  // src/modules/viewed/id.ts
-  var strict = /^(?:1[0-9A-Za-z]{9}(?:-[1-9][0-9]*)?|(?:ep|ss)[1-9][0-9]*)$/;
-  var isViewedId = (value2) => typeof value2 === "string" && strict.test(value2);
-  var withoutBv = (value2) => value2.trim().replace(/^BV/i, "");
-  function parseViewedId(value2) {
-    if (typeof value2 !== "string") return null;
-    const id = withoutBv(value2);
-    return strict.test(id) ? id : null;
-  }
-  function viewedIdFromBvid(bvid, part) {
-    const body2 = String(bvid ?? "");
-    return parseViewedId(part && Number.isSafeInteger(part) && part > 0 ? `${body2}-${part}` : body2) ?? "";
-  }
-  function viewedGroup(value2) {
-    const id = String(value2 ?? "");
-    if (/^(ep|ss)[1-9][0-9]*$/.test(id)) return `${id.slice(0, 2)}${id.slice(-1)}`;
-    if (id.length < 5) return "";
-    if (id.startsWith("ep") || id.startsWith("ss")) return `${id.slice(0, 2)}${id.slice(-1)}`;
-    if (id.length === 10 || id.length > 10 && id.indexOf("-") === 10) return id.charAt(1);
-    return "";
-  }
-  function parseStoredViewedId(value2) {
-    const id = withoutBv(String(value2 || ""));
-    return id && viewedGroup(id) ? id : null;
-  }
-  var alphabet = "FcwAPNKTMug3GV5Lj7EJnHpWsx4tb8haYeviqBz6rkCy12mUSDQX9RdoZf";
-  function bvidFromAid(aid) {
-    if (!Number.isSafeInteger(aid) || aid <= 0 || aid >= 2 ** 51) return "";
-    let rest = (BigInt(aid) | 1n << 51n) ^ 23442827791579n;
-    const digits = [];
-    for (let i = 0; i < 9; i++) {
-      digits.unshift(alphabet[Number(rest % 58n)]);
-      rest /= 58n;
-    }
-    [digits[0], digits[6]] = [digits[6], digits[0]];
-    [digits[1], digits[4]] = [digits[4], digits[1]];
-    return "BV1" + digits.join("");
-  }
-  var bvidPattern = /^BV1[0-9A-Za-z]{9}$/i;
-  var isBvid = (value2) => typeof value2 === "string" && bvidPattern.test(value2);
-  function viewedIdFromHref(href) {
-    if (!href) return "";
-    let url;
-    try {
-      url = new URL(href, location.href);
-    } catch {
-      return "";
-    }
-    const host = url.hostname;
-    if (host === "b23.tv") {
-      const code = url.pathname.split("/")[1];
-      return isBvid(code) ? viewedIdFromBvid(code) : "";
-    }
-    if (!/(^|\.)bilibili\.com$/.test(host)) return "";
-    const [, section, value2 = ""] = url.pathname.split("/");
-    if (section === "video") {
-      if (isBvid(value2)) return viewedIdFromBvid(value2);
-      const av = /^av(\d+)$/i.exec(value2);
-      return av ? viewedIdFromBvid(bvidFromAid(Number(av[1]))) : "";
-    }
-    if (section === "list") {
-      const bvid = url.searchParams.get("bvid");
-      return isBvid(bvid) ? viewedIdFromBvid(bvid) : "";
-    }
-    if (section === "bangumi") {
-      const episode = /^\/bangumi\/play\/((?:ep|ss)[1-9]\d*)\/?$/.exec(url.pathname);
-      return episode ? episode[1] : "";
-    }
-    return "";
-  }
-
-  // src/modules/sync/keys.ts
-  var viewedKey = (id) => `v:${id}`;
-  var uidKey = (uid) => `u:${String(uid).trim()}`;
-  var nameKey = (name) => `n:${String(name).trim().toLowerCase()}`;
-  function validKey(key6) {
-    const value2 = key6.slice(2);
-    if (key6.startsWith("v:")) return isViewedId(value2);
-    if (key6.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
-    return key6.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
-  }
-  var sameKeys = (a, b) => a.size === b.size && [...a].every((key6) => b.has(key6));
-
   // src/modules/blocker/matching.ts
   var defaultMatchOptions = {
     caseInsensitive: false,
@@ -6563,17 +6897,17 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
   }
   var syncedRules = { precise_uid: { prefix: "u:", key: uidKey }, precise_name: { prefix: "n:", key: nameKey } };
   var isSyncedRule = (key6) => Object.prototype.hasOwnProperty.call(syncedRules, key6);
-  var journal;
-  var keysOf = (key6, values) => new Set(values.map(syncedRules[key6].key).filter(validKey));
+  var journal2;
+  var keysOf2 = (key6, values) => new Set(values.map(syncedRules[key6].key).filter(validKey));
   function writeRuleList(key6, values) {
     const integer = integerRuleKeys.has(key6);
     const normalized = normalizeStoredRules(values, integer);
-    if (isSyncedRule(key6)) journal?.(keysOf(key6, readRuleList(key6)), keysOf(key6, normalized));
+    if (isSyncedRule(key6)) journal2?.(keysOf2(key6, readRuleList(key6)), keysOf2(key6, normalized));
     GM_setValue(key6, normalized);
     return normalized;
   }
   var blockedUserSyncStore = {
-    keys: () => /* @__PURE__ */ new Set([...keysOf("precise_uid", readRuleList("precise_uid")), ...keysOf("precise_name", readRuleList("precise_name"))]),
+    keys: () => /* @__PURE__ */ new Set([...keysOf2("precise_uid", readRuleList("precise_uid")), ...keysOf2("precise_name", readRuleList("precise_name"))]),
     applySync(desired) {
       const mine = new Set([...desired].filter((key6) => key6.startsWith("u:") || key6.startsWith("n:")));
       if (sameKeys(mine, blockedUserSyncStore.keys())) return false;
@@ -6586,7 +6920,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
       return true;
     },
     setJournal(next) {
-      journal = next;
+      journal2 = next;
     }
   };
   function readRuleSnapshot() {
@@ -6773,9 +7107,108 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
     actions.append(button("\u6DFB\u52A0\u89C4\u5219", () => editContentRule(scope, "", void 0, draw)), button("\u5173\u95ED", close2));
   }
 
+  // src/modules/blocker/card-menu.ts
+  var targets = /* @__PURE__ */ new WeakMap();
+  function webLink(value2) {
+    if (!value2) return "";
+    try {
+      const url = new URL(value2, location.href);
+      return /^https?:$/.test(url.protocol) ? url.href : "";
+    } catch {
+      return "";
+    }
+  }
+  function linkMenuItems(value2, label = "\u5728\u65B0\u6807\u7B7E\u9875\u4E2D\u6253\u5F00") {
+    const url = webLink(value2);
+    return [
+      { label, bold: true, disabled: !url, action: () => {
+        window.open(url, "_blank", "noopener,noreferrer");
+      } },
+      { label: "\u590D\u5236\u94FE\u63A5", disabled: !url, action: async () => {
+        try {
+          await navigator.clipboard.writeText(url);
+          showInfoLog("\u5DF2\u590D\u5236\u94FE\u63A5", "success");
+        } catch {
+          showInfoLog("\u590D\u5236\u94FE\u63A5\u5931\u8D25", "error");
+        }
+      } }
+    ];
+  }
+  function ruleMenuItems(card4, kind, seed) {
+    const selection = window.getSelection();
+    const selected = selection && card4.contains(selection.anchorNode) && card4.contains(selection.focusNode) ? selection.toString().trim() : "";
+    return [
+      { label: "\u8BBE\u7F6E\u5C4F\u853D\u89C4\u5219", disabled: !config.blocker.enabled, action: () => editContentRule(kind, selected || seed) },
+      { label: "\u7BA1\u7406\u6240\u6709\u5C4F\u853D\u89C4\u5219", disabled: !config.blocker.enabled, action: () => manageContentRules(kind) }
+    ];
+  }
+  function videoActions(value2) {
+    const url = webLink(value2);
+    if (!url) return [];
+    const path = new URL(url).pathname;
+    const id = parseViewedId(path.match(/\/video\/(BV[0-9A-Za-z]+)/i)?.[1] || path.match(/\/bangumi\/play\/((?:ss|ep)\d+)/)?.[1]);
+    return id ? [{ label: isViewedVideo(id) ? "\u6807\u8BB0\u4E3A\u672A\u770B" : "\u6807\u8BB0\u4E3A\u5DF2\u770B", action: () => toggleViewedVideo(id) }] : [];
+  }
+  function nativeDynamic(card4) {
+    const fromVue = (el3) => el3?.__vue__?.$props?.data ?? el3?.__vueParentComponent?.props?.data;
+    let data = fromVue(card4);
+    if (!data && typeof unsafeWindow !== "undefined") {
+      const index = [...document.querySelectorAll(".bili-dyn-item")].indexOf(card4);
+      if (index >= 0) data = fromVue(unsafeWindow.document.querySelectorAll(".bili-dyn-item")[index]);
+    }
+    const id = card4.getAttribute("data-did") || data?.id_str;
+    return { url: /^\d+$/.test(String(id)) ? `https://t.bilibili.com/${id}` : void 0, data };
+  }
+  function cardRuleMenu(card4, kind, seed, url, uid) {
+    if (!targets.has(card4)) card4.addEventListener("contextmenu", (event) => {
+      if (event.shiftKey || event.defaultPrevented || !(event.target instanceof Element)) return;
+      const current4 = targets.get(card4);
+      const target = event.target;
+      if (target.closest("input,textarea,[contenteditable=true],.acm-item")) return;
+      const link3 = target.closest("a[href]");
+      const native2 = current4.kind === "dynamic" && !current4.url ? nativeDynamic(card4) : void 0;
+      const forwarded = target.closest(".bili-dyn-content__forw");
+      const post = forwarded ? native2?.data?.orig : native2?.data;
+      let items;
+      if (target.closest(".adc-name,.adc-face-link,.bili-dyn-item__avatar,.bili-dyn-title__text,.bili-dyn-content__forw__uname,.bili-dyn-content__forw__author,.bili-video-card__info--owner") || link3?.hostname === "space.bilibili.com") {
+        const mid = post?.modules?.module_author?.mid || !forwarded && current4.uid;
+        const space = link3?.hostname === "space.bilibili.com" ? link3.href : mid ? `https://space.bilibili.com/${mid}` : "";
+        items = linkMenuItems(space, "\u5728\u65B0\u6807\u7B7E\u9875\u4E2D\u6253\u5F00\u4E2A\u4EBA\u7A7A\u95F4");
+      } else if (current4.kind === "dynamic" && target.closest(".adc-pic,.dyn-card-opus__pics,.bili-dyn-card-image,.bili-album")) {
+        const img = target.closest("img") ?? target.closest("a")?.querySelector("img");
+        if (!img) return;
+        const imageUrl = link3?.classList.contains("adc-pic") ? link3.href : img.currentSrc || img.src;
+        items = [{ label: "\u67E5\u770B\u56FE\u7247", bold: true, action: () => img.click() }, ...linkMenuItems(imageUrl)];
+      } else {
+        const videoLink = link3?.hostname === "www.bilibili.com" && /^\/(?:video|bangumi\/play|cheese\/play)\//.test(link3.pathname);
+        const media2 = target.closest(".adc-video,.bili-dyn-card-video,.bili-dyn-card-pgc,.bili-dyn-card-ugc-season,.opus-text-rich-hl.video") ?? (videoLink ? link3.closest(".adc-media") ?? link3 : null);
+        if (current4.kind === "dynamic" && media2) {
+          const major2 = post?.modules?.module_dynamic?.major;
+          const video2 = major2?.archive ?? major2?.pgc ?? major2?.ugc_season;
+          const href = link3?.href || media2.querySelector("a[href]")?.href || webLink(video2?.jump_url) || (video2?.bvid ? `https://www.bilibili.com/video/${video2.bvid}` : "");
+          const title = media2.querySelector(".adc-media-title,[class*='__title']")?.textContent || link3?.textContent || "";
+          items = [...linkMenuItems(href), ...videoActions(href), "separator", ...ruleMenuItems(media2, "video", title.trim())];
+        } else if (current4.kind === "dynamic" && link3 && link3.href !== (current4.url || native2?.url)) {
+          items = linkMenuItems(link3.href);
+        } else {
+          const url2 = current4.url || native2?.url;
+          items = [
+            ...linkMenuItems(url2),
+            ...current4.kind === "video" ? videoActions(url2) : [],
+            "separator",
+            ...ruleMenuItems(card4, current4.kind, current4.seed)
+          ];
+        }
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      openMenu(items, { x: event.clientX, y: event.clientY });
+    });
+    targets.set(card4, { kind, seed, url, uid });
+  }
+
   // src/modules/blocker/content-fold.ts
   var states = /* @__PURE__ */ new WeakMap();
-  var menus = /* @__PURE__ */ new WeakMap();
   var foldCss = `
 html:not([data-atelier-show-blocked]) [data-atelier-rule-folded]{min-height:0!important;height:auto!important;aspect-ratio:auto!important;background-image:none!important}
 html:not([data-atelier-show-blocked]) [data-atelier-rule-folded] > :not(.atelier-rule-toggle){display:none!important}
@@ -6809,17 +7242,6 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
     card4.prepend(control);
     states.set(card4, { identity, control });
     paint2(!opened?.has(identity));
-  }
-  function cardRuleMenu(card4, kind, seed) {
-    if (!menus.has(card4)) card4.addEventListener("contextmenu", (event) => {
-      if (event.shiftKey || event.defaultPrevented) return;
-      const current4 = menus.get(card4);
-      if (!current4) return;
-      event.preventDefault();
-      event.stopPropagation();
-      editContentRule(current4.kind, window.getSelection()?.toString().trim() || current4.seed);
-    });
-    menus.set(card4, { kind, seed });
   }
 
   // src/modules/blocker/history.ts
@@ -6978,97 +7400,6 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
       if (follow && button6.nextElementSibling !== follow) button6.insertAdjacentElement("afterend", follow);
     }
     return true;
-  }
-
-  // src/core/info-log.ts
-  var rootId = "bili-atelier-info-log";
-  var styleId = "bili-atelier-info-log-style";
-  var maxItems = 6;
-  function ensureInfoLogStyle() {
-    ensureAppearance();
-    if (document.getElementById(styleId)) {
-      return;
-    }
-    const style = document.createElement("style");
-    style.id = styleId;
-    setZoomedCss(style, `
-#${rootId} {
-  position: fixed;
-  top: 84px;
-  right: 24px;
-  z-index: 2147483640;
-  width: min(360px, calc(100vw - 32px));
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-  pointer-events: none;
-  font: var(--xp-font-size)/var(--xp-line) var(--xp-font);
-}
-#${rootId} .bili-atelier-info-log-item {
-  box-sizing: border-box;
-  max-width: 100%;
-  min-width: 180px;
-  padding: 5px 8px 6px 10px;
-  border: 1px solid var(--xp-ink);
-  border-left: 4px solid var(--xp-highlight);
-  background: var(--xp-info);
-  color: var(--xp-info-ink);
-  box-shadow: 2px 2px 2px #0005;
-  opacity: 0;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-}
-#${rootId} .bili-atelier-info-log-item.is-visible { opacity: 1; }
-#${rootId} .bili-atelier-info-log-item.is-leaving { display: none; }
-#${rootId} .bili-atelier-info-log-success { border-left-color: #3fb34f; }
-#${rootId} .bili-atelier-info-log-warning { border-left-color: #f7b500; }
-#${rootId} .bili-atelier-info-log-error { border-left-color: var(--xp-danger); }
-`);
-    (document.head || document.documentElement).appendChild(style);
-  }
-  function ensureInfoLogRoot() {
-    if (!document.body) {
-      return null;
-    }
-    ensureInfoLogStyle();
-    let root2 = document.getElementById(rootId);
-    if (!root2) {
-      root2 = document.createElement("div");
-      root2.id = rootId;
-      root2.setAttribute("data-bili-blocker-ui", "true");
-      root2.setAttribute("data-bili-atelier-ui", "info-log");
-      root2.setAttribute("role", "status");
-      root2.setAttribute("aria-live", "polite");
-      document.body.appendChild(root2);
-    }
-    return root2;
-  }
-  function showInfoLog(message, tone = "info", durationMs = 3600) {
-    const text4 = String(message || "").replace(/\s+/g, " ").trim();
-    if (!text4) {
-      return;
-    }
-    const root2 = ensureInfoLogRoot();
-    if (!root2) {
-      document.addEventListener("DOMContentLoaded", () => showInfoLog(text4, tone, durationMs), { once: true });
-      return;
-    }
-    const item = document.createElement("div");
-    item.className = `bili-atelier-info-log-item bili-atelier-info-log-${tone}`;
-    const label = item.appendChild(document.createElement("span"));
-    label.className = "xp-text";
-    label.textContent = text4;
-    root2.prepend(item);
-    item.style.maxHeight = `${Math.max(48, item.scrollHeight + 20)}px`;
-    window.requestAnimationFrame(() => item.classList.add("is-visible"));
-    while (root2.children.length > maxItems) {
-      root2.lastElementChild?.remove();
-    }
-    window.setTimeout(() => {
-      item.classList.add("is-leaving");
-      window.setTimeout(() => item.remove(), 320);
-    }, durationMs);
   }
 
   // src/modules/blocker/conceal.ts
@@ -8296,6 +8627,7 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
         insertionEl,
         title: title || void 0,
         content: text(first(card4, [".bili-video-card__info--desc", ".media-card-content-head-desc", ".video-desc", ".desc", ".description"])) || void 0,
+        url: anchor.href,
         bv: bv || void 0,
         uid: owner2.uid,
         name: owner2.name
@@ -8558,7 +8890,8 @@ ${foldCss}
         if (item.el.closest("[data-bili-blocker-ui]")) continue;
         const decision = decideBlockableItem(item, rules);
         if ((item.kind === "video" || item.kind === "dynamic") && isDiscoveryCard(item)) {
-          cardRuleMenu(item.el, item.kind, item.title || item.content || "");
+          const seed = item.kind === "dynamic" ? item.content || item.title : item.title || item.content;
+          cardRuleMenu(item.el, item.kind, seed || "", item.url, item.uid);
           const identity = item.bv || item.el.getAttribute("data-did") || [item.uid, item.title, item.content].join("|");
           if (decision?.fold && !item.el.querySelector(":scope > .atelier-rule-toggle")) recordBlockHistory(item, decision);
           foldContent(item.el, identity, !!decision?.fold);
@@ -10217,143 +10550,6 @@ ${foldCss}
   }
   var note = (message, tone = "info") => showInfoLog(message, tone);
 
-  // src/modules/viewed/storage.ts
-  function groupViewedItems(values) {
-    const groups = {};
-    const seen = /* @__PURE__ */ new Set();
-    for (const value2 of values) {
-      const id = parseStoredViewedId(value2);
-      if (!id || seen.has(id)) {
-        continue;
-      }
-      seen.add(id);
-      const groupId = viewedGroup(id);
-      if (!groups[groupId]) {
-        groups[groupId] = [];
-      }
-      groups[groupId].push(id);
-    }
-    return groups;
-  }
-  function flattenViewedGroups(groups) {
-    const items = [];
-    const seen = /* @__PURE__ */ new Set();
-    for (const value2 of Object.values(groups)) {
-      if (!Array.isArray(value2)) {
-        continue;
-      }
-      for (const item of value2) {
-        const id = parseStoredViewedId(item);
-        if (!id || seen.has(id)) {
-          continue;
-        }
-        seen.add(id);
-        items.push(id);
-      }
-    }
-    return items;
-  }
-  function viewedGroupStorageKey(groupId) {
-    return `BiliViewed_${groupId}`;
-  }
-  function listViewedGroupKeys() {
-    if (typeof GM_listValues !== "function") {
-      return [];
-    }
-    return GM_listValues().filter((key6) => String(key6).startsWith("BiliViewed_"));
-  }
-  function readViewedGroup(groupId, fallback2 = null) {
-    return GM_getValue(viewedGroupStorageKey(groupId), fallback2);
-  }
-  var journal2;
-  var keysOf2 = (values) => new Set((Array.isArray(values) ? values : []).map(String).filter(isViewedId).map(viewedKey));
-  function writeViewedGroup(groupId, values) {
-    journal2?.(keysOf2(readViewedGroup(groupId, [])), keysOf2(values));
-    GM_setValue(viewedGroupStorageKey(groupId), values);
-  }
-  function putGroups(groups, mode2) {
-    if (mode2 === "overwrite") for (const key6 of listViewedGroupKeys()) GM_deleteValue(key6);
-    for (const [groupId, values] of Object.entries(groups)) GM_setValue(viewedGroupStorageKey(groupId), values);
-  }
-  function readViewedStorage() {
-    const groups = {};
-    for (const key6 of listViewedGroupKeys()) {
-      const groupId = String(key6).slice("BiliViewed_".length);
-      groups[groupId] = flattenViewedGroups({ [groupId]: readViewedGroup(groupId, []) });
-    }
-    return { items: flattenViewedGroups(groups), groups };
-  }
-  function writeViewedStorage(snapshot, mode2) {
-    const incomingItems = snapshot.items?.length ? snapshot.items : snapshot.groups ? flattenViewedGroups(snapshot.groups) : [];
-    const currentItems = mode2 === "append" ? readViewedStorage().items : [];
-    const groups = groupViewedItems(currentItems.concat(incomingItems));
-    journal2?.(keysOf2(readViewedStorage().items), keysOf2(flattenViewedGroups(groups)));
-    putGroups(groups, mode2);
-    return { items: flattenViewedGroups(groups), groups };
-  }
-  var viewedSyncStore = {
-    keys: () => keysOf2(readViewedStorage().items),
-    applySync(desired) {
-      const wanted = new Set([...desired].filter((key6) => key6.startsWith("v:")));
-      if (sameKeys(wanted, viewedSyncStore.keys())) return false;
-      const unsyncable = readViewedStorage().items.filter((id) => !isViewedId(id));
-      putGroups(groupViewedItems([...unsyncable, ...[...wanted].map((key6) => key6.slice(2))]), "overwrite");
-      return true;
-    },
-    setJournal(next) {
-      journal2 = next;
-    }
-  };
-  function isLegacyViewedExport(value2) {
-    return !!value2 && typeof value2 === "object" && Object.keys(value2).some((key6) => key6.startsWith("BiliViewed_"));
-  }
-  function normalizeLegacyViewedExport(value2) {
-    const groups = {};
-    for (const [key6, items] of Object.entries(value2)) {
-      if (!key6.startsWith("BiliViewed_") || !Array.isArray(items)) {
-        continue;
-      }
-      const groupId = key6.slice("BiliViewed_".length);
-      groups[groupId] = flattenViewedGroups({ [groupId]: items });
-    }
-    return { items: flattenViewedGroups(groups), groups };
-  }
-
-  // src/modules/viewed/marks.ts
-  var viewedMarksChanged = "atelier-viewed-marks-changed";
-  var groupOf = (id) => isViewedId(id) ? viewedGroup(id) : "";
-  function viewedLookup() {
-    const groups = /* @__PURE__ */ new Map();
-    return (id) => {
-      const group = groupOf(id);
-      if (!group) return false;
-      let set = groups.get(group);
-      if (!set) {
-        const values = readViewedGroup(group, []);
-        set = new Set(Array.isArray(values) ? values.map(String) : []);
-        groups.set(group, set);
-      }
-      return set.has(id);
-    };
-  }
-  var isViewedVideo = (id) => viewedLookup()(id);
-  function setViewedVideo(id, viewed2) {
-    const group = groupOf(id);
-    if (!group) return false;
-    const stored = readViewedGroup(group, null), values = Array.isArray(stored) ? stored.map(String) : [];
-    const present = values.includes(id);
-    if (present === viewed2) return false;
-    writeViewedGroup(group, viewed2 ? [id, ...values] : values.filter((value2) => value2 !== id));
-    window.dispatchEvent(new CustomEvent(viewedMarksChanged, { detail: { id, viewed: viewed2 } }));
-    return true;
-  }
-  function toggleViewedVideo(id) {
-    const viewed2 = !isViewedVideo(id), changed = setViewedVideo(id, viewed2);
-    showInfoLog((viewed2 ? "\u5DF2\u6807\u8BB0\u5DF2\u770B\uFF1A" : "\u5DF2\u6807\u8BB0\u672A\u770B\uFF1A") + id, "success");
-    sound("click");
-    return viewed2;
-  }
-
   // src/modules/video-luna/ui.ts
   function el(tag, className = "", text4) {
     const node4 = document.createElement(tag);
@@ -10442,100 +10638,6 @@ ${foldCss}
       action();
     });
     return button6;
-  }
-  var openMenuHost = null;
-  var openMenuAnchor = null;
-  function closeMenu() {
-    openMenuHost?.remove();
-    openMenuHost = null;
-    openMenuAnchor?.removeAttribute("data-menu-open");
-    openMenuAnchor?.setAttribute("aria-expanded", "false");
-    openMenuAnchor = null;
-  }
-  function swallowClick(target) {
-    const swallow = (event) => {
-      event.stopImmediatePropagation();
-      event.preventDefault();
-      done();
-    };
-    const done = () => {
-      target.removeEventListener("click", swallow, true);
-      window.clearTimeout(timer2);
-    };
-    target.addEventListener("click", swallow, true);
-    const timer2 = window.setTimeout(done, 600);
-  }
-  function openMenu(items, at) {
-    closeMenu();
-    const anchor = at instanceof HTMLElement ? at : null;
-    if (anchor) {
-      openMenuAnchor = anchor;
-      anchor.setAttribute("data-menu-open", "");
-      anchor.setAttribute("aria-expanded", "true");
-    }
-    const host = el("div", "vl-menu-host");
-    host.setAttribute("data-bili-blocker-ui", "true");
-    const menu = host.appendChild(el("div", "xp-menu vl-menu"));
-    menu.setAttribute("role", "menu");
-    const buttons2 = [];
-    for (const item of items) {
-      if (item === "separator") {
-        menu.append(el("div", "xp-menu-separator"));
-        continue;
-      }
-      const button6 = menu.appendChild(el("button", "xp-menu-item"));
-      button6.type = "button";
-      button6.setAttribute("role", item.checked === void 0 ? "menuitem" : item.radio ? "menuitemradio" : "menuitemcheckbox");
-      if (item.checked !== void 0) button6.setAttribute("aria-checked", String(item.checked));
-      button6.append(el("span", "vl-menu-check", item.checked ? item.radio ? "\u2022" : "\u2713" : ""), el("span", item.bold ? "vl-menu-default" : "", item.label));
-      button6.disabled = !!item.disabled;
-      if (item.title) button6.title = item.title;
-      button6.addEventListener("click", () => {
-        closeMenu();
-        sound("click");
-        item.action?.();
-      });
-      buttons2.push(button6);
-    }
-    (document.fullscreenElement ?? document.body).append(host);
-    openMenuHost = host;
-    observeCrispText(menu);
-    const rect = anchor?.getBoundingClientRect(), point = rect ? { x: rect.left, y: rect.bottom } : at;
-    const width = screenWidth(menu), height = screenHeight(menu);
-    const across = document.documentElement.clientWidth || innerWidth, down = document.documentElement.clientHeight || innerHeight;
-    placeFixed(menu, { left: Math.max(2, Math.min(point.x, across - width - 2)), top: point.y + height > down - 2 ? Math.max(2, (rect ? rect.top : point.y) - height) : point.y });
-    sound("menu");
-    const close2 = (event) => {
-      if (event.type === "pointerdown" && host.contains(event.target)) return;
-      if (event.type === "pointerdown" && anchor?.contains(event.target)) swallowClick(anchor);
-      closeMenu();
-      stop();
-    };
-    const key6 = (event) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        closeMenu();
-        stop();
-      }
-      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-        event.preventDefault();
-        const live = buttons2.filter((button6) => !button6.disabled), index = live.indexOf(document.activeElement);
-        live[(index + (event.key === "ArrowUp" ? -1 : 1) + live.length) % live.length]?.focus();
-      }
-    };
-    const stop = () => {
-      document.removeEventListener("pointerdown", close2, true);
-      window.removeEventListener("scroll", close2, true);
-      window.removeEventListener("resize", close2);
-      document.removeEventListener("keydown", key6, true);
-    };
-    window.setTimeout(() => {
-      document.addEventListener("pointerdown", close2, true);
-      window.addEventListener("scroll", close2, true);
-      window.addEventListener("resize", close2);
-      document.addEventListener("keydown", key6, true);
-    }, 0);
-    buttons2.find((button6) => !button6.disabled)?.focus({ preventScroll: true });
   }
   function viewedButton(id, label = (viewed2) => viewed2 ? "\u5DF2\u770B" : "\u672A\u770B") {
     const button6 = el("button", "vl-viewed");
@@ -11860,13 +11962,13 @@ ${root} .btnView{z-index:3}
     const more = area.appendChild(button2("\u52A0\u8F7D\u66F4\u591A\u8BC4\u8BBA", "acm-more", () => void load(false)));
     more.hidden = true;
     let rules = context.blocking ? readRuleSnapshotWithHistoryAliases() : null;
-    const blocked = /* @__PURE__ */ new Set(), targets = /* @__PURE__ */ new WeakMap();
+    const blocked = /* @__PURE__ */ new Set(), targets2 = /* @__PURE__ */ new WeakMap();
     const reveal = () => {
       for (const element2 of blocked) element2.hidden = !isShowingBlocked();
     };
     window.addEventListener(blockedVisibilityChangedEvent, reveal);
     function guarded(element2) {
-      const target = targets.get(element2);
+      const target = targets2.get(element2);
       if (!rules || !target || blocked.has(element2)) return element2;
       const decision = decideBlockableItem(target, rules);
       if (!decision) return element2;
@@ -11916,7 +12018,7 @@ ${root} .btnView{z-index:3}
       const level = Number(reply?.member?.level_info?.current_level);
       if (space) for (const anchor of [face, who]) markUserCard(anchor, { mid, name: String(reply?.member?.uname ?? ""), face: String(reply?.member?.avatar ?? ""), level });
       const target = { kind: "comment", el: element2, insertionEl: element2, uid: Number(mid) || void 0, name: reply?.member?.uname, content: reply?.content?.message };
-      targets.set(element2, target);
+      targets2.set(element2, target);
       if (context.blocking && !(context.me && mid === context.me)) top.append(createCommentUserBlockButton(target, rescan, "acm-block"));
       if (mid && mid === context.owner) top.append(node2("span", "acm-badge", "UP"));
       if (Number.isFinite(level) && level > 0) top.append(node2("span", "acm-level", `Lv${level}`));
@@ -13118,7 +13220,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     let me = { mid: document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1] ?? "", name: "", face: "", level: 0 };
     const bar = header.appendChild(el2("div", "lh-band lh-menubar"));
     bar.setAttribute("role", "menubar");
-    const menus2 = bar.appendChild(el2("nav", "lh-menus"));
+    const menus = bar.appendChild(el2("nav", "lh-menus"));
     let active2 = null;
     const openFrom = (anchor, items, align = "left", focus = false) => {
       active2?.removeAttribute("data-open");
@@ -13135,7 +13237,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     };
     const openers = {};
     const menu = (id, label2, key6, items) => {
-      const button7 = menus2.appendChild(el2("button", "lh-menu-title"));
+      const button7 = menus.appendChild(el2("button", "lh-menu-title"));
       button7.type = "button";
       button7.append(titled(label2, key6));
       button7.setAttribute("data-menu-anchor", "");
@@ -15522,11 +15624,6 @@ ${full2} .bpx-player-container:not([data-ctrl-hidden=true]) .vl-pbp,${full2} .bp
   var caption = `box-sizing:border-box;display:flex;align-items:center;gap:3px;min-height:var(--xp-caption-h,29px);margin:0 calc(-1 * var(--xp-frame-r,4px)) 0 calc(-1 * var(--xp-frame-l,4px));padding:3px 5px 2px 6px;color:var(--xp-caption-ink);background:var(--xp-fallback-caption,var(--xp-caption));${image4("caption", 0)};image-rendering:pixelated;user-select:none`;
   var sunken = "border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d)";
   var crisp = "filter:var(--xp-crisp)";
-  var lunaMenuCss = `.vl-menu-host{position:fixed;inset:0 auto auto 0;z-index:2147483646}
-.vl-menu{position:fixed;min-width:180px;${xpFont}}
-.vl-menu .xp-menu-item{padding-left:2px}
-.vl-menu-check{flex:none;width:16px;text-align:center}
-.vl-menu-default{font-weight:bold}`;
   var lunaDialogCss = `.vl-dialog{width:min(360px,calc(100vw - 32px))}
 .vl-dialog .vl-choice{display:flex;align-items:center;gap:2px;min-height:22px}
 /* appearance:none boxes have no width of their own: the dialog's 100% must
@@ -15835,7 +15932,6 @@ ${on7} .main-container .plp-r.sticky{top:var(--vl-hold-top,var(--vl-stick,min(va
 .vl-empty{margin:0;padding:16px;text-align:center}
 
 /* Menus and dialogs */
-${lunaMenuCss}
 ${lunaDialogCss}
 `;
   var dm = `${skin} #danmukuBox`;
@@ -16312,7 +16408,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       if (event.target.closest?.("button:not(:disabled)")) sound("click");
     });
     const style = document.createElement("style");
-    setZoomedCss(style, pageCss + dynamicCardCss + commentAreaCss + followPanelCss + quickWindowCss + feedColumnsCss + feedLayoutCss + feedPublishCss + lunaMenuCss + lunaDialogCss + imageWindowCss);
+    setZoomedCss(style, pageCss + dynamicCardCss + commentAreaCss + followPanelCss + quickWindowCss + feedColumnsCss + feedLayoutCss + feedPublishCss + lunaDialogCss + imageWindowCss);
     (document.head || document.documentElement).append(style);
     let followings = parseFollowingsCopy(GM_getValue(followingsKey, null));
     const inGroup = () => localFollowSnapshot().accounts.filter((account) => !prefs.group || (prefs.group === "ungrouped" ? !account.groupIds.length : account.groupIds.includes(prefs.group)));
@@ -16435,7 +16531,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
         const card4 = renderDynamicCard(author2 ? raw : unpinned(raw));
         cards2.set(card4, raw);
         foldContent(card4, String(raw.id_str), !!decision?.fold);
-        if (rules) cardRuleMenu(card4, "dynamic", parts2.find((p2) => p2.title)?.title || parts2.find((p2) => p2.body)?.body || "");
+        if (rules) cardRuleMenu(card4, "dynamic", raw.modules?.module_dynamic?.desc?.text || parts2.find((p2) => p2.title)?.title || parts2.find((p2) => p2.body)?.body || "", dynamicUrl(raw));
         if (!loggedIn) for (const control of card4.querySelectorAll('.adc-actions [data-action="like"],.adc-actions [data-action="forward"]')) {
           control.disabled = true;
           control.title = "\u767B\u5F55\u540E\u53EF\u7528";
@@ -20465,7 +20561,7 @@ ${message}` : ""}`;
         event.preventDefault();
         context.open({ aid: Number(item.aid), bvid, cid: Number(item.cid), spm: `333.788.recommend_more_video.${index}`, url });
       });
-      anchor.addEventListener("contextmenu", (event) => {
+      node4.addEventListener("contextmenu", (event) => {
         if (event.shiftKey) return;
         event.preventDefault();
         if (onName(event)) {
@@ -20481,10 +20577,7 @@ ${message}` : ""}`;
         }
         const seen = !!id && isViewedVideo(id);
         openMenu([
-          { label: "\u5728\u65B0\u6807\u7B7E\u9875\u4E2D\u6253\u5F00", bold: true, action: () => {
-            window.open(url, "_blank", "noopener");
-          } },
-          { label: "\u590D\u5236\u94FE\u63A5", action: () => void navigator.clipboard.writeText(url).then(() => note("\u5DF2\u590D\u5236\u94FE\u63A5", "success")) },
+          ...linkMenuItems(url),
           "separator",
           { label: "\u6DFB\u52A0\u5230\u7A0D\u540E\u518D\u770B", disabled: !context.me || !item?.aid, title: context.me ? "" : guestTitle, action: async () => {
             try {
@@ -20498,7 +20591,7 @@ ${message}` : ""}`;
             setViewedVideo(id, !seen);
           } },
           "separator",
-          { label: "\u6DFB\u52A0\u5185\u5BB9\u89C4\u5219", disabled: !config.blocker.enabled, action: () => editContentRule("video", String(item?.title ?? "")) },
+          ...ruleMenuItems(node4, "video", String(item?.title ?? "")),
           blockUp
         ], { x: event.clientX, y: event.clientY });
       });
@@ -20607,20 +20700,18 @@ ${message}` : ""}`;
         event.preventDefault();
         context.open({ bvid: "", path: `/bangumi/play/ss${id}`, seasonId: id, url });
       });
-      anchor.addEventListener("contextmenu", (event) => {
+      node4.addEventListener("contextmenu", (event) => {
         if (event.shiftKey) return;
         event.preventDefault();
         const seen = !!viewedId && isViewedVideo(viewedId);
         openMenu([
-          { label: "\u6DFB\u52A0\u5185\u5BB9\u89C4\u5219", disabled: !config.blocker.enabled, action: () => editContentRule("video", season.title || "") },
-          { label: "\u5728\u65B0\u6807\u7B7E\u9875\u4E2D\u6253\u5F00", bold: true, action: () => {
-            window.open(url, "_blank", "noopener");
-          } },
-          { label: "\u590D\u5236\u94FE\u63A5", action: () => void navigator.clipboard.writeText(url) },
+          ...linkMenuItems(url),
           "separator",
           { label: seen ? "\u6807\u8BB0\u4E3A\u672A\u770B" : "\u6807\u8BB0\u4E3A\u5DF2\u770B", disabled: !viewedId, action: () => {
             setViewedVideo(viewedId, !seen);
-          } }
+          } },
+          "separator",
+          ...ruleMenuItems(node4, "video", season.title || "")
         ], { x: event.clientX, y: event.clientY });
       });
       foldContent(node4, url, config.blocker.enabled && !!matchContent("video", [{ title: season.title, body: season.evaluate || season.desc }], rules), opened);
@@ -21777,7 +21868,6 @@ ${page.css ?? ""}`;
   // src/modules/watch-history/styles.ts
   var w = "#atelier-history";
   var watchHistoryCss = `
-${lunaMenuCss}
 ${w}{width:min(calc(100% - 32px),1680px);margin:12px auto 16px;${xpFont};color:var(--xp-ink);text-align:left;letter-spacing:normal;line-height:normal}
 /* The blank the user dragged (bounds.ts), the same on both sides; a page
    too narrow for it takes it from the blank, not the window. */
