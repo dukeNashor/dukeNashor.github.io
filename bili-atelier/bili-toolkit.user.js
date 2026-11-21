@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.9.11
+// @version      0.10.0
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -2276,6 +2276,1110 @@
     document.addEventListener("DOMContentLoaded", check2);
   }
 
+  // src/ui/assets/xp-sounds/catalog.json
+  var catalog_default = {
+    schema: "bili-atelier-xp-sounds",
+    version: 1,
+    defaultVolume: 0.55,
+    source: {
+      imageName: "xp sp3 official.iso",
+      bytes: 630237184,
+      volume: "GRTMPVOL_CN"
+    },
+    categories: [
+      {
+        id: "navigation",
+        name: "\u5BFC\u822A\u4E0E\u7A97\u53E3",
+        sample: "xpstart",
+        defaultVolume: 1,
+        defaultEnabled: true
+      },
+      {
+        id: "controls",
+        name: "\u6309\u94AE\u4E0E\u9009\u62E9",
+        sample: "xpmenu",
+        defaultVolume: 1,
+        defaultEnabled: true
+      }
+    ],
+    cues: {
+      control: {
+        sound: "xpmenu",
+        category: "controls",
+        priority: 10
+      },
+      navigate: {
+        sound: "xpstart",
+        category: "navigation",
+        priority: 40
+      },
+      open: {
+        sound: "xprestor",
+        category: "navigation",
+        priority: 40
+      },
+      close: {
+        sound: "xpmin",
+        category: "navigation",
+        priority: 40
+      },
+      expand: {
+        sound: "xprestor",
+        category: "navigation",
+        priority: 40
+      },
+      collapse: {
+        sound: "xpmin",
+        category: "navigation",
+        priority: 40
+      }
+    },
+    sounds: [
+      {
+        id: "xpballn",
+        file: "xpballn.wav",
+        name: "Windows XP \u6C14\u7403",
+        previewOnly: true,
+        durationMs: 144,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -18.24,
+        rmsDbFS: -33.71,
+        gain: 0.81655,
+        bytes: 6400,
+        sha256: "c9de87a87b68dd754fa29f2989c240949ad9b1f0423d019ca68afcd86e107639",
+        source: "I386/XPBALLN.WA_",
+        compressedSha256: "1c8d7665108ad4af42bec4ef940d3dad949d4053d9418e63616284a2d1ad5ffb"
+      },
+      {
+        id: "xpbatcrt",
+        file: "xpbatcrt.wav",
+        name: "Windows XP \u7535\u6C60\u7535\u529B\u4E25\u91CD\u77ED\u7F3A",
+        previewOnly: true,
+        durationMs: 836,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -0.17,
+        rmsDbFS: -12.84,
+        gain: 0.10194,
+        bytes: 36910,
+        sha256: "cb02dd9f8b4d18aab9a5c51a26faac12e861dd362800a12292f243432a982325",
+        source: "I386/XPBATCRT.WA_",
+        compressedSha256: "aa2b39585f31ae73645fe7a5e3b986a2e44e0c4722712da9ee00daf32c6ffc3f"
+      },
+      {
+        id: "xpbatlow",
+        file: "xpbatlow.wav",
+        name: "Windows XP \u7535\u6C60\u4E0D\u8DB3",
+        previewOnly: true,
+        durationMs: 1220,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -1.31,
+        rmsDbFS: -16.43,
+        gain: 0.11624,
+        bytes: 53864,
+        sha256: "bd4a58b1e2b8e93bcf5b76df3e4a9f67ce0926107a5702ed6bac0e63466a22fd",
+        source: "I386/XPBATLOW.WA_",
+        compressedSha256: "f002dee050cb80f908c08eb7b713aa1c75096419537342533571781e4c1c4fdc"
+      },
+      {
+        id: "xpblkpop",
+        file: "xpblkpop.wav",
+        name: "Windows XP \u5F39\u51FA\u7A97\u53E3\u5DF2\u963B\u6B62",
+        previewOnly: true,
+        durationMs: 167,
+        channels: 2,
+        sampleRate: 44100,
+        bits: 16,
+        peakDbFS: -13.98,
+        rmsDbFS: -34.22,
+        gain: 0.50005,
+        bytes: 29444,
+        sha256: "df7cad111688dadb00469203dd7228df99e49e86ae7ba937e308d947cd9790f2",
+        source: "I386/XPBLKPOP.WA_",
+        compressedSha256: "baae17740810abd3d43d5c703ff801df8be3ebf63726a02d2c29f424ba55a0b0"
+      },
+      {
+        id: "xpcrtstp",
+        file: "xpcrtstp.wav",
+        name: "Windows XP \u5173\u952E\u6027\u7EC8\u6B62",
+        previewOnly: true,
+        durationMs: 892,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -3.2,
+        rmsDbFS: -16.48,
+        gain: 0.14448,
+        bytes: 39382,
+        sha256: "1b86a1b8b7b5925f9346b64115b0b92744a142b06b09f44263a57419bc2bb6e6",
+        source: "I386/XPCRTSTP.WA_",
+        compressedSha256: "8dff0499e501012337f14551e4350d017a2a88fa5f36b7ee84c7c6442cd62b8e"
+      },
+      {
+        id: "xpdef",
+        file: "xpdef.wav",
+        name: "Windows XP \u9ED8\u8BA4\u503C",
+        previewOnly: true,
+        durationMs: 555,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -9.77,
+        rmsDbFS: -27.31,
+        gain: 0.30791,
+        bytes: 24530,
+        sha256: "d0426433cb153f860f02320408a1922558742bc3d170eb47715192ff86a66a16",
+        source: "I386/XPDEF.WA_",
+        compressedSha256: "1d3258f9f2b9070370d49a069d3cf79ca5a89163063b84f479af7a0d641d3fa7"
+      },
+      {
+        id: "xpding",
+        file: "xpding.wav",
+        name: "Windows XP \u53EE\u5F53\u58F0",
+        previewOnly: true,
+        durationMs: 387,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -11.74,
+        rmsDbFS: -21.34,
+        gain: 0.38651,
+        bytes: 17132,
+        sha256: "20fc59d9f846bc32b899880fae0878208856718b75e6158526308b900af8a9bd",
+        source: "I386/XPDING.WA_",
+        compressedSha256: "3fa29e9bcb7f38b6dfc1aec0865270840ae69c9261ecc48eea4c5e81d0fdecd7"
+      },
+      {
+        id: "xperror",
+        file: "xperror.wav",
+        name: "Windows XP \u9519\u8BEF",
+        previewOnly: true,
+        durationMs: 1e3,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -6.98,
+        rmsDbFS: -23.56,
+        gain: 0.22343,
+        bytes: 44136,
+        sha256: "4b51ec1b1b14889bc2c2cdad8c80dafc974d78b9292c3ccb344e44e93383cac4",
+        source: "I386/XPERROR.WA_",
+        compressedSha256: "cb1b985cab19466befd27b5d9628165dda8a1cabbc880dc3c9bfec68a26ae8d1"
+      },
+      {
+        id: "xpexcl",
+        file: "xpexcl.wav",
+        name: "Windows XP \u60CA\u53F9\u53F7",
+        previewOnly: true,
+        durationMs: 964,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -16.42,
+        rmsDbFS: -32.09,
+        gain: 0.66185,
+        bytes: 42576,
+        sha256: "b57b8e8818c424452ca4fb8abb219ae01c0e31db2f955e1f85d9fcb5a0dabfbe",
+        source: "I386/XPEXCL.WA_",
+        compressedSha256: "0bc7bb68966af22cac6444392a3ea9956cb98177ef2648dbc8d025051118eea6"
+      },
+      {
+        id: "xphdfail",
+        file: "xphdfail.wav",
+        name: "Windows XP \u786C\u4EF6\u6545\u969C",
+        previewOnly: true,
+        durationMs: 829,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -12.98,
+        rmsDbFS: -25.32,
+        gain: 0.44558,
+        bytes: 36614,
+        sha256: "fe6e852ff646c0a896995632f76a3e390bea6163b40639c87bf45c1d8a7475c2",
+        source: "I386/XPHDFAIL.WA_",
+        compressedSha256: "7daa31c4f966dd10d85f992b6f601f9ec107a2f4d6c44539474ee3a6e6a97678"
+      },
+      {
+        id: "xphdinst",
+        file: "xphdinst.wav",
+        name: "Windows XP \u786C\u4EF6\u63D2\u5165",
+        previewOnly: true,
+        durationMs: 830,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -14.91,
+        rmsDbFS: -28.67,
+        gain: 0.55624,
+        bytes: 36636,
+        sha256: "a3e44db9179591a705baed6daa00efb988197c0698a9747980126d5939e9d506",
+        source: "I386/XPHDINST.WA_",
+        compressedSha256: "59692e7ac46240e9cf8b9ad16007bc837b4f05a9a81787cf79120ae855ab9d79"
+      },
+      {
+        id: "xphdrem",
+        file: "xphdrem.wav",
+        name: "Windows XP \u786C\u4EF6\u5220\u9664",
+        previewOnly: true,
+        durationMs: 828,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -15.55,
+        rmsDbFS: -28.3,
+        gain: 0.59938,
+        bytes: 36538,
+        sha256: "c4d09c6ad6a9090c4e611330a7501f7a84abc7c777c6e3d1915179f8d1ed45f3",
+        source: "I386/XPHDREM.WA_",
+        compressedSha256: "1af16d0041acfdc07c2268ed2186a6dd16c1e602c11e39e4ef17b27d9e7e57fb"
+      },
+      {
+        id: "xpinfbar",
+        file: "xpinfbar.wav",
+        name: "Windows XP \u4FE1\u606F\u680F",
+        previewOnly: true,
+        durationMs: 109,
+        channels: 2,
+        sampleRate: 44100,
+        bits: 16,
+        peakDbFS: -4.2,
+        rmsDbFS: -11.08,
+        gain: 0.16218,
+        bytes: 20336,
+        sha256: "b4dfbdfd8d6a102123a7966da358781bd32bb6d78e833514705cb7de76efa410",
+        source: "I386/XPINFBAR.WA_",
+        compressedSha256: "17ec22ddf2a76dd9b77a42271491228a905accbf0cd1028691fbc89d248b071e"
+      },
+      {
+        id: "xplogoff",
+        file: "xplogoff.wav",
+        name: "Windows XP \u6CE8\u9500\u97F3",
+        previewOnly: true,
+        durationMs: 2037,
+        channels: 2,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -10.39,
+        rmsDbFS: -27.7,
+        gain: 0.33066,
+        bytes: 179704,
+        sha256: "e0c0e5dea2550c8f235c0bb1584d9011a35ca23bc18597bf7ac6581efcd7b7aa",
+        source: "I386/XPLOGOFF.WA_",
+        compressedSha256: "47fbfa45e605ca3c84a13243267b02972c33f0ef879b31133412c2b528555f53"
+      },
+      {
+        id: "xplogon",
+        file: "xplogon.wav",
+        name: "Windows XP \u767B\u5F55\u97F3",
+        previewOnly: true,
+        durationMs: 2156,
+        channels: 2,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -10.04,
+        rmsDbFS: -27.67,
+        gain: 0.31758,
+        bytes: 190208,
+        sha256: "8d71fba4267fb3454030c7289079421a08fc3e773caa47107d832f855ae85396",
+        source: "I386/XPLOGON.WA_",
+        compressedSha256: "3e48b114a7a3956ced53f0a469a7d85717bd00b77522c335d85b77b3726e5f03"
+      },
+      {
+        id: "xpmenu",
+        file: "xpmenu.wav",
+        name: "Windows XP \u83DC\u5355\u547D\u4EE4",
+        previewOnly: false,
+        durationMs: 31,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -20.6,
+        rmsDbFS: -36.23,
+        gain: 1,
+        bytes: 1404,
+        sha256: "da4fc6f8917b97725e6de85bb45b574c7895ec46672e6eb439a462cfd9940ac7",
+        source: "I386/XPMENU.WA_",
+        compressedSha256: "2c73d31fdd47a2f456b64682f568ab6362a7ce8f6a6b6d38cc0ee8132b59d8f5"
+      },
+      {
+        id: "xpmin",
+        file: "xpmin.wav",
+        name: "Windows XP \u6700\u5C0F\u5316",
+        previewOnly: false,
+        durationMs: 511,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -24.38,
+        rmsDbFS: -37.4,
+        gain: 1,
+        bytes: 22580,
+        sha256: "974da6baee4187c37e514186b99691132988140cca95402589c6fdc1417e5926",
+        source: "I386/XPMIN.WA_",
+        compressedSha256: "37a5861aa70198e03c83ecdd5252e51d8a6be4cf13e241dda491e46bd4201de2"
+      },
+      {
+        id: "xpnotify",
+        file: "xpnotify.wav",
+        name: "Windows XP \u901A\u77E5",
+        previewOnly: true,
+        durationMs: 1110,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -18.71,
+        rmsDbFS: -36.89,
+        gain: 0.86164,
+        bytes: 48988,
+        sha256: "760cdd5685008255d6e188a8c528ebcb74daf806bb24a81c2a36086df6a95c76",
+        source: "I386/XPNOTIFY.WA_",
+        compressedSha256: "2f9684cd2952a85245a86b9d06973b13e7149ff6cf3ffafe82bcdce16a2dc1f3"
+      },
+      {
+        id: "xpprint",
+        file: "xpprint.wav",
+        name: "Windows XP \u6253\u5370\u7ED3\u675F",
+        previewOnly: true,
+        durationMs: 991,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -18.3,
+        rmsDbFS: -34.52,
+        gain: 0.82249,
+        bytes: 43762,
+        sha256: "e411c02471876c4d1075ec8fcd406e99ac7c9a5e0c6322ed579de50c8ca3b844",
+        source: "I386/XPPRINT.WA_",
+        compressedSha256: "324d91096b47c0f0fc35e65ab37e067ba403793b7eb211feb9a56288b119c763"
+      },
+      {
+        id: "xprecycl",
+        file: "xprecycl.wav",
+        name: "Windows XP \u56DE\u6536",
+        previewOnly: true,
+        durationMs: 516,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -17.06,
+        rmsDbFS: -38.1,
+        gain: 0.71312,
+        bytes: 22816,
+        sha256: "a8a7028f9fe989cdde61bf22b73f0ff23ae291dbf8e056bb09682a7487c49ad7",
+        source: "I386/XPRECYCL.WA_",
+        compressedSha256: "a2b79e1e62ec0b453982b30a38ad861838e7e09bc1498717466ca480abfe78e6"
+      },
+      {
+        id: "xprestor",
+        file: "xprestor.wav",
+        name: "Windows XP \u8FD8\u539F",
+        previewOnly: false,
+        durationMs: 440,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -24.36,
+        rmsDbFS: -37.68,
+        gain: 1,
+        bytes: 19458,
+        sha256: "480dea5b1808dd67c5a5946e7a47e8e582d5cb1c7fdce4b037140157da0ecadf",
+        source: "I386/XPRESTOR.WA_",
+        compressedSha256: "bf362bfb0c53d25d64075f046d9406da9b071c688f066c1c9edfc38174dd231e"
+      },
+      {
+        id: "xpringin",
+        file: "xpringin.wav",
+        name: "Windows XP \u7535\u8BDD\u62E8\u5165\u58F0",
+        previewOnly: true,
+        durationMs: 882,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -22.82,
+        rmsDbFS: -34.27,
+        gain: 1,
+        bytes: 38930,
+        sha256: "b2cd4e4a977606abb8c35b7d446d6c322ee4bda4c0c722ef240f0c51d7ddc713",
+        source: "I386/XPRINGIN.WA_",
+        compressedSha256: "4061db3507f25e2cefdd4b7bbf9f73042c45525c01f4bdb017e354bd43c552da"
+      },
+      {
+        id: "xprngout",
+        file: "xprngout.wav",
+        name: "Windows XP \u7535\u8BDD\u62E8\u51FA\u58F0",
+        previewOnly: true,
+        durationMs: 499,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -20.25,
+        rmsDbFS: -26.76,
+        gain: 1,
+        bytes: 22070,
+        sha256: "d994081372c2794642da68212d49c6a64263f88a9fde5cc96583b43574c26bb0",
+        source: "I386/XPRNGOUT.WA_",
+        compressedSha256: "32da90bd18459eb03356f9e977df35e9440e52b5baf3df727e343c666c75e8a8"
+      },
+      {
+        id: "xpshutdn",
+        file: "xpshutdn.wav",
+        name: "Windows XP \u5173\u673A",
+        previewOnly: true,
+        durationMs: 3204,
+        channels: 2,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -5.08,
+        rmsDbFS: -21.12,
+        gain: 0.17957,
+        bytes: 282608,
+        sha256: "3d937337075a647950f6aa557bca23dea6e17cf6d14814ca7dbc55b827678a0b",
+        source: "I386/XPSHUTDN.WA_",
+        compressedSha256: "dbd8c3522091971481245e330803b9dca3ad96f17ef289ef781e84fc4770d8c2"
+      },
+      {
+        id: "xpstart",
+        file: "xpstart.wav",
+        name: "Windows XP \u5F00\u59CB",
+        previewOnly: false,
+        durationMs: 49,
+        channels: 1,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -19.66,
+        rmsDbFS: -36.72,
+        gain: 0.96122,
+        bytes: 2202,
+        sha256: "d5712a8963eb3e1e181b25649ecff3080ede89c96350eb07e7d7cad429e959ea",
+        source: "I386/XPSTART.WA_",
+        compressedSha256: "501e2d3dd60d27514d2cf4e0349a360e5b09ce149427e8c9642dd665dc9add18"
+      },
+      {
+        id: "xpstartu",
+        file: "xpstartu.wav",
+        name: "Windows XP \u542F\u52A8",
+        previewOnly: true,
+        durationMs: 4814,
+        channels: 2,
+        sampleRate: 22050,
+        bits: 16,
+        peakDbFS: -5.32,
+        rmsDbFS: -20.9,
+        gain: 0.18453,
+        bytes: 424644,
+        sha256: "8f859ebb90247036ced11db854848abe1434dc3ffdfa5795f7c5f06db9a423d5",
+        source: "I386/XPSTARTU.WA_",
+        compressedSha256: "2e19628930cbe38457bd186747793f5cb29c6e360206303c219bdce514032559"
+      }
+    ]
+  };
+
+  // src/ui/resource-cache.ts
+  var warned = false;
+  function unavailable() {
+    if (warned) return;
+    warned = true;
+    console.warn("[Bili Atelier] \u90E8\u5206\u754C\u9762\u8D44\u6E90\u4E0D\u53EF\u7528\uFF0C\u8BF7\u68C0\u67E5 Tampermonkey \u7684\u811A\u672C\u66F4\u65B0\u3002\u6587\u5B57\u63A7\u4EF6\u548C\u6570\u636E\u529F\u80FD\u4ECD\u53EF\u4F7F\u7528\u3002");
+  }
+  function readCachedResourceUrl(name) {
+    try {
+      const url = GM_getResourceURL(name);
+      if (typeof url === "string" && /^(?:data:|blob:)/.test(url)) return url;
+    } catch {
+    }
+    unavailable();
+    return "";
+  }
+
+  // src/ui/assets/xp-sounds/xpballn.wav
+  var xpballn_default = readCachedResourceUrl("atelier_xpballn_wav");
+
+  // src/ui/assets/xp-sounds/xpbatcrt.wav
+  var xpbatcrt_default = readCachedResourceUrl("atelier_xpbatcrt_wav");
+
+  // src/ui/assets/xp-sounds/xpbatlow.wav
+  var xpbatlow_default = readCachedResourceUrl("atelier_xpbatlow_wav");
+
+  // src/ui/assets/xp-sounds/xpblkpop.wav
+  var xpblkpop_default = readCachedResourceUrl("atelier_xpblkpop_wav");
+
+  // src/ui/assets/xp-sounds/xpcrtstp.wav
+  var xpcrtstp_default = readCachedResourceUrl("atelier_xpcrtstp_wav");
+
+  // src/ui/assets/xp-sounds/xpdef.wav
+  var xpdef_default = readCachedResourceUrl("atelier_xpdef_wav");
+
+  // src/ui/assets/xp-sounds/xpding.wav
+  var xpding_default = readCachedResourceUrl("atelier_xpding_wav");
+
+  // src/ui/assets/xp-sounds/xperror.wav
+  var xperror_default = readCachedResourceUrl("atelier_xperror_wav");
+
+  // src/ui/assets/xp-sounds/xpexcl.wav
+  var xpexcl_default = readCachedResourceUrl("atelier_xpexcl_wav");
+
+  // src/ui/assets/xp-sounds/xphdfail.wav
+  var xphdfail_default = readCachedResourceUrl("atelier_xphdfail_wav");
+
+  // src/ui/assets/xp-sounds/xphdinst.wav
+  var xphdinst_default = readCachedResourceUrl("atelier_xphdinst_wav");
+
+  // src/ui/assets/xp-sounds/xphdrem.wav
+  var xphdrem_default = readCachedResourceUrl("atelier_xphdrem_wav");
+
+  // src/ui/assets/xp-sounds/xpinfbar.wav
+  var xpinfbar_default = readCachedResourceUrl("atelier_xpinfbar_wav");
+
+  // src/ui/assets/xp-sounds/xplogoff.wav
+  var xplogoff_default = readCachedResourceUrl("atelier_xplogoff_wav");
+
+  // src/ui/assets/xp-sounds/xplogon.wav
+  var xplogon_default = readCachedResourceUrl("atelier_xplogon_wav");
+
+  // src/ui/assets/xp-sounds/xpmenu.wav
+  var xpmenu_default = readCachedResourceUrl("atelier_xpmenu_wav");
+
+  // src/ui/assets/xp-sounds/xpmin.wav
+  var xpmin_default = readCachedResourceUrl("atelier_xpmin_wav");
+
+  // src/ui/assets/xp-sounds/xpnotify.wav
+  var xpnotify_default = readCachedResourceUrl("atelier_xpnotify_wav");
+
+  // src/ui/assets/xp-sounds/xpprint.wav
+  var xpprint_default = readCachedResourceUrl("atelier_xpprint_wav");
+
+  // src/ui/assets/xp-sounds/xprecycl.wav
+  var xprecycl_default = readCachedResourceUrl("atelier_xprecycl_wav");
+
+  // src/ui/assets/xp-sounds/xprestor.wav
+  var xprestor_default = readCachedResourceUrl("atelier_xprestor_wav");
+
+  // src/ui/assets/xp-sounds/xpringin.wav
+  var xpringin_default = readCachedResourceUrl("atelier_xpringin_wav");
+
+  // src/ui/assets/xp-sounds/xprngout.wav
+  var xprngout_default = readCachedResourceUrl("atelier_xprngout_wav");
+
+  // src/ui/assets/xp-sounds/xpshutdn.wav
+  var xpshutdn_default = readCachedResourceUrl("atelier_xpshutdn_wav");
+
+  // src/ui/assets/xp-sounds/xpstart.wav
+  var xpstart_default = readCachedResourceUrl("atelier_xpstart_wav");
+
+  // src/ui/assets/xp-sounds/xpstartu.wav
+  var xpstartu_default = readCachedResourceUrl("atelier_xpstartu_wav");
+
+  // src/modules/sounds/assets.ts
+  var soundSources = { xpballn: xpballn_default, xpbatcrt: xpbatcrt_default, xpbatlow: xpbatlow_default, xpblkpop: xpblkpop_default, xpcrtstp: xpcrtstp_default, xpdef: xpdef_default, xpding: xpding_default, xperror: xperror_default, xpexcl: xpexcl_default, xphdfail: xphdfail_default, xphdinst: xphdinst_default, xphdrem: xphdrem_default, xpinfbar: xpinfbar_default, xplogoff: xplogoff_default, xplogon: xplogon_default, xpmenu: xpmenu_default, xpmin: xpmin_default, xpnotify: xpnotify_default, xpprint: xpprint_default, xprecycl: xprecycl_default, xprestor: xprestor_default, xpringin: xpringin_default, xprngout: xprngout_default, xpshutdn: xpshutdn_default, xpstart: xpstart_default, xpstartu: xpstartu_default };
+
+  // src/modules/sounds/engine.ts
+  var soundCategories = ["navigation", "controls"];
+  var volume = (value2, fallback2) => typeof value2 === "number" && Number.isFinite(value2) ? Math.max(0, Math.min(1, value2)) : fallback2;
+  function normalizeSoundPreferences(raw) {
+    const value2 = raw;
+    return {
+      enabled: typeof value2?.enabled === "boolean" ? value2.enabled : true,
+      volume: volume(value2?.volume, 0.55),
+      categories: Object.fromEntries(soundCategories.map((category) => [category, {
+        enabled: typeof value2?.categories?.[category]?.enabled === "boolean" ? value2.categories[category].enabled : true,
+        volume: volume(value2?.categories?.[category]?.volume, 1)
+      }]))
+    };
+  }
+  var SoundEngine = class {
+    constructor(transport2, preferences, allowed, now, defer) {
+      this.transport = transport2;
+      this.preferences = preferences;
+      this.allowed = allowed;
+      this.now = now;
+      this.defer = defer;
+      this.scheduled = false;
+      this.lastId = "";
+      this.lastAt = -Infinity;
+    }
+    request(request2, action, valid = () => true) {
+      if (!soundCategories.includes(request2.category)) return;
+      if (!valid() || !this.allowed() || request2.asset.previewOnly && !request2.preview) return;
+      if (!this.pending || this.pending.action !== action || request2.priority >= this.pending.request.priority) this.pending = { request: request2, action, valid };
+      if (!this.scheduled) {
+        this.scheduled = true;
+        this.defer(() => this.flush());
+      }
+    }
+    stop() {
+      this.pending = void 0;
+      this.transport.stop();
+    }
+    flush() {
+      this.scheduled = false;
+      const pending3 = this.pending;
+      this.pending = void 0;
+      if (!pending3 || !pending3.valid() || !this.allowed()) return;
+      const { request: request2 } = pending3, prefs = this.preferences(), category = prefs.categories[request2.category];
+      if (!prefs.enabled || !category.enabled) return;
+      const gain = prefs.volume * category.volume * request2.asset.gain;
+      if (!(gain > 0) || !this.transport.ready(request2.asset.id)) return;
+      const now = this.now();
+      if (!request2.preview && now - this.lastAt < (this.lastId === request2.asset.id ? 180 : 55)) return;
+      if (this.transport.playing()) this.transport.stop();
+      if (this.transport.play(request2.asset.id, gain)) {
+        this.lastAt = now;
+        this.lastId = request2.asset.id;
+      }
+    }
+  };
+  var soundMediaPrefix = "AtelierSounds_media_";
+  var soundMediaLeaseMs = 15e4;
+  function activeMediaHeartbeat(raw, now) {
+    const value2 = raw;
+    return value2?.version === 1 && value2.playing === true && typeof value2.at === "number" && Number.isFinite(value2.at) && value2.at <= now + 5e3 && now - value2.at <= soundMediaLeaseMs;
+  }
+
+  // src/modules/sounds/media.ts
+  var pulseKey = "AtelierSounds_mediaPulse";
+  function startSoundMediaMonitor(changed) {
+    const key6 = soundMediaPrefix + crypto.randomUUID();
+    const media2 = /* @__PURE__ */ new Set(), roots2 = /* @__PURE__ */ new WeakSet(), frames = /* @__PURE__ */ new WeakSet();
+    let suspended = false, playing = false, published = false;
+    const events = new AbortController();
+    const observer = new MutationObserver((records2) => {
+      for (const record of records2) for (const node4 of record.addedNodes) if (node4.nodeType === 1) discover(node4);
+      update();
+    });
+    function signal() {
+      GM_setValue(pulseKey, crypto.randomUUID());
+    }
+    function publish(force = false) {
+      if (playing && !suspended) {
+        if (force || !published) {
+          GM_setValue(key6, { version: 1, at: Date.now(), playing: true });
+          signal();
+        }
+        published = true;
+      } else if (published) {
+        GM_deleteValue(key6);
+        published = false;
+        signal();
+      }
+    }
+    function track(node4) {
+      if (media2.has(node4)) return;
+      media2.add(node4);
+      for (const name of ["play", "playing", "pause", "ended", "emptied", "abort"]) node4.addEventListener(name, update, { signal: events.signal });
+    }
+    function discover(root2) {
+      if (root2 instanceof HTMLMediaElement) track(root2);
+      if (root2.shadowRoot) watch(root2.shadowRoot);
+      for (const node4 of root2.querySelectorAll("video,audio")) track(node4);
+      for (const node4 of root2.querySelectorAll("*")) if (node4.shadowRoot) watch(node4.shadowRoot);
+      const foundFrames = [...root2.querySelectorAll("iframe")];
+      if (root2.tagName === "IFRAME") foundFrames.unshift(root2);
+      for (const frame2 of foundFrames) {
+        const read3 = () => {
+          try {
+            if (frame2.contentDocument) watch(frame2.contentDocument);
+          } catch {
+          }
+        };
+        if (!frames.has(frame2)) {
+          frames.add(frame2);
+          frame2.addEventListener("load", read3, { signal: events.signal });
+        }
+        read3();
+      }
+    }
+    function watch(root2) {
+      if (roots2.has(root2)) return;
+      roots2.add(root2);
+      observer.observe(root2, { childList: true, subtree: true });
+      root2.addEventListener("play", (event) => {
+        const target = event.target;
+        if (target && (target.tagName === "VIDEO" || target.tagName === "AUDIO" || target instanceof HTMLMediaElement)) track(target);
+        update();
+      }, { capture: true, signal: events.signal });
+      discover(root2);
+    }
+    function update() {
+      let next = false;
+      for (const node4 of media2) {
+        let connected = node4.isConnected;
+        try {
+          const frame2 = node4.ownerDocument.defaultView?.frameElement;
+          if (frame2 && !frame2.isConnected) connected = false;
+        } catch {
+        }
+        if (!connected) {
+          media2.delete(node4);
+          continue;
+        }
+        if (!node4.paused && !node4.ended) next = true;
+      }
+      const was = playing;
+      playing = next;
+      publish();
+      if (was !== next) changed();
+    }
+    function blocked() {
+      if (!suspended) update();
+      if (playing && !suspended) return true;
+      const now = Date.now();
+      for (const other of GM_listValues()) {
+        if (!other.startsWith(soundMediaPrefix) || other === key6) continue;
+        if (activeMediaHeartbeat(GM_getValue(other), now)) return true;
+      }
+      return false;
+    }
+    watch(document);
+    update();
+    const heartbeat = window.setInterval(() => {
+      if (!suspended) {
+        discover(document);
+        update();
+        publish(true);
+      }
+    }, 1e4);
+    if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(pulseKey, (_, __, ___, remote) => {
+      if (remote) changed();
+    });
+    window.addEventListener("pagehide", () => {
+      suspended = true;
+      publish();
+      changed();
+    }, { signal: events.signal });
+    window.addEventListener("pageshow", () => {
+      suspended = false;
+      discover(document);
+      update();
+      publish(true);
+    }, { signal: events.signal });
+    for (const old of GM_listValues()) if (old.startsWith(soundMediaPrefix) && !activeMediaHeartbeat(GM_getValue(old), Date.now())) GM_deleteValue(old);
+    return { blocked, dispose() {
+      suspended = true;
+      publish();
+      events.abort();
+      observer.disconnect();
+      window.clearInterval(heartbeat);
+    } };
+  }
+
+  // src/modules/sounds/service.ts
+  var aliases = { folder: "navigate", open: "open", close: "close", minimize: "collapse", maximize: "expand", restore: "expand", menu: "control", select: "control", click: "control", start: "control", cancel: "control" };
+  var preferenceKey = "AtelierSounds_preferences";
+  var soundPreferencesChanged = "atelier-sound-preferences-changed";
+  var clips = new Map(catalog_default.sounds.map((asset) => [asset.id, asset]));
+  var WebAudioTransport = class {
+    constructor() {
+      this.buffers = /* @__PURE__ */ new Map();
+      this.loading = /* @__PURE__ */ new Set();
+      this.failures = /* @__PURE__ */ new Map();
+      this.supported = typeof window.AudioContext === "function";
+    }
+    /** Decodes every clip not decoded or on its way. A bad clip disables that
+     * clip only; it is never replaced by a download. */
+    prepare(decoder) {
+      for (const [id, source] of Object.entries(soundSources)) {
+        if (this.buffers.has(id) || this.loading.has(id)) continue;
+        const scheme = /^(blob|data):/.exec(source)?.[1] ?? "";
+        const fail = (stage) => (error) => {
+          this.loading.delete(id);
+          const { name, message } = error ?? {};
+          const text4 = typeof message === "string" ? typeof name === "string" && name !== "Error" ? `${name}: ${message}` : message : String(error);
+          this.failures.set(id, { stage, scheme, message: text4 });
+        };
+        const decode2 = (bytes) => decoder.decodeAudioData(bytes).then((buffer) => {
+          this.loading.delete(id);
+          this.failures.delete(id);
+          this.buffers.set(id, buffer);
+        }, fail("\u89E3\u7801"));
+        this.loading.add(id);
+        try {
+          if (scheme === "blob") {
+            void fetch(source).then((response) => {
+              if (!response.ok) throw new Error(`HTTP ${response.status}`);
+              return response.arrayBuffer();
+            }).then(decode2, fail("\u8BFB\u53D6"));
+          } else if (scheme === "data") {
+            const binary = atob(source.slice(source.indexOf(",") + 1));
+            void decode2(Uint8Array.from(binary, (character) => character.charCodeAt(0)).buffer);
+          } else fail("\u8BFB\u53D6")(new Error("Tampermonkey \u6CA1\u6709\u7ED9\u51FA\u8FD9\u4E2A\u8D44\u6E90"));
+        } catch (error) {
+          fail("\u8BFB\u53D6")(error);
+        }
+      }
+    }
+    preload() {
+      try {
+        if (typeof window.OfflineAudioContext === "function") this.prepare(new OfflineAudioContext(1, 1, 44100));
+      } catch {
+      }
+    }
+    unlock() {
+      if (!this.supported) return;
+      try {
+        if (!this.context) {
+          this.context = new AudioContext();
+          this.prepare(this.context);
+        }
+        if (this.context.state !== "running") void this.context.resume().catch(() => {
+        });
+      } catch {
+        this.supported = false;
+      }
+    }
+    clips() {
+      return { total: Object.keys(soundSources).length, loaded: this.buffers.size, loading: this.loading.size, failure: [...this.failures.values()][0] };
+    }
+    available() {
+      return this.supported;
+    }
+    unlocked() {
+      return this.context?.state === "running";
+    }
+    ready(id) {
+      return this.unlocked() && this.buffers.has(id);
+    }
+    playing() {
+      return !!this.source;
+    }
+    play(id, gain) {
+      if (!this.ready(id)) return false;
+      try {
+        const source = this.context.createBufferSource(), volume2 = this.context.createGain();
+        source.buffer = this.buffers.get(id);
+        volume2.gain.value = gain;
+        source.connect(volume2);
+        volume2.connect(this.context.destination);
+        this.source = source;
+        source.onended = () => {
+          source.disconnect();
+          volume2.disconnect();
+          if (this.source === source) this.source = void 0;
+        };
+        source.start();
+        return true;
+      } catch {
+        this.source = void 0;
+        return false;
+      }
+    }
+    stop() {
+      const source = this.source;
+      this.source = void 0;
+      if (source) try {
+        source.stop();
+      } catch {
+      }
+    }
+  };
+  var engine;
+  var transport;
+  var monitor;
+  var gesture = 0;
+  var sequence = 0;
+  var foregroundEpoch = 0;
+  var started = false;
+  var previewPlaying = false;
+  var foreground = () => window.top === window.self && !document.hidden && document.hasFocus();
+  var readSoundPreferences = () => normalizeSoundPreferences(typeof GM_getValue === "function" ? GM_getValue(preferenceKey, null) : null);
+  function writeSoundPreferences(value2) {
+    GM_setValue(preferenceKey, normalizeSoundPreferences(value2));
+    engine?.stop();
+    window.dispatchEvent(new Event(soundPreferencesChanged));
+  }
+  function request(cue) {
+    const alias = aliases[cue];
+    if (!alias) return;
+    const value2 = catalog_default.cues[alias];
+    return { asset: clips.get(value2.sound), category: value2.category, priority: value2.priority };
+  }
+  function enqueue(cue, action, valid) {
+    if (!action) return;
+    try {
+      const mapped = request(cue);
+      if (!mapped) return;
+      if (previewPlaying) {
+        engine?.stop();
+        previewPlaying = false;
+      }
+      engine?.request(mapped, action, valid);
+    } catch {
+    }
+  }
+  function sound(cue) {
+    try {
+      enqueue(cue, gesture);
+    } catch {
+    }
+  }
+  function soundTask(startCue, owner2) {
+    const action = gesture, epoch = foregroundEpoch;
+    let finished = false;
+    const valid = () => epoch === foregroundEpoch && (!owner2 || (typeof owner2 === "function" ? owner2() : owner2.isConnected && !owner2.hidden));
+    if (startCue) enqueue(startCue, action, valid);
+    return {
+      finish(cue) {
+        if (finished) return;
+        finished = true;
+        if (["folder", "open", "close", "minimize", "maximize", "restore", "cancel"].includes(cue)) enqueue(cue, action, valid);
+      },
+      cancel() {
+        finished = true;
+      }
+    };
+  }
+  function previewSound(id, category) {
+    const asset = clips.get(id);
+    if (!asset || !gesture) return;
+    previewPlaying = true;
+    engine?.request({ asset, category, priority: 100, preview: true }, gesture);
+  }
+  function stopSoundPreview() {
+    if (previewPlaying) {
+      engine?.stop();
+      previewPlaying = false;
+    }
+  }
+  function soundPlaybackStatus() {
+    const prefs = readSoundPreferences();
+    if (!prefs.enabled) return "\u97F3\u6548\u5DF2\u5173\u95ED";
+    if (prefs.volume === 0) return "\u603B\u97F3\u91CF\u4E3A\u96F6";
+    if (transport && !transport.available()) return "\u5F53\u524D\u6D4F\u89C8\u5668\u65E0\u6CD5\u4F7F\u7528 Web Audio";
+    const clips2 = transport?.clips();
+    if (clips2 && !clips2.loading && clips2.failure) {
+      const { stage, scheme, message } = clips2.failure;
+      return `\u58F0\u97F3\u6CA1\u6709\u8F7D\u5165\uFF08${clips2.loaded}/${clips2.total}\uFF09\uFF1A${scheme ? `${scheme}: \u5730\u5740${stage}\u5931\u8D25` : "\u6CA1\u6709\u62FF\u5230\u8D44\u6E90\u5730\u5740"}\uFF08${message}\uFF09`;
+    }
+    if (monitor?.blocked()) return "\u68C0\u6D4B\u5230\u5A92\u4F53\u64AD\u653E\uFF0C\u97F3\u6548\u6682\u65F6\u5B89\u9759";
+    if (!foreground()) return "\u53EA\u5728\u5F53\u524D\u524D\u53F0\u7A97\u53E3\u64AD\u653E";
+    if (!transport?.unlocked()) return "\u9996\u6B21\u70B9\u51FB\u540E\u53EF\u64AD\u653E\uFF1B\u6D4F\u89C8\u5668\u963B\u6B62\u7684\u58F0\u97F3\u4E0D\u4F1A\u8865\u64AD";
+    if (clips2?.loading) return `\u58F0\u97F3\u8F7D\u5165\u4E2D\uFF08${clips2.loaded}/${clips2.total}\uFF09`;
+    return `\u5DF2\u5C31\u7EEA \xB7 ${clips2?.loaded ?? 0}/${clips2?.total ?? 0} \u4E2A\u58F0\u97F3\u5DF2\u8F7D\u5165 \xB7 \u8BD5\u542C\u4E5F\u9075\u5B88\u97F3\u91CF\u3001\u5206\u7C7B\u5F00\u5173\u548C\u5A92\u4F53\u907F\u8BA9`;
+  }
+  function startSounds() {
+    if (started) return;
+    started = true;
+    try {
+      transport = new WebAudioTransport();
+      transport.preload();
+      monitor = startSoundMediaMonitor(() => {
+        if (monitor?.blocked()) engine?.stop();
+      });
+      engine = new SoundEngine(transport, readSoundPreferences, () => foreground() && !monitor.blocked(), Date.now, (run) => {
+        window.setTimeout(() => {
+          try {
+            run();
+          } catch {
+            transport?.stop();
+          }
+        }, 0);
+      });
+      const activate = (event) => {
+        if (!event.isTrusted || !foreground()) return;
+        transport.unlock();
+        const current4 = gesture = ++sequence;
+        window.setTimeout(() => {
+          if (gesture === current4) gesture = 0;
+        }, 0);
+      };
+      for (const name of ["pointerdown", "click", "keydown", "change", "submit"]) document.addEventListener(name, activate, true);
+      const leave = () => {
+        foregroundEpoch++;
+        gesture = 0;
+        engine?.stop();
+      };
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) leave();
+      });
+      window.addEventListener("pagehide", leave);
+      window.addEventListener("blur", () => {
+        window.setTimeout(() => {
+          if (!document.hasFocus()) leave();
+        }, 0);
+      });
+      if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(preferenceKey, (_, __, ___, remote) => {
+        if (remote) {
+          engine?.stop();
+          window.dispatchEvent(new Event(soundPreferencesChanged));
+        }
+      });
+    } catch {
+      transport?.stop();
+    }
+  }
+
+  // src/ui/atelier-dom.ts
+  function element(tag, className = "", text4 = "") {
+    const node4 = document.createElement(tag);
+    node4.className = className;
+    node4.textContent = text4;
+    return node4;
+  }
+  function icon(src, size = 28) {
+    const image6 = element("img");
+    image6.src = src;
+    image6.alt = "";
+    image6.width = image6.height = size;
+    return image6;
+  }
+  function button(text4, action, className = "luna-button") {
+    const node4 = element("button", className, text4);
+    node4.type = "button";
+    node4.addEventListener("click", () => {
+      sound("click");
+      action();
+    });
+    return node4;
+  }
+  function downloadJson(value2, fileName2) {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(value2, null, 2)], { type: "application/json;charset=utf-8" }));
+    const link3 = element("a");
+    link3.href = url;
+    link3.download = fileName2;
+    document.body.appendChild(link3);
+    link3.click();
+    link3.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1e3);
+  }
+
+  // src/ui/assets/xp-icons/atelier-icon.png
+  var atelier_icon_default = readCachedResourceUrl("atelier_atelier_icon_png");
+
+  // src/ui/assets/xp-icons/nav-users.png
+  var nav_users_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/nav-control-panel.png
+  var nav_control_panel_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/nav-recent-documents.png
+  var nav_recent_documents_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/nav-computer.png
+  var nav_computer_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/app.png
+  var app_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADMUlEQVR4nLWVS0hUURjHf+c+us2jx2gWGZGz0FWFsylMTEqj2vQk2lUEEUWvXUQUFQRSmww3ta2IQKJd0CYopHRRiW0KJXupWKHNTcfJmXPjzD13vJhBqf2Hc8/c75zzPf7f950rmBnqgDmTZD+BpzPUSw3QBHh/GE16TxEngQb9PzpJmQ04QAI4DWwBBpQiC7yEnrHwSOjZN6L2pIyQojxwBrig3yuBJHAL2AH067VFwJIUcBvoBmqDmNTLHaW2cH4JsDjsaSnQB2wATgEPgcvam4NAB3BER+C1gefpsUntacAr/p4Vo2goRCDhRA+swx+Pgc3AOeBrBC6WwRPgAJADFqozYyHPCkrCXIQWA7FIwncJ2yRcAbZK6H8Kj0agshFWAm3A9eDgfM2Z8uYL+vFYC9XiZEgoldAnYYOEYxIeSrikKEhNQdE+8NZMVUEpPPZPUCS0/hPL4d0H6BLQq5RriuoysGA13O7x613l0wXu+scsYF5BZFk55sXBHfZ51GgsUvQRvgvYBlwxYKsB/XXwKAaVPVNQ5JfKRB3V1EB3D9y5Bym/in6DYu4DsB44BDwAzurE7gtR1OiH3xYUkQcbvfp6PM/zx/PnExRZOgPHly799LWsrGFPZ+fbl/F4/GpJScll13UVJdeSyeQr27YP9Pb21gkhVqTTaeBHqFxsHCdCLmcxPj7GyMh40WudA3m4peXz+Z07R/PptIxlMploIpH4NjQ0VBqLxVzTNPOGYcjBwcFyx3Ey2Ww24nOvmlzBxbbHyeVGaG4+yt69b9i+3c+BjsC4UVvbvru8fM0mwxggkVC3AssikYia5wbeVFRUqKkgBOWl1CtxhLBpb++ko8NlLNQH2gCHXrx4vbaqahVdXV0IERTX38NxHFx3gNFRg/v3fzegNBb02rY9LQOWZWEYJqYpMsBHoEpd5UGZ3qyurn7GLMAwjCFgF3AReBNEQD6fN2fDgJRSXffvg1s5fEXNFrzwV64YgYJpmirEaeXA+MO5ooFoNFpoQ7VJbf5XCCEKBaKcnNJAa2vrQtWhw8PD0zYghCCbzaomKoYSjmm//kTOFKrNmgFVrv8fvwAWxReLASdSmAAAAABJRU5ErkJggg==";
+
+  // src/ui/assets/xp-icons/history.png
+  var history_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/folder.png
+  var folder_default = "data:image/png;base64,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";
+
+  // src/ui/assets/xp-icons/up.png
+  var up_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADgElEQVR42s2VXWhbZRjHfzlvmo/TpjlLGjeDLf3akM4O1wbGxEpx80YEOwoOQViH2gqCbOiloOCVeCF6IdQL227CLmRU8EJhzma2m462EF2r27SsrsE0sSWn+TznJCfxol9rk7ULKvjCe/M87/v/P/8/7/O88B8vUfGNfnro5Ac6iTJNaLfjlgrBFQR33Iftij5voi3lg8BpPmX+31HQyQWlzfG4y2PnkSY3ex5yNGbiub5ce0Fnmh//mYJ+ehx11tG6dhmPLGMXAq/TiWTCHzcTzM7EQmtqQpUr6EeRrJYx3+Fqh7emegPcLgQ+Vw2NDQp+f+0+VdVfSz9qWJgmuH5VesD6h5T9DqWutpqiVqRW2LALgUeWqZIkIpEks7N/YbdbAd6hn6H7WjQ1iOL1Pxm/N9b01QTCKalmthACaGh2dx97upkqScJisXD16iIzb4TL2m3dHnB7D8VdB15GaexC2GTgT9JHTea+6R0+9FL4LID0Zqq4FM3g97uQZXlH6SUEkrDhbekAcXkjJntaqD/y/pm50Q/PAHzvbmVkcRJZlhFCVEZgkapAurEtOIfSoqC0vgpAMzByYRIhBLJzVcHcaKC4fjwemzoRGODLsgTFQg4KiTK1LANgGlkWxs5hGAVk56YC35EPAHA93E3oM+coaJayBKapw4qA4nIJRWZlkdjNK9Qfv4TtYhdCCJyycw34CQCSkcs7W1QwNUgnwUyhLv2OGru1JV9//BLCNo4FcMpOhBCYqg1YWrXq6+cw89qe+xKYeQ0yKTLqHZIFP43PfgJEgAyQBcY3u1QIQqEFTrY+BixjJCMABAZQdyDIgJFlOTLD3mPvAhdLrBoeG9sYBNeCt/j4xdeBFL988TxmXmva8ipLLdIxchq5Kg+2ahNyuZL93sR3vHCyi/Pnx3n7qWdQHFZM4y6STR4ODGydrNZyBLqRpqahB/TbYOpbq5+cZG+9wuDgt/T49tPX0QHxFW583oeZ1z7atQ8KhRzpZBhP21uQLrVn5Pp1fo1EGOrtpaetDTQNIxFd9z60KwFAOhtnn9WEeLokd+rgQc51d2LN3OV2cIJMIoqZ1+aB0w/UyQA231FI/Ay6jpnXSaphkithUuoC7ckosQghIAj8BAS3+74rgffAKeavvUIy/huGlmAN7AqsAt/7DCv+k6cGWZ8pZ4FQYGDz8/hfrr8BOS1Vngza8EsAAAAASUVORK5CYII=";
+
+  // src/ui/assets/xp-icons/up-16.png
+  var up_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACQ0lEQVR42o2TT0gUURzHP5O7zs7k6tQoKVSuqWgLitTWoT9gRVAQlOcudigL79EhqA4hdMkORnQIPHayJOrQwS0TpVxckXJTJ9eUTTZHZ3dnt3HdcbvolrpJv9N7vN/38z7vB09gu7rGQ6AJuMJTwvlaCrYJN4tKwZMy707PSsxutRuzywQY2twm/COs7HAKIxVH3J5ytQjFITIbijMxrgfXbILbGxymY3eNfG7vvmLKZJldskR9dSkul7M8Gk1et5tWBQL4ARzrGa3Hl11fV78ZxlrIoC0tUnJIRKl04XQ6GRj4HlbKXB4Jxx0D624OoPX4siXeqyieoyQyOhq3cjLntWkO1uxBkiSAsHHfqvpbNmeg1jaC8BGlEJRLDwAVSLJ0+yySJCFLMooDxdj02hyA9DQI6bXNZwC+ve6majWLLMkkkyucrG1u6uwxswDVLcPCRkB8CTs9Tyo2j6mHWbYsSrztyNozRFFkYlLndMNFDpxpZ+LVBf9Wg5hJRBvEXXeDCu8JIA7ozCS/Isn7CQRm6LhcT+JHL4nI+0dbAPZyGoobUTwC0AtAWNdxqy5GR+c47irFU5Rm6kNX2NfGiy2AxYUxVG87JD7lpLr9fiwrw+jbSfpaW0npI8RmB+/lHWImk0aWRTB/5Q47+/tprqzkccsx7MgY8z+nDPhz+8YZuOshHoJUgoQxh2nM8rxBRLVDRIZCYcAPvPS1YeQFFCp1jPfdJGVGAYKAX4V3QNDXlv8nbgDEvnSRMqOn1gIG/1m/AexC1pfIkDVeAAAAAElFTkSuQmCC";
+
+  // src/ui/atelier-assets.ts
+  var atelierIcons = { tv: atelier_icon_default || app_default, app: app_default, folder: folder_default, following: nav_users_default, settings: nav_control_panel_default, viewed: nav_recent_documents_default, data: nav_computer_default, video: history_default, up: up_default, up16: up_16_default };
+
   // src/ui/interface-prefs.ts
   var key = "BiliAtelier_Interface";
   var interfaceChanged = "atelier-interface-changed";
@@ -2307,10 +3411,10 @@
   function interfaceCss(prefs = readInterfacePrefs()) {
     return `:root{--atelier-pbp-opacity:${prefs.pbpOpacity};--atelier-viewed-opacity:${prefs.viewedDim ? prefs.viewedOpacity : 1}}` + (prefs.ipLocation ? "" : "\n.acm-where{display:none!important}");
   }
-  var started = false;
+  var started2 = false;
   function startInterfacePrefs() {
-    if (started) return;
-    started = true;
+    if (started2) return;
+    started2 = true;
     const style = document.createElement("style");
     style.id = "atelier-interface";
     const paint2 = () => {
@@ -2320,23 +3424,6 @@
     paint2();
     window.addEventListener(interfaceChanged, paint2);
     relayRemoteChanges(key, interfaceChanged);
-  }
-
-  // src/ui/resource-cache.ts
-  var warned = false;
-  function unavailable() {
-    if (warned) return;
-    warned = true;
-    console.warn("[Bili Atelier] \u90E8\u5206\u754C\u9762\u8D44\u6E90\u4E0D\u53EF\u7528\uFF0C\u8BF7\u68C0\u67E5 Tampermonkey \u7684\u811A\u672C\u66F4\u65B0\u3002\u6587\u5B57\u63A7\u4EF6\u548C\u6570\u636E\u529F\u80FD\u4ECD\u53EF\u4F7F\u7528\u3002");
-  }
-  function readCachedResourceUrl(name) {
-    try {
-      const url = GM_getResourceURL(name);
-      if (typeof url === "string" && /^(?:data:|blob:)/.test(url)) return url;
-    } catch {
-    }
-    unavailable();
-    return "";
   }
 
   // src/ui/assets/luna/blue.png
@@ -4615,10 +5702,10 @@ ${xpButtonCss(".atelier-control", true)}
     const { theme: theme2, scheme } = readUiPreferences();
     return { scheme, dark: theme2 === "dark" || theme2 === "page" && pageIsDark(), dpr: window.devicePixelRatio || 1 };
   }
-  var started2 = false;
+  var started3 = false;
   function ensureAppearance() {
-    if (started2) return;
-    started2 = true;
+    if (started3) return;
+    started3 = true;
     const styles = ["atelier-appearance", "atelier-fonts", "atelier-controls"].map((id) => {
       const style = document.createElement("style");
       style.id = id;
@@ -4771,6 +5858,7 @@ ${id}[data-maximized=true]{inset:0;width:auto;height:auto;box-shadow:none}
 ${id}[data-maximized=true] .luna-rules-content{display:flex;flex-direction:column}${id}[data-maximized=true] .luna-rules-content>*{flex-shrink:0}${id}[data-maximized=true] .luna-editor-host{flex:1 0 auto;display:flex;flex-direction:column}${id}[data-maximized=true] .luna-editor{flex:1 0 auto;resize:none}
 ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw - 24px));height:auto;margin:0}${id}[data-minimized=true] :is(.luna-layout,.xp-status){display:none}
 #atelier-launcher{position:fixed;z-index:2147483500;width:44px;height:44px;isolation:isolate;color:var(--xp-ink);${xpFont}}
+body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!important}
 #atelier-launcher [hidden]{display:none!important}#atelier-launcher .atelier-launcher-button{width:44px;height:44px;min-width:0;padding:4px;touch-action:none;box-shadow:1px 2px 4px #0004}
 #atelier-launcher img{width:16px;height:16px;object-fit:contain}#atelier-launcher .atelier-launcher-button img{width:32px;height:32px}
 #atelier-launcher .atelier-menu-check{width:16px;height:16px;flex-shrink:0;display:grid;place-items:center}#atelier-launcher .atelier-menu-check.checked::after{content:"\u2713"}
@@ -4788,6 +5876,1072 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
 @media(max-width:640px){${id}{inset:6px;width:calc(100vw - 12px);height:calc(100vh - 12px)}${id} .luna-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}${id} .luna-sidebar{flex-direction:row;padding:6px;overflow:auto}${id} .luna-sidebar .xp-task-group{min-width:100%}${id} .luna-sidebar .xp-task-body{flex-direction:row;flex-wrap:wrap;gap:4px 12px}${id} .luna-sidebar .xp-task-link{width:auto}${id} .luna-content{padding:9px}}
 `);
     (document.head || document.documentElement).appendChild(style);
+  }
+
+  // src/ui/dialogs.ts
+  var pending = Promise.resolve();
+  function atelierDialog(options) {
+    const run = () => new Promise((resolve) => {
+      ensureLunaTheme();
+      const before = document.activeElement;
+      const dialog = document.createElement("dialog");
+      dialog.className = "atelier-dialog xp-window";
+      dialog.setAttribute("data-bili-blocker-ui", "");
+      const caption2 = document.createElement("header");
+      caption2.className = "xp-caption";
+      const heading = document.createElement("h2");
+      heading.id = "atelier-dialog-title";
+      heading.textContent = options.title;
+      const dismiss = document.createElement("button");
+      dismiss.type = "button";
+      dismiss.className = "xp-caption-button";
+      dismiss.dataset.kind = "close";
+      dismiss.setAttribute("aria-label", "\u5173\u95ED");
+      dismiss.title = "\u5173\u95ED";
+      caption2.append(heading, dismiss);
+      dialog.setAttribute("aria-labelledby", heading.id);
+      const message = document.createElement("p");
+      message.textContent = options.message;
+      const body2 = document.createElement("div");
+      body2.className = "atelier-dialog-body";
+      body2.append(message);
+      let input;
+      if (options.input !== void 0) {
+        input = document.createElement(options.multiline ? "textarea" : "input");
+        input.value = options.input;
+        input.readOnly = !!options.readOnly;
+        input.setAttribute("aria-label", options.title);
+        body2.append(input);
+      }
+      const actions = document.createElement("div");
+      actions.className = "atelier-dialog-actions";
+      let settled = false;
+      const cleanupPixels = observeCrispText(dialog);
+      dismiss.addEventListener("click", () => {
+        sound("click");
+        finish(null);
+      });
+      const finish = (result2) => {
+        if (settled) return;
+        settled = true;
+        cleanupPixels();
+        dialog.remove();
+        if (before?.isConnected) before.focus();
+        resolve(result2);
+      };
+      const add = (label, value2, parent = actions) => {
+        const button6 = document.createElement("button");
+        button6.type = "button";
+        button6.className = "atelier-control";
+        button6.textContent = label;
+        button6.addEventListener("click", () => {
+          sound("click");
+          finish(value2());
+        });
+        parent.append(button6);
+        return button6;
+      };
+      if (options.choices) {
+        const choices = document.createElement("div");
+        choices.className = "atelier-dialog-choices";
+        for (const choice of options.choices) add(choice.label, () => choice.value, choices);
+        body2.append(choices);
+      } else add(options.confirmLabel || (options.readOnly || options.alert ? "\u5173\u95ED" : "\u786E\u5B9A"), () => input?.value ?? "ok");
+      if (!options.alert && !options.readOnly) add(options.cancelLabel || "\u53D6\u6D88", () => null);
+      dialog.append(caption2, body2, actions);
+      dialog.addEventListener("cancel", (event) => {
+        event.preventDefault();
+        finish(null);
+      });
+      dialog.addEventListener("keydown", (event) => {
+        event.stopPropagation();
+        if (event.key === "Escape") {
+          event.preventDefault();
+          finish(null);
+        }
+        if (event.key === "Enter" && event.target === input && !options.multiline) {
+          event.preventDefault();
+          finish(input.value);
+        }
+      });
+      document.body.append(dialog);
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+      (input || dialog.querySelector("button"))?.focus();
+      if (options.readOnly) input?.select();
+    });
+    const result = pending.then(run, run);
+    pending = result;
+    return result;
+  }
+  async function atelierConfirm(message, title = "\u786E\u8BA4\u64CD\u4F5C") {
+    return await atelierDialog({ title, message }) !== null;
+  }
+  function atelierAlert(message, title = "\u64CD\u4F5C\u63D0\u793A") {
+    return atelierDialog({ title, message, alert: true });
+  }
+  function atelierPrompt(message, value2 = "", readOnly = false) {
+    return atelierDialog({ title: readOnly ? "\u5BFC\u51FA\u6570\u636E" : "\u5BFC\u5165\u6570\u636E", message, input: value2, multiline: true, readOnly });
+  }
+
+  // src/ui/navigation.ts
+  var atelierAreas = [
+    { id: "following", label: "\u672C\u5730\u5173\u6CE8" },
+    { id: "viewed", label: "\u5DF2\u770B\u7BA1\u7406" },
+    { id: "video", label: "\u5C4F\u853D\u7BA1\u7406" },
+    { id: "data", label: "\u6570\u636E\u4E0E\u540C\u6B65" },
+    { id: "settings", label: "\u8BBE\u7F6E" }
+  ];
+  var atelierTabs = {
+    following: [],
+    viewed: [],
+    video: [["user", "\u7528\u6237"], ["video", "\u89C6\u9891"], ["comment", "\u8BC4\u8BBA"], ["dynamic", "\u52A8\u6001"], ["live", "\u76F4\u64AD"], ["history", "\u5C4F\u853D\u5386\u53F2"]],
+    data: [["data", "\u5BFC\u5165\u4E0E\u5BFC\u51FA"], ["sync", "PC / Android \u540C\u6B65"]],
+    settings: [["settings", "\u5916\u89C2"], ["interface", "\u754C\u9762"], ["sounds", "\u97F3\u6548"]]
+  };
+  function areaFor(section) {
+    for (const area of atelierAreas) if (atelierTabs[area.id].some(([id]) => id === section)) return area.id;
+    return section;
+  }
+  var driver;
+  function registerAtelierNavigation(next) {
+    driver = next;
+  }
+  function openAtelier(section = "following") {
+    driver?.open(section);
+  }
+  function toggleAtelier(section) {
+    driver?.toggle(section);
+  }
+
+  // src/ui/window-drag.ts
+  function enableWindowDrag(panel, caption2, signal) {
+    const positions = {};
+    let drag;
+    const mode2 = () => panel.dataset.minimized === "true" ? "minimized" : "normal";
+    const maximized = () => panel.dataset.maximized === "true" && mode2() === "normal";
+    const place3 = (position) => {
+      const rect = panel.getBoundingClientRect();
+      position.x = Math.max(0, Math.min(Math.max(0, innerWidth - rect.width), position.x));
+      position.y = Math.max(0, Math.min(Math.max(0, innerHeight - rect.height), position.y));
+      Object.assign(panel.style, { right: "auto", bottom: "auto", margin: "0" });
+      placeFixed(panel, { left: position.x, top: position.y });
+    };
+    const update = () => {
+      drag = void 0;
+      for (const property of ["left", "top", "right", "bottom", "margin"]) panel.style.removeProperty(property);
+      if (!maximized() && positions[mode2()]) place3(positions[mode2()]);
+      caption2.style.cursor = maximized() ? "default" : "move";
+    };
+    caption2.style.touchAction = "none";
+    caption2.querySelectorAll("img").forEach((img) => {
+      img.draggable = false;
+    });
+    caption2.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || maximized() || event.target.closest("button")) return;
+      const rect = panel.getBoundingClientRect();
+      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, origin: { x: rect.left, y: rect.top }, moved: false };
+      caption2.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    }, { signal });
+    caption2.addEventListener("pointermove", (event) => {
+      if (!drag || drag.id !== event.pointerId) return;
+      if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 4) drag.moved = true;
+      if (!drag.moved) return;
+      const position = { x: drag.origin.x + event.clientX - drag.x, y: drag.origin.y + event.clientY - drag.y };
+      place3(position);
+      positions[mode2()] = position;
+    }, { signal });
+    const release = (event) => {
+      if (!drag || drag.id !== event.pointerId) return;
+      if (event.type === "pointercancel" && drag.moved) {
+        positions[mode2()] = drag.origin;
+        place3(drag.origin);
+      }
+      drag = void 0;
+    };
+    for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) caption2.addEventListener(event, release, { signal });
+    window.addEventListener("resize", update, { signal });
+    update();
+    return update;
+  }
+
+  // src/ui/atelier-window.ts
+  var factories = [];
+  function registerAtelierPages(factory) {
+    factories.push(factory);
+  }
+  var notifyAtelierDataChanged = () => window.dispatchEvent(new Event("atelier-sync-applied"));
+  var active;
+  function toggleAtelierWindow(section) {
+    if (!active?.toggle(section)) openAtelierWindow(section);
+  }
+  function openAtelierWindow(initialSection = "following") {
+    if (active && document.getElementById(atelierPanelId)) {
+      active.show(initialSection);
+      return;
+    }
+    ensureLunaTheme();
+    const previousFocus = document.activeElement;
+    const events = new AbortController();
+    const panel = element("section");
+    panel.id = atelierPanelId;
+    panel.className = "xp-window";
+    panel.setAttribute("data-bili-blocker-ui", "");
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-labelledby", "bili-atelier-title");
+    let section = initialSection;
+    const cleanupPixels = observeCrispText(panel);
+    const navButtons = /* @__PURE__ */ new Map();
+    const status2 = element("span", "luna-status xp-status-pane");
+    status2.setAttribute("role", "status");
+    status2.setAttribute("aria-live", "polite");
+    const win = {
+      element: panel,
+      signal: events.signal,
+      current: () => section,
+      show: (next, user = false) => show(next, user),
+      updateStatus,
+      isDirty: () => groups.some((group2) => group2.isDirty?.()),
+      reload: () => {
+        for (const group2 of groups) group2.reload?.();
+      }
+    };
+    const groups = factories.map((factory) => factory(win));
+    const groupOf2 = (id) => groups.find((group2) => group2.pages[id]);
+    function updateStatus(message) {
+      const current4 = groupOf2(section);
+      const source = [current4, ...groups].find((group2) => group2?.status && (group2 === current4 || group2.isDirty?.()));
+      status2.textContent = message || source?.status?.() || "";
+      status2.dataset.dirty = String(!!source?.isDirty?.());
+    }
+    let closing = false;
+    async function close2() {
+      if (closing) return;
+      closing = true;
+      const feedback = soundTask();
+      if (win.isDirty() && !await atelierConfirm("\u89C4\u5219\u6216\u540C\u6B65\u8BBE\u7F6E\u5C1A\u672A\u4FDD\u5B58\uFF0C\u786E\u5B9A\u653E\u5F03\u4FEE\u6539\u5E76\u5173\u95ED\u5417\uFF1F")) {
+        closing = false;
+        feedback.finish("cancel");
+        return;
+      }
+      events.abort();
+      for (const group2 of groups) group2.dispose?.();
+      cleanupPixels();
+      panel.remove();
+      active = void 0;
+      if (previousFocus?.isConnected) previousFocus.focus();
+      feedback.finish("close");
+    }
+    function save() {
+      groupOf2(section)?.save?.();
+    }
+    const caption2 = element("header", "luna-caption xp-caption");
+    const title = element("h1", "", "Bili Atelier");
+    title.id = "bili-atelier-title";
+    const captionActions = element("div", "luna-caption-actions");
+    function captionButton2(name, label, action) {
+      const node4 = button("", action, "luna-caption-button xp-caption-button");
+      node4.title = label;
+      node4.setAttribute("aria-label", label);
+      node4.dataset.kind = name;
+      captionActions.appendChild(node4);
+      return node4;
+    }
+    const minimize = captionButton2("minimize", "\u6700\u5C0F\u5316", () => {
+      const minimized = panel.dataset.minimized !== "true";
+      if (minimized) groupOf2(section)?.leave?.();
+      panel.dataset.minimized = String(minimized);
+      updateWindowPosition();
+      minimize.title = minimized ? "\u5C55\u5F00\u7A97\u53E3" : "\u6700\u5C0F\u5316";
+      minimize.setAttribute("aria-label", minimize.title);
+      sound(minimized ? "minimize" : "restore");
+    });
+    const maximize = captionButton2("maximize", "\u6700\u5927\u5316", () => {
+      panel.dataset.minimized = "false";
+      minimize.title = "\u6700\u5C0F\u5316";
+      minimize.setAttribute("aria-label", minimize.title);
+      const maximized = panel.dataset.maximized !== "true";
+      panel.dataset.maximized = String(maximized);
+      updateWindowPosition();
+      maximize.title = maximized ? "\u8FD8\u539F\u7A97\u53E3" : "\u6700\u5927\u5316";
+      maximize.setAttribute("aria-label", maximize.title);
+      maximize.dataset.kind = maximized ? "restore" : "maximize";
+      sound(maximized ? "maximize" : "restore");
+    });
+    captionButton2("close", "\u5173\u95ED\u7A97\u53E3", close2);
+    caption2.append(icon(atelierIcons.tv, 16), title, captionActions);
+    const updateWindowPosition = enableWindowDrag(panel, caption2, events.signal);
+    const layout2 = element("div", "luna-layout");
+    const sidebar = element("div", "luna-sidebar xp-taskpane");
+    const group = element("section", "xp-task-group");
+    group.dataset.special = "";
+    const groupHead = button("\u5DE5\u4F5C\u53F0", () => {
+      group.toggleAttribute("data-collapsed");
+      groupHead.setAttribute("aria-expanded", String(!group.hasAttribute("data-collapsed")));
+    }, "xp-task-head");
+    groupHead.setAttribute("aria-expanded", "true");
+    const nav2 = element("nav", "luna-nav xp-task-body");
+    nav2.setAttribute("aria-label", "Atelier \u529F\u80FD\u76EE\u5F55");
+    for (const area of atelierAreas) {
+      const node4 = button("", () => show(area.id, true), "luna-nav-button xp-task-link");
+      node4.append(icon(atelierIcons[area.id], 16), document.createTextNode(area.label));
+      navButtons.set(area.id, node4);
+      nav2.appendChild(node4);
+    }
+    group.append(groupHead, nav2);
+    sidebar.append(group);
+    const main = element("div", "luna-main");
+    const breadcrumb = element("div", "luna-breadcrumb");
+    const address = element("div", "luna-address");
+    breadcrumb.append(document.createTextNode("\u5730\u5740"), address);
+    const sectionTabs = element("nav", "luna-section-tabs xp-tabs");
+    sectionTabs.setAttribute("aria-label", "\u5F53\u524D\u680F\u76EE\u5B50\u9875\u9762");
+    const content = element("div", "luna-content");
+    const footer = element("footer", "luna-footer");
+    const saveButton = button("\u4FDD\u5B58\u89C4\u5219", save, "luna-button luna-button-primary xp-default");
+    footer.append(saveButton, button("\u5173\u95ED", close2));
+    main.append(breadcrumb, sectionTabs, content, footer);
+    layout2.append(sidebar, main);
+    const statusBar = element("div", "xp-status");
+    statusBar.append(status2);
+    panel.append(caption2, layout2, statusBar);
+    let drawnClass = "";
+    function show(next, user = false) {
+      if (user && next !== section) sound("folder");
+      else if (user && panel.dataset.minimized === "true") sound("restore");
+      groupOf2(section)?.leave?.();
+      section = next;
+      const owner2 = groupOf2(section), page = owner2?.pages[section];
+      saveButton.hidden = !(page?.saves && owner2?.save);
+      panel.dataset.minimized = "false";
+      updateWindowPosition();
+      minimize.title = "\u6700\u5C0F\u5316";
+      minimize.setAttribute("aria-label", minimize.title);
+      const area = areaFor(section);
+      for (const [id, node4] of navButtons) {
+        if (id === area) node4.setAttribute("aria-current", "page");
+        else node4.removeAttribute("aria-current");
+      }
+      const label = atelierAreas.find((item) => item.id === area).label;
+      address.replaceChildren(icon(atelierIcons[area], 16), document.createTextNode("Bili Atelier \u203A " + label));
+      const tabs2 = atelierTabs[area];
+      sectionTabs.replaceChildren();
+      sectionTabs.hidden = !tabs2.length;
+      for (const [id, tabLabel] of tabs2) {
+        const tab = button(tabLabel, () => show(id, true), "luna-section-tab xp-tab");
+        if (id === section) tab.setAttribute("aria-current", "page");
+        sectionTabs.append(tab);
+      }
+      content.replaceChildren();
+      content.classList.toggle("xp-tabpanel", !!tabs2.length);
+      if (drawnClass) content.classList.remove(drawnClass);
+      drawnClass = page?.contentClass ?? "";
+      if (drawnClass) content.classList.add(drawnClass);
+      page?.draw(content);
+      content.scrollTop = 0;
+      updateStatus();
+    }
+    panel.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        close2();
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!saveButton.hidden) save();
+      }
+    });
+    window.addEventListener("beforeunload", (event) => {
+      if (win.isDirty()) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    }, { signal: events.signal });
+    active = {
+      show: (next) => show(next, true),
+      toggle: (next) => {
+        if (section !== next || !panel.isConnected) return false;
+        minimize.click();
+        return true;
+      }
+    };
+    document.body.appendChild(panel);
+    show(initialSection);
+    navButtons.get(areaFor(initialSection))?.focus();
+    sound("open");
+  }
+
+  // src/modules/blocker/content-rules.ts
+  var scopeNames = { video: "\u89C6\u9891", dynamic: "\u52A8\u6001", both: "\u89C6\u9891\u548C\u52A8\u6001" };
+  var fieldNames = { title: "\u4EC5\u6807\u9898", text: "\u6807\u9898\uFF0B\u6587\u6848" };
+  var modeNames = { keyword: "\u6309\u5173\u952E\u5B57", regex: "\u6309\u6B63\u5219\u8868\u8FBE\u5F0F" };
+  function contentKey({ scope, fields: fields2, mode: mode2 }) {
+    if (scope === "video" && fields2 === "title") return mode2 === "keyword" ? "title" : "titleCanonical";
+    if (scope === "dynamic" && fields2 === "text") return mode2 === "keyword" ? "dynamic" : "dynamicCanonical";
+    return `content.${scope}.${fields2}.${mode2}`;
+  }
+  var contentGroups = Object.keys(scopeNames).flatMap((scope) => Object.keys(fieldNames).flatMap((fields2) => Object.keys(modeNames).map((mode2) => ({ scope, fields: fields2, mode: mode2, key: contentKey({ scope, fields: fields2, mode: mode2 }) }))));
+  function matchContent(kind, parts2, lists) {
+    for (const group of contentGroups) {
+      const rules = lists[group.key];
+      if (!rules?.length || kind === "video" && group.scope === "dynamic") continue;
+      for (const pattern of rules) {
+        const value2 = String(pattern);
+        let regex;
+        if (group.mode === "regex") {
+          try {
+            regex = new RegExp(value2, "i");
+          } catch {
+            continue;
+          }
+        }
+        const keyword = value2.replace(/\s+/g, "").toLowerCase();
+        const matches = (s) => !!s && (regex ? regex.test(s) : !!keyword && s.replace(/\s+/g, "").toLowerCase().includes(keyword));
+        if (parts2.some((part) => (kind !== "dynamic" || group.scope !== "video" || part.video) && (matches(part.title) || group.fields === "text" && matches(part.body)))) {
+          const label = group.scope === "dynamic" ? "\u52A8\u6001" : "\u6807\u9898";
+          return { type: label + (regex ? "regex" : "fuzzy"), matching: pattern, ruleValue: pattern, ruleKey: group.key, fold: true };
+        }
+      }
+    }
+    return null;
+  }
+
+  // src/modules/viewed/id.ts
+  var strict = /^(?:1[0-9A-Za-z]{9}(?:-[1-9][0-9]*)?|(?:ep|ss)[1-9][0-9]*)$/;
+  var isViewedId = (value2) => typeof value2 === "string" && strict.test(value2);
+  var withoutBv = (value2) => value2.trim().replace(/^BV/i, "");
+  function parseViewedId(value2) {
+    if (typeof value2 !== "string") return null;
+    const id = withoutBv(value2);
+    return strict.test(id) ? id : null;
+  }
+  function viewedIdFromBvid(bvid, part) {
+    const body2 = String(bvid ?? "");
+    return parseViewedId(part && Number.isSafeInteger(part) && part > 0 ? `${body2}-${part}` : body2) ?? "";
+  }
+  function viewedGroup(value2) {
+    const id = String(value2 ?? "");
+    if (/^(ep|ss)[1-9][0-9]*$/.test(id)) return `${id.slice(0, 2)}${id.slice(-1)}`;
+    if (id.length < 5) return "";
+    if (id.startsWith("ep") || id.startsWith("ss")) return `${id.slice(0, 2)}${id.slice(-1)}`;
+    if (id.length === 10 || id.length > 10 && id.indexOf("-") === 10) return id.charAt(1);
+    return "";
+  }
+  function parseStoredViewedId(value2) {
+    const id = withoutBv(String(value2 || ""));
+    return id && viewedGroup(id) ? id : null;
+  }
+  var alphabet = "FcwAPNKTMug3GV5Lj7EJnHpWsx4tb8haYeviqBz6rkCy12mUSDQX9RdoZf";
+  function bvidFromAid(aid) {
+    if (!Number.isSafeInteger(aid) || aid <= 0 || aid >= 2 ** 51) return "";
+    let rest = (BigInt(aid) | 1n << 51n) ^ 23442827791579n;
+    const digits = [];
+    for (let i = 0; i < 9; i++) {
+      digits.unshift(alphabet[Number(rest % 58n)]);
+      rest /= 58n;
+    }
+    [digits[0], digits[6]] = [digits[6], digits[0]];
+    [digits[1], digits[4]] = [digits[4], digits[1]];
+    return "BV1" + digits.join("");
+  }
+  var bvidPattern = /^BV1[0-9A-Za-z]{9}$/i;
+  var isBvid = (value2) => typeof value2 === "string" && bvidPattern.test(value2);
+  function viewedIdFromHref(href) {
+    if (!href) return "";
+    let url;
+    try {
+      url = new URL(href, location.href);
+    } catch {
+      return "";
+    }
+    const host = url.hostname;
+    if (host === "b23.tv") {
+      const code = url.pathname.split("/")[1];
+      return isBvid(code) ? viewedIdFromBvid(code) : "";
+    }
+    if (!/(^|\.)bilibili\.com$/.test(host)) return "";
+    const [, section, value2 = ""] = url.pathname.split("/");
+    if (section === "video") {
+      if (isBvid(value2)) return viewedIdFromBvid(value2);
+      const av = /^av(\d+)$/i.exec(value2);
+      return av ? viewedIdFromBvid(bvidFromAid(Number(av[1]))) : "";
+    }
+    if (section === "list") {
+      const bvid = url.searchParams.get("bvid");
+      return isBvid(bvid) ? viewedIdFromBvid(bvid) : "";
+    }
+    if (section === "bangumi") {
+      const episode = /^\/bangumi\/play\/((?:ep|ss)[1-9]\d*)\/?$/.exec(url.pathname);
+      return episode ? episode[1] : "";
+    }
+    return "";
+  }
+
+  // src/modules/sync/keys.ts
+  var viewedKey = (id) => `v:${id}`;
+  var uidKey = (uid) => `u:${String(uid).trim()}`;
+  var nameKey = (name) => `n:${String(name).trim().toLowerCase()}`;
+  function validKey(key6) {
+    const value2 = key6.slice(2);
+    if (key6.startsWith("v:")) return isViewedId(value2);
+    if (key6.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
+    return key6.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
+  }
+  var sameKeys = (a, b) => a.size === b.size && [...a].every((key6) => b.has(key6));
+
+  // src/modules/blocker/matching.ts
+  var defaultMatchOptions = {
+    caseInsensitive: false,
+    collapseWhitespace: true
+  };
+  function resolveOptions(options = {}) {
+    return { ...defaultMatchOptions, ...options };
+  }
+  function normalizeText(value2, options = {}) {
+    if (value2 === null || value2 === void 0) {
+      return null;
+    }
+    const resolvedOptions = resolveOptions(options);
+    let text4 = String(value2).trim();
+    if (text4.length === 0) {
+      return null;
+    }
+    if (resolvedOptions.collapseWhitespace) {
+      text4 = text4.replace(/[\t\r\f\n\s]+/g, "");
+    }
+    if (resolvedOptions.caseInsensitive) {
+      text4 = text4.toLowerCase();
+    }
+    return text4.length > 0 ? text4 : null;
+  }
+  function normalizeRuleValue(value2, options = {}) {
+    if (typeof value2 === "number") {
+      return Number.isFinite(value2) ? value2 : null;
+    }
+    return normalizeText(value2, options);
+  }
+  function validateRuleInput(value2, integerRule = false) {
+    if (value2 === null || value2 === void 0) {
+      return { status: false, res: "\u5185\u5BB9\u4E0D\u80FD\u4E3A\u7A7A" };
+    }
+    const trimmed = String(value2).trim();
+    if (trimmed.length === 0) {
+      return { status: false, res: "\u5185\u5BB9\u4E0D\u80FD\u4E3A\u7A7A" };
+    }
+    if (!integerRule) {
+      return { status: true, res: trimmed };
+    }
+    const parsed = /^-?\d+$/.test(trimmed) ? Number.parseInt(trimmed, 10) : Number.NaN;
+    if (!Number.isFinite(parsed)) {
+      return { status: false, res: "\u8BF7\u8F93\u5165\u6570\u5B57\uFF01" };
+    }
+    return { status: true, res: parsed };
+  }
+  function exactMatch(ruleList, value2, options = {}) {
+    if (!Array.isArray(ruleList)) {
+      return null;
+    }
+    const normalizedValue = normalizeRuleValue(value2, options);
+    if (normalizedValue === null) {
+      return null;
+    }
+    for (const rule of ruleList) {
+      const normalizedRule = normalizeRuleValue(rule, options);
+      if (normalizedRule === null) {
+        continue;
+      }
+      if (normalizedRule === normalizedValue) {
+        return { kind: "exact", matching: rule };
+      }
+    }
+    return null;
+  }
+  function fuzzyMatch(ruleList, value2, options = {}) {
+    if (!Array.isArray(ruleList)) {
+      return null;
+    }
+    const normalizedValue = normalizeText(value2, options);
+    if (normalizedValue === null) {
+      return null;
+    }
+    for (const rule of ruleList) {
+      const normalizedRule = normalizeText(rule, options);
+      if (normalizedRule === null) {
+        continue;
+      }
+      if (normalizedValue.includes(normalizedRule)) {
+        return { kind: "fuzzy", matching: rule };
+      }
+    }
+    return null;
+  }
+  function regexMatch(ruleList, value2, options = {}) {
+    if (!Array.isArray(ruleList)) {
+      return null;
+    }
+    const normalizedValue = normalizeText(value2, options);
+    if (normalizedValue === null) {
+      return null;
+    }
+    for (const rule of ruleList) {
+      const normalizedRule = normalizeText(rule, { ...options, collapseWhitespace: false });
+      if (normalizedRule === null) {
+        continue;
+      }
+      try {
+        const regexp = new RegExp(normalizedRule, options.caseInsensitive ? "i" : "");
+        if (regexp.test(normalizedValue)) {
+          return { kind: "regex", matching: rule };
+        }
+      } catch (error) {
+        options.onInvalidRule?.({ rule: String(rule), error });
+      }
+    }
+    return null;
+  }
+  function blockExactFuzzyRegex(value2, config2) {
+    const exact = exactMatch(config2.exactRules, value2, config2.options);
+    if (exact) {
+      return exact;
+    }
+    const fuzzy = fuzzyMatch(config2.fuzzyRules, value2, config2.options);
+    if (fuzzy) {
+      return fuzzy;
+    }
+    return regexMatch(config2.regexRules, value2, {
+      ...config2.options,
+      onInvalidRule: config2.onInvalidRegexRule
+    });
+  }
+
+  // src/modules/blocker/rules.ts
+  var ruleDefinitions = [
+    { key: "precise_uid", label: "\u7528\u6237 UID\uFF08\u7CBE\u786E\uFF09", integer: true },
+    { key: "precise_uid_white", label: "\u7528\u6237 UID \u767D\u540D\u5355\uFF08\u7CBE\u786E\uFF09", integer: true },
+    { key: "name", label: "\u7528\u6237\u540D\uFF08\u6A21\u7CCA\uFF09" },
+    { key: "precise_name", label: "\u7528\u6237\u540D\uFF08\u7CBE\u786E\uFF09" },
+    { key: "nameCanonical", label: "\u7528\u6237\u540D\uFF08\u6B63\u5219\uFF09" },
+    { key: "title", label: "\u89C6\u9891\u6807\u9898\uFF08\u6A21\u7CCA\uFF09" },
+    { key: "titleCanonical", label: "\u89C6\u9891\u6807\u9898\uFF08\u6B63\u5219\uFF09" },
+    { key: "commentOn", label: "\u8BC4\u8BBA\u5173\u952E\u8BCD\uFF08\u6A21\u7CCA\uFF09", textarea: true },
+    { key: "commentOnCanonical", label: "\u8BC4\u8BBA\u5173\u952E\u8BCD\uFF08\u6B63\u5219\uFF09", textarea: true },
+    { key: "dynamic", label: "\u52A8\u6001\u5173\u952E\u8BCD\uFF08\u6A21\u7CCA\uFF09", textarea: true },
+    { key: "dynamicCanonical", label: "\u52A8\u6001\u5173\u952E\u8BCD\uFF08\u6B63\u5219\uFF09", textarea: true },
+    { key: "liveTitle", label: "\u76F4\u64AD\u6807\u9898\uFF08\u6A21\u7CCA\uFF09" },
+    { key: "liveTitleCanonical", label: "\u76F4\u64AD\u6807\u9898\uFF08\u6B63\u5219\uFF09" },
+    ...contentGroups.filter((group) => group.key.startsWith("content.")).map((group) => ({
+      key: group.key,
+      label: [scopeNames[group.scope], fieldNames[group.fields], modeNames[group.mode]].join(" \xB7 ")
+    })),
+    { key: "precise_liveRoomId", label: "\u76F4\u64AD\u95F4 ID\uFF08\u7CBE\u786E\uFF09" },
+    { key: "precise_partition", label: "\u76F4\u64AD\u5206\u533A\uFF08\u7CBE\u786E\uFF09" }
+  ];
+  var integerRuleKeys = new Set(ruleDefinitions.filter((rule) => rule.integer).map((rule) => rule.key));
+  function emptySnapshot() {
+    return Object.fromEntries(ruleDefinitions.map((rule) => [rule.key, []]));
+  }
+  function normalizeStoredRules(value2, integer = false) {
+    if (!Array.isArray(value2)) {
+      return [];
+    }
+    const normalized = [];
+    for (const item of value2) {
+      const validation = validateRuleInput(item, integer);
+      if (!validation.status || normalized.includes(validation.res)) {
+        continue;
+      }
+      normalized.push(validation.res);
+    }
+    return normalized;
+  }
+  function readRuleList(key6) {
+    const integer = integerRuleKeys.has(key6);
+    return normalizeStoredRules(GM_getValue(key6, []), integer);
+  }
+  var syncedRules = { precise_uid: { prefix: "u:", key: uidKey }, precise_name: { prefix: "n:", key: nameKey } };
+  var isSyncedRule = (key6) => Object.prototype.hasOwnProperty.call(syncedRules, key6);
+  var journal;
+  var keysOf = (key6, values) => new Set(values.map(syncedRules[key6].key).filter(validKey));
+  function writeRuleList(key6, values) {
+    const integer = integerRuleKeys.has(key6);
+    const normalized = normalizeStoredRules(values, integer);
+    if (isSyncedRule(key6)) journal?.(keysOf(key6, readRuleList(key6)), keysOf(key6, normalized));
+    GM_setValue(key6, normalized);
+    return normalized;
+  }
+  var blockedUserSyncStore = {
+    keys: () => /* @__PURE__ */ new Set([...keysOf("precise_uid", readRuleList("precise_uid")), ...keysOf("precise_name", readRuleList("precise_name"))]),
+    applySync(desired) {
+      const mine = new Set([...desired].filter((key6) => key6.startsWith("u:") || key6.startsWith("n:")));
+      if (sameKeys(mine, blockedUserSyncStore.keys())) return false;
+      for (const key6 of Object.keys(syncedRules)) {
+        const { prefix: prefix4, key: toKey } = syncedRules[key6];
+        const local = readRuleList(key6).filter((value2) => !validKey(toKey(value2)));
+        const synced = [...mine].filter((entry) => entry.startsWith(prefix4)).map((entry) => entry.slice(prefix4.length));
+        GM_setValue(key6, normalizeStoredRules([...local, ...synced], integerRuleKeys.has(key6)));
+      }
+      return true;
+    },
+    setJournal(next) {
+      journal = next;
+    }
+  };
+  function readRuleSnapshot() {
+    const snapshot = emptySnapshot();
+    for (const rule of ruleDefinitions) {
+      snapshot[rule.key] = readRuleList(rule.key);
+    }
+    return snapshot;
+  }
+  function addRuleItem(key6, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key6));
+    if (!validation.status) {
+      return validation;
+    }
+    const current4 = readRuleList(key6);
+    if (current4.includes(validation.res)) {
+      return { status: false, res: "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" };
+    }
+    current4.push(validation.res);
+    writeRuleList(key6, current4);
+    return { status: true, res: "\u6DFB\u52A0\u6210\u529F", value: validation.res };
+  }
+  function removeRuleItem(key6, value2) {
+    const validation = validateRuleInput(value2, integerRuleKeys.has(key6));
+    if (!validation.status) {
+      return validation;
+    }
+    const current4 = readRuleList(key6);
+    const index = current4.findIndex((item) => item === validation.res);
+    if (index < 0) {
+      return { status: false, res: "\u89C4\u5219\u4E0D\u5B58\u5728" };
+    }
+    current4.splice(index, 1);
+    writeRuleList(key6, current4);
+    return { status: true, res: "\u5DF2\u89E3\u9664\u5C4F\u853D", value: validation.res };
+  }
+  function importRuleSnapshot(data, mode2) {
+    if (!data || typeof data !== "object") {
+      return { status: false, res: "\u89C4\u5219\u5185\u5BB9\u5FC5\u987B\u662F\u5BF9\u8C61" };
+    }
+    let changed = 0;
+    for (const rule of ruleDefinitions) {
+      const incoming = data[rule.key];
+      if (!Array.isArray(incoming)) {
+        continue;
+      }
+      if (mode2 === "overwrite") {
+        const written = writeRuleList(rule.key, incoming);
+        changed += written.length;
+        continue;
+      }
+      const current4 = readRuleList(rule.key);
+      const merged = writeRuleList(rule.key, current4.concat(incoming));
+      changed += Math.max(0, merged.length - current4.length);
+    }
+    return { status: true, res: `\u5BFC\u5165\u5B8C\u6210\uFF0C\u53D8\u66F4 ${changed} \u6761` };
+  }
+  function exportNonEmptyRuleSnapshot() {
+    const snapshot = readRuleSnapshot();
+    const result = {};
+    for (const rule of ruleDefinitions) {
+      if (snapshot[rule.key].length > 0) {
+        result[rule.key] = snapshot[rule.key];
+      }
+    }
+    return result;
+  }
+  function parseRuleText(value2, integer = false) {
+    const lines = value2.split(/\r?\n/g);
+    return normalizeStoredRules(lines, integer);
+  }
+  function formatRuleText(values) {
+    return values.join("\n");
+  }
+
+  // src/modules/blocker/content-editor.ts
+  function modal(title) {
+    ensureLunaTheme();
+    const dialog = element("dialog", "atelier-dialog xp-window");
+    dialog.setAttribute("data-bili-blocker-ui", "true");
+    dialog.setAttribute("aria-label", title);
+    const header = element("header", "xp-caption");
+    header.append(element("h2", "", title));
+    const body2 = element("div", "atelier-dialog-body");
+    const actions = element("div", "atelier-dialog-actions");
+    dialog.append(header, body2, actions);
+    dialog.addEventListener("close", () => dialog.remove());
+    const close2 = () => {
+      if (dialog.close) dialog.close();
+      else dialog.remove();
+    };
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      close2();
+    });
+    document.body.append(dialog);
+    if (dialog.showModal) dialog.showModal();
+    else dialog.setAttribute("open", "");
+    return { body: body2, actions, close: close2, dialog };
+  }
+  function editContentRule(scope, seed = "", original, changed) {
+    const { body: body2, actions, close: close2 } = modal(original ? "\u7F16\u8F91\u5185\u5BB9\u89C4\u5219" : "\u6DFB\u52A0\u5185\u5BB9\u89C4\u5219");
+    const value2 = element("input");
+    value2.value = original?.value ?? seed;
+    const label = element("label", "", "\u5339\u914D\u5185\u5BB9 ");
+    label.append(value2);
+    body2.append(label);
+    function choice(title, choices, selected) {
+      const label2 = element("label", "", title + " "), select = element("select");
+      for (const [id, name] of Object.entries(choices)) select.add(new Option(String(name), id));
+      select.value = selected;
+      label2.append(select);
+      body2.append(label2);
+      return () => select.value;
+    }
+    body2.style.display = "grid";
+    body2.style.gap = "6px";
+    const mode2 = choice("\u65B9\u5F0F", modeNames, original?.mode ?? "keyword");
+    const range = choice("\u8303\u56F4", scopeNames, original?.scope ?? scope);
+    const fields2 = choice("\u5B57\u6BB5", fieldNames, original?.fields ?? (scope === "dynamic" ? "text" : "title"));
+    const error = element("span");
+    error.setAttribute("role", "alert");
+    body2.append(error);
+    function save() {
+      const rule = { mode: mode2(), scope: range(), fields: fields2(), value: value2.value.trim() };
+      if (!rule.value) {
+        error.textContent = "\u8BF7\u8F93\u5165\u5339\u914D\u5185\u5BB9";
+        value2.focus();
+        return;
+      }
+      if (rule.mode === "regex") {
+        try {
+          new RegExp(rule.value, "i");
+        } catch {
+          error.textContent = "\u6B63\u5219\u8868\u8FBE\u5F0F\u65E0\u6548";
+          value2.focus();
+          return;
+        }
+      }
+      const key6 = contentKey(rule);
+      if (!original || contentKey(original) !== key6 || original.value !== rule.value) {
+        const result = addRuleItem(key6, rule.value);
+        if (!result.status) {
+          error.textContent = String(result.res);
+          return;
+        }
+        if (original) removeRuleItem(contentKey(original), original.value);
+        notifyAtelierDataChanged();
+        changed?.();
+      }
+      close2();
+    }
+    actions.append(button("\u4FDD\u5B58", save), button("\u53D6\u6D88", close2));
+    value2.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.isComposing) save();
+    });
+    value2.focus();
+    value2.select();
+  }
+  function manageContentRules(scope) {
+    const { body: body2, actions, close: close2 } = modal("\u5185\u5BB9\u89C4\u5219");
+    body2.style.maxHeight = "55vh";
+    body2.style.overflow = "auto";
+    function draw() {
+      body2.replaceChildren();
+      for (const group of contentGroups) for (const pattern of readRuleList(group.key)) {
+        const rule = { ...group, value: String(pattern) };
+        const row = element("div", "luna-rule-row");
+        row.append(
+          element("strong", "", rule.value),
+          element("div", "", [modeNames[rule.mode], scopeNames[rule.scope], fieldNames[rule.fields]].join(" \xB7 ")),
+          button("\u7F16\u8F91", () => editContentRule(scope, "", rule, draw)),
+          button("\u5220\u9664", () => {
+            removeRuleItem(group.key, rule.value);
+            notifyAtelierDataChanged();
+            draw();
+          })
+        );
+        body2.append(row);
+      }
+      if (!body2.childElementCount) body2.textContent = "\u6682\u65E0\u5185\u5BB9\u89C4\u5219";
+    }
+    draw();
+    actions.append(button("\u6DFB\u52A0\u89C4\u5219", () => editContentRule(scope, "", void 0, draw)), button("\u5173\u95ED", close2));
+  }
+
+  // src/modules/blocker/content-fold.ts
+  var states = /* @__PURE__ */ new WeakMap();
+  var menus = /* @__PURE__ */ new WeakMap();
+  var foldCss = `
+html:not([data-atelier-show-blocked]) [data-atelier-rule-folded]{min-height:0!important;height:auto!important;aspect-ratio:auto!important;background-image:none!important}
+html:not([data-atelier-show-blocked]) [data-atelier-rule-folded] > :not(.atelier-rule-toggle){display:none!important}
+html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
+.atelier-rule-toggle{display:block;position:relative;z-index:1;align-self:start;max-width:100%;padding:4px 8px;color:var(--xp-ink,inherit);background:var(--xp-face,Canvas);border:1px solid var(--xp-shadow3d,GrayText);cursor:pointer;font:inherit}
+`;
+  function foldContent(card4, identity, matched, opened) {
+    const state2 = states.get(card4);
+    if (matched && state2?.identity === identity && state2.control.parentElement === card4) return;
+    state2?.control.remove();
+    states.delete(card4);
+    card4.removeAttribute("data-atelier-rule-folded");
+    if (!matched) return;
+    const control = document.createElement("button");
+    control.type = "button";
+    control.className = "atelier-rule-toggle";
+    control.setAttribute("data-bili-blocker-ui", "true");
+    const paint2 = (folded) => {
+      card4.toggleAttribute("data-atelier-rule-folded", folded);
+      control.textContent = folded ? "\u5DF2\u6309\u89C4\u5219\u6298\u53E0" : "\u6536\u8D77";
+      control.setAttribute("aria-expanded", String(!folded));
+    };
+    control.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const expanding = card4.hasAttribute("data-atelier-rule-folded");
+      if (expanding) opened?.add(identity);
+      else opened?.delete(identity);
+      paint2(!expanding);
+    });
+    card4.prepend(control);
+    states.set(card4, { identity, control });
+    paint2(!opened?.has(identity));
+  }
+  function cardRuleMenu(card4, kind, seed) {
+    if (!menus.has(card4)) card4.addEventListener("contextmenu", (event) => {
+      if (event.shiftKey || event.defaultPrevented) return;
+      const current4 = menus.get(card4);
+      if (!current4) return;
+      event.preventDefault();
+      event.stopPropagation();
+      editContentRule(current4.kind, window.getSelection()?.toString().trim() || current4.seed);
+    });
+    menus.set(card4, { kind, seed });
+  }
+
+  // src/modules/blocker/history.ts
+  var historyChangedEvent = "bili-atelier-block-history-changed";
+  var historyStorageKey = "BiliAtelier_BlockHistory";
+  var historyLimit = 200;
+  function summarizeBlockedItem(item) {
+    return item.title || item.content || item.liveTitle || item.name || item.bv || item.roomId || item.partition || "\u672A\u77E5\u5185\u5BB9";
+  }
+  function detailBlockedItem(item) {
+    const parts2 = [];
+    if (item.name) {
+      parts2.push(`\u7528\u6237\uFF1A${item.name}`);
+    }
+    if (item.uid !== void 0) {
+      parts2.push(`UID\uFF1A${item.uid}`);
+    }
+    if (item.bv) {
+      parts2.push(`BV\uFF1A${item.bv}`);
+    }
+    if (item.roomId) {
+      parts2.push(`\u76F4\u64AD\u95F4\uFF1A${item.roomId}`);
+    }
+    return parts2.join(" / ");
+  }
+  function readBlockHistory() {
+    const value2 = GM_getValue(historyStorageKey, []);
+    if (!Array.isArray(value2)) {
+      return [];
+    }
+    return value2.filter((entry) => entry && typeof entry === "object" && typeof entry.id === "string").slice(0, historyLimit);
+  }
+  function writeBlockHistory(history2) {
+    GM_setValue(historyStorageKey, history2.slice(0, historyLimit));
+  }
+  function notifyBlockHistoryChanged() {
+    document.dispatchEvent(new CustomEvent(historyChangedEvent));
+  }
+  function decisionRuleReferences(decision) {
+    if (decision.linkedRules?.length) {
+      return decision.linkedRules;
+    }
+    if (decision.ruleKey && decision.ruleValue !== void 0) {
+      return [{ key: decision.ruleKey, value: decision.ruleValue }];
+    }
+    return [];
+  }
+  function ruleIdentity(rules) {
+    return rules.map((rule) => `${rule.key}=${String(rule.value)}`).sort().join("&");
+  }
+  function createHistoryId(item, decision) {
+    const identity = ruleIdentity(decisionRuleReferences(decision));
+    if (identity) {
+      return [item.kind, identity].join("|");
+    }
+    return [
+      item.kind,
+      decision.ruleKey || decision.type,
+      String(decision.ruleValue ?? decision.matching)
+    ].join("|");
+  }
+  function entryRuleReferences(entry) {
+    if (entry.linkedRules?.length) {
+      return entry.linkedRules;
+    }
+    if (entry.ruleKey && entry.ruleValue !== void 0) {
+      return [{ key: entry.ruleKey, value: entry.ruleValue }];
+    }
+    return [];
+  }
+  function entryMatchesRule(entry, ruleKey, normalizedValue) {
+    return entryRuleReferences(entry).some((rule) => {
+      return rule.key === ruleKey && String(rule.value) === normalizedValue;
+    });
+  }
+  function isDuplicateHistoryEntry(entry, kind, id, rules) {
+    if (entry.id === id) {
+      return true;
+    }
+    if (entry.kind !== kind || rules.length === 0) {
+      return false;
+    }
+    const existingRules = entryRuleReferences(entry);
+    return existingRules.some((existingRule) => {
+      return rules.some((rule) => existingRule.key === rule.key && String(existingRule.value) === String(rule.value));
+    });
+  }
+  function recordBlockHistory(item, decision) {
+    const id = createHistoryId(item, decision);
+    const history2 = readBlockHistory();
+    const rules = decisionRuleReferences(decision);
+    if (history2.some((entry2) => isDuplicateHistoryEntry(entry2, item.kind, id, rules))) {
+      return;
+    }
+    const entry = {
+      id,
+      timestamp: Date.now(),
+      kind: item.kind,
+      type: decision.type,
+      matching: decision.matching,
+      ruleKey: decision.ruleKey,
+      ruleValue: decision.ruleValue,
+      linkedRules: decision.linkedRules,
+      uid: item.uid,
+      name: item.name,
+      title: item.title?.slice(0, 160),
+      content: item.content?.slice(0, 220),
+      bv: item.bv,
+      liveTitle: item.liveTitle?.slice(0, 160),
+      roomId: item.roomId,
+      partition: item.partition,
+      summary: summarizeBlockedItem(item).slice(0, 140),
+      detail: detailBlockedItem(item),
+      url: location.href
+    };
+    writeBlockHistory([entry, ...history2]);
+    notifyBlockHistoryChanged();
+  }
+  function removeHistoryByRules(rules) {
+    writeBlockHistory(readBlockHistory().filter((entry) => {
+      return !rules.some((rule) => entryMatchesRule(entry, rule.key, String(rule.value)));
+    }));
   }
 
   // src/ui/page-controls.ts
@@ -4917,1254 +7071,6 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     }, durationMs);
   }
 
-  // src/ui/assets/xp-sounds/catalog.json
-  var catalog_default = {
-    schema: "bili-atelier-xp-sounds",
-    version: 1,
-    defaultVolume: 0.55,
-    source: {
-      imageName: "xp sp3 official.iso",
-      bytes: 630237184,
-      volume: "GRTMPVOL_CN"
-    },
-    categories: [
-      {
-        id: "navigation",
-        name: "\u5BFC\u822A\u4E0E\u7A97\u53E3",
-        sample: "xpstart",
-        defaultVolume: 1,
-        defaultEnabled: true
-      },
-      {
-        id: "controls",
-        name: "\u6309\u94AE\u4E0E\u9009\u62E9",
-        sample: "xpmenu",
-        defaultVolume: 1,
-        defaultEnabled: true
-      }
-    ],
-    cues: {
-      control: {
-        sound: "xpmenu",
-        category: "controls",
-        priority: 10
-      },
-      navigate: {
-        sound: "xpstart",
-        category: "navigation",
-        priority: 40
-      },
-      open: {
-        sound: "xprestor",
-        category: "navigation",
-        priority: 40
-      },
-      close: {
-        sound: "xpmin",
-        category: "navigation",
-        priority: 40
-      },
-      expand: {
-        sound: "xprestor",
-        category: "navigation",
-        priority: 40
-      },
-      collapse: {
-        sound: "xpmin",
-        category: "navigation",
-        priority: 40
-      }
-    },
-    sounds: [
-      {
-        id: "xpballn",
-        file: "xpballn.wav",
-        name: "Windows XP \u6C14\u7403",
-        previewOnly: true,
-        durationMs: 144,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -18.24,
-        rmsDbFS: -33.71,
-        gain: 0.81655,
-        bytes: 6400,
-        sha256: "c9de87a87b68dd754fa29f2989c240949ad9b1f0423d019ca68afcd86e107639",
-        source: "I386/XPBALLN.WA_",
-        compressedSha256: "1c8d7665108ad4af42bec4ef940d3dad949d4053d9418e63616284a2d1ad5ffb"
-      },
-      {
-        id: "xpbatcrt",
-        file: "xpbatcrt.wav",
-        name: "Windows XP \u7535\u6C60\u7535\u529B\u4E25\u91CD\u77ED\u7F3A",
-        previewOnly: true,
-        durationMs: 836,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -0.17,
-        rmsDbFS: -12.84,
-        gain: 0.10194,
-        bytes: 36910,
-        sha256: "cb02dd9f8b4d18aab9a5c51a26faac12e861dd362800a12292f243432a982325",
-        source: "I386/XPBATCRT.WA_",
-        compressedSha256: "aa2b39585f31ae73645fe7a5e3b986a2e44e0c4722712da9ee00daf32c6ffc3f"
-      },
-      {
-        id: "xpbatlow",
-        file: "xpbatlow.wav",
-        name: "Windows XP \u7535\u6C60\u4E0D\u8DB3",
-        previewOnly: true,
-        durationMs: 1220,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -1.31,
-        rmsDbFS: -16.43,
-        gain: 0.11624,
-        bytes: 53864,
-        sha256: "bd4a58b1e2b8e93bcf5b76df3e4a9f67ce0926107a5702ed6bac0e63466a22fd",
-        source: "I386/XPBATLOW.WA_",
-        compressedSha256: "f002dee050cb80f908c08eb7b713aa1c75096419537342533571781e4c1c4fdc"
-      },
-      {
-        id: "xpblkpop",
-        file: "xpblkpop.wav",
-        name: "Windows XP \u5F39\u51FA\u7A97\u53E3\u5DF2\u963B\u6B62",
-        previewOnly: true,
-        durationMs: 167,
-        channels: 2,
-        sampleRate: 44100,
-        bits: 16,
-        peakDbFS: -13.98,
-        rmsDbFS: -34.22,
-        gain: 0.50005,
-        bytes: 29444,
-        sha256: "df7cad111688dadb00469203dd7228df99e49e86ae7ba937e308d947cd9790f2",
-        source: "I386/XPBLKPOP.WA_",
-        compressedSha256: "baae17740810abd3d43d5c703ff801df8be3ebf63726a02d2c29f424ba55a0b0"
-      },
-      {
-        id: "xpcrtstp",
-        file: "xpcrtstp.wav",
-        name: "Windows XP \u5173\u952E\u6027\u7EC8\u6B62",
-        previewOnly: true,
-        durationMs: 892,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -3.2,
-        rmsDbFS: -16.48,
-        gain: 0.14448,
-        bytes: 39382,
-        sha256: "1b86a1b8b7b5925f9346b64115b0b92744a142b06b09f44263a57419bc2bb6e6",
-        source: "I386/XPCRTSTP.WA_",
-        compressedSha256: "8dff0499e501012337f14551e4350d017a2a88fa5f36b7ee84c7c6442cd62b8e"
-      },
-      {
-        id: "xpdef",
-        file: "xpdef.wav",
-        name: "Windows XP \u9ED8\u8BA4\u503C",
-        previewOnly: true,
-        durationMs: 555,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -9.77,
-        rmsDbFS: -27.31,
-        gain: 0.30791,
-        bytes: 24530,
-        sha256: "d0426433cb153f860f02320408a1922558742bc3d170eb47715192ff86a66a16",
-        source: "I386/XPDEF.WA_",
-        compressedSha256: "1d3258f9f2b9070370d49a069d3cf79ca5a89163063b84f479af7a0d641d3fa7"
-      },
-      {
-        id: "xpding",
-        file: "xpding.wav",
-        name: "Windows XP \u53EE\u5F53\u58F0",
-        previewOnly: true,
-        durationMs: 387,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -11.74,
-        rmsDbFS: -21.34,
-        gain: 0.38651,
-        bytes: 17132,
-        sha256: "20fc59d9f846bc32b899880fae0878208856718b75e6158526308b900af8a9bd",
-        source: "I386/XPDING.WA_",
-        compressedSha256: "3fa29e9bcb7f38b6dfc1aec0865270840ae69c9261ecc48eea4c5e81d0fdecd7"
-      },
-      {
-        id: "xperror",
-        file: "xperror.wav",
-        name: "Windows XP \u9519\u8BEF",
-        previewOnly: true,
-        durationMs: 1e3,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -6.98,
-        rmsDbFS: -23.56,
-        gain: 0.22343,
-        bytes: 44136,
-        sha256: "4b51ec1b1b14889bc2c2cdad8c80dafc974d78b9292c3ccb344e44e93383cac4",
-        source: "I386/XPERROR.WA_",
-        compressedSha256: "cb1b985cab19466befd27b5d9628165dda8a1cabbc880dc3c9bfec68a26ae8d1"
-      },
-      {
-        id: "xpexcl",
-        file: "xpexcl.wav",
-        name: "Windows XP \u60CA\u53F9\u53F7",
-        previewOnly: true,
-        durationMs: 964,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -16.42,
-        rmsDbFS: -32.09,
-        gain: 0.66185,
-        bytes: 42576,
-        sha256: "b57b8e8818c424452ca4fb8abb219ae01c0e31db2f955e1f85d9fcb5a0dabfbe",
-        source: "I386/XPEXCL.WA_",
-        compressedSha256: "0bc7bb68966af22cac6444392a3ea9956cb98177ef2648dbc8d025051118eea6"
-      },
-      {
-        id: "xphdfail",
-        file: "xphdfail.wav",
-        name: "Windows XP \u786C\u4EF6\u6545\u969C",
-        previewOnly: true,
-        durationMs: 829,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -12.98,
-        rmsDbFS: -25.32,
-        gain: 0.44558,
-        bytes: 36614,
-        sha256: "fe6e852ff646c0a896995632f76a3e390bea6163b40639c87bf45c1d8a7475c2",
-        source: "I386/XPHDFAIL.WA_",
-        compressedSha256: "7daa31c4f966dd10d85f992b6f601f9ec107a2f4d6c44539474ee3a6e6a97678"
-      },
-      {
-        id: "xphdinst",
-        file: "xphdinst.wav",
-        name: "Windows XP \u786C\u4EF6\u63D2\u5165",
-        previewOnly: true,
-        durationMs: 830,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -14.91,
-        rmsDbFS: -28.67,
-        gain: 0.55624,
-        bytes: 36636,
-        sha256: "a3e44db9179591a705baed6daa00efb988197c0698a9747980126d5939e9d506",
-        source: "I386/XPHDINST.WA_",
-        compressedSha256: "59692e7ac46240e9cf8b9ad16007bc837b4f05a9a81787cf79120ae855ab9d79"
-      },
-      {
-        id: "xphdrem",
-        file: "xphdrem.wav",
-        name: "Windows XP \u786C\u4EF6\u5220\u9664",
-        previewOnly: true,
-        durationMs: 828,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -15.55,
-        rmsDbFS: -28.3,
-        gain: 0.59938,
-        bytes: 36538,
-        sha256: "c4d09c6ad6a9090c4e611330a7501f7a84abc7c777c6e3d1915179f8d1ed45f3",
-        source: "I386/XPHDREM.WA_",
-        compressedSha256: "1af16d0041acfdc07c2268ed2186a6dd16c1e602c11e39e4ef17b27d9e7e57fb"
-      },
-      {
-        id: "xpinfbar",
-        file: "xpinfbar.wav",
-        name: "Windows XP \u4FE1\u606F\u680F",
-        previewOnly: true,
-        durationMs: 109,
-        channels: 2,
-        sampleRate: 44100,
-        bits: 16,
-        peakDbFS: -4.2,
-        rmsDbFS: -11.08,
-        gain: 0.16218,
-        bytes: 20336,
-        sha256: "b4dfbdfd8d6a102123a7966da358781bd32bb6d78e833514705cb7de76efa410",
-        source: "I386/XPINFBAR.WA_",
-        compressedSha256: "17ec22ddf2a76dd9b77a42271491228a905accbf0cd1028691fbc89d248b071e"
-      },
-      {
-        id: "xplogoff",
-        file: "xplogoff.wav",
-        name: "Windows XP \u6CE8\u9500\u97F3",
-        previewOnly: true,
-        durationMs: 2037,
-        channels: 2,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -10.39,
-        rmsDbFS: -27.7,
-        gain: 0.33066,
-        bytes: 179704,
-        sha256: "e0c0e5dea2550c8f235c0bb1584d9011a35ca23bc18597bf7ac6581efcd7b7aa",
-        source: "I386/XPLOGOFF.WA_",
-        compressedSha256: "47fbfa45e605ca3c84a13243267b02972c33f0ef879b31133412c2b528555f53"
-      },
-      {
-        id: "xplogon",
-        file: "xplogon.wav",
-        name: "Windows XP \u767B\u5F55\u97F3",
-        previewOnly: true,
-        durationMs: 2156,
-        channels: 2,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -10.04,
-        rmsDbFS: -27.67,
-        gain: 0.31758,
-        bytes: 190208,
-        sha256: "8d71fba4267fb3454030c7289079421a08fc3e773caa47107d832f855ae85396",
-        source: "I386/XPLOGON.WA_",
-        compressedSha256: "3e48b114a7a3956ced53f0a469a7d85717bd00b77522c335d85b77b3726e5f03"
-      },
-      {
-        id: "xpmenu",
-        file: "xpmenu.wav",
-        name: "Windows XP \u83DC\u5355\u547D\u4EE4",
-        previewOnly: false,
-        durationMs: 31,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -20.6,
-        rmsDbFS: -36.23,
-        gain: 1,
-        bytes: 1404,
-        sha256: "da4fc6f8917b97725e6de85bb45b574c7895ec46672e6eb439a462cfd9940ac7",
-        source: "I386/XPMENU.WA_",
-        compressedSha256: "2c73d31fdd47a2f456b64682f568ab6362a7ce8f6a6b6d38cc0ee8132b59d8f5"
-      },
-      {
-        id: "xpmin",
-        file: "xpmin.wav",
-        name: "Windows XP \u6700\u5C0F\u5316",
-        previewOnly: false,
-        durationMs: 511,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -24.38,
-        rmsDbFS: -37.4,
-        gain: 1,
-        bytes: 22580,
-        sha256: "974da6baee4187c37e514186b99691132988140cca95402589c6fdc1417e5926",
-        source: "I386/XPMIN.WA_",
-        compressedSha256: "37a5861aa70198e03c83ecdd5252e51d8a6be4cf13e241dda491e46bd4201de2"
-      },
-      {
-        id: "xpnotify",
-        file: "xpnotify.wav",
-        name: "Windows XP \u901A\u77E5",
-        previewOnly: true,
-        durationMs: 1110,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -18.71,
-        rmsDbFS: -36.89,
-        gain: 0.86164,
-        bytes: 48988,
-        sha256: "760cdd5685008255d6e188a8c528ebcb74daf806bb24a81c2a36086df6a95c76",
-        source: "I386/XPNOTIFY.WA_",
-        compressedSha256: "2f9684cd2952a85245a86b9d06973b13e7149ff6cf3ffafe82bcdce16a2dc1f3"
-      },
-      {
-        id: "xpprint",
-        file: "xpprint.wav",
-        name: "Windows XP \u6253\u5370\u7ED3\u675F",
-        previewOnly: true,
-        durationMs: 991,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -18.3,
-        rmsDbFS: -34.52,
-        gain: 0.82249,
-        bytes: 43762,
-        sha256: "e411c02471876c4d1075ec8fcd406e99ac7c9a5e0c6322ed579de50c8ca3b844",
-        source: "I386/XPPRINT.WA_",
-        compressedSha256: "324d91096b47c0f0fc35e65ab37e067ba403793b7eb211feb9a56288b119c763"
-      },
-      {
-        id: "xprecycl",
-        file: "xprecycl.wav",
-        name: "Windows XP \u56DE\u6536",
-        previewOnly: true,
-        durationMs: 516,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -17.06,
-        rmsDbFS: -38.1,
-        gain: 0.71312,
-        bytes: 22816,
-        sha256: "a8a7028f9fe989cdde61bf22b73f0ff23ae291dbf8e056bb09682a7487c49ad7",
-        source: "I386/XPRECYCL.WA_",
-        compressedSha256: "a2b79e1e62ec0b453982b30a38ad861838e7e09bc1498717466ca480abfe78e6"
-      },
-      {
-        id: "xprestor",
-        file: "xprestor.wav",
-        name: "Windows XP \u8FD8\u539F",
-        previewOnly: false,
-        durationMs: 440,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -24.36,
-        rmsDbFS: -37.68,
-        gain: 1,
-        bytes: 19458,
-        sha256: "480dea5b1808dd67c5a5946e7a47e8e582d5cb1c7fdce4b037140157da0ecadf",
-        source: "I386/XPRESTOR.WA_",
-        compressedSha256: "bf362bfb0c53d25d64075f046d9406da9b071c688f066c1c9edfc38174dd231e"
-      },
-      {
-        id: "xpringin",
-        file: "xpringin.wav",
-        name: "Windows XP \u7535\u8BDD\u62E8\u5165\u58F0",
-        previewOnly: true,
-        durationMs: 882,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -22.82,
-        rmsDbFS: -34.27,
-        gain: 1,
-        bytes: 38930,
-        sha256: "b2cd4e4a977606abb8c35b7d446d6c322ee4bda4c0c722ef240f0c51d7ddc713",
-        source: "I386/XPRINGIN.WA_",
-        compressedSha256: "4061db3507f25e2cefdd4b7bbf9f73042c45525c01f4bdb017e354bd43c552da"
-      },
-      {
-        id: "xprngout",
-        file: "xprngout.wav",
-        name: "Windows XP \u7535\u8BDD\u62E8\u51FA\u58F0",
-        previewOnly: true,
-        durationMs: 499,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -20.25,
-        rmsDbFS: -26.76,
-        gain: 1,
-        bytes: 22070,
-        sha256: "d994081372c2794642da68212d49c6a64263f88a9fde5cc96583b43574c26bb0",
-        source: "I386/XPRNGOUT.WA_",
-        compressedSha256: "32da90bd18459eb03356f9e977df35e9440e52b5baf3df727e343c666c75e8a8"
-      },
-      {
-        id: "xpshutdn",
-        file: "xpshutdn.wav",
-        name: "Windows XP \u5173\u673A",
-        previewOnly: true,
-        durationMs: 3204,
-        channels: 2,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -5.08,
-        rmsDbFS: -21.12,
-        gain: 0.17957,
-        bytes: 282608,
-        sha256: "3d937337075a647950f6aa557bca23dea6e17cf6d14814ca7dbc55b827678a0b",
-        source: "I386/XPSHUTDN.WA_",
-        compressedSha256: "dbd8c3522091971481245e330803b9dca3ad96f17ef289ef781e84fc4770d8c2"
-      },
-      {
-        id: "xpstart",
-        file: "xpstart.wav",
-        name: "Windows XP \u5F00\u59CB",
-        previewOnly: false,
-        durationMs: 49,
-        channels: 1,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -19.66,
-        rmsDbFS: -36.72,
-        gain: 0.96122,
-        bytes: 2202,
-        sha256: "d5712a8963eb3e1e181b25649ecff3080ede89c96350eb07e7d7cad429e959ea",
-        source: "I386/XPSTART.WA_",
-        compressedSha256: "501e2d3dd60d27514d2cf4e0349a360e5b09ce149427e8c9642dd665dc9add18"
-      },
-      {
-        id: "xpstartu",
-        file: "xpstartu.wav",
-        name: "Windows XP \u542F\u52A8",
-        previewOnly: true,
-        durationMs: 4814,
-        channels: 2,
-        sampleRate: 22050,
-        bits: 16,
-        peakDbFS: -5.32,
-        rmsDbFS: -20.9,
-        gain: 0.18453,
-        bytes: 424644,
-        sha256: "8f859ebb90247036ced11db854848abe1434dc3ffdfa5795f7c5f06db9a423d5",
-        source: "I386/XPSTARTU.WA_",
-        compressedSha256: "2e19628930cbe38457bd186747793f5cb29c6e360206303c219bdce514032559"
-      }
-    ]
-  };
-
-  // src/ui/assets/xp-sounds/xpballn.wav
-  var xpballn_default = readCachedResourceUrl("atelier_xpballn_wav");
-
-  // src/ui/assets/xp-sounds/xpbatcrt.wav
-  var xpbatcrt_default = readCachedResourceUrl("atelier_xpbatcrt_wav");
-
-  // src/ui/assets/xp-sounds/xpbatlow.wav
-  var xpbatlow_default = readCachedResourceUrl("atelier_xpbatlow_wav");
-
-  // src/ui/assets/xp-sounds/xpblkpop.wav
-  var xpblkpop_default = readCachedResourceUrl("atelier_xpblkpop_wav");
-
-  // src/ui/assets/xp-sounds/xpcrtstp.wav
-  var xpcrtstp_default = readCachedResourceUrl("atelier_xpcrtstp_wav");
-
-  // src/ui/assets/xp-sounds/xpdef.wav
-  var xpdef_default = readCachedResourceUrl("atelier_xpdef_wav");
-
-  // src/ui/assets/xp-sounds/xpding.wav
-  var xpding_default = readCachedResourceUrl("atelier_xpding_wav");
-
-  // src/ui/assets/xp-sounds/xperror.wav
-  var xperror_default = readCachedResourceUrl("atelier_xperror_wav");
-
-  // src/ui/assets/xp-sounds/xpexcl.wav
-  var xpexcl_default = readCachedResourceUrl("atelier_xpexcl_wav");
-
-  // src/ui/assets/xp-sounds/xphdfail.wav
-  var xphdfail_default = readCachedResourceUrl("atelier_xphdfail_wav");
-
-  // src/ui/assets/xp-sounds/xphdinst.wav
-  var xphdinst_default = readCachedResourceUrl("atelier_xphdinst_wav");
-
-  // src/ui/assets/xp-sounds/xphdrem.wav
-  var xphdrem_default = readCachedResourceUrl("atelier_xphdrem_wav");
-
-  // src/ui/assets/xp-sounds/xpinfbar.wav
-  var xpinfbar_default = readCachedResourceUrl("atelier_xpinfbar_wav");
-
-  // src/ui/assets/xp-sounds/xplogoff.wav
-  var xplogoff_default = readCachedResourceUrl("atelier_xplogoff_wav");
-
-  // src/ui/assets/xp-sounds/xplogon.wav
-  var xplogon_default = readCachedResourceUrl("atelier_xplogon_wav");
-
-  // src/ui/assets/xp-sounds/xpmenu.wav
-  var xpmenu_default = readCachedResourceUrl("atelier_xpmenu_wav");
-
-  // src/ui/assets/xp-sounds/xpmin.wav
-  var xpmin_default = readCachedResourceUrl("atelier_xpmin_wav");
-
-  // src/ui/assets/xp-sounds/xpnotify.wav
-  var xpnotify_default = readCachedResourceUrl("atelier_xpnotify_wav");
-
-  // src/ui/assets/xp-sounds/xpprint.wav
-  var xpprint_default = readCachedResourceUrl("atelier_xpprint_wav");
-
-  // src/ui/assets/xp-sounds/xprecycl.wav
-  var xprecycl_default = readCachedResourceUrl("atelier_xprecycl_wav");
-
-  // src/ui/assets/xp-sounds/xprestor.wav
-  var xprestor_default = readCachedResourceUrl("atelier_xprestor_wav");
-
-  // src/ui/assets/xp-sounds/xpringin.wav
-  var xpringin_default = readCachedResourceUrl("atelier_xpringin_wav");
-
-  // src/ui/assets/xp-sounds/xprngout.wav
-  var xprngout_default = readCachedResourceUrl("atelier_xprngout_wav");
-
-  // src/ui/assets/xp-sounds/xpshutdn.wav
-  var xpshutdn_default = readCachedResourceUrl("atelier_xpshutdn_wav");
-
-  // src/ui/assets/xp-sounds/xpstart.wav
-  var xpstart_default = readCachedResourceUrl("atelier_xpstart_wav");
-
-  // src/ui/assets/xp-sounds/xpstartu.wav
-  var xpstartu_default = readCachedResourceUrl("atelier_xpstartu_wav");
-
-  // src/modules/sounds/assets.ts
-  var soundSources = { xpballn: xpballn_default, xpbatcrt: xpbatcrt_default, xpbatlow: xpbatlow_default, xpblkpop: xpblkpop_default, xpcrtstp: xpcrtstp_default, xpdef: xpdef_default, xpding: xpding_default, xperror: xperror_default, xpexcl: xpexcl_default, xphdfail: xphdfail_default, xphdinst: xphdinst_default, xphdrem: xphdrem_default, xpinfbar: xpinfbar_default, xplogoff: xplogoff_default, xplogon: xplogon_default, xpmenu: xpmenu_default, xpmin: xpmin_default, xpnotify: xpnotify_default, xpprint: xpprint_default, xprecycl: xprecycl_default, xprestor: xprestor_default, xpringin: xpringin_default, xprngout: xprngout_default, xpshutdn: xpshutdn_default, xpstart: xpstart_default, xpstartu: xpstartu_default };
-
-  // src/modules/sounds/engine.ts
-  var soundCategories = ["navigation", "controls"];
-  var volume = (value2, fallback2) => typeof value2 === "number" && Number.isFinite(value2) ? Math.max(0, Math.min(1, value2)) : fallback2;
-  function normalizeSoundPreferences(raw) {
-    const value2 = raw;
-    return {
-      enabled: typeof value2?.enabled === "boolean" ? value2.enabled : true,
-      volume: volume(value2?.volume, 0.55),
-      categories: Object.fromEntries(soundCategories.map((category) => [category, {
-        enabled: typeof value2?.categories?.[category]?.enabled === "boolean" ? value2.categories[category].enabled : true,
-        volume: volume(value2?.categories?.[category]?.volume, 1)
-      }]))
-    };
-  }
-  var SoundEngine = class {
-    constructor(transport2, preferences, allowed, now, defer) {
-      this.transport = transport2;
-      this.preferences = preferences;
-      this.allowed = allowed;
-      this.now = now;
-      this.defer = defer;
-      this.scheduled = false;
-      this.lastId = "";
-      this.lastAt = -Infinity;
-    }
-    request(request2, action, valid = () => true) {
-      if (!soundCategories.includes(request2.category)) return;
-      if (!valid() || !this.allowed() || request2.asset.previewOnly && !request2.preview) return;
-      if (!this.pending || this.pending.action !== action || request2.priority >= this.pending.request.priority) this.pending = { request: request2, action, valid };
-      if (!this.scheduled) {
-        this.scheduled = true;
-        this.defer(() => this.flush());
-      }
-    }
-    stop() {
-      this.pending = void 0;
-      this.transport.stop();
-    }
-    flush() {
-      this.scheduled = false;
-      const pending3 = this.pending;
-      this.pending = void 0;
-      if (!pending3 || !pending3.valid() || !this.allowed()) return;
-      const { request: request2 } = pending3, prefs = this.preferences(), category = prefs.categories[request2.category];
-      if (!prefs.enabled || !category.enabled) return;
-      const gain = prefs.volume * category.volume * request2.asset.gain;
-      if (!(gain > 0) || !this.transport.ready(request2.asset.id)) return;
-      const now = this.now();
-      if (!request2.preview && now - this.lastAt < (this.lastId === request2.asset.id ? 180 : 55)) return;
-      if (this.transport.playing()) this.transport.stop();
-      if (this.transport.play(request2.asset.id, gain)) {
-        this.lastAt = now;
-        this.lastId = request2.asset.id;
-      }
-    }
-  };
-  var soundMediaPrefix = "AtelierSounds_media_";
-  var soundMediaLeaseMs = 15e4;
-  function activeMediaHeartbeat(raw, now) {
-    const value2 = raw;
-    return value2?.version === 1 && value2.playing === true && typeof value2.at === "number" && Number.isFinite(value2.at) && value2.at <= now + 5e3 && now - value2.at <= soundMediaLeaseMs;
-  }
-
-  // src/modules/sounds/media.ts
-  var pulseKey = "AtelierSounds_mediaPulse";
-  function startSoundMediaMonitor(changed) {
-    const key6 = soundMediaPrefix + crypto.randomUUID();
-    const media2 = /* @__PURE__ */ new Set(), roots2 = /* @__PURE__ */ new WeakSet(), frames = /* @__PURE__ */ new WeakSet();
-    let suspended = false, playing = false, published = false;
-    const events = new AbortController();
-    const observer = new MutationObserver((records2) => {
-      for (const record of records2) for (const node4 of record.addedNodes) if (node4.nodeType === 1) discover(node4);
-      update();
-    });
-    function signal() {
-      GM_setValue(pulseKey, crypto.randomUUID());
-    }
-    function publish(force = false) {
-      if (playing && !suspended) {
-        if (force || !published) {
-          GM_setValue(key6, { version: 1, at: Date.now(), playing: true });
-          signal();
-        }
-        published = true;
-      } else if (published) {
-        GM_deleteValue(key6);
-        published = false;
-        signal();
-      }
-    }
-    function track(node4) {
-      if (media2.has(node4)) return;
-      media2.add(node4);
-      for (const name of ["play", "playing", "pause", "ended", "emptied", "abort"]) node4.addEventListener(name, update, { signal: events.signal });
-    }
-    function discover(root2) {
-      if (root2 instanceof HTMLMediaElement) track(root2);
-      if (root2.shadowRoot) watch(root2.shadowRoot);
-      for (const node4 of root2.querySelectorAll("video,audio")) track(node4);
-      for (const node4 of root2.querySelectorAll("*")) if (node4.shadowRoot) watch(node4.shadowRoot);
-      const foundFrames = [...root2.querySelectorAll("iframe")];
-      if (root2.tagName === "IFRAME") foundFrames.unshift(root2);
-      for (const frame2 of foundFrames) {
-        const read3 = () => {
-          try {
-            if (frame2.contentDocument) watch(frame2.contentDocument);
-          } catch {
-          }
-        };
-        if (!frames.has(frame2)) {
-          frames.add(frame2);
-          frame2.addEventListener("load", read3, { signal: events.signal });
-        }
-        read3();
-      }
-    }
-    function watch(root2) {
-      if (roots2.has(root2)) return;
-      roots2.add(root2);
-      observer.observe(root2, { childList: true, subtree: true });
-      root2.addEventListener("play", (event) => {
-        const target = event.target;
-        if (target && (target.tagName === "VIDEO" || target.tagName === "AUDIO" || target instanceof HTMLMediaElement)) track(target);
-        update();
-      }, { capture: true, signal: events.signal });
-      discover(root2);
-    }
-    function update() {
-      let next = false;
-      for (const node4 of media2) {
-        let connected = node4.isConnected;
-        try {
-          const frame2 = node4.ownerDocument.defaultView?.frameElement;
-          if (frame2 && !frame2.isConnected) connected = false;
-        } catch {
-        }
-        if (!connected) {
-          media2.delete(node4);
-          continue;
-        }
-        if (!node4.paused && !node4.ended) next = true;
-      }
-      const was = playing;
-      playing = next;
-      publish();
-      if (was !== next) changed();
-    }
-    function blocked() {
-      if (!suspended) update();
-      if (playing && !suspended) return true;
-      const now = Date.now();
-      for (const other of GM_listValues()) {
-        if (!other.startsWith(soundMediaPrefix) || other === key6) continue;
-        if (activeMediaHeartbeat(GM_getValue(other), now)) return true;
-      }
-      return false;
-    }
-    watch(document);
-    update();
-    const heartbeat = window.setInterval(() => {
-      if (!suspended) {
-        discover(document);
-        update();
-        publish(true);
-      }
-    }, 1e4);
-    if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(pulseKey, (_, __, ___, remote) => {
-      if (remote) changed();
-    });
-    window.addEventListener("pagehide", () => {
-      suspended = true;
-      publish();
-      changed();
-    }, { signal: events.signal });
-    window.addEventListener("pageshow", () => {
-      suspended = false;
-      discover(document);
-      update();
-      publish(true);
-    }, { signal: events.signal });
-    for (const old of GM_listValues()) if (old.startsWith(soundMediaPrefix) && !activeMediaHeartbeat(GM_getValue(old), Date.now())) GM_deleteValue(old);
-    return { blocked, dispose() {
-      suspended = true;
-      publish();
-      events.abort();
-      observer.disconnect();
-      window.clearInterval(heartbeat);
-    } };
-  }
-
-  // src/modules/sounds/service.ts
-  var aliases = { folder: "navigate", open: "open", close: "close", minimize: "collapse", maximize: "expand", restore: "expand", menu: "control", select: "control", click: "control", start: "control", cancel: "control" };
-  var preferenceKey = "AtelierSounds_preferences";
-  var soundPreferencesChanged = "atelier-sound-preferences-changed";
-  var clips = new Map(catalog_default.sounds.map((asset) => [asset.id, asset]));
-  var WebAudioTransport = class {
-    constructor() {
-      this.buffers = /* @__PURE__ */ new Map();
-      this.loading = /* @__PURE__ */ new Set();
-      this.failures = /* @__PURE__ */ new Map();
-      this.supported = typeof window.AudioContext === "function";
-    }
-    /** Decodes every clip not decoded or on its way. A bad clip disables that
-     * clip only; it is never replaced by a download. */
-    prepare(decoder) {
-      for (const [id, source] of Object.entries(soundSources)) {
-        if (this.buffers.has(id) || this.loading.has(id)) continue;
-        const scheme = /^(blob|data):/.exec(source)?.[1] ?? "";
-        const fail = (stage) => (error) => {
-          this.loading.delete(id);
-          const { name, message } = error ?? {};
-          const text4 = typeof message === "string" ? typeof name === "string" && name !== "Error" ? `${name}: ${message}` : message : String(error);
-          this.failures.set(id, { stage, scheme, message: text4 });
-        };
-        const decode2 = (bytes) => decoder.decodeAudioData(bytes).then((buffer) => {
-          this.loading.delete(id);
-          this.failures.delete(id);
-          this.buffers.set(id, buffer);
-        }, fail("\u89E3\u7801"));
-        this.loading.add(id);
-        try {
-          if (scheme === "blob") {
-            void fetch(source).then((response) => {
-              if (!response.ok) throw new Error(`HTTP ${response.status}`);
-              return response.arrayBuffer();
-            }).then(decode2, fail("\u8BFB\u53D6"));
-          } else if (scheme === "data") {
-            const binary = atob(source.slice(source.indexOf(",") + 1));
-            void decode2(Uint8Array.from(binary, (character) => character.charCodeAt(0)).buffer);
-          } else fail("\u8BFB\u53D6")(new Error("Tampermonkey \u6CA1\u6709\u7ED9\u51FA\u8FD9\u4E2A\u8D44\u6E90"));
-        } catch (error) {
-          fail("\u8BFB\u53D6")(error);
-        }
-      }
-    }
-    preload() {
-      try {
-        if (typeof window.OfflineAudioContext === "function") this.prepare(new OfflineAudioContext(1, 1, 44100));
-      } catch {
-      }
-    }
-    unlock() {
-      if (!this.supported) return;
-      try {
-        if (!this.context) {
-          this.context = new AudioContext();
-          this.prepare(this.context);
-        }
-        if (this.context.state !== "running") void this.context.resume().catch(() => {
-        });
-      } catch {
-        this.supported = false;
-      }
-    }
-    clips() {
-      return { total: Object.keys(soundSources).length, loaded: this.buffers.size, loading: this.loading.size, failure: [...this.failures.values()][0] };
-    }
-    available() {
-      return this.supported;
-    }
-    unlocked() {
-      return this.context?.state === "running";
-    }
-    ready(id) {
-      return this.unlocked() && this.buffers.has(id);
-    }
-    playing() {
-      return !!this.source;
-    }
-    play(id, gain) {
-      if (!this.ready(id)) return false;
-      try {
-        const source = this.context.createBufferSource(), volume2 = this.context.createGain();
-        source.buffer = this.buffers.get(id);
-        volume2.gain.value = gain;
-        source.connect(volume2);
-        volume2.connect(this.context.destination);
-        this.source = source;
-        source.onended = () => {
-          source.disconnect();
-          volume2.disconnect();
-          if (this.source === source) this.source = void 0;
-        };
-        source.start();
-        return true;
-      } catch {
-        this.source = void 0;
-        return false;
-      }
-    }
-    stop() {
-      const source = this.source;
-      this.source = void 0;
-      if (source) try {
-        source.stop();
-      } catch {
-      }
-    }
-  };
-  var engine;
-  var transport;
-  var monitor;
-  var gesture = 0;
-  var sequence = 0;
-  var foregroundEpoch = 0;
-  var started3 = false;
-  var previewPlaying = false;
-  var foreground = () => window.top === window.self && !document.hidden && document.hasFocus();
-  var readSoundPreferences = () => normalizeSoundPreferences(typeof GM_getValue === "function" ? GM_getValue(preferenceKey, null) : null);
-  function writeSoundPreferences(value2) {
-    GM_setValue(preferenceKey, normalizeSoundPreferences(value2));
-    engine?.stop();
-    window.dispatchEvent(new Event(soundPreferencesChanged));
-  }
-  function request(cue) {
-    const alias = aliases[cue];
-    if (!alias) return;
-    const value2 = catalog_default.cues[alias];
-    return { asset: clips.get(value2.sound), category: value2.category, priority: value2.priority };
-  }
-  function enqueue(cue, action, valid) {
-    if (!action) return;
-    try {
-      const mapped = request(cue);
-      if (!mapped) return;
-      if (previewPlaying) {
-        engine?.stop();
-        previewPlaying = false;
-      }
-      engine?.request(mapped, action, valid);
-    } catch {
-    }
-  }
-  function sound(cue) {
-    try {
-      enqueue(cue, gesture);
-    } catch {
-    }
-  }
-  function soundTask(startCue, owner2) {
-    const action = gesture, epoch = foregroundEpoch;
-    let finished = false;
-    const valid = () => epoch === foregroundEpoch && (!owner2 || (typeof owner2 === "function" ? owner2() : owner2.isConnected && !owner2.hidden));
-    if (startCue) enqueue(startCue, action, valid);
-    return {
-      finish(cue) {
-        if (finished) return;
-        finished = true;
-        if (["folder", "open", "close", "minimize", "maximize", "restore", "cancel"].includes(cue)) enqueue(cue, action, valid);
-      },
-      cancel() {
-        finished = true;
-      }
-    };
-  }
-  function previewSound(id, category) {
-    const asset = clips.get(id);
-    if (!asset || !gesture) return;
-    previewPlaying = true;
-    engine?.request({ asset, category, priority: 100, preview: true }, gesture);
-  }
-  function stopSoundPreview() {
-    if (previewPlaying) {
-      engine?.stop();
-      previewPlaying = false;
-    }
-  }
-  function soundPlaybackStatus() {
-    const prefs = readSoundPreferences();
-    if (!prefs.enabled) return "\u97F3\u6548\u5DF2\u5173\u95ED";
-    if (prefs.volume === 0) return "\u603B\u97F3\u91CF\u4E3A\u96F6";
-    if (transport && !transport.available()) return "\u5F53\u524D\u6D4F\u89C8\u5668\u65E0\u6CD5\u4F7F\u7528 Web Audio";
-    const clips2 = transport?.clips();
-    if (clips2 && !clips2.loading && clips2.failure) {
-      const { stage, scheme, message } = clips2.failure;
-      return `\u58F0\u97F3\u6CA1\u6709\u8F7D\u5165\uFF08${clips2.loaded}/${clips2.total}\uFF09\uFF1A${scheme ? `${scheme}: \u5730\u5740${stage}\u5931\u8D25` : "\u6CA1\u6709\u62FF\u5230\u8D44\u6E90\u5730\u5740"}\uFF08${message}\uFF09`;
-    }
-    if (monitor?.blocked()) return "\u68C0\u6D4B\u5230\u5A92\u4F53\u64AD\u653E\uFF0C\u97F3\u6548\u6682\u65F6\u5B89\u9759";
-    if (!foreground()) return "\u53EA\u5728\u5F53\u524D\u524D\u53F0\u7A97\u53E3\u64AD\u653E";
-    if (!transport?.unlocked()) return "\u9996\u6B21\u70B9\u51FB\u540E\u53EF\u64AD\u653E\uFF1B\u6D4F\u89C8\u5668\u963B\u6B62\u7684\u58F0\u97F3\u4E0D\u4F1A\u8865\u64AD";
-    if (clips2?.loading) return `\u58F0\u97F3\u8F7D\u5165\u4E2D\uFF08${clips2.loaded}/${clips2.total}\uFF09`;
-    return `\u5DF2\u5C31\u7EEA \xB7 ${clips2?.loaded ?? 0}/${clips2?.total ?? 0} \u4E2A\u58F0\u97F3\u5DF2\u8F7D\u5165 \xB7 \u8BD5\u542C\u4E5F\u9075\u5B88\u97F3\u91CF\u3001\u5206\u7C7B\u5F00\u5173\u548C\u5A92\u4F53\u907F\u8BA9`;
-  }
-  function startSounds() {
-    if (started3) return;
-    started3 = true;
-    try {
-      transport = new WebAudioTransport();
-      transport.preload();
-      monitor = startSoundMediaMonitor(() => {
-        if (monitor?.blocked()) engine?.stop();
-      });
-      engine = new SoundEngine(transport, readSoundPreferences, () => foreground() && !monitor.blocked(), Date.now, (run) => {
-        window.setTimeout(() => {
-          try {
-            run();
-          } catch {
-            transport?.stop();
-          }
-        }, 0);
-      });
-      const activate = (event) => {
-        if (!event.isTrusted || !foreground()) return;
-        transport.unlock();
-        const current4 = gesture = ++sequence;
-        window.setTimeout(() => {
-          if (gesture === current4) gesture = 0;
-        }, 0);
-      };
-      for (const name of ["pointerdown", "click", "keydown", "change", "submit"]) document.addEventListener(name, activate, true);
-      const leave = () => {
-        foregroundEpoch++;
-        gesture = 0;
-        engine?.stop();
-      };
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) leave();
-      });
-      window.addEventListener("pagehide", leave);
-      window.addEventListener("blur", () => {
-        window.setTimeout(() => {
-          if (!document.hasFocus()) leave();
-        }, 0);
-      });
-      if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(preferenceKey, (_, __, ___, remote) => {
-        if (remote) {
-          engine?.stop();
-          window.dispatchEvent(new Event(soundPreferencesChanged));
-        }
-      });
-    } catch {
-      transport?.stop();
-    }
-  }
-
-  // src/ui/dialogs.ts
-  var pending = Promise.resolve();
-  function atelierDialog(options) {
-    const run = () => new Promise((resolve) => {
-      ensureLunaTheme();
-      const before = document.activeElement;
-      const dialog = document.createElement("dialog");
-      dialog.className = "atelier-dialog xp-window";
-      dialog.setAttribute("data-bili-blocker-ui", "");
-      const caption2 = document.createElement("header");
-      caption2.className = "xp-caption";
-      const heading = document.createElement("h2");
-      heading.id = "atelier-dialog-title";
-      heading.textContent = options.title;
-      const dismiss = document.createElement("button");
-      dismiss.type = "button";
-      dismiss.className = "xp-caption-button";
-      dismiss.dataset.kind = "close";
-      dismiss.setAttribute("aria-label", "\u5173\u95ED");
-      dismiss.title = "\u5173\u95ED";
-      caption2.append(heading, dismiss);
-      dialog.setAttribute("aria-labelledby", heading.id);
-      const message = document.createElement("p");
-      message.textContent = options.message;
-      const body2 = document.createElement("div");
-      body2.className = "atelier-dialog-body";
-      body2.append(message);
-      let input;
-      if (options.input !== void 0) {
-        input = document.createElement(options.multiline ? "textarea" : "input");
-        input.value = options.input;
-        input.readOnly = !!options.readOnly;
-        input.setAttribute("aria-label", options.title);
-        body2.append(input);
-      }
-      const actions = document.createElement("div");
-      actions.className = "atelier-dialog-actions";
-      let settled = false;
-      const cleanupPixels = observeCrispText(dialog);
-      dismiss.addEventListener("click", () => {
-        sound("click");
-        finish(null);
-      });
-      const finish = (result2) => {
-        if (settled) return;
-        settled = true;
-        cleanupPixels();
-        dialog.remove();
-        if (before?.isConnected) before.focus();
-        resolve(result2);
-      };
-      const add = (label, value2, parent = actions) => {
-        const button6 = document.createElement("button");
-        button6.type = "button";
-        button6.className = "atelier-control";
-        button6.textContent = label;
-        button6.addEventListener("click", () => {
-          sound("click");
-          finish(value2());
-        });
-        parent.append(button6);
-        return button6;
-      };
-      if (options.choices) {
-        const choices = document.createElement("div");
-        choices.className = "atelier-dialog-choices";
-        for (const choice of options.choices) add(choice.label, () => choice.value, choices);
-        body2.append(choices);
-      } else add(options.confirmLabel || (options.readOnly || options.alert ? "\u5173\u95ED" : "\u786E\u5B9A"), () => input?.value ?? "ok");
-      if (!options.alert && !options.readOnly) add(options.cancelLabel || "\u53D6\u6D88", () => null);
-      dialog.append(caption2, body2, actions);
-      dialog.addEventListener("cancel", (event) => {
-        event.preventDefault();
-        finish(null);
-      });
-      dialog.addEventListener("keydown", (event) => {
-        event.stopPropagation();
-        if (event.key === "Escape") {
-          event.preventDefault();
-          finish(null);
-        }
-        if (event.key === "Enter" && event.target === input && !options.multiline) {
-          event.preventDefault();
-          finish(input.value);
-        }
-      });
-      document.body.append(dialog);
-      if (typeof dialog.showModal === "function") dialog.showModal();
-      else dialog.setAttribute("open", "");
-      (input || dialog.querySelector("button"))?.focus();
-      if (options.readOnly) input?.select();
-    });
-    const result = pending.then(run, run);
-    pending = result;
-    return result;
-  }
-  async function atelierConfirm(message, title = "\u786E\u8BA4\u64CD\u4F5C") {
-    return await atelierDialog({ title, message }) !== null;
-  }
-  function atelierAlert(message, title = "\u64CD\u4F5C\u63D0\u793A") {
-    return atelierDialog({ title, message, alert: true });
-  }
-  function atelierPrompt(message, value2 = "", readOnly = false) {
-    return atelierDialog({ title: readOnly ? "\u5BFC\u51FA\u6570\u636E" : "\u5BFC\u5165\u6570\u636E", message, input: value2, multiline: true, readOnly });
-  }
-
-  // src/modules/blocker/history.ts
-  var historyChangedEvent = "bili-atelier-block-history-changed";
-  var historyStorageKey = "BiliAtelier_BlockHistory";
-  var historyLimit = 200;
-  function summarizeBlockedItem(item) {
-    return item.title || item.content || item.liveTitle || item.name || item.bv || item.roomId || item.partition || "\u672A\u77E5\u5185\u5BB9";
-  }
-  function detailBlockedItem(item) {
-    const parts2 = [];
-    if (item.name) {
-      parts2.push(`\u7528\u6237\uFF1A${item.name}`);
-    }
-    if (item.uid !== void 0) {
-      parts2.push(`UID\uFF1A${item.uid}`);
-    }
-    if (item.bv) {
-      parts2.push(`BV\uFF1A${item.bv}`);
-    }
-    if (item.roomId) {
-      parts2.push(`\u76F4\u64AD\u95F4\uFF1A${item.roomId}`);
-    }
-    return parts2.join(" / ");
-  }
-  function readBlockHistory() {
-    const value2 = GM_getValue(historyStorageKey, []);
-    if (!Array.isArray(value2)) {
-      return [];
-    }
-    return value2.filter((entry) => entry && typeof entry === "object" && typeof entry.id === "string").slice(0, historyLimit);
-  }
-  function writeBlockHistory(history2) {
-    GM_setValue(historyStorageKey, history2.slice(0, historyLimit));
-  }
-  function notifyBlockHistoryChanged() {
-    document.dispatchEvent(new CustomEvent(historyChangedEvent));
-  }
-  function decisionRuleReferences(decision) {
-    if (decision.linkedRules?.length) {
-      return decision.linkedRules;
-    }
-    if (decision.ruleKey && decision.ruleValue !== void 0) {
-      return [{ key: decision.ruleKey, value: decision.ruleValue }];
-    }
-    return [];
-  }
-  function ruleIdentity(rules) {
-    return rules.map((rule) => `${rule.key}=${String(rule.value)}`).sort().join("&");
-  }
-  function createHistoryId(item, decision) {
-    const identity = ruleIdentity(decisionRuleReferences(decision));
-    if (identity) {
-      return [item.kind, identity].join("|");
-    }
-    return [
-      item.kind,
-      decision.ruleKey || decision.type,
-      String(decision.ruleValue ?? decision.matching)
-    ].join("|");
-  }
-  function entryRuleReferences(entry) {
-    if (entry.linkedRules?.length) {
-      return entry.linkedRules;
-    }
-    if (entry.ruleKey && entry.ruleValue !== void 0) {
-      return [{ key: entry.ruleKey, value: entry.ruleValue }];
-    }
-    return [];
-  }
-  function entryMatchesRule(entry, ruleKey, normalizedValue) {
-    return entryRuleReferences(entry).some((rule) => {
-      return rule.key === ruleKey && String(rule.value) === normalizedValue;
-    });
-  }
-  function isDuplicateHistoryEntry(entry, kind, id, rules) {
-    if (entry.id === id) {
-      return true;
-    }
-    if (entry.kind !== kind || rules.length === 0) {
-      return false;
-    }
-    const existingRules = entryRuleReferences(entry);
-    return existingRules.some((existingRule) => {
-      return rules.some((rule) => existingRule.key === rule.key && String(existingRule.value) === String(rule.value));
-    });
-  }
-  function recordBlockHistory(item, decision) {
-    const id = createHistoryId(item, decision);
-    const history2 = readBlockHistory();
-    const rules = decisionRuleReferences(decision);
-    if (history2.some((entry2) => isDuplicateHistoryEntry(entry2, item.kind, id, rules))) {
-      return;
-    }
-    const entry = {
-      id,
-      timestamp: Date.now(),
-      kind: item.kind,
-      type: decision.type,
-      matching: decision.matching,
-      ruleKey: decision.ruleKey,
-      ruleValue: decision.ruleValue,
-      linkedRules: decision.linkedRules,
-      uid: item.uid,
-      name: item.name,
-      title: item.title?.slice(0, 160),
-      content: item.content?.slice(0, 220),
-      bv: item.bv,
-      liveTitle: item.liveTitle?.slice(0, 160),
-      roomId: item.roomId,
-      partition: item.partition,
-      summary: summarizeBlockedItem(item).slice(0, 140),
-      detail: detailBlockedItem(item),
-      url: location.href
-    };
-    writeBlockHistory([entry, ...history2]);
-    notifyBlockHistoryChanged();
-  }
-  function removeHistoryByRules(rules) {
-    writeBlockHistory(readBlockHistory().filter((entry) => {
-      return !rules.some((rule) => entryMatchesRule(entry, rule.key, String(rule.value)));
-    }));
-  }
-
   // src/modules/blocker/conceal.ts
   var showingBlocked = false;
   var blockedVisibilityChangedEvent = "atelier-blocked-visibility-changed";
@@ -6173,6 +7079,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
   }
   function toggleBlockedVisibility() {
     showingBlocked = !showingBlocked;
+    document.documentElement.toggleAttribute("data-atelier-show-blocked", showingBlocked);
     for (const el3 of hiddenElements) {
       if (el3.isConnected) applyBlockedVisibility(el3);
       else hiddenElements.delete(el3);
@@ -6235,362 +7142,11 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     }
   }
 
-  // src/modules/blocker/matching.ts
-  var defaultMatchOptions = {
-    caseInsensitive: false,
-    collapseWhitespace: true
-  };
-  function resolveOptions(options = {}) {
-    return { ...defaultMatchOptions, ...options };
-  }
-  function normalizeText(value2, options = {}) {
-    if (value2 === null || value2 === void 0) {
-      return null;
-    }
-    const resolvedOptions = resolveOptions(options);
-    let text4 = String(value2).trim();
-    if (text4.length === 0) {
-      return null;
-    }
-    if (resolvedOptions.collapseWhitespace) {
-      text4 = text4.replace(/[\t\r\f\n\s]+/g, "");
-    }
-    if (resolvedOptions.caseInsensitive) {
-      text4 = text4.toLowerCase();
-    }
-    return text4.length > 0 ? text4 : null;
-  }
-  function normalizeRuleValue(value2, options = {}) {
-    if (typeof value2 === "number") {
-      return Number.isFinite(value2) ? value2 : null;
-    }
-    return normalizeText(value2, options);
-  }
-  function validateRuleInput(value2, integerRule = false) {
-    if (value2 === null || value2 === void 0) {
-      return { status: false, res: "\u5185\u5BB9\u4E0D\u80FD\u4E3A\u7A7A" };
-    }
-    const trimmed = String(value2).trim();
-    if (trimmed.length === 0) {
-      return { status: false, res: "\u5185\u5BB9\u4E0D\u80FD\u4E3A\u7A7A" };
-    }
-    if (!integerRule) {
-      return { status: true, res: trimmed };
-    }
-    const parsed = /^-?\d+$/.test(trimmed) ? Number.parseInt(trimmed, 10) : Number.NaN;
-    if (!Number.isFinite(parsed)) {
-      return { status: false, res: "\u8BF7\u8F93\u5165\u6570\u5B57\uFF01" };
-    }
-    return { status: true, res: parsed };
-  }
-  function exactMatch(ruleList, value2, options = {}) {
-    if (!Array.isArray(ruleList)) {
-      return null;
-    }
-    const normalizedValue = normalizeRuleValue(value2, options);
-    if (normalizedValue === null) {
-      return null;
-    }
-    for (const rule of ruleList) {
-      const normalizedRule = normalizeRuleValue(rule, options);
-      if (normalizedRule === null) {
-        continue;
-      }
-      if (normalizedRule === normalizedValue) {
-        return { kind: "exact", matching: rule };
-      }
-    }
-    return null;
-  }
-  function fuzzyMatch(ruleList, value2, options = {}) {
-    if (!Array.isArray(ruleList)) {
-      return null;
-    }
-    const normalizedValue = normalizeText(value2, options);
-    if (normalizedValue === null) {
-      return null;
-    }
-    for (const rule of ruleList) {
-      const normalizedRule = normalizeText(rule, options);
-      if (normalizedRule === null) {
-        continue;
-      }
-      if (normalizedValue.includes(normalizedRule)) {
-        return { kind: "fuzzy", matching: rule };
-      }
-    }
-    return null;
-  }
-  function regexMatch(ruleList, value2, options = {}) {
-    if (!Array.isArray(ruleList)) {
-      return null;
-    }
-    const normalizedValue = normalizeText(value2, options);
-    if (normalizedValue === null) {
-      return null;
-    }
-    for (const rule of ruleList) {
-      const normalizedRule = normalizeText(rule, { ...options, collapseWhitespace: false });
-      if (normalizedRule === null) {
-        continue;
-      }
-      try {
-        const regexp = new RegExp(normalizedRule, options.caseInsensitive ? "i" : "");
-        if (regexp.test(normalizedValue)) {
-          return { kind: "regex", matching: rule };
-        }
-      } catch (error) {
-        options.onInvalidRule?.({ rule: String(rule), error });
-      }
-    }
-    return null;
-  }
-  function blockExactFuzzyRegex(value2, config2) {
-    const exact = exactMatch(config2.exactRules, value2, config2.options);
-    if (exact) {
-      return exact;
-    }
-    const fuzzy = fuzzyMatch(config2.fuzzyRules, value2, config2.options);
-    if (fuzzy) {
-      return fuzzy;
-    }
-    return regexMatch(config2.regexRules, value2, {
-      ...config2.options,
-      onInvalidRule: config2.onInvalidRegexRule
-    });
-  }
-
-  // src/modules/viewed/id.ts
-  var strict = /^(?:1[0-9A-Za-z]{9}(?:-[1-9][0-9]*)?|(?:ep|ss)[1-9][0-9]*)$/;
-  var isViewedId = (value2) => typeof value2 === "string" && strict.test(value2);
-  var withoutBv = (value2) => value2.trim().replace(/^BV/i, "");
-  function parseViewedId(value2) {
-    if (typeof value2 !== "string") return null;
-    const id = withoutBv(value2);
-    return strict.test(id) ? id : null;
-  }
-  function viewedIdFromBvid(bvid, part) {
-    const body2 = String(bvid ?? "");
-    return parseViewedId(part && Number.isSafeInteger(part) && part > 0 ? `${body2}-${part}` : body2) ?? "";
-  }
-  function viewedGroup(value2) {
-    const id = String(value2 ?? "");
-    if (/^(ep|ss)[1-9][0-9]*$/.test(id)) return `${id.slice(0, 2)}${id.slice(-1)}`;
-    if (id.length < 5) return "";
-    if (id.startsWith("ep") || id.startsWith("ss")) return `${id.slice(0, 2)}${id.slice(-1)}`;
-    if (id.length === 10 || id.length > 10 && id.indexOf("-") === 10) return id.charAt(1);
-    return "";
-  }
-  function parseStoredViewedId(value2) {
-    const id = withoutBv(String(value2 || ""));
-    return id && viewedGroup(id) ? id : null;
-  }
-  var alphabet = "FcwAPNKTMug3GV5Lj7EJnHpWsx4tb8haYeviqBz6rkCy12mUSDQX9RdoZf";
-  function bvidFromAid(aid) {
-    if (!Number.isSafeInteger(aid) || aid <= 0 || aid >= 2 ** 51) return "";
-    let rest = (BigInt(aid) | 1n << 51n) ^ 23442827791579n;
-    const digits = [];
-    for (let i = 0; i < 9; i++) {
-      digits.unshift(alphabet[Number(rest % 58n)]);
-      rest /= 58n;
-    }
-    [digits[0], digits[6]] = [digits[6], digits[0]];
-    [digits[1], digits[4]] = [digits[4], digits[1]];
-    return "BV1" + digits.join("");
-  }
-  var bvidPattern = /^BV1[0-9A-Za-z]{9}$/i;
-  var isBvid = (value2) => typeof value2 === "string" && bvidPattern.test(value2);
-  function viewedIdFromHref(href) {
-    if (!href) return "";
-    let url;
-    try {
-      url = new URL(href, location.href);
-    } catch {
-      return "";
-    }
-    const host = url.hostname;
-    if (host === "b23.tv") {
-      const code = url.pathname.split("/")[1];
-      return isBvid(code) ? viewedIdFromBvid(code) : "";
-    }
-    if (!/(^|\.)bilibili\.com$/.test(host)) return "";
-    const [, section, value2 = ""] = url.pathname.split("/");
-    if (section === "video") {
-      if (isBvid(value2)) return viewedIdFromBvid(value2);
-      const av = /^av(\d+)$/i.exec(value2);
-      return av ? viewedIdFromBvid(bvidFromAid(Number(av[1]))) : "";
-    }
-    if (section === "list") {
-      const bvid = url.searchParams.get("bvid");
-      return isBvid(bvid) ? viewedIdFromBvid(bvid) : "";
-    }
-    if (section === "bangumi") {
-      const episode = /^\/bangumi\/play\/((?:ep|ss)[1-9]\d*)\/?$/.exec(url.pathname);
-      return episode ? episode[1] : "";
-    }
-    return "";
-  }
-
-  // src/modules/sync/keys.ts
-  var viewedKey = (id) => `v:${id}`;
-  var uidKey = (uid) => `u:${String(uid).trim()}`;
-  var nameKey = (name) => `n:${String(name).trim().toLowerCase()}`;
-  function validKey(key6) {
-    const value2 = key6.slice(2);
-    if (key6.startsWith("v:")) return isViewedId(value2);
-    if (key6.startsWith("u:")) return /^[1-9][0-9]*$/.test(value2) && Number.isSafeInteger(Number(value2));
-    return key6.startsWith("n:") && value2.length > 0 && value2 === value2.trim().toLowerCase();
-  }
-  var sameKeys = (a, b) => a.size === b.size && [...a].every((key6) => b.has(key6));
-
-  // src/modules/blocker/rules.ts
-  var ruleDefinitions = [
-    { key: "precise_uid", label: "\u7528\u6237 UID\uFF08\u7CBE\u786E\uFF09", integer: true },
-    { key: "precise_uid_white", label: "\u7528\u6237 UID \u767D\u540D\u5355\uFF08\u7CBE\u786E\uFF09", integer: true },
-    { key: "name", label: "\u7528\u6237\u540D\uFF08\u6A21\u7CCA\uFF09" },
-    { key: "precise_name", label: "\u7528\u6237\u540D\uFF08\u7CBE\u786E\uFF09" },
-    { key: "nameCanonical", label: "\u7528\u6237\u540D\uFF08\u6B63\u5219\uFF09" },
-    { key: "title", label: "\u89C6\u9891\u6807\u9898\uFF08\u6A21\u7CCA\uFF09" },
-    { key: "titleCanonical", label: "\u89C6\u9891\u6807\u9898\uFF08\u6B63\u5219\uFF09" },
-    { key: "commentOn", label: "\u8BC4\u8BBA\u5173\u952E\u8BCD\uFF08\u6A21\u7CCA\uFF09", textarea: true },
-    { key: "commentOnCanonical", label: "\u8BC4\u8BBA\u5173\u952E\u8BCD\uFF08\u6B63\u5219\uFF09", textarea: true },
-    { key: "dynamic", label: "\u52A8\u6001\u5173\u952E\u8BCD\uFF08\u6A21\u7CCA\uFF09", textarea: true },
-    { key: "dynamicCanonical", label: "\u52A8\u6001\u5173\u952E\u8BCD\uFF08\u6B63\u5219\uFF09", textarea: true },
-    { key: "liveTitle", label: "\u76F4\u64AD\u6807\u9898\uFF08\u6A21\u7CCA\uFF09" },
-    { key: "liveTitleCanonical", label: "\u76F4\u64AD\u6807\u9898\uFF08\u6B63\u5219\uFF09" },
-    { key: "precise_liveRoomId", label: "\u76F4\u64AD\u95F4 ID\uFF08\u7CBE\u786E\uFF09" },
-    { key: "precise_partition", label: "\u76F4\u64AD\u5206\u533A\uFF08\u7CBE\u786E\uFF09" }
-  ];
-  var integerRuleKeys = new Set(ruleDefinitions.filter((rule) => rule.integer).map((rule) => rule.key));
-  function emptySnapshot() {
-    return Object.fromEntries(ruleDefinitions.map((rule) => [rule.key, []]));
-  }
-  function normalizeStoredRules(value2, integer = false) {
-    if (!Array.isArray(value2)) {
-      return [];
-    }
-    const normalized = [];
-    for (const item of value2) {
-      const validation = validateRuleInput(item, integer);
-      if (!validation.status || normalized.includes(validation.res)) {
-        continue;
-      }
-      normalized.push(validation.res);
-    }
-    return normalized;
-  }
-  function readRuleList(key6) {
-    const integer = integerRuleKeys.has(key6);
-    return normalizeStoredRules(GM_getValue(key6, []), integer);
-  }
-  var syncedRules = { precise_uid: { prefix: "u:", key: uidKey }, precise_name: { prefix: "n:", key: nameKey } };
-  var isSyncedRule = (key6) => Object.prototype.hasOwnProperty.call(syncedRules, key6);
-  var journal;
-  var keysOf = (key6, values) => new Set(values.map(syncedRules[key6].key).filter(validKey));
-  function writeRuleList(key6, values) {
-    const integer = integerRuleKeys.has(key6);
-    const normalized = normalizeStoredRules(values, integer);
-    if (isSyncedRule(key6)) journal?.(keysOf(key6, readRuleList(key6)), keysOf(key6, normalized));
-    GM_setValue(key6, normalized);
-    return normalized;
-  }
-  var blockedUserSyncStore = {
-    keys: () => /* @__PURE__ */ new Set([...keysOf("precise_uid", readRuleList("precise_uid")), ...keysOf("precise_name", readRuleList("precise_name"))]),
-    applySync(desired) {
-      const mine = new Set([...desired].filter((key6) => key6.startsWith("u:") || key6.startsWith("n:")));
-      if (sameKeys(mine, blockedUserSyncStore.keys())) return false;
-      for (const key6 of Object.keys(syncedRules)) {
-        const { prefix: prefix4, key: toKey } = syncedRules[key6];
-        const local = readRuleList(key6).filter((value2) => !validKey(toKey(value2)));
-        const synced = [...mine].filter((entry) => entry.startsWith(prefix4)).map((entry) => entry.slice(prefix4.length));
-        GM_setValue(key6, normalizeStoredRules([...local, ...synced], integerRuleKeys.has(key6)));
-      }
-      return true;
-    },
-    setJournal(next) {
-      journal = next;
-    }
-  };
-  function readRuleSnapshot() {
-    const snapshot = emptySnapshot();
-    for (const rule of ruleDefinitions) {
-      snapshot[rule.key] = readRuleList(rule.key);
-    }
-    return snapshot;
-  }
-  function addRuleItem(key6, value2) {
-    const validation = validateRuleInput(value2, integerRuleKeys.has(key6));
-    if (!validation.status) {
-      return validation;
-    }
-    const current4 = readRuleList(key6);
-    if (current4.includes(validation.res)) {
-      return { status: false, res: "\u5DF2\u5B58\u5728\u6B64\u5185\u5BB9" };
-    }
-    current4.push(validation.res);
-    writeRuleList(key6, current4);
-    return { status: true, res: "\u6DFB\u52A0\u6210\u529F", value: validation.res };
-  }
-  function removeRuleItem(key6, value2) {
-    const validation = validateRuleInput(value2, integerRuleKeys.has(key6));
-    if (!validation.status) {
-      return validation;
-    }
-    const current4 = readRuleList(key6);
-    const index = current4.findIndex((item) => item === validation.res);
-    if (index < 0) {
-      return { status: false, res: "\u89C4\u5219\u4E0D\u5B58\u5728" };
-    }
-    current4.splice(index, 1);
-    writeRuleList(key6, current4);
-    return { status: true, res: "\u5DF2\u89E3\u9664\u5C4F\u853D", value: validation.res };
-  }
-  function importRuleSnapshot(data, mode2) {
-    if (!data || typeof data !== "object") {
-      return { status: false, res: "\u89C4\u5219\u5185\u5BB9\u5FC5\u987B\u662F\u5BF9\u8C61" };
-    }
-    let changed = 0;
-    for (const rule of ruleDefinitions) {
-      const incoming = data[rule.key];
-      if (!Array.isArray(incoming)) {
-        continue;
-      }
-      if (mode2 === "overwrite") {
-        const written = writeRuleList(rule.key, incoming);
-        changed += written.length;
-        continue;
-      }
-      const current4 = readRuleList(rule.key);
-      const merged = writeRuleList(rule.key, current4.concat(incoming));
-      changed += Math.max(0, merged.length - current4.length);
-    }
-    return { status: true, res: `\u5BFC\u5165\u5B8C\u6210\uFF0C\u53D8\u66F4 ${changed} \u6761` };
-  }
-  function exportNonEmptyRuleSnapshot() {
-    const snapshot = readRuleSnapshot();
-    const result = {};
-    for (const rule of ruleDefinitions) {
-      if (snapshot[rule.key].length > 0) {
-        result[rule.key] = snapshot[rule.key];
-      }
-    }
-    return result;
-  }
-  function parseRuleText(value2, integer = false) {
-    const lines = value2.split(/\r?\n/g);
-    return normalizeStoredRules(lines, integer);
-  }
-  function formatRuleText(values) {
-    return values.join("\n");
-  }
-
   // src/modules/blocker/decision.ts
-  var titleCheck = { field: "title", fuzzy: "title", regex: "titleCanonical", label: "\u6807\u9898" };
   var checks = {
-    video: [titleCheck],
+    video: [],
     comment: [{ field: "content", fuzzy: "commentOn", regex: "commentOnCanonical", label: "\u8BC4\u8BBA" }],
-    /** A drawn dynamic card: its text, then an embedded video's title. */
-    dynamic: [{ field: "content", fuzzy: "dynamic", regex: "dynamicCanonical", label: "\u52A8\u6001" }, titleCheck],
+    dynamic: [],
     live: [
       { field: "roomId", exact: "precise_liveRoomId", label: "\u7CBE\u786E\u76F4\u64AD\u95F4 ID" },
       { field: "partition", exact: "precise_partition", label: "\u7CBE\u786E\u76F4\u64AD\u5206\u533A" },
@@ -6654,6 +7210,9 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     const userDecision = blockUser(item.uid, item.name, rules);
     if (userDecision) {
       return userDecision;
+    }
+    if (item.kind === "video" || item.kind === "dynamic") {
+      return matchContent(item.kind, item.parts ?? [{ title: item.title, video: true }, { body: item.content, video: item.kind === "video" }], rules);
     }
     for (const check2 of checks[item.kind]) {
       const decision = runCheck(check2, item, rules);
@@ -7504,6 +8063,8 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     ".bili-feed-card",
     ".feed-card",
     ".video-card",
+    ".bangumi-item",
+    ".media-card",
     ".video-page-card-small",
     ".video-page-operator-card-small",
     ".small-item",
@@ -7511,10 +8072,9 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     ".rank-item",
     ".rank-list>li",
     ".video-list-item",
-    ".card-box",
-    "li",
-    "div"
+    ".card-box"
   ];
+  var discoveryVideoSelector = videoCardSelectors.join(",");
   var commentSelectors = [
     "bili-comment-thread-renderer",
     "bili-comment-reply-renderer",
@@ -7697,7 +8257,9 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     };
   }
   function collectVideoItems(root2 = document) {
-    const anchors = Array.from(root2.querySelectorAll('a[href*="/video/BV"]'));
+    const anchors = Array.from(root2.querySelectorAll(
+      'a[href*="/video/BV"],a[href*="/video/av"],:is(.bili-video-card,.bangumi-item,.media-card) a[href*="/bangumi/play/"]'
+    ));
     const seen = /* @__PURE__ */ new Set();
     const items = [];
     const collectionSelector = ".pod-item,.video-episode-card,.multip .video-pod__item,.multip.grid .page";
@@ -7710,14 +8272,14 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
       seen.add(row);
     }
     for (const anchor of anchors) {
-      if (anchor.closest(collectionSelector)) continue;
-      const card4 = closestAny(anchor, videoCardSelectors);
+      if (anchor.closest(collectionSelector) || anchor.closest(".bili-dyn-item,.vl-window,.lh,[data-bili-blocker-ui]")) continue;
+      const card4 = closestAny(anchor, [...videoCardSelectors, "li", "div"]);
       if (!card4 || seen.has(card4)) {
         continue;
       }
       seen.add(card4);
       const owner2 = fillOwnerFromSpacePage(getOwner(card4), root2);
-      const title = attr(anchor, "title") || text(first(card4, [".bili-video-card__info--tit", ".title", "h3", ".video-name"])) || text(anchor);
+      const title = attr(anchor, "title") || text(first(card4, [".bili-video-card__info--tit", ".bili-video-card__title", ".media-card-content-head-title", ".title", "h3", ".video-name"])) || text(anchor);
       const bv = parseBv(anchor.href);
       const insertionEl = first(card4, [
         ".bili-video-card__info--bottom",
@@ -7733,9 +8295,39 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
         el: card4,
         insertionEl,
         title: title || void 0,
+        content: text(first(card4, [".bili-video-card__info--desc", ".media-card-content-head-desc", ".video-desc", ".desc", ".description"])) || void 0,
         bv: bv || void 0,
         uid: owner2.uid,
         name: owner2.name
+      });
+    }
+    return items;
+  }
+  function collectDynamicItems(root2 = document) {
+    const items = [];
+    for (const card4 of root2.querySelectorAll(".bili-dyn-item")) {
+      if (card4.parentElement?.closest(".bili-dyn-item,[data-bili-blocker-ui]")) continue;
+      const parts2 = [];
+      for (const link3 of card4.querySelectorAll(".bili-dyn-card-video,.bili-dyn-card-pgc,.bili-dyn-card-ugc-season")) {
+        parts2.push({ video: true, title: text(link3.querySelector('[class*="__title"]')), body: text(link3.querySelector('[class*="__desc"]')) });
+      }
+      for (const field of card4.querySelectorAll(".bili-rich-text,.dyn-card-opus__title,.dyn-card-opus__summary,.bili-dyn-card-opus__title,.bili-dyn-card-article__title,.bili-dyn-card-article__desc,.bili-dyn-content__title,.bili-dyn-card-link-common__detail__title,.bili-dyn-card-link-common__detail__desc")) {
+        if (field.closest(".bili-dyn-item__footer,.bili-dyn-item__interaction,.bili-dyn-card-video")) continue;
+        parts2.push(field.matches('[class*="title"]') ? { title: text(field) } : { body: text(field) });
+      }
+      for (const link3 of card4.querySelectorAll('.opus-text-rich-hl.video[href],.bili-dyn-content-link[href*="/video/"]')) {
+        parts2.push({ video: true, title: text(link3) });
+      }
+      const owner2 = getOwner(card4), author2 = card4.querySelector(".bili-dyn-title__text,.bili-dyn-item__author a[href]");
+      items.push({
+        kind: "dynamic",
+        el: card4,
+        insertionEl: card4,
+        name: text(author2) || owner2.name,
+        uid: parseUid(author2?.getAttribute("href")) ?? owner2.uid,
+        parts: parts2,
+        title: parts2.find((p2) => p2.title)?.title,
+        content: parts2.find((p2) => p2.body)?.body
       });
     }
     return items;
@@ -7824,36 +8416,6 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     return items;
   }
 
-  // src/ui/navigation.ts
-  var atelierAreas = [
-    { id: "following", label: "\u672C\u5730\u5173\u6CE8" },
-    { id: "viewed", label: "\u5DF2\u770B\u7BA1\u7406" },
-    { id: "video", label: "\u5C4F\u853D\u7BA1\u7406" },
-    { id: "data", label: "\u6570\u636E\u4E0E\u540C\u6B65" },
-    { id: "settings", label: "\u8BBE\u7F6E" }
-  ];
-  var atelierTabs = {
-    following: [],
-    viewed: [],
-    video: [["user", "\u7528\u6237"], ["video", "\u89C6\u9891"], ["comment", "\u8BC4\u8BBA"], ["dynamic", "\u52A8\u6001"], ["live", "\u76F4\u64AD"], ["history", "\u5C4F\u853D\u5386\u53F2"]],
-    data: [["data", "\u5BFC\u5165\u4E0E\u5BFC\u51FA"], ["sync", "PC / Android \u540C\u6B65"]],
-    settings: [["settings", "\u5916\u89C2"], ["interface", "\u754C\u9762"], ["sounds", "\u97F3\u6548"]]
-  };
-  function areaFor(section) {
-    for (const area of atelierAreas) if (atelierTabs[area.id].some(([id]) => id === section)) return area.id;
-    return section;
-  }
-  var driver;
-  function registerAtelierNavigation(next) {
-    driver = next;
-  }
-  function openAtelier(section = "following") {
-    driver?.open(section);
-  }
-  function toggleAtelier(section) {
-    driver?.toggle(section);
-  }
-
   // src/modules/blocker/runtime.ts
   var historyShortcutInstalled = false;
   var homeFeedCardSelectors = [
@@ -7875,14 +8437,9 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
     style.textContent = `
 ${actionsCss}
 ${concealCss}
+${foldCss}
 `;
     document.head.appendChild(style);
-  }
-  function decide(item, rules) {
-    if (item.el.closest("[data-bili-blocker-ui]")) {
-      return null;
-    }
-    return decideBlockableItem(item, rules);
   }
   function isAdBlockPlaceholderText(value2) {
     const compactText3 = String(value2 || "").replace(/\s+/g, "");
@@ -7956,6 +8513,17 @@ ${concealCss}
       window.setTimeout(scan, delayMs);
     }
   }
+  function isDiscoveryCard(item) {
+    if (item.kind === "video" && !item.el.matches(discoveryVideoSelector)) return false;
+    if (item.collection || item.el.closest(".history-record,.action-list-container,.video-pod,.playlist-container--left")) return false;
+    const { hostname, pathname } = location;
+    if (isSpacePageLocation()) return !/\/(favlist|favorite|history|watchlater)(?:\/|$)/.test(pathname);
+    if (hostname === "t.bilibili.com") return pathname === "/";
+    if (hostname === "search.bilibili.com") return true;
+    if (hostname !== "www.bilibili.com") return false;
+    if (pathname.startsWith("/list/")) return !!item.el.closest(".recommend-list-container,.recommend-list-v1");
+    return isHomePageLocation() || /^\/(?:video|v|bangumi\/play)\//.test(pathname);
+  }
   function startBlocker() {
     let observer = null;
     const observedShadowRoots = /* @__PURE__ */ new WeakSet();
@@ -7982,16 +8550,24 @@ ${concealCss}
       const rules = readRuleSnapshotWithHistoryAliases();
       removeHomeAdBlockPlaceholders();
       const items = [
+        ...collectDynamicItems(document),
         ...collectVideoItems(document),
         ...collectLiveItems(document)
       ];
       for (const item of items) {
-        const decision = decide(item, rules);
-        if (decision) {
+        if (item.el.closest("[data-bili-blocker-ui]")) continue;
+        const decision = decideBlockableItem(item, rules);
+        if ((item.kind === "video" || item.kind === "dynamic") && isDiscoveryCard(item)) {
+          cardRuleMenu(item.el, item.kind, item.title || item.content || "");
+          const identity = item.bv || item.el.getAttribute("data-did") || [item.uid, item.title, item.content].join("|");
+          if (decision?.fold && !item.el.querySelector(":scope > .atelier-rule-toggle")) recordBlockHistory(item, decision);
+          foldContent(item.el, identity, !!decision?.fold);
+        } else if (item.kind === "video") foldContent(item.el, "", false);
+        if (decision && !decision.fold) {
           hideElement(item, decision);
         } else {
           restoreElement(item);
-          ensureActionButton(item, scan);
+          if (item.kind !== "dynamic") ensureActionButton(item, scan);
         }
       }
       scanComments(document, rules);
@@ -8029,7 +8605,7 @@ ${concealCss}
       bodyObserver.disconnect();
       start2();
     });
-    bodyObserver.observe(document.documentElement, { childList: true });
+    bodyObserver.observe(document, { childList: true, subtree: true });
     window.addEventListener("pagehide", () => observer?.disconnect(), { once: true });
   }
 
@@ -8748,39 +9324,6 @@ ${concealCss}
       return data;
     }
   };
-
-  // src/ui/assets/xp-icons/atelier-icon.png
-  var atelier_icon_default = readCachedResourceUrl("atelier_atelier_icon_png");
-
-  // src/ui/assets/xp-icons/nav-users.png
-  var nav_users_default = "data:image/png;base64,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";
-
-  // src/ui/assets/xp-icons/nav-control-panel.png
-  var nav_control_panel_default = "data:image/png;base64,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";
-
-  // src/ui/assets/xp-icons/nav-recent-documents.png
-  var nav_recent_documents_default = "data:image/png;base64,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";
-
-  // src/ui/assets/xp-icons/nav-computer.png
-  var nav_computer_default = "data:image/png;base64,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";
-
-  // src/ui/assets/xp-icons/app.png
-  var app_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADMUlEQVR4nLWVS0hUURjHf+c+us2jx2gWGZGz0FWFsylMTEqj2vQk2lUEEUWvXUQUFQRSmww3ta2IQKJd0CYopHRRiW0KJXupWKHNTcfJmXPjzD13vJhBqf2Hc8/c75zzPf7f950rmBnqgDmTZD+BpzPUSw3QBHh/GE16TxEngQb9PzpJmQ04QAI4DWwBBpQiC7yEnrHwSOjZN6L2pIyQojxwBrig3yuBJHAL2AH067VFwJIUcBvoBmqDmNTLHaW2cH4JsDjsaSnQB2wATgEPgcvam4NAB3BER+C1gefpsUntacAr/p4Vo2goRCDhRA+swx+Pgc3AOeBrBC6WwRPgAJADFqozYyHPCkrCXIQWA7FIwncJ2yRcAbZK6H8Kj0agshFWAm3A9eDgfM2Z8uYL+vFYC9XiZEgoldAnYYOEYxIeSrikKEhNQdE+8NZMVUEpPPZPUCS0/hPL4d0H6BLQq5RriuoysGA13O7x613l0wXu+scsYF5BZFk55sXBHfZ51GgsUvQRvgvYBlwxYKsB/XXwKAaVPVNQ5JfKRB3V1EB3D9y5Bym/in6DYu4DsB44BDwAzurE7gtR1OiH3xYUkQcbvfp6PM/zx/PnExRZOgPHly799LWsrGFPZ+fbl/F4/GpJScll13UVJdeSyeQr27YP9Pb21gkhVqTTaeBHqFxsHCdCLmcxPj7GyMh40WudA3m4peXz+Z07R/PptIxlMploIpH4NjQ0VBqLxVzTNPOGYcjBwcFyx3Ey2Ww24nOvmlzBxbbHyeVGaG4+yt69b9i+3c+BjsC4UVvbvru8fM0mwxggkVC3AssikYia5wbeVFRUqKkgBOWl1CtxhLBpb++ko8NlLNQH2gCHXrx4vbaqahVdXV0IERTX38NxHFx3gNFRg/v3fzegNBb02rY9LQOWZWEYJqYpMsBHoEpd5UGZ3qyurn7GLMAwjCFgF3AReBNEQD6fN2fDgJRSXffvg1s5fEXNFrzwV64YgYJpmirEaeXA+MO5ooFoNFpoQ7VJbf5XCCEKBaKcnNJAa2vrQtWhw8PD0zYghCCbzaomKoYSjmm//kTOFKrNmgFVrv8fvwAWxReLASdSmAAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/xp-icons/history.png
-  var history_default = "data:image/png;base64,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";
-
-  // src/ui/assets/xp-icons/folder.png
-  var folder_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAHcElEQVR4nLWXe2xbVx3HP37FeTlx6mRp0pe7du2qLl0oYq06sQ0YYpOK1nYwsQIqQwhRYBLsDx4DihADpoFgLYyNIbWjoAEb6xBZ10VTu7B23dJnsjRNm6RJHMdxYsfx4/p57XsPOtd26qTpOlj5Sb97fK7vPb/v7/t7nHtM/A/ydGd2t65pH9Z1zVK8Fw6MvbBr2+p9QBzI8f+Sp95KPXIhqIufv62LL7ULQw9d0kW3XxdfePQPjwFNwAyw6yq7j0S2XZjUhJSxmC4+8qIuvv3v/FxK+7lY+s77d34LaADM19X4r171rz/cl4zMWBNCBBVNpLO6mEoIQ6W80DmVXrKqdQtQC5iui/FfHBiqe/542JPThZirSVWIfWeFODYqRCAuRCKji9+/0jdx4y0b7wYqrwXC/H4ANDirOu5trV2qalCqcRUODkBjFXgiMBSGrDBx/x03NW5/+PE9wGrA/kEAmPa0efZ/7Ja6dSazaZZxqSd8YDVDRoNaO4xGoTcAZouFh7ZuWvOd3QefAZa/Fwhr6eT471iu5liRzeGy22jtqXii7ra19V90VNkMg6VyaRom4+Ash4QKwgIWM3hjoOlwc4ON++6547aBr/7suy8/+4OfAN75ytNaOqlesPKN5vXfX1bmcOOL2FmYWEttbaXhYalIw31BWFwDY7H8GEpBhQ10AT4FyqywtKmand/4+o5cJjXV9qfHfi1fBbR5Q9D5NI+4P/rbZa5Va3E0x3GvHGbUN8lRD8TSl2mfTkL3BCypheFIfpReF5mQIZFMNFTln1+x1Mlntn/5mxvv3v4AsGBu2M3y0vEkdc5Fd+5yNLaAqRuYoLwsyYO3d5LwDdE1AclsXs8FoLE6H+9FNZfHcQVqyyGWgeV1s3Nl0U3L7fc99OjjzcvW3C6JLq0Ms7yUWdnW1PJwLeZ3Z1HdWBfns+teZ+ziMN3+PPU2C0RSUFcBU8n86IvBwmqYiOfnkqGi8UAchoIa3sHz8XFP3xqgvhSAVV6CUfwImR+JORliZaErwSeXvUGHrwrb0htYUAGBBKSzUG7N0y7v+ePgkqMCN9eDmoqgR7tIjHdxQ9jLp2oP27buvedrU8OvrXjwp3wPiMikNACYTQh0FVQTmDNXgPjQ8glE+iU6RrZici80Sk4mnWz4VbEOytQRFqc9VOZGcDvdOJUR7A43Fa5bsTS04miS3ZkaTY3UtD1R93FgA/AOMG0AsJgRWmYaVBme9NxKAZuN9YtHGT9zkCH/NhY111FniVB/fiurWncgq6bStQVhc5IQkJEqE9sL66pVHKSMZcZP/4i24wSApcCZWWWYmu7F6VoHIv/wFVJezua1vfzjrJWYvorVmWe59RO/IWhvZTAMY/2wZAlYCvtgIAAN5gxNjqQx19Qo/Sf+nN57iItGlmOgEgaAU/10t27SQJO1Mz5jU8umScYDxMOjZFJR7DXr2ODuwl4dxun+MUGbm5N+iESguRlyubwmEmAOe9nUKnNczwPq2cOBjuhwoSH1F74bMADs2kvwKzuyMnMgmUesRMcIpaw4b/wcrpWtBs0QBZKQ83J6soqhDNjt4HKBroOq5gEo4QxbnX+lzLJtxhlvz4u5vx/hPBg6UeyK1qKz6Bpk05DJJ2EoEsF976vAOeCCjOjlcJgytFR2MjL9APFsowFCviYEhMOwuekAjlig6CSh/jbaj475QjE8hcWU4lLm4o9kdBChqeg5lXRyGouzBRgBzgK+wmIFtWQpc1j5dP1+ssk0qVTe+2gUNjraaaoNFCpdOpMh0PMX9rcbnkvjfiB7BQAtq6BjIptNEIl4cK3aAfolmT3zqwnKqkxsdvwRLZUyIrfCepqWmhNgL8vTQRzF/xavHekfH/QxVKBf1r+4AkAmV3FCTrPZFGndTOWCNaAOQDZ7dS0rw+VU2Fz+FI0MsqniFXA48v8ZAJL4Tz/H84cNz2X2e+bWuXUmrCZdCC1DJqNgqd8AuYE8r9cSCcIRZXP4SagtlIIUXUdVRjn5Tk/41EUuAb2y8ZR6PwuApipCaGkUxYerZRdkPJcXu5ZUVRkdE7P58jtCMH76b7z0JoNg0D8yX5ezFn/EoxKkRjqr4mi6CwK/BDGTK9cWaVxSX3TIauLiyWPpl48acZfeh2aawnwAsjm8NmvFxvKFd0GqDzIx/ltJKpPEp0dRQiOEgpO5Z/5l1LBsPgNX7nRzAKg5vJGpHpzuz0P83DXp13Jpkkq+SyphL719nvjIJNHuQSaP9+IdGDN6viy5t0sbz1UBWMzoiuJniXsLDPwQY3csETUdM7pjMh4kHvFy5nwgfG6YqYExgh1deEMxg2Kp0vB4wWiwoDON56oAzCaEVr4Y0j5QFZKJIPGoDyXmIxQK5rr7Y9PvDhG86CXw+imjnGKFbzx/YQwUajxZULnZqHOz/qoApGhahpE3d3K2s20+OqMFr4oGg4V7qYKmS2h+T6PzApgMc6z9uX+KfYdwBCLGAnPplDUsE6noneyzxax+3wbnSumxSR6j5CFCHixlzApb3yw6P5Cx+eQ/bh39EDg8PIAAAAAASUVORK5CYII=";
-
-  // src/ui/assets/xp-icons/up.png
-  var up_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADgElEQVR42s2VXWhbZRjHfzlvmo/TpjlLGjeDLf3akM4O1wbGxEpx80YEOwoOQViH2gqCbOiloOCVeCF6IdQL227CLmRU8EJhzma2m462EF2r27SsrsE0sSWn+TznJCfxol9rk7ULKvjCe/M87/v/P/8/7/O88B8vUfGNfnro5Ac6iTJNaLfjlgrBFQR33Iftij5voi3lg8BpPmX+31HQyQWlzfG4y2PnkSY3ex5yNGbiub5ce0Fnmh//mYJ+ehx11tG6dhmPLGMXAq/TiWTCHzcTzM7EQmtqQpUr6EeRrJYx3+Fqh7emegPcLgQ+Vw2NDQp+f+0+VdVfSz9qWJgmuH5VesD6h5T9DqWutpqiVqRW2LALgUeWqZIkIpEks7N/YbdbAd6hn6H7WjQ1iOL1Pxm/N9b01QTCKalmthACaGh2dx97upkqScJisXD16iIzb4TL2m3dHnB7D8VdB15GaexC2GTgT9JHTea+6R0+9FL4LID0Zqq4FM3g97uQZXlH6SUEkrDhbekAcXkjJntaqD/y/pm50Q/PAHzvbmVkcRJZlhFCVEZgkapAurEtOIfSoqC0vgpAMzByYRIhBLJzVcHcaKC4fjwemzoRGODLsgTFQg4KiTK1LANgGlkWxs5hGAVk56YC35EPAHA93E3oM+coaJayBKapw4qA4nIJRWZlkdjNK9Qfv4TtYhdCCJyycw34CQCSkcs7W1QwNUgnwUyhLv2OGru1JV9//BLCNo4FcMpOhBCYqg1YWrXq6+cw89qe+xKYeQ0yKTLqHZIFP43PfgJEgAyQBcY3u1QIQqEFTrY+BixjJCMABAZQdyDIgJFlOTLD3mPvAhdLrBoeG9sYBNeCt/j4xdeBFL988TxmXmva8ipLLdIxchq5Kg+2ahNyuZL93sR3vHCyi/Pnx3n7qWdQHFZM4y6STR4ODGydrNZyBLqRpqahB/TbYOpbq5+cZG+9wuDgt/T49tPX0QHxFW583oeZ1z7atQ8KhRzpZBhP21uQLrVn5Pp1fo1EGOrtpaetDTQNIxFd9z60KwFAOhtnn9WEeLokd+rgQc51d2LN3OV2cIJMIoqZ1+aB0w/UyQA231FI/Ay6jpnXSaphkithUuoC7ckosQghIAj8BAS3+74rgffAKeavvUIy/huGlmAN7AqsAt/7DCv+k6cGWZ8pZ4FQYGDz8/hfrr8BOS1Vngza8EsAAAAASUVORK5CYII=";
-
-  // src/ui/assets/xp-icons/up-16.png
-  var up_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACQ0lEQVR42o2TT0gUURzHP5O7zs7k6tQoKVSuqWgLitTWoT9gRVAQlOcudigL79EhqA4hdMkORnQIPHayJOrQwS0TpVxckXJTJ9eUTTZHZ3dnt3HdcbvolrpJv9N7vN/38z7vB09gu7rGQ6AJuMJTwvlaCrYJN4tKwZMy707PSsxutRuzywQY2twm/COs7HAKIxVH3J5ytQjFITIbijMxrgfXbILbGxymY3eNfG7vvmLKZJldskR9dSkul7M8Gk1et5tWBQL4ARzrGa3Hl11fV78ZxlrIoC0tUnJIRKl04XQ6GRj4HlbKXB4Jxx0D624OoPX4siXeqyieoyQyOhq3cjLntWkO1uxBkiSAsHHfqvpbNmeg1jaC8BGlEJRLDwAVSLJ0+yySJCFLMooDxdj02hyA9DQI6bXNZwC+ve6majWLLMkkkyucrG1u6uwxswDVLcPCRkB8CTs9Tyo2j6mHWbYsSrztyNozRFFkYlLndMNFDpxpZ+LVBf9Wg5hJRBvEXXeDCu8JIA7ozCS/Isn7CQRm6LhcT+JHL4nI+0dbAPZyGoobUTwC0AtAWNdxqy5GR+c47irFU5Rm6kNX2NfGiy2AxYUxVG87JD7lpLr9fiwrw+jbSfpaW0npI8RmB+/lHWImk0aWRTB/5Q47+/tprqzkccsx7MgY8z+nDPhz+8YZuOshHoJUgoQxh2nM8rxBRLVDRIZCYcAPvPS1YeQFFCp1jPfdJGVGAYKAX4V3QNDXlv8nbgDEvnSRMqOn1gIG/1m/AexC1pfIkDVeAAAAAElFTkSuQmCC";
-
-  // src/ui/atelier-assets.ts
-  var atelierIcons = { tv: atelier_icon_default || app_default, app: app_default, folder: folder_default, following: nav_users_default, settings: nav_control_panel_default, viewed: nav_recent_documents_default, data: nav_computer_default, video: history_default, up: up_default, up16: up_16_default };
 
   // src/ui/assets/xp-shell/shell32-32.png
   var shell32_32_default = readCachedResourceUrl("atelier_shell32_32_png");
@@ -10511,19 +11054,23 @@ ${concealCss}
     if (when2 && !nested) card4.appendChild(node("footer", "adc-footer xp-status")).append(node("span", "xp-status-pane", `\u53D1\u5E03\u4E8E ${when2}`));
     return card4;
   }
-  function dynamicBlockText(raw) {
+  function dynamicContentParts(raw) {
     const parts2 = [];
-    const collect = (item) => {
-      const dynamic = item?.modules?.module_dynamic;
-      for (const value2 of [dynamic?.desc?.text, dynamic?.major?.opus?.title, dynamic?.major?.opus?.summary?.text, dynamic?.major?.archive?.title, dynamic?.major?.archive?.desc, dynamic?.major?.article?.title, dynamic?.major?.article?.desc]) {
-        if (typeof value2 === "string" && value2) parts2.push(value2);
+    for (let item = raw; item; item = item.orig) {
+      const dynamic = item.modules?.module_dynamic, major2 = dynamic?.major;
+      parts2.push({ body: dynamic?.desc?.text || dynamic?.desc?.rich_text_nodes?.map((n) => n.text || "").join("") });
+      if (!major2) continue;
+      for (const key6 of ["archive", "pgc", "ugc_season", "opus", "article", "common", "music", "courses", "live"]) {
+        const media2 = major2[key6];
+        if (media2) parts2.push({
+          title: media2.title,
+          body: media2.summary?.text || media2.desc || media2.sub_title || media2.label || media2.desc_first,
+          video: ["archive", "pgc", "ugc_season", "courses"].includes(key6)
+        });
       }
-    };
-    collect(raw);
-    if (raw?.orig) collect(raw.orig);
-    return parts2.join("\n");
+    }
+    return parts2;
   }
-  var dynamicVideoTitle = (raw) => raw?.modules?.module_dynamic?.major?.archive?.title ?? raw?.orig?.modules?.module_dynamic?.major?.archive?.title;
   var root = "#atelier-feed";
   var viewed = `${root} .adc-card:has(> .adc-body > .adc-video .btnIsView, > .adc-body > .adc-last > .adc-video .btnIsView)`;
   var dynamicCardCss = `
@@ -10655,21 +11202,21 @@ ${root} .btnView{z-index:3}
   // src/modules/local-following/follow-controls.ts
   var followed = (attribute2) => attribute2 === 1 || attribute2 === 2 || attribute2 === 6;
   var followLabel = (attribute2) => attribute2 === 6 ? "\u5DF2\u4E92\u7C89" : attribute2 === 1 ? "\u6084\u6084\u5173\u6CE8" : attribute2 === 2 ? "\u5DF2\u5173\u6CE8" : "\uFF0B \u5173\u6CE8";
-  var states = /* @__PURE__ */ new Map();
+  var states2 = /* @__PURE__ */ new Map();
   var painters = /* @__PURE__ */ new WeakMap();
   var repaint = (selector) => {
     for (const node4 of document.querySelectorAll(selector)) painters.get(node4)?.();
   };
-  var knownFollowState = (mid) => states.get(mid);
+  var knownFollowState = (mid) => states2.get(mid);
   function setFollowState(mid, attribute2) {
-    states.set(mid, attribute2);
+    states2.set(mid, attribute2);
     repaint(`.vl-follow[data-follow-mid="${mid}"]`);
   }
   var note2 = (message, tone) => showInfoLog(message, tone);
   function followButton(person, options, className = "") {
     const button6 = xpButton("", () => void click(), `vl-follow ${className}`.trim());
     const paint2 = () => {
-      const attribute2 = states.get(person.mid) ?? 0;
+      const attribute2 = states2.get(person.mid) ?? 0;
       button6.textContent = followLabel(attribute2);
       button6.classList.toggle("xp-default", !followed(attribute2));
       button6.setAttribute("aria-pressed", String(followed(attribute2)));
@@ -10683,7 +11230,7 @@ ${root} .btnView{z-index:3}
     }
     paint2();
     async function click() {
-      const attribute2 = states.get(person.mid) ?? 0;
+      const attribute2 = states2.get(person.mid) ?? 0;
       if (!followed(attribute2)) {
         button6.disabled = true;
         try {
@@ -11007,7 +11554,7 @@ ${root} .btnView{z-index:3}
     if (text4 !== void 0) element2.textContent = text4;
     return element2;
   }
-  function button(label, className, action) {
+  function button2(label, className, action) {
     const element2 = node2("button", `atelier-control ${className}`, label);
     element2.type = "button";
     element2.addEventListener("click", () => action(element2));
@@ -11100,7 +11647,7 @@ ${root} .btnView{z-index:3}
     panel.setAttribute("aria-label", "\u8868\u60C5");
     const caption2 = panel.appendChild(node2("header", "xp-caption"));
     caption2.append(node2("span", "xp-caption-title", "\u8868\u60C5"));
-    const close2 = caption2.appendChild(button("", "xp-caption-button", () => done()));
+    const close2 = caption2.appendChild(button2("", "xp-caption-button", () => done()));
     close2.className = "xp-caption-button";
     close2.dataset.kind = "close";
     close2.title = "\u5173\u95ED";
@@ -11179,16 +11726,16 @@ ${root} .btnView{z-index:3}
       field.focus();
       refresh();
     };
-    const emotes = button("\u8868\u60C5", "acm-tool", (target) => void openEmotes(context.api, target, insert));
+    const emotes = button2("\u8868\u60C5", "acm-tool", (target) => void openEmotes(context.api, target, insert));
     const input = node2("input");
     input.type = "file";
     input.accept = "image/png,image/jpeg,image/gif,image/webp";
     input.multiple = true;
     input.hidden = true;
-    const images2 = button("\u56FE\u7247", "acm-tool", () => input.click());
-    const send = button("\u53D1\u8868", "acm-send xp-default", () => void submit());
+    const images2 = button2("\u56FE\u7247", "acm-tool", () => input.click());
+    const send = button2("\u53D1\u8868", "acm-send xp-default", () => void submit());
     row.append(emotes, images2, input, note3, send);
-    if (options.cancel) row.append(button("\u53D6\u6D88", "acm-cancel", () => options.cancel()));
+    if (options.cancel) row.append(button2("\u53D6\u6D88", "acm-cancel", () => options.cancel()));
     const refresh = () => {
       images2.disabled = pictures2.length >= 9;
       send.disabled = pictures2.some((item) => !item.picture && !item.failed) || pictures2.some((item) => item.failed) || !field.value.trim() && !pictures2.length;
@@ -11200,7 +11747,7 @@ ${root} .btnView{z-index:3}
         image6.src = URL.createObjectURL(file);
         image6.alt = "";
         const item = { file, element: element2 };
-        element2.appendChild(button("\u2715", "acm-thumb-remove", () => {
+        element2.appendChild(button2("\u2715", "acm-thumb-remove", () => {
           URL.revokeObjectURL(image6.src);
           element2.remove();
           pictures2.splice(pictures2.indexOf(item), 1);
@@ -11310,7 +11857,7 @@ ${root} .btnView{z-index:3}
       area.append(compose.box);
     }
     const list = area.appendChild(node2("div", "acm-list"));
-    const more = area.appendChild(button("\u52A0\u8F7D\u66F4\u591A\u8BC4\u8BBA", "acm-more", () => void load(false)));
+    const more = area.appendChild(button2("\u52A0\u8F7D\u66F4\u591A\u8BC4\u8BBA", "acm-more", () => void load(false)));
     more.hidden = true;
     let rules = context.blocking ? readRuleSnapshotWithHistoryAliases() : null;
     const blocked = /* @__PURE__ */ new Set(), targets = /* @__PURE__ */ new WeakMap();
@@ -11382,7 +11929,7 @@ ${root} .btnView{z-index:3}
       if (where) stamp.append(node2("span", "acm-where", (when2 ? " \xB7 " : "") + where));
       const actions = meta.appendChild(node2("span", "acm-actions"));
       let likes = Math.max(0, Number(reply?.like) || 0), action = Number(reply?.action) || 0;
-      const like = button("", "acm-like", () => void toggle(1)), hate = button("\u8E29", "acm-hate", () => void toggle(2));
+      const like = button2("", "acm-like", () => void toggle(1)), hate = button2("\u8E29", "acm-hate", () => void toggle(2));
       const paint2 = () => {
         like.textContent = likes ? `\u70B9\u8D5E ${formatCount(likes)}` : "\u70B9\u8D5E";
         like.setAttribute("aria-pressed", String(action === 1));
@@ -11404,9 +11951,9 @@ ${root} .btnView{z-index:3}
         }
       }
       paint2();
-      actions.append(like, hate, button("\u56DE\u590D", "acm-reply", () => openReply()));
-      if (context.me && (mid === context.me || context.owner === context.me)) actions.append(button("\u5220\u9664", "acm-delete", () => void remove()));
-      actions.append(button("\u4E3E\u62A5", "acm-report", () => void report()));
+      actions.append(like, hate, button2("\u56DE\u590D", "acm-reply", () => openReply()));
+      if (context.me && (mid === context.me || context.owner === context.me)) actions.append(button2("\u5220\u9664", "acm-delete", () => void remove()));
+      actions.append(button2("\u4E3E\u62A5", "acm-report", () => void report()));
       if (!context.me) for (const control of actions.querySelectorAll("button")) {
         control.disabled = true;
         control.title = "\u767B\u5F55\u540E\u53EF\u7528";
@@ -11479,7 +12026,7 @@ ${root} .btnView{z-index:3}
         const preview = Array.isArray(reply?.replies) ? reply.replies : [], replyCount = Math.max(Number(reply?.rcount) || 0, preview.length);
         for (const child of preview.slice(0, 3)) replies.append(item(child, true));
         if (replyCount > Math.min(3, preview.length)) {
-          const open2 = replies.appendChild(button(String(reply?.reply_control?.sub_reply_entry_text || `\u5171 ${replyCount} \u6761\u56DE\u590D`) + "\uFF0C\u70B9\u51FB\u67E5\u770B", "acm-open", () => void page(1)));
+          const open2 = replies.appendChild(button2(String(reply?.reply_control?.sub_reply_entry_text || `\u5171 ${replyCount} \u6761\u56DE\u590D`) + "\uFF0C\u70B9\u51FB\u67E5\u770B", "acm-open", () => void page(1)));
           open2.classList.add("xp-tool");
         }
         async function page(number2) {
@@ -11490,7 +12037,7 @@ ${root} .btnView{z-index:3}
             replies.replaceChildren(...(Array.isArray(data.replies) ? data.replies : []).map((child) => item(child, true)));
             if (pages > 1) {
               const pager = replies.appendChild(node2("div", "acm-pager"));
-              pager.append(button("\u4E0A\u4E00\u9875", "acm-prev", () => void page(number2 - 1)), node2("span", "", `\u7B2C ${number2} / ${pages} \u9875`), button("\u4E0B\u4E00\u9875", "acm-next", () => void page(number2 + 1)));
+              pager.append(button2("\u4E0A\u4E00\u9875", "acm-prev", () => void page(number2 - 1)), node2("span", "", `\u7B2C ${number2} / ${pages} \u9875`), button2("\u4E0B\u4E00\u9875", "acm-next", () => void page(number2 + 1)));
               pager.querySelector(".acm-prev").disabled = number2 <= 1;
               pager.querySelector(".acm-next").disabled = number2 >= pages;
             }
@@ -12571,7 +13118,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     let me = { mid: document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1] ?? "", name: "", face: "", level: 0 };
     const bar = header.appendChild(el2("div", "lh-band lh-menubar"));
     bar.setAttribute("role", "menubar");
-    const menus = bar.appendChild(el2("nav", "lh-menus"));
+    const menus2 = bar.appendChild(el2("nav", "lh-menus"));
     let active2 = null;
     const openFrom = (anchor, items, align = "left", focus = false) => {
       active2?.removeAttribute("data-open");
@@ -12588,7 +13135,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     };
     const openers = {};
     const menu = (id, label2, key6, items) => {
-      const button7 = menus.appendChild(el2("button", "lh-menu-title"));
+      const button7 = menus2.appendChild(el2("button", "lh-menu-title"));
       button7.type = "button";
       button7.append(titled(label2, key6));
       button7.setAttribute("data-menu-anchor", "");
@@ -12800,13 +13347,6 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       const line = separator(compact);
       resets.push([line, miniButton(views_16_default, "\u91CD\u7F6E\u5E03\u5C40", resetLayout)]);
     }
-    compact.append(el2("span", "lh-compact-gap"));
-    const unfold = compact.appendChild(el2("button", "lh-fold"));
-    unfold.type = "button";
-    unfold.title = "\u5C55\u5F00\u5DE5\u5177\u680F";
-    unfold.setAttribute("aria-label", unfold.title);
-    unfold.setAttribute("aria-expanded", "false");
-    unfold.addEventListener("click", toggleFold);
     if (resettable) {
       const paintReset = () => {
         const layout2 = currentPageLayout();
@@ -13087,16 +13627,13 @@ html:is([data-atelier-screen=web],[data-atelier-screen=full]) .lh[data-folded] .
 .lh[data-folded] .lh-pop{visibility:visible}
 /* The compact bar (header.ts, part 4) at the top of the page's right column:
    a band of the header in small, sticky, so the column scrolls under it as
-   the page does under the header. Its arrow takes the fold button's place. */
+   the page does under the header. */
 .lh-compact{position:sticky;top:0;z-index:3;box-sizing:border-box;display:flex;flex-wrap:nowrap;align-items:center;gap:1px;min-width:0;margin:0 0 8px;padding:2px 2px 2px 3px;overflow:hidden;${xpFont};color:var(--xp-ink);text-align:left;letter-spacing:normal;background:var(--xp-face);border:1px solid;border-color:var(--xp-light3d) var(--xp-shadow3d) var(--xp-shadow3d) var(--xp-light3d);border-radius:0;box-shadow:none;pointer-events:auto;user-select:none}
 .lh-compact *{box-sizing:border-box}
 .lh-compact [hidden],.lh-compact[hidden],html:is([data-atelier-screen=web],[data-atelier-screen=full]) .lh-compact{display:none!important}
-html:has(.lh-compact:not([hidden])) .lh[data-folded] .lh-fold{visibility:hidden}
 .lh-compact .lh-mini{flex:none;gap:2px;min-height:22px;padding:2px 3px}
 .lh-compact .lh-split{flex:none;min-height:22px;padding:0 3px}
 .lh-compact .lh-split-main{padding-right:2px}
-.lh-compact-gap{flex:1 1 0;min-width:4px}
-.lh-compact .lh-fold{margin:0 1px 0 2px;background-image:var(--xp-arrow-4)}.lh-compact .lh-fold:hover{background-image:var(--xp-arrow-5)}.lh-compact .lh-fold:active{background-image:var(--xp-arrow-6)}
 .lh-brand{flex:none;align-self:stretch;display:flex;align-items:center;justify-content:center;width:42px;border-left:1px solid var(--xp-shadow3d);box-shadow:inset 1px 0 var(--xp-light3d);background:var(--xp-window)}
 .lh-brand-guest{width:auto;padding:0 3px;background:var(--xp-face)}
 .lh-face-button{display:flex;align-items:center;justify-content:center;width:100%;height:100%;padding:0;margin:0;border:0;background:transparent;cursor:default}
@@ -14329,20 +14866,20 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
     fold.setAttribute("aria-expanded", String(!folded));
   }
   var readFolded2 = () => typeof GM_getValue === "function" && GM_getValue(publishFoldKey, false) === true;
-  var button2 = null;
+  var button3 = null;
   function foldButton() {
-    if (button2) return button2;
-    button2 = document.createElement("button");
-    button2.type = "button";
-    button2.className = "alf-publish-fold";
-    button2.addEventListener("click", () => {
+    if (button3) return button3;
+    button3 = document.createElement("button");
+    button3.type = "button";
+    button3.className = "alf-publish-fold";
+    button3.addEventListener("click", () => {
       const folded = !readFolded2();
       sound(folded ? "minimize" : "restore");
       if (typeof GM_setValue === "function") GM_setValue(publishFoldKey, folded);
       mountFeedPublisher();
       window.dispatchEvent(new Event("resize"));
     });
-    return button2;
+    return button3;
   }
   var box = `${on6} .alf-publish>.bili-dyn-publishing`;
   var tool2 = (state2) => `border-image-source:var(--xp-tool-${state2});border-image-slice:var(--xp-tool-slice) fill;border-image-width:var(--xp-tool-edge);border-image-repeat:stretch`;
@@ -14400,58 +14937,6 @@ ${on6} .bili-emoji__list__item:hover{background:color-mix(in srgb,var(--xp-highl
     if (typeof GM_setValue !== "function") return;
     const key6 = localFeedPrefsKey();
     GM_setValue(key6, { ...parseLocalFeedPrefs(GM_getValue(key6, null)), native: !luna });
-  }
-
-  // src/ui/window-drag.ts
-  function enableWindowDrag(panel, caption2, signal) {
-    const positions = {};
-    let drag;
-    const mode2 = () => panel.dataset.minimized === "true" ? "minimized" : "normal";
-    const maximized = () => panel.dataset.maximized === "true" && mode2() === "normal";
-    const place3 = (position) => {
-      const rect = panel.getBoundingClientRect();
-      position.x = Math.max(0, Math.min(Math.max(0, innerWidth - rect.width), position.x));
-      position.y = Math.max(0, Math.min(Math.max(0, innerHeight - rect.height), position.y));
-      Object.assign(panel.style, { right: "auto", bottom: "auto", margin: "0" });
-      placeFixed(panel, { left: position.x, top: position.y });
-    };
-    const update = () => {
-      drag = void 0;
-      for (const property of ["left", "top", "right", "bottom", "margin"]) panel.style.removeProperty(property);
-      if (!maximized() && positions[mode2()]) place3(positions[mode2()]);
-      caption2.style.cursor = maximized() ? "default" : "move";
-    };
-    caption2.style.touchAction = "none";
-    caption2.querySelectorAll("img").forEach((img) => {
-      img.draggable = false;
-    });
-    caption2.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0 || maximized() || event.target.closest("button")) return;
-      const rect = panel.getBoundingClientRect();
-      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, origin: { x: rect.left, y: rect.top }, moved: false };
-      caption2.setPointerCapture(event.pointerId);
-      event.preventDefault();
-    }, { signal });
-    caption2.addEventListener("pointermove", (event) => {
-      if (!drag || drag.id !== event.pointerId) return;
-      if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 4) drag.moved = true;
-      if (!drag.moved) return;
-      const position = { x: drag.origin.x + event.clientX - drag.x, y: drag.origin.y + event.clientY - drag.y };
-      place3(position);
-      positions[mode2()] = position;
-    }, { signal });
-    const release = (event) => {
-      if (!drag || drag.id !== event.pointerId) return;
-      if (event.type === "pointercancel" && drag.moved) {
-        positions[mode2()] = drag.origin;
-        place3(drag.origin);
-      }
-      drag = void 0;
-    };
-    for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) caption2.addEventListener(event, release, { signal });
-    window.addEventListener("resize", update, { signal });
-    update();
-    return update;
   }
 
   // src/modules/local-following/groups-window.ts
@@ -15356,7 +15841,7 @@ ${lunaDialogCss}
   var dm = `${skin} #danmukuBox`;
   var adv = `${dm} .bpx-player-adv-danmaku-panel`;
   var locked = `${dm} .bpx-player-adv-danmaku-panel.mask`;
-  var button3 = `box-sizing:border-box;${xpFont};color:var(--xp-ink)!important;background:var(--xp-fallback,var(--xp-face))!important;border:0 solid transparent;border-radius:0!important;box-shadow:none!important;${image4("button", 0)};image-rendering:pixelated;cursor:default!important`;
+  var button4 = `box-sizing:border-box;${xpFont};color:var(--xp-ink)!important;background:var(--xp-fallback,var(--xp-face))!important;border:0 solid transparent;border-radius:0!important;box-shadow:none!important;${image4("button", 0)};image-rendering:pixelated;cursor:default!important`;
   var buttonInside = "background:none!important;border:0!important;border-radius:0!important;padding:0!important;min-width:0!important;height:auto!important;line-height:inherit!important;font:inherit!important;color:inherit!important";
   var check = (part) => `content:"";flex:none;width:var(--xp-${part}-w,13px);height:var(--xp-${part}-h,13px);margin:0 4px 0 0;background:var(--xp-${part}-0) center/100% 100% no-repeat;image-rendering:pixelated`;
   var videoSkinCss = `
@@ -15423,7 +15908,7 @@ ${dm} :is(.dm-info-block-btn,.dm-info-report-btn){${xpFont};color:var(--xp-ink);
 ${dm} .bpx-player-dm-btn-footer{box-sizing:border-box;display:flex;align-items:stretch;gap:6px;height:23px!important;margin:8px!important;cursor:default!important}
 ${dm} .bpx-player-dm-btn-footer::before{content:attr(data-vl-count);flex:1;min-width:0;display:flex;align-items:center;padding:0 4px;${sunken};${xpFont};color:var(--xp-ink);white-space:nowrap;overflow:hidden}
 /* The player shows \u67E5\u770B\u5386\u53F2\u5F39\u5E55 once the list has loaded: no display here. */
-${dm} .bpx-player-dm-btn-history{flex:none;width:auto!important;height:23px!important;margin:0!important;padding:2px 9px!important;line-height:19px!important;text-align:center;${button3}}
+${dm} .bpx-player-dm-btn-history{flex:none;width:auto!important;height:23px!important;margin:0!important;padding:2px 9px!important;line-height:19px!important;text-align:center;${button4}}
 ${dm} .bpx-player-dm-btn-history::after{content:"\u2026"}
 ${dm} .bpx-player-dm-btn-history:hover{border-image-source:var(--xp-button-1)}
 ${dm} .bpx-player-dm-btn-history:active{border-image-source:var(--xp-button-2)}
@@ -15447,7 +15932,7 @@ ${dm} .bpx-player-block-switch .bui-switch-input:checked+.bui-switch-label{backg
 ${dm} .bpx-player-block-top>div:first-child:hover .bui-switch-input:checked+.bui-switch-label{background-image:var(--xp-checkbox-5)}
 ${dm} .bpx-player-block-label{margin:0!important;font-size:0!important;line-height:normal!important;font-weight:normal!important;${crisp}}
 ${dm} .bpx-player-block-label::after{content:"\u542F\u7528\u5C4F\u853D\u5217\u8868";${xpFont};color:var(--xp-ink)}
-${dm} .bpx-player-block-sync-btn{position:relative;display:inline-flex;align-items:center;min-height:23px;margin:0!important;padding:2px 9px!important;line-height:var(--xp-line)!important;${button3}}
+${dm} .bpx-player-block-sync-btn{position:relative;display:inline-flex;align-items:center;min-height:23px;margin:0!important;padding:2px 9px!important;line-height:var(--xp-line)!important;${button4}}
 ${dm} .bpx-player-block-sync-btn:hover{border-image-source:var(--xp-button-1)}
 ${dm} .bpx-player-block-sync-btn:active{border-image-source:var(--xp-button-2)}
 ${dm} .bpx-player-block-sync-btn.bpx-player-hide{border-image-source:var(--xp-button-3);color:var(--xp-graytext)!important}
@@ -15455,7 +15940,7 @@ ${dm} .bpx-player-sync-icon{display:none!important}
 ${dm} .bpx-player-block-sync-btn::after,${dm} .bpx-player-block-sync-btn:hover::after{top:calc(100% + 2px)!important;right:0;z-index:4;padding:1px 4px 2px!important;${xpFont};color:var(--xp-info-ink)!important;background:var(--xp-info)!important;border:1px solid var(--xp-ink);border-radius:0!important;box-shadow:2px 2px 2px #0005;transition:none!important;white-space:nowrap}
 ${dm} .bpx-player-block-add{gap:4px;margin-top:8px;line-height:var(--xp-line)!important}
 ${dm} .bpx-player-block-add-input{flex:1;min-width:0;width:auto!important;height:23px!important;margin:0!important;padding:2px 3px!important;line-height:normal!important}
-${dm} .bpx-player-block-add-btn{flex:none!important;min-width:64px;height:23px!important;line-height:19px!important;padding:2px 9px!important;text-align:center;${button3}}
+${dm} .bpx-player-block-add-btn{flex:none!important;min-width:64px;height:23px!important;line-height:19px!important;padding:2px 9px!important;text-align:center;${button4}}
 ${dm} .bpx-player-block-add-btn:hover{border-image-source:var(--xp-button-1)}
 ${dm} .bpx-player-block-add-btn:active{border-image-source:var(--xp-button-2)}
 ${dm} .bpx-player-block-add-btn .bui-area{${buttonInside}}
@@ -15544,7 +16029,7 @@ ${dm} .bpx-player-adv-danmaku-checkbox:hover .bui-checkbox-label::before{backgro
 ${dm} .bpx-player-adv-danmaku-checkbox .bui-checkbox-input:checked+.bui-checkbox-label::before{background-image:var(--xp-checkbox-4)}
 ${dm} .bpx-player-adv-danmaku-checkbox:hover .bui-checkbox-input:checked+.bui-checkbox-label::before{background-image:var(--xp-checkbox-5)}
 ${dm} .bpx-player-adv-danmaku-checkbox .bui-checkbox-name{${xpFont};color:var(--xp-ink)!important;${crisp}}
-${dm} .bpx-player-adv-danmaku-btn{width:auto!important;min-width:68px;height:23px!important;margin-right:8px;padding:0 9px!important;line-height:21px!important;text-align:center;${button3}}
+${dm} .bpx-player-adv-danmaku-btn{width:auto!important;min-width:68px;height:23px!important;margin-right:8px;padding:0 9px!important;line-height:21px!important;text-align:center;${button4}}
 ${dm} .bpx-player-adv-danmaku-btn .bui-area{${buttonInside}}
 ${dm} .bpx-player-adv-danmaku-btn:hover{border-image-source:var(--xp-button-1)}
 ${dm} :is(.bpx-player-adv-danmaku-btn:active,.bpx-player-adv-danmaku-btn.active){border-image-source:var(--xp-button-2)}
@@ -15569,7 +16054,7 @@ ${dm} .bpx-player-adv-danmaku-dialog .bui-dialog-close>*{opacity:0!important}
 ${dm} .bpx-player-adv-danmaku-dialog-content{padding:12px 10px 0!important}
 ${dm} .bpx-player-adv-danmaku-dialog-text{${xpFont};color:var(--xp-ink)!important;text-align:left!important}
 ${dm} .bpx-player-adv-danmaku-dialog-functions{gap:6px;justify-content:flex-end!important}
-${dm} .bpx-player-adv-danmaku-dialog-function{min-width:75px!important;height:23px!important;margin:0!important;padding:0 9px!important;line-height:21px!important;${button3}}
+${dm} .bpx-player-adv-danmaku-dialog-function{min-width:75px!important;height:23px!important;margin:0!important;padding:0 9px!important;line-height:21px!important;${button4}}
 ${dm} .bpx-player-adv-danmaku-dialog-function:hover{border-image-source:var(--xp-button-1)}
 ${dm} .bpx-player-adv-danmaku-dialog-function:active{border-image-source:var(--xp-button-2)}
 
@@ -15640,7 +16125,7 @@ ${skin} .bpx-player-mode-selection-row .bui-color-picker-display{border-radius:0
 ${skin} .bpx-player-mode-selection-row :is(.bui-color-picker-option,.vip-danmaku-color li){border:1px solid var(--xp-shadow3d)!important;border-radius:0!important;box-shadow:none!important}
 ${skin} .bpx-player-mode-selection-row :is(.bui-color-picker-option-active,.vip-danmaku-color .active){outline:1px solid var(--xp-ink);outline-offset:1px}
 ${skin} .bpx-player-mode-selection-mask{background:color-mix(in srgb,var(--xp-face) 85%,transparent)!important}
-${skin} .bpx-player-mode-selection-mask-warning{padding:2px 9px;${button3}}
+${skin} .bpx-player-mode-selection-mask-warning{padding:2px 9px;${button4}}
 ${skin} .bpx-player-mode-selection-mask-warning:hover{border-image-source:var(--xp-button-1)}
 ${skin} .bpx-player-mode-selection-mask-warning:active{border-image-source:var(--xp-button-2)}
 ${skin} .bpx-player-mode-selection-mask-warning .bui-area{${buttonInside};image-rendering:auto}
@@ -15929,24 +16414,28 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       latestMemo = void 0;
       panel.render();
     };
-    function blocked(raw, rules) {
-      if (!rules) return false;
+    function blockDecision(raw, parts2, rules) {
+      if (!rules) return null;
       const owner2 = raw?.modules?.module_author ?? {}, holder = document.createElement("div");
-      const item = { kind: "dynamic", el: holder, insertionEl: holder, uid: Number(owner2.mid) || void 0, name: owner2.name, content: dynamicBlockText(raw), title: dynamicVideoTitle(raw) };
+      const item = { kind: "dynamic", el: holder, insertionEl: holder, uid: Number(owner2.mid) || void 0, name: owner2.name, parts: parts2, content: parts2.find((p2) => p2.body)?.body, title: parts2.find((p2) => p2.title)?.title };
       const decision = decideBlockableItem(item, rules);
       if (decision) recordBlockHistory(item, decision);
-      return !!decision;
+      return decision;
     }
     function append(answer) {
       const rules = config.blocker.enabled ? readRuleSnapshotWithHistoryAliases() : null;
       let hidden = 0;
       for (const raw of answer.data.items) {
-        if (blocked(raw, rules)) {
+        const parts2 = dynamicContentParts(raw);
+        const decision = blockDecision(raw, parts2, rules);
+        if (decision && !decision.fold) {
           hidden++;
           continue;
         }
         const card4 = renderDynamicCard(author2 ? raw : unpinned(raw));
         cards2.set(card4, raw);
+        foldContent(card4, String(raw.id_str), !!decision?.fold);
+        if (rules) cardRuleMenu(card4, "dynamic", parts2.find((p2) => p2.title)?.title || parts2.find((p2) => p2.body)?.body || "");
         if (!loggedIn) for (const control of card4.querySelectorAll('.adc-actions [data-action="like"],.adc-actions [data-action="forward"]')) {
           control.disabled = true;
           control.title = "\u767B\u5F55\u540E\u53EF\u7528";
@@ -16008,11 +16497,16 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       const rules = config.blocker.enabled ? readRuleSnapshotWithHistoryAliases() : null;
       for (const card4 of [...list.children]) {
         const raw = cards2.get(card4);
-        if (!raw || !blocked(raw, rules)) continue;
+        if (!raw) continue;
+        const parts2 = dynamicContentParts(raw);
+        const decision = blockDecision(raw, parts2, rules);
+        foldContent(card4, String(raw.id_str), !!decision?.fold);
+        if (!decision || decision.fold) continue;
         if (card4 === keep) note3(card4, "\u5DF2\u5C4F\u853D\uFF0C\u5237\u65B0\u540E\u4E0D\u518D\u663E\u793A\u8FD9\u5F20\u5361\u7247", true);
         else card4.remove();
       }
     }
+    window.addEventListener("atelier-sync-applied", () => refilter());
     async function like(card4, raw, control) {
       const on8 = control.getAttribute("aria-pressed") !== "true", before = Number(control.dataset.count) || 0;
       control.setAttribute("aria-pressed", String(on8));
@@ -16316,7 +16810,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     node4.textContent = text4;
     return node4;
   }
-  function button4(label, action, className = "lf-button") {
+  function button5(label, action, className = "lf-button") {
     const node4 = localFollowElement("button", className, label);
     node4.type = "button";
     node4.addEventListener("click", () => {
@@ -16415,12 +16909,12 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     };
     const layout2 = localFollowElement("div", "lf-layout"), sidebar = localFollowElement("aside", "lf-sidebar"), nav2 = localFollowElement("nav", "lf-nav");
     nav2.setAttribute("aria-label", "\u672C\u5730\u5206\u7EC4");
-    sidebar.append(nav2, button4("\u5206\u7EC4\u7BA1\u7406", () => openLocalFollowGroups({ group: groupId === "all" || groupId === "ungrouped" ? void 0 : groupId }), "lf-button lf-groups-open"));
+    sidebar.append(nav2, button5("\u5206\u7EC4\u7BA1\u7406", () => openLocalFollowGroups({ group: groupId === "all" || groupId === "ungrouped" ? void 0 : groupId }), "lf-button lf-groups-open"));
     const main = localFollowElement("div", "lf-main"), addRow = localFollowElement("form", "lf-row lf-add");
     const input = localFollowElement("input");
     input.placeholder = "\u7C98\u8D34 UID \u6216\u4E2A\u4EBA\u4E3B\u9875\u94FE\u63A5";
     input.setAttribute("aria-label", "\u6DFB\u52A0\u8D26\u53F7 UID \u6216\u94FE\u63A5");
-    const add = button4("\u6DFB\u52A0\u672C\u5730\u5173\u6CE8", () => {
+    const add = button5("\u6DFB\u52A0\u672C\u5730\u5173\u6CE8", () => {
       void addProfile();
     });
     async function addProfile() {
@@ -16468,7 +16962,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       sortSelect.append(option);
     }
     sortSelect.value = sort;
-    const direction = button4(ascending ? "\u5347\u5E8F" : "\u964D\u5E8F", () => {
+    const direction = button5(ascending ? "\u5347\u5E8F" : "\u964D\u5E8F", () => {
       ascending = !ascending;
       direction.textContent = ascending ? "\u5347\u5E8F" : "\u964D\u5E8F";
       savePrefs();
@@ -16513,21 +17007,21 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
         feedback.finish("error");
       }
     }
-    const actions = localFollowElement("div", "lf-row"), checkChosen = button4("\u68C0\u67E5\u9009\u4E2D", () => void check2([...selected]));
-    const checkGroup = button4("\u68C0\u67E5\u6574\u7EC4", () => void check2(inGroup().map((account) => account.uid)));
-    const cancel = button4("\u53D6\u6D88\u68C0\u67E5", () => {
+    const actions = localFollowElement("div", "lf-row"), checkChosen = button5("\u68C0\u67E5\u9009\u4E2D", () => void check2([...selected]));
+    const checkGroup = button5("\u68C0\u67E5\u6574\u7EC4", () => void check2(inGroup().map((account) => account.uid)));
+    const cancel = button5("\u53D6\u6D88\u68C0\u67E5", () => {
       checker.cancel();
       sound("cancel");
     });
-    const all = button4("\u9009\u62E9\u5F53\u524D\u7ED3\u679C", () => {
+    const all = button5("\u9009\u62E9\u5F53\u524D\u7ED3\u679C", () => {
       for (const account of visible()) selected.add(account.uid);
       renderDirectory();
     });
-    const none = button4("\u53D6\u6D88\u9009\u62E9", () => {
+    const none = button5("\u53D6\u6D88\u9009\u62E9", () => {
       selected.clear();
       renderDirectory();
     });
-    const remove = button4("\u79FB\u9664\u9009\u4E2D\u672C\u5730\u5173\u6CE8", () => {
+    const remove = button5("\u79FB\u9664\u9009\u4E2D\u672C\u5730\u5173\u6CE8", () => {
       mutate(() => removeLocalFollows([...selected]), "delete");
       selected.clear();
       render2();
@@ -16621,7 +17115,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       if (groupId !== "all" && groupId !== "ungrouped" && !snapshot.groups.some((group) => group.id === groupId)) groupId = "ungrouped";
       nav2.replaceChildren();
       for (const [id, label] of [["all", "\u5168\u90E8\u672C\u5730\u5173\u6CE8"], ["ungrouped", "\u672A\u5206\u7EC4"], ...snapshot.groups.map((group) => [group.id, groupLabel(group)])]) {
-        const node4 = button4(label, () => {
+        const node4 = button5(label, () => {
           if (groupId !== id) sound("folder");
           groupId = id;
           render2();
@@ -17557,9 +18051,9 @@ ${message}` : ""}`;
     /** Several accounts at once (a 创作团队): mid → attribute. */
     async followStates(mids) {
       if (!mids.length) return {};
-      const data = await this.get(`/x/relation/relations?fids=${mids.join(",")}`), states2 = {};
-      for (const mid of mids) states2[mid] = Number(data?.[mid]?.attribute) || 0;
-      return states2;
+      const data = await this.get(`/x/relation/relations?fids=${mids.join(",")}`), states3 = {};
+      for (const mid of mids) states3[mid] = Number(data?.[mid]?.attribute) || 0;
+      return states3;
     }
     /** act 1 关注, 2 取消关注, 4 取消悄悄关注 (re_src 14 is the video page). */
     follow(mid, act) {
@@ -19896,6 +20390,7 @@ ${message}` : ""}`;
     const win = xpWindow({ className: "vl-small vl-rec-window", icon: shellIcon(224, 16), title: "\u76F8\u5173\u63A8\u8350" });
     foldable(win, "rec");
     let state2 = null, expanded = false;
+    const opened = /* @__PURE__ */ new Set();
     const published = /* @__PURE__ */ new Map(), asked = /* @__PURE__ */ new Set();
     const dateLine = (aid) => {
       const stamp = formatTimestamp(published.get(aid)).slice(0, 16);
@@ -19917,7 +20412,7 @@ ${message}` : ""}`;
     }
     function blockedBy(item, rules, holder) {
       if (!rules) return null;
-      const target = { kind: "video", el: holder, insertionEl: holder, uid: Number(item?.owner?.mid) || void 0, name: item?.owner?.name, title: item?.title, bv: item?.bvid };
+      const target = { kind: "video", el: holder, insertionEl: holder, uid: Number(item?.owner?.mid) || void 0, name: item?.owner?.name, title: item?.title, content: item?.desc, bv: item?.bvid };
       const decision = decideBlockableItem(target, rules);
       if (decision) recordBlockHistory(target, decision);
       return decision;
@@ -19928,7 +20423,7 @@ ${message}` : ""}`;
       const bvid = String(item?.bvid ?? ""), id = viewedIdFromBvid(bvid), redirect = typeof item?.redirect_url === "string" && /^https?:\/\//.test(item.redirect_url) ? item.redirect_url : "";
       const url = redirect || videoUrl(bvid);
       const decision = blockedBy(item, rules, node4);
-      if (decision) {
+      if (decision && !decision.fold) {
         node4.dataset.blocked = "";
         node4.title = `Bili Atelier \u5DF2\u5C4F\u853D\uFF1A${decision.type} ${decision.matching}`;
       }
@@ -20003,9 +20498,11 @@ ${message}` : ""}`;
             setViewedVideo(id, !seen);
           } },
           "separator",
+          { label: "\u6DFB\u52A0\u5185\u5BB9\u89C4\u5219", disabled: !config.blocker.enabled, action: () => editContentRule("video", String(item?.title ?? "")) },
           blockUp
         ], { x: event.clientX, y: event.clientY });
       });
+      foldContent(node4, url, !!decision?.fold, opened);
       return node4;
     }
     function draw() {
@@ -20056,6 +20553,7 @@ ${message}` : ""}`;
       for (const node4 of win.body.querySelectorAll(".vl-tile[data-blocked]")) node4.hidden = !isShowingBlocked();
     };
     window.addEventListener(blockedVisibilityChangedEvent, paintBlocked);
+    window.addEventListener("atelier-sync-applied", draw);
     window.addEventListener(viewedMarksChanged, () => {
       for (const node4 of win.body.querySelectorAll(".vl-tile")) {
         const id = node4.querySelector(".vl-viewed")?.dataset.viewedId;
@@ -20065,7 +20563,10 @@ ${message}` : ""}`;
     return {
       element: win.root,
       render(next) {
-        if (next.bvid !== state2?.bvid) expanded = false;
+        if (next.bvid !== state2?.bvid) {
+          expanded = false;
+          opened.clear();
+        }
         state2 = next;
         draw();
       },
@@ -20080,7 +20581,9 @@ ${message}` : ""}`;
     foldable(win, "rec");
     const tiles = win.body.appendChild(el("div", "vl-tiles"));
     let key6 = "";
-    function tile(season) {
+    let seasons = [];
+    const opened = /* @__PURE__ */ new Set();
+    function tile(season, rules) {
       const id = Number(season?.season_id) || 0, url = bangumiUrl(`ss${id}`), viewedId = bangumiViewedId("ss", id);
       const node4 = el("div", "vl-tile vl-season-tile");
       if (viewedId && isViewedVideo(viewedId)) node4.dataset.viewed = "";
@@ -20109,6 +20612,7 @@ ${message}` : ""}`;
         event.preventDefault();
         const seen = !!viewedId && isViewedVideo(viewedId);
         openMenu([
+          { label: "\u6DFB\u52A0\u5185\u5BB9\u89C4\u5219", disabled: !config.blocker.enabled, action: () => editContentRule("video", season.title || "") },
           { label: "\u5728\u65B0\u6807\u7B7E\u9875\u4E2D\u6253\u5F00", bold: true, action: () => {
             window.open(url, "_blank", "noopener");
           } },
@@ -20119,8 +20623,15 @@ ${message}` : ""}`;
           } }
         ], { x: event.clientX, y: event.clientY });
       });
+      foldContent(node4, url, config.blocker.enabled && !!matchContent("video", [{ title: season.title, body: season.evaluate || season.desc }], rules), opened);
       return node4;
     }
+    function draw() {
+      const rules = readRuleSnapshot();
+      tiles.replaceChildren(...seasons.map((season) => tile(season, rules)));
+      if (!seasons.length) tiles.append(el("p", "vl-empty vl-muted", "\u6CA1\u6709\u76F8\u5173\u63A8\u8350"));
+    }
+    window.addEventListener("atelier-sync-applied", draw);
     window.addEventListener(viewedMarksChanged, () => {
       for (const node4 of tiles.querySelectorAll(".vl-tile")) {
         const id = node4.querySelector(".vl-viewed")?.dataset.viewedId;
@@ -20130,12 +20641,12 @@ ${message}` : ""}`;
     return {
       element: win.root,
       render(next) {
-        const seasons = (Array.isArray(next.bangumi?.related) ? next.bangumi.related : []).filter((season) => Number(season?.season_id) > 0);
+        seasons = (Array.isArray(next.bangumi?.related) ? next.bangumi.related : []).filter((season) => Number(season?.season_id) > 0);
         const now = seasons.map((season) => season.season_id).join();
         if (now === key6) return;
         key6 = now;
-        tiles.replaceChildren(...seasons.map(tile));
-        if (!seasons.length) tiles.append(el("p", "vl-empty vl-muted", "\u6CA1\u6709\u76F8\u5173\u63A8\u8350"));
+        opened.clear();
+        draw();
       }
     };
   }
@@ -21848,248 +22359,6 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     attach();
   }
 
-  // src/ui/atelier-dom.ts
-  function element(tag, className = "", text4 = "") {
-    const node4 = document.createElement(tag);
-    node4.className = className;
-    node4.textContent = text4;
-    return node4;
-  }
-  function icon(src, size = 28) {
-    const image6 = element("img");
-    image6.src = src;
-    image6.alt = "";
-    image6.width = image6.height = size;
-    return image6;
-  }
-  function button5(text4, action, className = "luna-button") {
-    const node4 = element("button", className, text4);
-    node4.type = "button";
-    node4.addEventListener("click", () => {
-      sound("click");
-      action();
-    });
-    return node4;
-  }
-  function downloadJson(value2, fileName2) {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(value2, null, 2)], { type: "application/json;charset=utf-8" }));
-    const link3 = element("a");
-    link3.href = url;
-    link3.download = fileName2;
-    document.body.appendChild(link3);
-    link3.click();
-    link3.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1e3);
-  }
-
-  // src/ui/atelier-window.ts
-  var factories = [];
-  function registerAtelierPages(factory) {
-    factories.push(factory);
-  }
-  var notifyAtelierDataChanged = () => window.dispatchEvent(new Event("atelier-sync-applied"));
-  var active;
-  function toggleAtelierWindow(section) {
-    if (!active?.toggle(section)) openAtelierWindow(section);
-  }
-  function openAtelierWindow(initialSection = "following") {
-    if (active && document.getElementById(atelierPanelId)) {
-      active.show(initialSection);
-      return;
-    }
-    ensureLunaTheme();
-    const previousFocus = document.activeElement;
-    const events = new AbortController();
-    const panel = element("section");
-    panel.id = atelierPanelId;
-    panel.className = "xp-window";
-    panel.setAttribute("data-bili-blocker-ui", "");
-    panel.setAttribute("role", "dialog");
-    panel.setAttribute("aria-labelledby", "bili-atelier-title");
-    let section = initialSection;
-    const cleanupPixels = observeCrispText(panel);
-    const navButtons = /* @__PURE__ */ new Map();
-    const status2 = element("span", "luna-status xp-status-pane");
-    status2.setAttribute("role", "status");
-    status2.setAttribute("aria-live", "polite");
-    const win = {
-      element: panel,
-      signal: events.signal,
-      current: () => section,
-      show: (next, user = false) => show(next, user),
-      updateStatus,
-      isDirty: () => groups.some((group2) => group2.isDirty?.()),
-      reload: () => {
-        for (const group2 of groups) group2.reload?.();
-      }
-    };
-    const groups = factories.map((factory) => factory(win));
-    const groupOf2 = (id) => groups.find((group2) => group2.pages[id]);
-    function updateStatus(message) {
-      const current4 = groupOf2(section);
-      const source = [current4, ...groups].find((group2) => group2?.status && (group2 === current4 || group2.isDirty?.()));
-      status2.textContent = message || source?.status?.() || "";
-      status2.dataset.dirty = String(!!source?.isDirty?.());
-    }
-    let closing = false;
-    async function close2() {
-      if (closing) return;
-      closing = true;
-      const feedback = soundTask();
-      if (win.isDirty() && !await atelierConfirm("\u89C4\u5219\u6216\u540C\u6B65\u8BBE\u7F6E\u5C1A\u672A\u4FDD\u5B58\uFF0C\u786E\u5B9A\u653E\u5F03\u4FEE\u6539\u5E76\u5173\u95ED\u5417\uFF1F")) {
-        closing = false;
-        feedback.finish("cancel");
-        return;
-      }
-      events.abort();
-      for (const group2 of groups) group2.dispose?.();
-      cleanupPixels();
-      panel.remove();
-      active = void 0;
-      if (previousFocus?.isConnected) previousFocus.focus();
-      feedback.finish("close");
-    }
-    function save() {
-      groupOf2(section)?.save?.();
-    }
-    const caption2 = element("header", "luna-caption xp-caption");
-    const title = element("h1", "", "Bili Atelier");
-    title.id = "bili-atelier-title";
-    const captionActions = element("div", "luna-caption-actions");
-    function captionButton2(name, label, action) {
-      const node4 = button5("", action, "luna-caption-button xp-caption-button");
-      node4.title = label;
-      node4.setAttribute("aria-label", label);
-      node4.dataset.kind = name;
-      captionActions.appendChild(node4);
-      return node4;
-    }
-    const minimize = captionButton2("minimize", "\u6700\u5C0F\u5316", () => {
-      const minimized = panel.dataset.minimized !== "true";
-      if (minimized) groupOf2(section)?.leave?.();
-      panel.dataset.minimized = String(minimized);
-      updateWindowPosition();
-      minimize.title = minimized ? "\u5C55\u5F00\u7A97\u53E3" : "\u6700\u5C0F\u5316";
-      minimize.setAttribute("aria-label", minimize.title);
-      sound(minimized ? "minimize" : "restore");
-    });
-    const maximize = captionButton2("maximize", "\u6700\u5927\u5316", () => {
-      panel.dataset.minimized = "false";
-      minimize.title = "\u6700\u5C0F\u5316";
-      minimize.setAttribute("aria-label", minimize.title);
-      const maximized = panel.dataset.maximized !== "true";
-      panel.dataset.maximized = String(maximized);
-      updateWindowPosition();
-      maximize.title = maximized ? "\u8FD8\u539F\u7A97\u53E3" : "\u6700\u5927\u5316";
-      maximize.setAttribute("aria-label", maximize.title);
-      maximize.dataset.kind = maximized ? "restore" : "maximize";
-      sound(maximized ? "maximize" : "restore");
-    });
-    captionButton2("close", "\u5173\u95ED\u7A97\u53E3", close2);
-    caption2.append(icon(atelierIcons.tv, 16), title, captionActions);
-    const updateWindowPosition = enableWindowDrag(panel, caption2, events.signal);
-    const layout2 = element("div", "luna-layout");
-    const sidebar = element("div", "luna-sidebar xp-taskpane");
-    const group = element("section", "xp-task-group");
-    group.dataset.special = "";
-    const groupHead = button5("\u5DE5\u4F5C\u53F0", () => {
-      group.toggleAttribute("data-collapsed");
-      groupHead.setAttribute("aria-expanded", String(!group.hasAttribute("data-collapsed")));
-    }, "xp-task-head");
-    groupHead.setAttribute("aria-expanded", "true");
-    const nav2 = element("nav", "luna-nav xp-task-body");
-    nav2.setAttribute("aria-label", "Atelier \u529F\u80FD\u76EE\u5F55");
-    for (const area of atelierAreas) {
-      const node4 = button5("", () => show(area.id, true), "luna-nav-button xp-task-link");
-      node4.append(icon(atelierIcons[area.id], 16), document.createTextNode(area.label));
-      navButtons.set(area.id, node4);
-      nav2.appendChild(node4);
-    }
-    group.append(groupHead, nav2);
-    sidebar.append(group);
-    const main = element("div", "luna-main");
-    const breadcrumb = element("div", "luna-breadcrumb");
-    const address = element("div", "luna-address");
-    breadcrumb.append(document.createTextNode("\u5730\u5740"), address);
-    const sectionTabs = element("nav", "luna-section-tabs xp-tabs");
-    sectionTabs.setAttribute("aria-label", "\u5F53\u524D\u680F\u76EE\u5B50\u9875\u9762");
-    const content = element("div", "luna-content");
-    const footer = element("footer", "luna-footer");
-    const saveButton = button5("\u4FDD\u5B58\u89C4\u5219", save, "luna-button luna-button-primary xp-default");
-    footer.append(saveButton, button5("\u5173\u95ED", close2));
-    main.append(breadcrumb, sectionTabs, content, footer);
-    layout2.append(sidebar, main);
-    const statusBar = element("div", "xp-status");
-    statusBar.append(status2);
-    panel.append(caption2, layout2, statusBar);
-    let drawnClass = "";
-    function show(next, user = false) {
-      if (user && next !== section) sound("folder");
-      else if (user && panel.dataset.minimized === "true") sound("restore");
-      groupOf2(section)?.leave?.();
-      section = next;
-      const owner2 = groupOf2(section), page = owner2?.pages[section];
-      saveButton.hidden = !(page?.saves && owner2?.save);
-      panel.dataset.minimized = "false";
-      updateWindowPosition();
-      minimize.title = "\u6700\u5C0F\u5316";
-      minimize.setAttribute("aria-label", minimize.title);
-      const area = areaFor(section);
-      for (const [id, node4] of navButtons) {
-        if (id === area) node4.setAttribute("aria-current", "page");
-        else node4.removeAttribute("aria-current");
-      }
-      const label = atelierAreas.find((item) => item.id === area).label;
-      address.replaceChildren(icon(atelierIcons[area], 16), document.createTextNode("Bili Atelier \u203A " + label));
-      const tabs2 = atelierTabs[area];
-      sectionTabs.replaceChildren();
-      sectionTabs.hidden = !tabs2.length;
-      for (const [id, tabLabel] of tabs2) {
-        const tab = button5(tabLabel, () => show(id, true), "luna-section-tab xp-tab");
-        if (id === section) tab.setAttribute("aria-current", "page");
-        sectionTabs.append(tab);
-      }
-      content.replaceChildren();
-      content.classList.toggle("xp-tabpanel", !!tabs2.length);
-      if (drawnClass) content.classList.remove(drawnClass);
-      drawnClass = page?.contentClass ?? "";
-      if (drawnClass) content.classList.add(drawnClass);
-      page?.draw(content);
-      content.scrollTop = 0;
-      updateStatus();
-    }
-    panel.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        event.stopPropagation();
-        close2();
-      }
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
-        event.preventDefault();
-        event.stopPropagation();
-        if (!saveButton.hidden) save();
-      }
-    });
-    window.addEventListener("beforeunload", (event) => {
-      if (win.isDirty()) {
-        event.preventDefault();
-        event.returnValue = "";
-      }
-    }, { signal: events.signal });
-    active = {
-      show: (next) => show(next, true),
-      toggle: (next) => {
-        if (section !== next || !panel.isConnected) return false;
-        minimize.click();
-        return true;
-      }
-    };
-    document.body.appendChild(panel);
-    show(initialSection);
-    navButtons.get(areaFor(initialSection))?.focus();
-    sound("open");
-  }
-
   // src/modules/blocker/panel.ts
   var categories = [
     { id: "user", label: "\u7528\u6237", description: "\u6309\u7528\u6237\u8EAB\u4EFD\u8FC7\u6EE4\u5185\u5BB9\uFF0C\u767D\u540D\u5355\u4F18\u5148\u4FDD\u7559\u3002", keys: ["precise_uid", "precise_uid_white", "name", "precise_name", "nameCanonical"] },
@@ -22144,6 +22413,18 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     }
     function save() {
       const changed = isDirty();
+      for (const key6 of ["titleCanonical", "dynamicCanonical"]) {
+        const field = fields2.get(key6);
+        if (field.value === saved.get(key6)) continue;
+        for (const pattern of parseRuleText(field.value)) {
+          try {
+            new RegExp(String(pattern), "i");
+          } catch {
+            showInfoLog("\u6B63\u5219\u8868\u8FBE\u5F0F\u65E0\u6548\uFF1A" + pattern, "error");
+            return;
+          }
+        }
+      }
       const latest = readRuleSnapshot();
       for (const rule of ruleDefinitions) {
         const field = fields2.get(rule.key);
@@ -22172,6 +22453,10 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
           syncSavedRules();
           if (!category.keys.includes(selectedKey)) selectedKey = category.keys[0];
           content.append(element("h2", "", category.label + "\u5C4F\u853D\u89C4\u5219"), element("p", "luna-description", category.description));
+          if (category.id === "video" || category.id === "dynamic") {
+            const scope = category.id;
+            content.append(button("\u7BA1\u7406\u5185\u5BB9\u89C4\u5219", () => manageContentRules(scope)));
+          }
           const tabs2 = element("div", "luna-rule-tabs");
           tabs2.setAttribute("role", "tablist");
           tabs2.setAttribute("aria-label", category.label + "\u5339\u914D\u65B9\u5F0F");
@@ -22190,7 +22475,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
             editorHost.replaceChildren(fields2.get(key6));
           }
           for (const key6 of category.keys) {
-            const tab = button5(modeLabels[key6], () => selectMode(key6, true), "luna-rule-tab");
+            const tab = button(modeLabels[key6], () => selectMode(key6, true), "luna-rule-tab");
             const mark2 = element("span", "luna-radio");
             mark2.setAttribute("aria-hidden", "true");
             tab.prepend(mark2);
@@ -22433,7 +22718,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       row("\u660E\u6697(D):", choice([["page", "\u8DDF\u968F\u7F51\u9875"], ["light", "\u6D45\u8272"], ["dark", "\u6DF1\u8272"]], prefs.theme, (value2) => saveUiPreferences({ theme: value2 }))),
       pixelScaleRow(choice),
       element("p", "luna-hint", "\u6574\u6570\u500D\u65F6\uFF0CXP \u7684\u6BCF\u4E2A\u50CF\u7D20\u90FD\u753B\u6210\u540C\u6837\u5927\u5C0F\u7684\u65B9\u5757\u3002"),
-      button5("\u91CD\u7F6E\u7535\u89C6\u5165\u53E3\u4F4D\u7F6E", () => {
+      button("\u91CD\u7F6E\u7535\u89C6\u5165\u53E3\u4F4D\u7F6E", () => {
         saveUiPreferences({ edge: "right", y: 0.72 });
         window.dispatchEvent(new Event("atelier-reset-launcher"));
       })
@@ -22523,7 +22808,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
         }
       });
       const wrapper = element("span");
-      wrapper.append(button5(label, () => input.click()), input);
+      wrapper.append(button(label, () => input.click()), input);
       return wrapper;
     }
     window.addEventListener("atelier-sync-applied", () => {
@@ -22544,9 +22829,9 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
             content.append(list);
             if (snapshot.items.length > 100) content.append(element("p", "luna-hint", "\u6B64\u5904\u9884\u89C8\u524D 100 \u6761\uFF1B\u5BFC\u51FA\u6587\u4EF6\u5305\u542B\u5168\u90E8\u8BB0\u5F55\u3002"));
             content.append(dataGroup("\u6570\u636E\u5907\u4EFD", "\u53EF\u5C06\u5DF2\u770B\u8BB0\u5F55\u4E0B\u8F7D\u5230\u624B\u673A\uFF0C\u6216\u8FDB\u5165\u6570\u636E\u7BA1\u7406\u5BFC\u5165\u5DF2\u6709\u8BB0\u5F55\u3002", [
-              button5("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
-              button5("\u5BFC\u5165\u5DF2\u770B\u8BB0\u5F55\u2026", () => win.show("data", true)),
-              button5("\u5237\u65B0\u8BB0\u5F55", () => win.show("viewed", true))
+              button("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
+              button("\u5BFC\u5165\u5DF2\u770B\u8BB0\u5F55\u2026", () => win.show("data", true)),
+              button("\u5237\u65B0\u8BB0\u5F55", () => win.show("viewed", true))
             ]));
           }
         },
@@ -22554,13 +22839,13 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
           draw(content) {
             content.append(element("h2", "", "\u6570\u636E\u7BA1\u7406"), element("p", "luna-description", "\u5907\u4EFD\u4F60\u7684\u5DF2\u770B\u8BB0\u5F55\u548C\u5C4F\u853D\u89C4\u5219\uFF0C\u4E5F\u53EF\u5BFC\u5165\u5230\u624B\u673A\u3002"));
             content.append(dataGroup("\u5BFC\u51FA\u4E0E\u624B\u673A\u5BFC\u5165", "\u5BFC\u51FA\u5F53\u524D\u5DF2\u4FDD\u5B58\u7684\u6570\u636E\uFF1B\u4FEE\u6539\u89C4\u5219\u540E\u8BF7\u5148\u4FDD\u5B58\u3002", [
-              button5("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
-              button5("\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", () => {
+              button("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
+              button("\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", () => {
                 downloadJson(exportAtelierDataPackage(), dated("bili-atelier-data"));
                 showInfoLog("\u5DF2\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u542B\u5DF2\u770B\u548C\u5C4F\u853D\u89C4\u5219\uFF09", "success");
                 sound("success");
               }),
-              button5("\u5BFC\u51FA\u7EDF\u4E00 JSON", async () => {
+              button("\u5BFC\u51FA\u7EDF\u4E00 JSON", async () => {
                 const feedback = soundTask(void 0, win.element);
                 const json = JSON.stringify(exportAtelierDataPackage(), null, 2);
                 let copied = false;
@@ -22577,11 +22862,11 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
               })
             ]));
             content.append(dataGroup("\u8FFD\u52A0\u5BFC\u5165", "\u5408\u5E76\u5E76\u53BB\u91CD\uFF0C\u4FDD\u7559\u5DF2\u6709\u8BB0\u5F55\u3002\u517C\u5BB9\u65E7\u5C4F\u853D / \u5DF2\u770B JSON\u3002", [
-              button5("\u8FFD\u52A0\u5BFC\u5165\u7EDF\u4E00 JSON", () => pasteImport("append")),
+              button("\u8FFD\u52A0\u5BFC\u5165\u7EDF\u4E00 JSON", () => pasteImport("append")),
               fileImport("\u4ECE\u6587\u4EF6\u8FFD\u52A0\u5BFC\u5165", "append")
             ]));
             content.append(dataGroup("\u8986\u76D6\u5BFC\u5165", "\u66FF\u6362\u5DF2\u770B\u8BB0\u5F55\u53CA\u5BFC\u5165\u6587\u4EF6\u4E2D\u7684\u89C4\u5219\u3002\u64CD\u4F5C\u524D\u4F1A\u518D\u6B21\u786E\u8BA4\u3002", [
-              button5("\u8986\u76D6\u5BFC\u5165\u7EDF\u4E00 JSON", () => pasteImport("overwrite")),
+              button("\u8986\u76D6\u5BFC\u5165\u7EDF\u4E00 JSON", () => pasteImport("overwrite")),
               fileImport("\u4ECE\u6587\u4EF6\u8986\u76D6\u5BFC\u5165", "overwrite")
             ]));
           }
@@ -22959,7 +23244,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     const observer = new MutationObserver(() => {
       if (document.head) start2();
     });
-    observer.observe(document.documentElement, { childList: true });
+    observer.observe(document.documentElement || document, { childList: true, subtree: true });
     document.addEventListener("DOMContentLoaded", start2, { once: true });
   }
   var modules = [
@@ -23000,7 +23285,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       mountWatchHistory();
     }, recover: showNativeHistory },
     { name: "\u7535\u89C6\u5165\u53E3", phase: "page", gm: {}, start: startAtelierLauncher },
-    { name: "\u672C\u5730\u5173\u6CE8", phase: "page", gm: {}, start: startLocalFollowing },
+    { name: "\u672C\u5730\u5173\u6CE8", phase: "page", gm: {}, start: () => whenHeadExists("\u672C\u5730\u5173\u6CE8", startLocalFollowing) },
     { name: "\u5DF2\u770B\u6A21\u5757", phase: "page", gm: { missing: "\u5DF2\u770B\u6A21\u5757\u9700\u8981 GM_* \u5B58\u50A8\u6743\u9650\uFF0C\u5F53\u524D\u73AF\u5883\u4E0D\u53EF\u7528\u3002" }, enabled: config.viewedMarker.enabled, start: () => whenHeadExists("\u5DF2\u770B\u6A21\u5757", startViewedMarker) },
     { name: "\u5C4F\u853D\u6A21\u5757", phase: "page", gm: { missing: "\u5C4F\u853D\u6A21\u5757\u9700\u8981 GM_* \u5B58\u50A8\u6743\u9650\uFF0C\u5F53\u524D\u73AF\u5883\u4E0D\u53EF\u7528\u3002" }, enabled: config.blocker.enabled, start: startBlocker }
   ];
