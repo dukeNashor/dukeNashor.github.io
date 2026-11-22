@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.10.1
+// @version      0.10.2
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -2354,6 +2354,7 @@
   function readInterfacePrefs() {
     const stored = (typeof GM_getValue === "function" ? GM_getValue(key, {}) : {}) ?? {};
     return {
+      danmakuFont: stored.danmakuFont === "native" ? "native" : "pixel",
       pbpOpacity: share(stored.pbpOpacity, 1),
       viewedDim: stored.viewedDim !== false,
       viewedOpacity: share(stored.viewedOpacity, 0.45),
@@ -4310,7 +4311,8 @@
   var whole = `html[${pageZoomAttribute}]`;
   var notWhole = `html:not([${pageZoomAttribute}])`;
   var zoomedScope = `${whole},${notWhole} :is(${zoomedParts})`;
-  var unzoomedScope = `${whole}:is([data-atelier-screen=web],[data-atelier-screen=full]) #bilibili-player`;
+  var fullScreen = "[data-atelier-screen=web],[data-atelier-screen=full]";
+  var unzoomedScope = `${whole}[data-atelier-video=luna]:not(${fullScreen}) #bilibili-player .bpx-player-video-area,${whole}:is(${fullScreen}) #bilibili-player`;
   function zoomCss(zoom) {
     if (zoom === 1) return "";
     const z = +zoom.toFixed(8), back = +(1 / zoom).toFixed(8);
@@ -16071,6 +16073,7 @@ ${dm} .bpx-player-block-list-line .bpx-player-block-list-delete::after{content:"
 ${dm} .bpx-player-block-list-line .bpx-player-block-list-delete:hover{${image4("tool", 1)}}
 ${dm} .bpx-player-block-list-line .bpx-player-block-list-delete:active{${image4("tool", 2)}}
 ${dm} .bpx-player-block-list-sync{fill:var(--xp-graytext)!important;color:var(--xp-graytext)!important}
+${dm} .bpx-player-block-list-line .bpx-player-block-list-sync>svg{display:block;width:14px;height:18px;margin:0 auto}
 
 /* \u9AD8\u7EA7\u5F39\u5E55: the player's three groups as group boxes. Locked, the player
    veils the page in white; we gray the controls and say why. */
@@ -19582,6 +19585,66 @@ ${message}` : ""}`;
     };
   }
 
+  // src/modules/video-luna/danmaku-font.ts
+  function startDanmakuFont() {
+    const pixel = '"Atelier XP 12"';
+    const page = typeof unsafeWindow === "undefined" ? window : unsafeWindow;
+    const saved = /* @__PURE__ */ new WeakMap();
+    let enabled = false, loaded = false, loading;
+    let redraw = 0;
+    const sync = () => {
+      let engine2;
+      try {
+        engine2 = page.player?.danmaku?.getDanmakuX?.();
+      } catch {
+        return;
+      }
+      if (!engine2?.config?.setting || typeof engine2.setSetting !== "function") return;
+      const config2 = engine2.config, setting = config2.setting;
+      let previous = saved.get(engine2);
+      if (enabled && document.documentElement.dataset.atelierVideo === "luna") {
+        if (!loaded) return;
+        if (!previous) {
+          const measure = {};
+          if ("fontFamily" in config2) measure.fontFamily = config2.fontFamily;
+          if ("bold" in config2) measure.bold = config2.bold;
+          previous = { family: setting.fontFamily, measure };
+          saved.set(engine2, previous);
+        }
+        if (setting.fontFamily === pixel && config2.fontFamily === pixel && config2.bold === setting.bold) return;
+        if (setting.fontFamily !== pixel) previous.family = setting.fontFamily;
+        config2.fontFamily = pixel;
+        config2.bold = setting.bold;
+        engine2.setSetting("fontFamily", pixel);
+      } else {
+        if (!previous) return;
+        delete config2.fontFamily;
+        delete config2.bold;
+        Object.assign(config2, previous.measure);
+        engine2.setSetting("fontFamily", setting.fontFamily === pixel ? previous.family : setting.fontFamily);
+        saved.delete(engine2);
+      }
+      window.clearTimeout(redraw);
+      redraw = window.setTimeout(() => {
+        if (engine2.container.isConnected) engine2.seek(engine2.currentTime, false);
+      }, 16);
+    };
+    const preference = () => {
+      enabled = readInterfacePrefs().danmakuFont === "pixel";
+      if (enabled && !loading && document.fonts) {
+        loading = Promise.all([400, 700].map((weight) => document.fonts.load(`${weight} 24px ${pixel}`))).then((faces) => {
+          loaded = faces.every((matches) => matches.length > 0);
+          sync();
+        }, () => {
+        });
+      }
+      sync();
+    };
+    preference();
+    window.addEventListener(interfaceChanged, preference);
+    return sync;
+  }
+
   // src/modules/video-luna/episode-window.ts
   var rangeSize = 100;
   var blockSize = 1e3;
@@ -21132,6 +21195,7 @@ ${message}` : ""}`;
     style.id = "atelier-video-luna";
     setZoomedCss(style, videoWindowCss + videoSkinCss);
     (document.head || document.documentElement).append(style);
+    const syncDanmakuFont = startDanmakuFont();
     const me = document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1] ?? "";
     const bangumi = isLunaBangumiPath(location.pathname);
     let latest = null, raw = null;
@@ -21328,6 +21392,19 @@ ${message}` : ""}`;
     const root2 = document.documentElement;
     const sizes = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null;
     let watchedPlayer = null, watchedContainer = null;
+    let lastPicture;
+    function refreshDanmakuOrigin() {
+      if (root2.dataset.atelierVideo !== "luna") return;
+      const area = document.querySelector("#bilibili-player .bpx-player-video-area");
+      if (!area) return;
+      const rect = area.getBoundingClientRect(), x = Math.round(rect.left + window.scrollX), y = Math.round(rect.top + window.scrollY);
+      const old = lastPicture;
+      lastPicture = { area, x, y, width: rect.width, height: rect.height };
+      if (old?.area === area && (old.x === x && old.y === y || old.width !== rect.width || old.height !== rect.height)) return;
+      if (rect.width && rect.height) area.animate?.([{ marginRight: "1px" }, { marginRight: "1px" }], 80);
+    }
+    window.addEventListener("resize", () => requestAnimationFrame(refreshDanmakuOrigin));
+    document.addEventListener("scrollend", refreshDanmakuOrigin, true);
     const screen = new MutationObserver(paintScreen);
     const readers = {
       "--vl-player-w": () => [player.element, bar?.element, player.status],
@@ -21359,6 +21436,8 @@ ${message}` : ""}`;
       layout2.measure();
     }
     function trackPlayer() {
+      syncDanmakuFont();
+      refreshDanmakuOrigin();
       const element2 = document.getElementById("bilibili-player"), container = document.querySelector(".bpx-player-container");
       if (element2 && element2 !== watchedPlayer) {
         if (watchedPlayer) sizes?.unobserve(watchedPlayer);
@@ -21432,6 +21511,7 @@ ${message}` : ""}`;
       if (latest && placed) return;
       for (const [, pane] of windows) pane.element.remove();
       showNativePage();
+      syncDanmakuFont();
       warnLog("Luna \u89C6\u9891\u9875\u6CA1\u80FD\u753B\u51FA\u6765\uFF0C\u5DF2\u6062\u590D B \u7AD9\u539F\u6765\u7684\u9875\u9762");
     }, giveUpMs2);
   }
@@ -23024,6 +23104,16 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       return line;
     };
     const feedWho = localFeedIdentity() === "guest" ? "\u672A\u767B\u5F55\u65F6" : "\u5F53\u524D\u8D26\u53F7";
+    const fontRow = element("label", "atelier-appearance-row"), font = element("select");
+    font.append(new Option("\u50CF\u7D20\u5B57\u4F53\uFF08XP \u5B8B\u4F53\uFF09", "pixel"), new Option("\u539F\u751F\u5B57\u4F53", "native"));
+    font.addEventListener("change", () => {
+      sound("select");
+      saveInterfacePrefs({ danmakuFont: font.value === "native" ? "native" : "pixel" });
+    });
+    fontRow.append(element("span", "", "\u5F39\u5E55\u5B57\u4F53"), font);
+    syncs.push(() => {
+      font.value = readInterfacePrefs().danmakuFont;
+    });
     page.append(
       element("h2", "", "\u754C\u9762"),
       group(
@@ -23039,6 +23129,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       ),
       group(
         "\u89C6\u9891\u64AD\u653E",
+        fontRow,
         check2("\u8FDB\u5165\u89C6\u9891\u65F6\u663E\u793A\u5C01\u9762\uFF08\u6307\u5411\u753B\u9762\u65F6\u663E\u793A\u9996\u5E27\uFF0C\u5F00\u59CB\u64AD\u653E\u540E\u4E0D\u518D\u663E\u793A\uFF09", videoCoverEnabled, setVideoCoverEnabled),
         check2("\u663E\u793A\u9AD8\u80FD\u8FDB\u5EA6\u6761\uFF08\u548C\u64AD\u653E\u5668\u72B6\u6001\u680F\u300C\u5DE5\u5177\u300D\u5DE6\u8FB9\u7684\u52FE\u9009\u6846\u662F\u540C\u4E00\u4E2A\u8BBE\u7F6E\uFF09", pbpShown, setPbpShown),
         opacity("\u9AD8\u80FD\u8FDB\u5EA6\u6761\u4E0D\u900F\u660E\u5EA6", () => readInterfacePrefs().pbpOpacity, (share2) => saveInterfacePrefs({ pbpOpacity: share2 }), pbpShown)
