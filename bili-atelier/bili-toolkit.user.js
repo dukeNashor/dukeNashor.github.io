@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.10.2
+// @version      0.10.3
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -14594,6 +14594,14 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
         measureColumns();
       });
     };
+    if (typeof ResizeObserver === "function") {
+      let lastWidth;
+      new ResizeObserver(([entry]) => {
+        const width = entry.contentRect.width;
+        if (width !== lastWidth && saved.blank !== void 0) remeasure();
+        lastWidth = width;
+      }).observe(root2);
+    }
     window.addEventListener("resize", () => {
       markViewport();
       remeasure();
@@ -15967,6 +15975,11 @@ ${dm} .bui-collapse-arrow *{display:none}
    the selected tab. A click lands on the player's own item. */
 ${dm} .bui-dropdown-display{display:none!important}
 ${dm} .bui-dropdown-items{position:absolute!important;inset:calc(var(--xp-caption-h,29px) + 4px) 8px auto 8px!important;z-index:3;display:flex!important;align-items:flex-end;height:22px;padding:0 2px!important;margin:0!important;background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;transform:none!important;opacity:1!important;visibility:visible!important;pointer-events:auto}
+/* At fractional zoom, CSS borders snap but the caption's negative margins
+   do not. Reserve the same lengths as padding and let border-image paint
+   the frame. The inset shadows supply the sides until its bitmap loads. */
+${on7}[data-atelier-page-zoom] .xp-window.vl-window,${skin}[data-atelier-page-zoom] #danmukuBox .bui-collapse-wrap{border-inline-width:0;padding-inline:var(--xp-frame-l,4px) var(--xp-frame-r,4px);box-shadow:inset var(--xp-frame-l,4px) 0 var(--xp-fallback-caption,var(--xp-caption)),inset calc(-1 * var(--xp-frame-r,4px)) 0 var(--xp-fallback-caption,var(--xp-caption))}
+${skin}[data-atelier-page-zoom] #danmukuBox .bui-dropdown-items{left:calc(8px + var(--xp-frame-l,4px))!important;right:calc(8px + var(--xp-frame-r,4px))!important}
 ${dm} .bui-collapse-wrap-folded .bui-dropdown-items{display:none!important}
 ${dm} .bui-dropdown-item{${xpFont};color:var(--xp-ink)!important;position:relative;top:2px;display:inline-flex!important;align-items:center;height:auto!important;min-height:19px;padding:1px 7px 2px!important;margin:0!important;border:0 solid transparent;border-radius:0!important;background:var(--xp-fallback,var(--xp-face))!important;${image4("tab", 0)};image-rendering:pixelated;cursor:default;white-space:nowrap}
 ${dm} .bui-dropdown-item:first-child{border-image-source:var(--xp-tab-left-0)}
