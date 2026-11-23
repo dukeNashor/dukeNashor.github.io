@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.10.3
+// @version      0.10.4
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -15530,7 +15530,9 @@ ${w2} .xp-status{flex:none}
     for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup", "click", "dblclick", "contextmenu", "wheel"]) element2.addEventListener(type, (event) => event.stopPropagation());
     canvas.addEventListener("click", (event) => {
       const rect = canvas.getBoundingClientRect();
-      if (rect.width && duration > 0) context.bridge.seek(Math.min(duration, Math.max(0, (event.clientX - rect.left) / rect.width * duration)));
+      const down = element2.hasAttribute("data-vertical");
+      const length = down ? rect.height : rect.width, offset = down ? event.clientY - rect.top : event.clientX - rect.left;
+      if (length && duration > 0) context.bridge.seek(Math.min(duration, Math.max(0, offset / length * duration)));
     });
     let data = null, key6 = "", duration = 0, played = 0, drawn = "";
     const reads2 = /* @__PURE__ */ new Map();
@@ -15549,14 +15551,18 @@ ${w2} .xp-status{flex:none}
         resized.observe(node4);
       }
       const from = seek?.isConnected ? seek.getBoundingClientRect() : null, box3 = area?.getBoundingClientRect();
+      const down = !!from?.height && !!box3 && seek?.getAttribute("aria-orientation") === "vertical";
+      element2.toggleAttribute("data-vertical", down);
+      const inset = 12 * zoomOf(seek), z = zoomOf(element2);
+      element2.style.top = down ? `${(from.top + inset - box3.top) / z}px` : "";
       if (!from?.width || !box3) {
         element2.style.removeProperty("left");
         element2.style.removeProperty("width");
         return;
       }
-      const inset = 12 * zoomOf(seek), z = zoomOf(element2);
-      element2.style.left = `${+((from.left + inset - box3.left) / z).toFixed(3)}px`;
-      element2.style.width = `${+(Math.max(0, from.width - 2 * inset) / z).toFixed(3)}px`;
+      const left = down ? from.right + 4 * z : from.left + inset;
+      element2.style.left = `${+((left - box3.left) / z).toFixed(3)}px`;
+      element2.style.width = `${+(Math.max(0, (down ? from.height : from.width) - 2 * inset) / z).toFixed(3)}px`;
     }
     function draw() {
       if (!data || element2.hidden || !element2.isConnected) return;
@@ -15564,7 +15570,8 @@ ${w2} .xp-status{flex:none}
       const rect = element2.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
       const ratio = window.devicePixelRatio || 1, unit = Math.max(1, Math.round(currentPixelScale().drawn)), pitch = 3 * unit;
-      const width = Math.round(rect.width * ratio), height = Math.round(rect.height * ratio);
+      const down = element2.hasAttribute("data-vertical");
+      const width = Math.round((down ? rect.height : rect.width) * ratio), height = Math.round((down ? rect.width : rect.height) * ratio);
       const columns3 = Math.floor((width + unit) / pitch), rows = Math.floor((height + unit) / pitch);
       const reached = Math.round(played * columns3), next = [width, height, unit, reached, duration].join();
       if (next === drawn) return;
@@ -15619,6 +15626,7 @@ ${w2} .xp-status{flex:none}
   var pbpDotsCss = (on8, full2) => `${on8} .bpx-player-pbp{display:none!important}
 .vl-pbp{position:absolute;left:0;width:100%;bottom:0;height:28px;z-index:71;pointer-events:none;opacity:var(--atelier-pbp-opacity,1)}
 .vl-pbp[hidden],html[data-atelier-screen=mini] .vl-pbp{display:none}
+.vl-pbp[data-vertical]{height:18px;transform-origin:top left;transform:rotate(90deg) translateY(-100%)}
 .vl-pbp>canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:auto;cursor:pointer;image-rendering:pixelated}
 ${full2} .bpx-player-container:not([data-ctrl-hidden=true]) .vl-pbp,${full2} .bpx-player-video-area:has(>.vl-wmp-fs[data-pinned])>.vl-pbp{bottom:91px}
 .vl-player-status>.vl-status-check{display:inline-flex;align-items:center;gap:3px;padding:0 4px;cursor:default}
@@ -15628,6 +15636,8 @@ ${full2} .bpx-player-container:not([data-ctrl-hidden=true]) .vl-pbp,${full2} .bp
   var on7 = `html[${videoAttribute}=luna]`;
   var wide = `${on7}[data-atelier-screen=wide]`;
   var full = `${on7}[data-vl-wmp]:is([data-atelier-screen=web],[data-atelier-screen=full])`;
+  var sides = ".vl-wmp-fs[data-sides]";
+  var sidePlayer = `${full} .bpx-player-container:has(${sides})`;
   var skin = `${on7}:not([${nativeAttribute}~=skin])`;
   var image4 = (part, state2, fill = true) => `border-image-source:var(--xp-${part}-${state2});border-image-slice:var(--xp-${part}-slice)${fill ? " fill" : ""};border-image-width:var(--xp-${part}-edge);border-image-repeat:stretch`;
   var frame = `border:0 solid var(--xp-caption);border-width:var(--xp-frame-edge,0 4px 4px 4px);${image4("frame", 0, false)};border-image-width:var(--xp-caption-h,29px) var(--xp-frame-r,4px) var(--xp-frame-b,4px) var(--xp-frame-l,4px);image-rendering:pixelated`;
@@ -15794,6 +15804,44 @@ ${full} .vl-wmp-fs{display:block;position:absolute;inset:0;z-index:70;pointer-ev
 ${full} :is(.bpx-player-control-top,.bpx-player-control-bottom-left,.bpx-player-control-bottom-right,.bpx-player-control-mask,.bpx-player-top-wrap,[class*=bpx-player-shadow-progress]){display:none!important}
 ${full} .bpx-player-control-wrap{z-index:80!important;pointer-events:none!important}
 ${full} .bpx-player-control-bottom-center{position:absolute!important;left:50%!important;bottom:57px!important;height:34px!important;transform:translateX(-50%);max-width:640px;pointer-events:auto}
+
+.vl-fs-layout{position:absolute;left:146px;top:5px;width:22px;height:22px;padding:0;border:1px solid var(--xp-shadow3d);border-radius:3px;background:var(--xp-face);color:var(--xp-ink);cursor:pointer}
+.vl-fs-layout::before{content:"";display:block;width:14px;height:10px;margin:auto;box-sizing:border-box;border:1px solid currentColor;border-inline-width:3px}
+.vl-fs-layout:hover,.vl-fs-layout[aria-pressed=true]{box-shadow:inset 0 0 0 1px currentColor}
+.vl-fs-layout:not([hidden])~.vl-wmp-fs-title{left:174px}
+.vl-wmp-fs [hidden]{display:none!important}
+/* Rotate the transport with its artwork and clock. The tools move to the title bar. */
+${sides}{container-type:size}
+${sides} .vl-wmp-fs-bottom{inset:0;pointer-events:none}
+${sides} .vl-wmp-fs-strip{display:none}
+${sides} .vl-wmp{position:absolute;left:57px;top:0;width:100cqh;transform-origin:0 0;transform:rotate(90deg)}
+${sides} :is(.vl-wmp-seek,.vl-wmp-volume){touch-action:none}
+${sides} .vl-wmp-plate{pointer-events:none}
+${sides} .vl-wmp-fs-top{--logo-space:clamp(22px,calc(100cqh - 440px),98px);isolation:isolate;inset:0 0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;width:32px;height:100%;padding:var(--logo-space) 0 8px;background:none;overflow:hidden}
+${sides} .vl-wmp-fs-top::before,${sides} .vl-wmp-fs-top::after{content:"";position:absolute;left:32px;top:0;height:32px;transform-origin:0 0;transform:rotate(90deg);pointer-events:none;z-index:-1}
+${sides} .vl-wmp-fs-top::before{width:100cqh;background:var(--wmp-top-fill) left top repeat-x}
+${sides} .vl-wmp-fs-top::after{width:var(--logo-space);background:var(--wmp-top-left) calc((var(--logo-space) - 110px) / 2) top no-repeat}
+${sides} .vl-wmp-fs-top>button{position:static;flex:none}
+${sides} .vl-wmp-fs-top>[data-art=exit]{margin-top:4px}
+${sides} .vl-wmp-fs-top .vl-wmp-fs-title{position:static;flex:1 1 0;min-height:min(3em,9cqh);width:100%;margin:5px 0;writing-mode:vertical-rl;text-orientation:upright;letter-spacing:1px}
+${sides} .vl-fs-digit-pair{text-combine-upright:all;letter-spacing:0}
+${sides} .vl-wmp-tools{flex:0 1 auto;flex-direction:column;gap:2px;width:100%;min-height:0;overflow:auto;scrollbar-width:none}
+${sides} .vl-wmp-tool{flex:none;justify-content:center}
+${sides} .vl-wmp-tool[aria-haspopup=menu]{flex-direction:column;height:auto;padding:2px 0}
+${sides} .vl-wmp-tool[aria-haspopup=menu]>span:first-child{writing-mode:vertical-rl;text-orientation:sideways;line-height:18px}
+${sides} .vl-wmp-tool .vl-drop{transform:rotate(90deg);margin:2px 0}
+/* The XP filter snaps text on screen axes. Keep the rotated glyphs on their own baseline. */
+${sides} :is(.vl-wmp-clock,.vl-wmp-tool[aria-haspopup=menu]) .xp-text{position:static;filter:none}
+${sides} .vl-side-send{width:22px;height:22px;padding:0;background:var(--vl-icon-bubble) center/16px 16px no-repeat}
+@container (max-height:480px){${sides} .vl-wmp-plate{left:auto;right:4px;top:44px;width:max-content;max-width:100%;height:13px;line-height:13px}}
+html:has(${sides} [data-menu-open]) .vl-menu{min-width:96px}
+.bpx-player-container[data-ctrl-hidden=true] ${sides}:not([data-pinned],[data-composing]) :is(.vl-wmp-fs-top,.vl-wmp-fs-bottom){visibility:hidden}
+.bpx-player-container[data-ctrl-hidden=true] ${sides}[data-composing] :is(.vl-wmp-fs-top,.vl-wmp-fs-bottom){opacity:1}
+${sidePlayer} .bpx-player-control-bottom-center{display:none!important}
+${sidePlayer}:has(.vl-wmp-fs[data-composing]) .bpx-player-control-bottom-center{display:flex!important;left:auto!important;right:36px!important;bottom:34px!important;transform:none!important;width:min(284px,calc(100% - 42px))!important;height:auto!important;padding:0!important}
+${sidePlayer} .bpx-player-sending-bar{display:grid!important;grid-template-columns:auto auto 1fr;align-items:center;justify-items:start;width:100%!important;min-width:0!important;height:auto!important;padding:4px!important}
+${sidePlayer} .bpx-player-dm-root{display:contents!important}
+${sidePlayer} .bpx-player-video-inputbar{display:flex!important;grid-column:1 / -1;width:100%!important;min-width:0!important;margin:0!important}
 
 /* \u7B80\u4ECB\u4E0E\u8BC4\u8BBA */
 .vl-info-window{margin:12px -4px 0}
@@ -20206,9 +20254,12 @@ ${message}` : ""}`;
         style.textContent = `.vl-wmp-art{${mediaArtNames.map((name) => `--wmp-${name}:url("${urls[name]}")`).join(";")}}`;
       });
     }
+    const vertical = () => seek.getAttribute("aria-orientation") === "vertical";
     const at = (element2, event, inset = 0) => {
       const rect = element2.getBoundingClientRect();
-      return Math.min(1, Math.max(0, (event.clientX - rect.left - inset) / Math.max(1, rect.width - inset * 2)));
+      const down = vertical();
+      const offset = down ? event.clientY - rect.top : event.clientX - rect.left;
+      return Math.min(1, Math.max(0, (offset - inset) / Math.max(1, (down ? rect.height : rect.width) - inset * 2)));
     };
     let tip = null;
     const showTip = (event, seconds2) => {
@@ -20218,8 +20269,10 @@ ${message}` : ""}`;
         tip.setAttribute("data-bili-blocker-ui", "true");
       }
       tip.textContent = formatDuration(seconds2);
-      const width = screenWidth(tip);
-      placeFixed(tip, { left: Math.max(4, Math.min(event.clientX - width / 2, innerWidth - width - 4)), top: seek.getBoundingClientRect().top - screenHeight(tip) - 4 });
+      const width = screenWidth(tip), height = screenHeight(tip), rect = seek.getBoundingClientRect();
+      const left = vertical() ? rect.right + 5 : event.clientX - width / 2;
+      const top = vertical() ? event.clientY - height / 2 : rect.top - height - 4;
+      placeFixed(tip, { left: Math.max(4, Math.min(left, innerWidth - width - 4)), top: Math.max(4, Math.min(top, innerHeight - height - 4)) });
     };
     const hideTip = () => {
       tip?.remove();
@@ -20267,8 +20320,10 @@ ${message}` : ""}`;
       if (!bubble) return;
       bubble.textContent = clockState?.muted ? "\u9759\u97F3" : `\u97F3\u91CF ${Math.round((clockState?.volume ?? 1) * 100)}`;
       const knobBox = knob.getBoundingClientRect();
-      const width = screenWidth(bubble);
-      placeFixed(bubble, { left: Math.max(4, Math.min(knobBox.left + knobBox.width / 2 - width / 2, innerWidth - width - 4)), top: volume2.getBoundingClientRect().top - screenHeight(bubble) - 4 });
+      const width = screenWidth(bubble), height = screenHeight(bubble), rect = volume2.getBoundingClientRect();
+      const left = vertical() ? rect.right + 5 : knobBox.left + knobBox.width / 2 - width / 2;
+      const top = vertical() ? knobBox.top + knobBox.height / 2 - height / 2 : rect.top - height - 4;
+      placeFixed(bubble, { left: Math.max(4, Math.min(left, innerWidth - width - 4)), top: Math.max(4, Math.min(top, innerHeight - height - 4)) });
     };
     const showBubble = () => {
       window.clearTimeout(bubbleTimer);
@@ -20422,12 +20477,24 @@ ${message}` : ""}`;
       root2.classList.remove("vl-wmp-tight");
       if (plate.scrollWidth > plate.clientWidth + 1) root2.classList.add("vl-wmp-tight");
     };
-    if (typeof ResizeObserver === "function") new ResizeObserver(fit).observe(root2);
+    if (typeof ResizeObserver === "function") new ResizeObserver(fit).observe(seek);
     window.setInterval(() => {
       if (root2.isConnected) paint2();
     }, 1e3);
     return {
       element: root2,
+      seek,
+      tools,
+      setSideLayout(beforeExit) {
+        const orientation = beforeExit ? "vertical" : "horizontal";
+        seek.setAttribute("aria-orientation", orientation);
+        volume2.setAttribute("aria-orientation", orientation);
+        if (beforeExit) beforeExit.before(tools);
+        else plate.append(tools);
+        hideTip();
+        fit();
+        paint2();
+      },
       paintArt,
       /** The page's state: what comes before and after this video. */
       render(next2) {
@@ -20453,6 +20520,9 @@ ${message}` : ""}`;
     const pin = top.appendChild(el("button", "vl-wmp-button"));
     pin.type = "button";
     pin.dataset.art = "pin";
+    const layout2 = top.appendChild(el("button", "vl-fs-layout"));
+    layout2.type = "button";
+    layout2.hidden = true;
     const title = top.appendChild(el("span", "vl-wmp-fs-title"));
     const exit = top.appendChild(el("button", "vl-wmp-button"));
     exit.type = "button";
@@ -20463,6 +20533,55 @@ ${message}` : ""}`;
     const strip = bottom.appendChild(el("div", "vl-wmp-fs-strip"));
     const now = strip.appendChild(el("span", "vl-wmp-fs-now")), online = strip.appendChild(el("span", "vl-wmp-fs-online"));
     bottom.append(bar.element);
+    const send = bar.tools.appendChild(el("button", "vl-wmp-tool vl-side-send"));
+    send.title = "\u53D1\u5F39\u5E55";
+    send.setAttribute("aria-label", send.title);
+    send.type = "button";
+    send.hidden = true;
+    send.setAttribute("aria-expanded", "false");
+    let sides2 = readFolded("web-fullscreen-sides"), web = false;
+    function setComposer(open2) {
+      root2.toggleAttribute("data-composing", open2);
+      send.setAttribute("aria-expanded", String(open2));
+      if (open2) root2.closest(".bpx-player-container")?.querySelector(".bpx-player-control-bottom-center .bpx-player-dm-input")?.focus({ preventScroll: true });
+    }
+    send.addEventListener("click", () => {
+      sound("click");
+      setComposer(!root2.hasAttribute("data-composing"));
+    });
+    window.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape" || event.isComposing || !root2.hasAttribute("data-sides")) return;
+      const menuButton = root2.querySelector("[data-menu-open]");
+      if (!menuButton && !root2.hasAttribute("data-composing")) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (menuButton) {
+        closeMenu();
+        menuButton.focus({ preventScroll: true });
+      } else {
+        setComposer(false);
+        send.focus({ preventScroll: true });
+      }
+    }, true);
+    function paintLayout() {
+      const active2 = web && sides2;
+      layout2.hidden = !web;
+      layout2.title = active2 ? "\u6062\u590D\u4E0A\u4E0B\u63A7\u5236\u680F" : "\u63A7\u4EF6\u79FB\u5230\u4E24\u4FA7";
+      layout2.setAttribute("aria-label", layout2.title);
+      layout2.setAttribute("aria-pressed", String(active2));
+      if (root2.hasAttribute("data-sides") === active2) return;
+      if (root2.querySelector("[data-menu-open]")) closeMenu();
+      root2.toggleAttribute("data-sides", active2);
+      send.hidden = !active2;
+      setComposer(false);
+      bar.setSideLayout(active2 ? exit : null);
+    }
+    layout2.addEventListener("click", () => {
+      sides2 = !sides2;
+      writeFolded("web-fullscreen-sides", sides2);
+      sound("click");
+      paintLayout();
+    });
     let pinned = readFolded("fullscreen-pinned");
     const paintPin = () => {
       pin.classList.toggle("vl-wmp-on", pinned);
@@ -20504,16 +20623,21 @@ ${message}` : ""}`;
     window.setInterval(() => {
       const area = root2.parentElement, screen = root2.closest(".bpx-player-container")?.getAttribute("data-screen");
       const menu = !!document.querySelector(".vl-menu-host");
-      if ((pinned || over || menu) && area && (screen === "web" || screen === "full")) area.dispatchEvent(new MouseEvent("mousemove", { bubbles: true, clientX: x, clientY: y }));
+      if ((pinned || over || menu || root2.hasAttribute("data-composing")) && area && (screen === "web" || screen === "full")) area.dispatchEvent(new MouseEvent("mousemove", { bubbles: true, clientX: x, clientY: y }));
       const count2 = area?.querySelector(".bpx-player-control-bottom-center .bpx-player-video-info-online") ? null : document.querySelector(".bpx-player-video-info-online");
       online.textContent = (count2?.textContent ?? "").trim();
     }, 1e3);
     return {
       element: root2,
+      setScreen(mode2) {
+        web = mode2 === "web";
+        paintLayout();
+      },
       /** What is playing, for the title bar and the strip. */
       render(name) {
         if (title.textContent !== name) {
-          title.textContent = name;
+          title.replaceChildren(...name.split(/(\d+)/).map((part) => /^\d{2}$/.test(part) ? el("span", "vl-fs-digit-pair", part) : part));
+          title.title = name;
           now.textContent = name ? `\u6B63\u5728\u64AD\u653E\uFF1A${name}` : "";
         }
       }
@@ -21298,7 +21422,7 @@ ${message}` : ""}`;
     startEndingClicks();
     const pbp = createPbpDots(context, () => {
       const full2 = /^(web|full)$/.test(root2.getAttribute("data-atelier-screen") ?? "");
-      return (full2 ? fullBar : bar)?.element.querySelector(".vl-wmp-seek") ?? null;
+      return (full2 ? fullBar : bar)?.seek ?? null;
     });
     player.status.insertBefore(pbp.toggle, player.status.querySelector(".vl-status-tools"));
     const barFailed = (error) => {
@@ -21444,6 +21568,7 @@ ${message}` : ""}`;
     function paintScreen() {
       const mode2 = document.querySelector(".bpx-player-container")?.getAttribute("data-screen") || "normal";
       if (root2.getAttribute("data-atelier-screen") !== mode2) root2.setAttribute("data-atelier-screen", mode2);
+      fullscreen?.setScreen(mode2);
       player.setWide(mode2 === "wide");
       measure();
       layout2.measure();
