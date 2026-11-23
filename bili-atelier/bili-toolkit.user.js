@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.10.4
+// @version      0.11.0
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -2245,8 +2245,8 @@
     const isReady = () => {
       if (document.readyState === "loading") return false;
       if (bangumi) return !!document.querySelector("#bilibili-player .bpx-player-container");
-      const app = document.getElementById("app");
-      return app !== null && app.childElementCount > 0 && !app.hasAttribute("data-server-rendered");
+      const app2 = document.getElementById("app");
+      return app2 !== null && app2.childElementCount > 0 && !app2.hasAttribute("data-server-rendered");
     };
     if (isReady()) {
       callback();
@@ -4034,7 +4034,7 @@
       groupText: value(scheme, "Button.GroupBox", "textcolor", "#0046d5")
     };
     const base = dark ? darkPalettes[scheme] : light;
-    const caption2 = sys("activecaption", "#0054e3"), inactive = sys("inactivecaption", "#7a96df");
+    const caption3 = sys("activecaption", "#0054e3"), inactive = sys("inactivecaption", "#7a96df");
     return {
       ...Object.fromEntries(Object.entries(base).filter(([key6]) => key6 !== "lift")),
       graytext: dark ? dim(sys("graytext", "#aca899")) : sys("graytext", "#aca899"),
@@ -4042,7 +4042,7 @@
       "highlight-ink": sys("highlighttext", "#ffffff"),
       // DrawFocusRect inverts the pixels under its dots.
       "highlight-xor": "#" + (16777215 ^ parseInt(sys("highlight", "#316ac5").slice(1), 16)).toString(16).padStart(6, "0"),
-      caption: dark ? dim(caption2) : caption2,
+      caption: dark ? dim(caption3) : caption3,
       "caption-ink": sys("captiontext", "#ffffff"),
       "inactive-caption": dark ? dim(inactive) : inactive,
       "inactive-caption-ink": sys("inactivecaptiontext", "#d8e4f8"),
@@ -4073,7 +4073,7 @@
   }
   function parts(scheme, dpr) {
     const hiDpi = dpr >= 1.5 && Math.abs(dpr - Math.round(dpr)) > 1e-6;
-    const caption2 = (name) => ({ source: `${name}_caption_button_${hiDpi ? 144 : 96}`, states: 8, kind: "chrome", sourceScale: hiDpi ? 1.5 : 1 });
+    const caption3 = (name) => ({ source: `${name}_caption_button_${hiDpi ? 144 : 96}`, states: 8, kind: "chrome", sourceScale: hiDpi ? 1.5 : 1 });
     return {
       caption: { source: "frame_caption", states: 2, margins: margins(scheme, "Window.Caption", [28, 35, 9, 17]), kind: "chrome" },
       // Left, right and bottom edges in one image, for one border-image.
@@ -4088,10 +4088,10 @@
         context.drawImage(bottom, 0, left.height);
         return canvas;
       }, states: 2, margins: [5, 5, 0, 5], kind: "chrome" },
-      minimize: caption2("minimize"),
-      maximize: caption2("maximize"),
-      restore: caption2("restore"),
-      close: caption2("close"),
+      minimize: caption3("minimize"),
+      maximize: caption3("maximize"),
+      restore: caption3("restore"),
+      close: caption3("close"),
       button: { source: "button", states: 5, margins: margins(scheme, "Button.Pushbutton", [8, 8, 9, 9]), kind: "face" },
       checkbox: { source: "checkbox_96", states: 12, kind: "face" },
       radio: { source: "radio_button_96", states: 8, kind: "face" },
@@ -4151,7 +4151,7 @@
     canvas.height = y.map.length;
     const context = canvas.getContext("2d"), output = context.createImageData(canvas.width, canvas.height);
     const rgb = (hex) => [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16));
-    const [face, lift] = dark ? [rgb(dark.face), rgb(dark.lift)] : [[0, 0, 0], [0, 0, 0]];
+    const [face2, lift] = dark ? [rgb(dark.face), rgb(dark.lift)] : [[0, 0, 0], [0, 0, 0]];
     for (let row = 0; row < y.map.length; row++) for (let column = 0; column < x.map.length; column++) {
       const from = (y.map[row] * source.width + x.map[column]) * 4, to = (row * canvas.width + column) * 4;
       let r = input[from], g = input[from + 1], b = input[from + 2];
@@ -4160,7 +4160,7 @@
         g *= 0.7;
         b *= 0.7;
       } else if (dark) {
-        const luma = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255, mix = (index, channel2) => face[index] + (1 - luma) * (lift[index] - face[index]) + (channel2 - luma * 255) * 0.6;
+        const luma = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255, mix = (index, channel2) => face2[index] + (1 - luma) * (lift[index] - face2[index]) + (channel2 - luma * 255) * 0.6;
         [r, g, b] = [mix(0, r), mix(1, g), mix(2, b)];
       }
       output.data[to] = r;
@@ -4322,17 +4322,17 @@ ${unzoomedScope}{zoom:${back}}`;
   }
   var wholePage = false;
   var applied = 1;
-  function zoomWholePage(on8 = true) {
-    if (wholePage === on8) return;
-    wholePage = on8;
+  function zoomWholePage(on9 = true) {
+    if (wholePage === on9) return;
+    wholePage = on9;
     syncZoom(true);
   }
   function syncZoom(force = false) {
-    const { zoom } = currentPixelScale(), root2 = document.documentElement;
+    const { zoom } = currentPixelScale(), root = document.documentElement;
     const value2 = wholePage && zoom !== 1 ? String(+zoom.toFixed(6)) : null;
-    const changed = root2.getAttribute(pageZoomAttribute) !== value2;
-    if (value2 === null) root2.removeAttribute(pageZoomAttribute);
-    else root2.setAttribute(pageZoomAttribute, value2);
+    const changed = root.getAttribute(pageZoomAttribute) !== value2;
+    if (value2 === null) root.removeAttribute(pageZoomAttribute);
+    else root.setAttribute(pageZoomAttribute, value2);
     if (zoom === applied && !changed && !force) return;
     applied = zoom;
     for (const [style, css] of zoomedStyles) style.textContent = zoomMedia(css);
@@ -4394,9 +4394,9 @@ ${unzoomedScope}{zoom:${back}}`;
   }
   function xpFontCss(dpr) {
     const faces = Object.entries(strikes).flatMap(([strike, [regular, bold]]) => [[regular, 400], [bold, 700]].filter(([url]) => url).map(([url, weight]) => `@font-face{font-family:"Atelier XP ${strike}";src:url("${url}") format("woff");font-weight:${weight};font-display:block}`));
-    const body2 = xpTextFor(9, dpr), caption2 = xpTextFor(10, dpr), title = xpTextFor(12, dpr);
+    const body2 = xpTextFor(9, dpr), caption3 = xpTextFor(10, dpr), title = xpTextFor(12, dpr);
     const family = (text4) => `"Atelier XP ${text4.strike}",SimSun,"NSimSun",monospace`;
-    return { faces: faces.join("\n"), vars: `--xp-font:${family(body2)};--xp-font-size:${body2.size}px;--xp-line:${body2.line}px;--xp-caption-font:${family(caption2)};--xp-caption-size:${caption2.size}px;--xp-title-font:${family(title)};--xp-title-size:${title.size}px;--xp-dot:${body2.factor / dpr}px;--xp-crisp:${xpCrispFilter}` };
+    return { faces: faces.join("\n"), vars: `--xp-font:${family(body2)};--xp-font-size:${body2.size}px;--xp-line:${body2.line}px;--xp-caption-font:${family(caption3)};--xp-caption-size:${caption3.size}px;--xp-title-font:${family(title)};--xp-title-size:${title.size}px;--xp-dot:${body2.factor / dpr}px;--xp-crisp:${xpCrispFilter}` };
   }
   var fallback = /[^\u0000-\u007e\u00a0-\u024f\u2000-\u206f\u2e80-\u9fff\uff00-\uffef]/u;
   var graphemes;
@@ -4429,9 +4429,9 @@ ${unzoomedScope}{zoom:${back}}`;
     return true;
   };
   var skip = /* @__PURE__ */ new Set(["SCRIPT", "STYLE", "TEXTAREA", "INPUT", "SELECT", "OPTION", "svg", "CANVAS"]);
-  function observeCrispText(root2, selector) {
+  function observeCrispText(root, selector) {
     let queued = false, snapping = 0, disposed = false;
-    const tree = root2 instanceof ShadowRoot ? root2 : root2.getRootNode();
+    const tree = root instanceof ShadowRoot ? root : root.getRootNode();
     ensureCrispFilter(tree instanceof ShadowRoot ? tree : document);
     const wrap = (node4) => {
       const parent = node4.parentElement;
@@ -4449,7 +4449,7 @@ ${unzoomedScope}{zoom:${back}}`;
       });
       node4.replaceWith(...spans);
     };
-    const host = root2 instanceof ShadowRoot ? root2.host : root2;
+    const host = root instanceof ShadowRoot ? root.host : root;
     const sizes = typeof ResizeObserver === "function" ? new ResizeObserver(() => resnap()) : null;
     const watched = /* @__PURE__ */ new Set();
     const watchAncestors = () => {
@@ -4465,7 +4465,7 @@ ${unzoomedScope}{zoom:${back}}`;
         watched.add(element2);
       }
     };
-    const targets2 = () => !selector ? [root2] : [...root2 instanceof Element && root2.matches(selector) ? [root2] : [], ...root2.querySelectorAll(selector)];
+    const targets2 = () => !selector ? [root] : [...root instanceof Element && root.matches(selector) ? [root] : [], ...root.querySelectorAll(selector)];
     const snap = () => {
       snapping = 0;
       if (disposed) return;
@@ -4512,7 +4512,7 @@ ${unzoomedScope}{zoom:${back}}`;
     const observer = new MutationObserver((records2) => {
       if (records2.some((record) => record.type === "characterData" ? relevant(record.target) : [...record.addedNodes, ...record.removedNodes].some((node4) => node4.nodeType === Node.TEXT_NODE ? relevant(record.target) : relevant(node4) || relevant(record.target)))) schedule2();
     });
-    observer.observe(root2, { childList: true, subtree: true, characterData: true });
+    observer.observe(root, { childList: true, subtree: true, characterData: true });
     watchAncestors();
     window.addEventListener("resize", resnap);
     document.fonts?.addEventListener?.("loadingdone", resnap);
@@ -4753,7 +4753,7 @@ ${zoomCss(zoom)}` : "");
       scale?.addEventListener("change", update);
     };
     const observer = new MutationObserver(update);
-    for (const root2 of [document.documentElement, document.body]) if (root2) observer.observe(root2, { attributes: true, attributeFilter: ["class", "style", "data-theme", "theme"] });
+    for (const root of [document.documentElement, document.body]) if (root) observer.observe(root, { attributes: true, attributeFilter: ["class", "style", "data-theme", "theme"] });
     document.addEventListener("DOMContentLoaded", () => {
       if (document.body) observer.observe(document.body, { attributes: true, attributeFilter: ["class", "style", "data-theme", "theme"] });
       update();
@@ -4831,25 +4831,25 @@ ${zoomCss(zoom)}` : "");
       return null;
     }
     ensureInfoLogStyle();
-    let root2 = document.getElementById(rootId);
-    if (!root2) {
-      root2 = document.createElement("div");
-      root2.id = rootId;
-      root2.setAttribute("data-bili-blocker-ui", "true");
-      root2.setAttribute("data-bili-atelier-ui", "info-log");
-      root2.setAttribute("role", "status");
-      root2.setAttribute("aria-live", "polite");
-      document.body.appendChild(root2);
+    let root = document.getElementById(rootId);
+    if (!root) {
+      root = document.createElement("div");
+      root.id = rootId;
+      root.setAttribute("data-bili-blocker-ui", "true");
+      root.setAttribute("data-bili-atelier-ui", "info-log");
+      root.setAttribute("role", "status");
+      root.setAttribute("aria-live", "polite");
+      document.body.appendChild(root);
     }
-    return root2;
+    return root;
   }
   function showInfoLog(message, tone = "info", durationMs = 3600) {
     const text4 = String(message || "").replace(/\s+/g, " ").trim();
     if (!text4) {
       return;
     }
-    const root2 = ensureInfoLogRoot();
-    if (!root2) {
+    const root = ensureInfoLogRoot();
+    if (!root) {
       document.addEventListener("DOMContentLoaded", () => showInfoLog(text4, tone, durationMs), { once: true });
       return;
     }
@@ -4858,11 +4858,11 @@ ${zoomCss(zoom)}` : "");
     const label = item.appendChild(document.createElement("span"));
     label.className = "xp-text";
     label.textContent = text4;
-    root2.prepend(item);
+    root.prepend(item);
     item.style.maxHeight = `${Math.max(48, item.scrollHeight + 20)}px`;
     window.requestAnimationFrame(() => item.classList.add("is-visible"));
-    while (root2.children.length > maxItems) {
-      root2.lastElementChild?.remove();
+    while (root.children.length > maxItems) {
+      root.lastElementChild?.remove();
     }
     window.setTimeout(() => {
       item.classList.add("is-leaving");
@@ -5550,13 +5550,13 @@ ${zoomCss(zoom)}` : "");
       media2.add(node4);
       for (const name of ["play", "playing", "pause", "ended", "emptied", "abort"]) node4.addEventListener(name, update, { signal: events.signal });
     }
-    function discover(root2) {
-      if (root2 instanceof HTMLMediaElement) track(root2);
-      if (root2.shadowRoot) watch(root2.shadowRoot);
-      for (const node4 of root2.querySelectorAll("video,audio")) track(node4);
-      for (const node4 of root2.querySelectorAll("*")) if (node4.shadowRoot) watch(node4.shadowRoot);
-      const foundFrames = [...root2.querySelectorAll("iframe")];
-      if (root2.tagName === "IFRAME") foundFrames.unshift(root2);
+    function discover(root) {
+      if (root instanceof HTMLMediaElement) track(root);
+      if (root.shadowRoot) watch(root.shadowRoot);
+      for (const node4 of root.querySelectorAll("video,audio")) track(node4);
+      for (const node4 of root.querySelectorAll("*")) if (node4.shadowRoot) watch(node4.shadowRoot);
+      const foundFrames = [...root.querySelectorAll("iframe")];
+      if (root.tagName === "IFRAME") foundFrames.unshift(root);
       for (const frame2 of foundFrames) {
         const read3 = () => {
           try {
@@ -5571,16 +5571,16 @@ ${zoomCss(zoom)}` : "");
         read3();
       }
     }
-    function watch(root2) {
-      if (roots2.has(root2)) return;
-      roots2.add(root2);
-      observer.observe(root2, { childList: true, subtree: true });
-      root2.addEventListener("play", (event) => {
+    function watch(root) {
+      if (roots2.has(root)) return;
+      roots2.add(root);
+      observer.observe(root, { childList: true, subtree: true });
+      root.addEventListener("play", (event) => {
         const target = event.target;
         if (target && (target.tagName === "VIDEO" || target.tagName === "AUDIO" || target instanceof HTMLMediaElement)) track(target);
         update();
       }, { capture: true, signal: events.signal });
-      discover(root2);
+      discover(root);
     }
     function update() {
       let next = false;
@@ -6022,21 +6022,21 @@ ${zoomCss(zoom)}` : "");
     };
   }
   var isViewedVideo = (id) => viewedLookup()(id);
-  function setViewedVideo(id, viewed2) {
+  function setViewedVideo(id, viewed) {
     const group = groupOf(id);
     if (!group) return false;
     const stored = readViewedGroup(group, null), values = Array.isArray(stored) ? stored.map(String) : [];
     const present = values.includes(id);
-    if (present === viewed2) return false;
-    writeViewedGroup(group, viewed2 ? [id, ...values] : values.filter((value2) => value2 !== id));
-    window.dispatchEvent(new CustomEvent(viewedMarksChanged, { detail: { id, viewed: viewed2 } }));
+    if (present === viewed) return false;
+    writeViewedGroup(group, viewed ? [id, ...values] : values.filter((value2) => value2 !== id));
+    window.dispatchEvent(new CustomEvent(viewedMarksChanged, { detail: { id, viewed } }));
     return true;
   }
   function toggleViewedVideo(id) {
-    const viewed2 = !isViewedVideo(id), changed = setViewedVideo(id, viewed2);
-    showInfoLog((viewed2 ? "\u5DF2\u6807\u8BB0\u5DF2\u770B\uFF1A" : "\u5DF2\u6807\u8BB0\u672A\u770B\uFF1A") + id, "success");
+    const viewed = !isViewedVideo(id), changed = setViewedVideo(id, viewed);
+    showInfoLog((viewed ? "\u5DF2\u6807\u8BB0\u5DF2\u770B\uFF1A" : "\u5DF2\u6807\u8BB0\u672A\u770B\uFF1A") + id, "success");
     sound("click");
-    return viewed2;
+    return viewed;
   }
 
   // src/ui/atelier-dom.ts
@@ -6306,8 +6306,8 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
       const dialog = document.createElement("dialog");
       dialog.className = "atelier-dialog xp-window";
       dialog.setAttribute("data-bili-blocker-ui", "");
-      const caption2 = document.createElement("header");
-      caption2.className = "xp-caption";
+      const caption3 = document.createElement("header");
+      caption3.className = "xp-caption";
       const heading = document.createElement("h2");
       heading.id = "atelier-dialog-title";
       heading.textContent = options.title;
@@ -6317,7 +6317,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
       dismiss.dataset.kind = "close";
       dismiss.setAttribute("aria-label", "\u5173\u95ED");
       dismiss.title = "\u5173\u95ED";
-      caption2.append(heading, dismiss);
+      caption3.append(heading, dismiss);
       dialog.setAttribute("aria-labelledby", heading.id);
       const message = document.createElement("p");
       message.textContent = options.message;
@@ -6367,7 +6367,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
         body2.append(choices);
       } else add(options.confirmLabel || (options.readOnly || options.alert ? "\u5173\u95ED" : "\u786E\u5B9A"), () => input?.value ?? "ok");
       if (!options.alert && !options.readOnly) add(options.cancelLabel || "\u53D6\u6D88", () => null);
-      dialog.append(caption2, body2, actions);
+      dialog.append(caption3, body2, actions);
       dialog.addEventListener("cancel", (event) => {
         event.preventDefault();
         finish(null);
@@ -6434,7 +6434,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
   }
 
   // src/ui/window-drag.ts
-  function enableWindowDrag(panel, caption2, signal) {
+  function enableWindowDrag(panel, caption3, signal) {
     const positions = {};
     let drag;
     const mode2 = () => panel.dataset.minimized === "true" ? "minimized" : "normal";
@@ -6450,20 +6450,20 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
       drag = void 0;
       for (const property of ["left", "top", "right", "bottom", "margin"]) panel.style.removeProperty(property);
       if (!maximized() && positions[mode2()]) place3(positions[mode2()]);
-      caption2.style.cursor = maximized() ? "default" : "move";
+      caption3.style.cursor = maximized() ? "default" : "move";
     };
-    caption2.style.touchAction = "none";
-    caption2.querySelectorAll("img").forEach((img) => {
+    caption3.style.touchAction = "none";
+    caption3.querySelectorAll("img").forEach((img) => {
       img.draggable = false;
     });
-    caption2.addEventListener("pointerdown", (event) => {
+    caption3.addEventListener("pointerdown", (event) => {
       if (event.button !== 0 || maximized() || event.target.closest("button")) return;
       const rect = panel.getBoundingClientRect();
       drag = { id: event.pointerId, x: event.clientX, y: event.clientY, origin: { x: rect.left, y: rect.top }, moved: false };
-      caption2.setPointerCapture(event.pointerId);
+      caption3.setPointerCapture(event.pointerId);
       event.preventDefault();
     }, { signal });
-    caption2.addEventListener("pointermove", (event) => {
+    caption3.addEventListener("pointermove", (event) => {
       if (!drag || drag.id !== event.pointerId) return;
       if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 4) drag.moved = true;
       if (!drag.moved) return;
@@ -6479,7 +6479,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
       }
       drag = void 0;
     };
-    for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) caption2.addEventListener(event, release, { signal });
+    for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) caption3.addEventListener(event, release, { signal });
     window.addEventListener("resize", update, { signal });
     update();
     return update;
@@ -6555,7 +6555,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
     function save() {
       groupOf2(section)?.save?.();
     }
-    const caption2 = element("header", "luna-caption xp-caption");
+    const caption3 = element("header", "luna-caption xp-caption");
     const title = element("h1", "", "Bili Atelier");
     title.id = "bili-atelier-title";
     const captionActions = element("div", "luna-caption-actions");
@@ -6589,8 +6589,8 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
       sound(maximized ? "maximize" : "restore");
     });
     captionButton2("close", "\u5173\u95ED\u7A97\u53E3", close2);
-    caption2.append(icon(atelierIcons.tv, 16), title, captionActions);
-    const updateWindowPosition = enableWindowDrag(panel, caption2, events.signal);
+    caption3.append(icon(atelierIcons.tv, 16), title, captionActions);
+    const updateWindowPosition = enableWindowDrag(panel, caption3, events.signal);
     const layout2 = element("div", "luna-layout");
     const sidebar = element("div", "luna-sidebar xp-taskpane");
     const group = element("section", "xp-task-group");
@@ -6624,7 +6624,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
     layout2.append(sidebar, main);
     const statusBar = element("div", "xp-status");
     statusBar.append(status2);
-    panel.append(caption2, layout2, statusBar);
+    panel.append(caption3, layout2, statusBar);
     let drawnClass = "";
     function show(next, user = false) {
       if (user && next !== section) sound("folder");
@@ -7370,35 +7370,35 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
 
   // src/ui/page-controls.ts
   var roots = /* @__PURE__ */ new WeakSet();
-  function ensurePageControls(root2 = document) {
+  function ensurePageControls(root = document) {
     ensureLunaTheme();
-    if (root2 instanceof ShadowRoot && !root2.querySelector("style[data-atelier-page-controls]")) {
+    if (root instanceof ShadowRoot && !root.querySelector("style[data-atelier-page-controls]")) {
       const style = document.createElement("style");
       style.setAttribute("data-atelier-page-controls", "");
       style.textContent = sharedControlCss;
-      root2.append(style);
+      root.append(style);
     }
-    if (roots.has(root2)) return;
-    roots.add(root2);
-    observeCrispText(root2 instanceof Document ? root2.documentElement : root2, ".atelier-control");
+    if (roots.has(root)) return;
+    roots.add(root);
+    observeCrispText(root instanceof Document ? root.documentElement : root, ".atelier-control");
   }
   function styleAtelierAction(button6) {
     button6.classList.add("atelier-control");
-    const root2 = button6.getRootNode();
-    ensurePageControls(root2 instanceof ShadowRoot ? root2 : document);
+    const root = button6.getRootNode();
+    ensurePageControls(root instanceof ShadowRoot ? root : document);
   }
-  function placeVideoUpAction(root2, button6, kind) {
-    const container = root2 instanceof HTMLElement ? root2 : root2 instanceof ShadowRoot ? root2.host : null;
+  function placeVideoUpAction(root, button6, kind) {
+    const container = root instanceof HTMLElement ? root : root instanceof ShadowRoot ? root.host : null;
     if (!container?.matches(".up-panel-container")) return false;
-    const message = root2.querySelector('.message,a[href*="message.bilibili.com"]');
+    const message = root.querySelector('.message,a[href*="message.bilibili.com"]');
     if (!message) return false;
-    const block = root2.querySelector(".bili-blocker-profile-action");
+    const block = root.querySelector(".bili-blocker-profile-action");
     const anchor = kind === "follow" && block?.parentElement === message.parentElement && message.nextElementSibling === block ? block : message;
     if (anchor.nextElementSibling !== button6) anchor.insertAdjacentElement("afterend", button6);
     button6.style.margin = "0 0 0 8px";
     button6.style.flex = "0 0 auto";
     if (kind === "block") {
-      const follow = root2.querySelector(".atelier-local-follow-action");
+      const follow = root.querySelector(".atelier-local-follow-action");
       if (follow && button6.nextElementSibling !== follow) button6.insertAdjacentElement("afterend", follow);
     }
     return true;
@@ -8037,6 +8037,7 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
       "#h-name",
       ".h-name",
       ".n-name",
+      ".space-header .upinfo-detail__top .nickname",
       ".space-header .name",
       ".h-basic .name",
       ".user-info .name",
@@ -8329,22 +8330,22 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
     const elements = eventPathElements(event);
     const containerSelector = commentFastScanContainerSelectors.join(",");
     for (const element2 of elements) {
-      const root2 = element2.closest(containerSelector);
-      if (root2) {
-        return root2;
+      const root = element2.closest(containerSelector);
+      if (root) {
+        return root;
       }
     }
     const itemSelector = commentFastScanItemSelectors.join(",");
     for (const element2 of elements) {
-      const root2 = element2.closest(itemSelector);
-      if (root2) {
-        return root2;
+      const root = element2.closest(itemSelector);
+      if (root) {
+        return root;
       }
     }
     return document;
   }
-  function scheduleCommentFastScans(scanComments, root2) {
-    const run = () => scanComments(root2);
+  function scheduleCommentFastScans(scanComments, root) {
+    const run = () => scanComments(root);
     if (typeof window.requestAnimationFrame === "function") {
       window.requestAnimationFrame(run);
     } else {
@@ -8467,16 +8468,16 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
   function attr(el3, name) {
     return el3?.getAttribute(name)?.trim() || "";
   }
-  function first(root2, selectors) {
+  function first(root, selectors) {
     for (const selector of selectors) {
-      const found = root2.querySelector(selector);
+      const found = root.querySelector(selector);
       if (found) {
         return found;
       }
     }
     return null;
   }
-  function queryAllDeep(root2, selector) {
+  function queryAllDeep(root, selector) {
     const results = [];
     const visit = (node4) => {
       if (typeof Element !== "undefined" && node4 instanceof Element && node4.matches(selector)) {
@@ -8492,17 +8493,17 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
         }
       }
     };
-    visit(root2);
+    visit(root);
     return results;
   }
-  function queryOneDeep(root2, selectors) {
+  function queryOneDeep(root, selectors) {
     for (const selector of selectors) {
-      const local = root2.querySelector(selector);
+      const local = root.querySelector(selector);
       if (local) {
         return local;
       }
     }
-    for (const el3 of Array.from(root2.querySelectorAll("*"))) {
+    for (const el3 of Array.from(root.querySelectorAll("*"))) {
       const shadowRoot = el3.shadowRoot;
       if (!shadowRoot) {
         continue;
@@ -8520,12 +8521,12 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
   function parseRoomId(url) {
     return url?.match(/live\.bilibili\.com\/(?:blanc\/)?(\d+)/i)?.[1] || void 0;
   }
-  function getSpaceOwner(root2) {
+  function getSpaceOwner(root) {
     if (!isSpacePageLocation()) {
       return { uid: void 0, name: void 0 };
     }
     const uid = parseSpaceProfileUid();
-    const name = text(first(root2, [
+    const name = text(first(root, [
       "#h-name",
       ".h-name",
       ".n-name",
@@ -8536,11 +8537,11 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
     ])) || void 0;
     return { uid, name };
   }
-  function fillOwnerFromSpacePage(owner2, root2) {
+  function fillOwnerFromSpacePage(owner2, root) {
     if (owner2.uid !== void 0 || owner2.name) {
       return owner2;
     }
-    return getSpaceOwner(root2);
+    return getSpaceOwner(root);
   }
   function closestAny(el3, selectors) {
     for (const selector of selectors) {
@@ -8551,8 +8552,8 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
     }
     return el3 instanceof HTMLElement ? el3 : null;
   }
-  function getOwner(root2) {
-    const ownerLink = first(root2, [
+  function getOwner(root) {
+    const ownerLink = first(root, [
       'a[href*="//space.bilibili.com/"]',
       'a[href*="space.bilibili.com/"]',
       ".bili-video-card__info--owner",
@@ -8589,14 +8590,14 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
       name: owner2.name
     };
   }
-  function collectVideoItems(root2 = document) {
-    const anchors = Array.from(root2.querySelectorAll(
+  function collectVideoItems(root = document) {
+    const anchors = Array.from(root.querySelectorAll(
       'a[href*="/video/BV"],a[href*="/video/av"],:is(.bili-video-card,.bangumi-item,.media-card) a[href*="/bangumi/play/"]'
     ));
     const seen = /* @__PURE__ */ new Set();
     const items = [];
     const collectionSelector = ".pod-item,.video-episode-card,.multip .video-pod__item,.multip.grid .page";
-    for (const row of Array.from(root2.querySelectorAll(collectionSelector))) {
+    for (const row of Array.from(root.querySelectorAll(collectionSelector))) {
       if (row.closest("[data-bili-blocker-ui]")) continue;
       if (row.parentElement?.closest(collectionSelector)) continue;
       const item = readCollectionVideoItem(row);
@@ -8611,7 +8612,7 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
         continue;
       }
       seen.add(card4);
-      const owner2 = fillOwnerFromSpacePage(getOwner(card4), root2);
+      const owner2 = fillOwnerFromSpacePage(getOwner(card4), root);
       const title = attr(anchor, "title") || text(first(card4, [".bili-video-card__info--tit", ".bili-video-card__title", ".media-card-content-head-title", ".title", "h3", ".video-name"])) || text(anchor);
       const bv = parseBv(anchor.href);
       const insertionEl = first(card4, [
@@ -8637,9 +8638,9 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
     }
     return items;
   }
-  function collectDynamicItems(root2 = document) {
+  function collectDynamicItems(root = document) {
     const items = [];
-    for (const card4 of root2.querySelectorAll(".bili-dyn-item")) {
+    for (const card4 of root.querySelectorAll(".bili-dyn-item")) {
       if (card4.parentElement?.closest(".bili-dyn-item,[data-bili-blocker-ui]")) continue;
       const parts2 = [];
       for (const link3 of card4.querySelectorAll(".bili-dyn-card-video,.bili-dyn-card-pgc,.bili-dyn-card-ugc-season")) {
@@ -8666,9 +8667,9 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
     }
     return items;
   }
-  function collectCommentItems(root2 = document) {
+  function collectCommentItems(root = document) {
     const selector = commentSelectors.join(",");
-    const candidates = queryAllDeep(root2, selector);
+    const candidates = queryAllDeep(root, selector);
     const seen = /* @__PURE__ */ new Set();
     const items = [];
     for (const candidate of candidates) {
@@ -8709,8 +8710,8 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
     }
     return items;
   }
-  function collectLiveItems(root2 = document) {
-    const anchors = Array.from(root2.querySelectorAll('a[href*="live.bilibili.com/"]'));
+  function collectLiveItems(root = document) {
+    const anchors = Array.from(root.querySelectorAll('a[href*="live.bilibili.com/"]'));
     const seen = /* @__PURE__ */ new Set();
     const items = [];
     for (const anchor of anchors) {
@@ -8723,7 +8724,7 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
         continue;
       }
       seen.add(card4);
-      const owner2 = fillOwnerFromSpacePage(getOwner(card4), root2);
+      const owner2 = fillOwnerFromSpacePage(getOwner(card4), root);
       const liveTitle = attr(anchor, "title") || text(first(card4, [".room-title", ".bili-live-card__info--tit", "h3", ".title"])) || text(anchor);
       const partition = text(first(card4, [".area-name", ".video-card-meta__chip", ".partition"]));
       items.push({
@@ -8834,11 +8835,11 @@ ${foldCss}
     observer.observe(shadowRoot, { childList: true, subtree: true });
     observeOpenShadowRoots(shadowRoot, observer, observed);
   }
-  function observeOpenShadowRoots(root2, observer, observed) {
-    if (root2 instanceof HTMLElement) {
-      observeElementShadowRoot(root2, observer, observed);
+  function observeOpenShadowRoots(root, observer, observed) {
+    if (root instanceof HTMLElement) {
+      observeElementShadowRoot(root, observer, observed);
     }
-    for (const el3 of Array.from(root2.querySelectorAll("*"))) {
+    for (const el3 of Array.from(root.querySelectorAll("*"))) {
       observeElementShadowRoot(el3, observer, observed);
     }
   }
@@ -8861,11 +8862,11 @@ ${foldCss}
   function startBlocker() {
     let observer = null;
     const observedShadowRoots = /* @__PURE__ */ new WeakSet();
-    const scanComments = (root2 = document, rules = readRuleSnapshotWithHistoryAliases()) => {
+    const scanComments = (root = document, rules = readRuleSnapshotWithHistoryAliases()) => {
       if (observer) {
-        observeOpenShadowRoots(root2, observer, observedShadowRoots);
+        observeOpenShadowRoots(root, observer, observedShadowRoots);
       }
-      for (const item of collectCommentItems(root2)) {
+      for (const item of collectCommentItems(root)) {
         const decision = decideBlockableItem(item, rules);
         if (decision) {
           hideElement(item, decision);
@@ -8921,7 +8922,7 @@ ${foldCss}
       installHistoryShortcut(scan);
       installCommentExpandFastScan(scanComments);
       observer = new MutationObserver((records2) => {
-        for (const root2 of commentMutationRoots(records2)) scanComments(root2);
+        for (const root of commentMutationRoots(records2)) scanComments(root);
         scheduleScan();
       });
       observer.observe(document.body, { childList: true, subtree: true });
@@ -9034,6 +9035,11 @@ ${foldCss}
     upload: ["/x/dynamic/feed/draw/upload_bfs", "file", "body", 0]
   };
   var endpoints = {
+    /** The inline comment area and its author cards on an UP's space. */
+    spaceComments: {
+      reads: { [api]: [nav, card, ...replyReads, "/x/relation", "/x/relation/tags", "/x/relation/tag/user"] },
+      writes: { ...replyWrites, follow: ["/x/relation/modify", "form", "body", 0], "follow-tags": ["/x/relation/tags/addUsers", "form", "body", 0] }
+    },
     /** Requests with the browser's cookies from any page: local follow checks. */
     gm: { reads: { [api]: followReads }, writes: {} },
     /** The drawn 动态 feed on t.bilibili.com. */
@@ -10457,8 +10463,8 @@ ${foldCss}
     async send(op, payload) {
       return ok(await this.write(op, payload));
     }
-    like(dynId, on8) {
-      return this.send("like", { body: { dyn_id_str: dynId, up: on8 ? 1 : 2, spmid: "333.1365.0.0" } });
+    like(dynId, on9) {
+      return this.send("like", { body: { dyn_id_str: dynId, up: on9 ? 1 : 2, spmid: "333.1365.0.0" } });
     }
     /** The page's own forward flow: submit check, then the scene-4 create. */
     async forward(dynId, text4) {
@@ -10471,8 +10477,8 @@ ${foldCss}
     comments(oid, type, mode2, next = 0, signal) {
       return this.get(`https://api.bilibili.com/x/v2/reply/main?oid=${oid}&type=${type}&mode=${mode2}&next=${next}&ps=20&plat=1`, signal);
     }
-    replies(oid, type, root2, page, signal) {
-      return this.get(`https://api.bilibili.com/x/v2/reply/reply?oid=${oid}&type=${type}&root=${root2}&pn=${page}&ps=10`, signal);
+    replies(oid, type, root, page, signal) {
+      return this.get(`https://api.bilibili.com/x/v2/reply/reply?oid=${oid}&type=${type}&root=${root}&pn=${page}&ps=10`, signal);
     }
     /** Signed the way the comment component signs its posts. */
     async post(options) {
@@ -10485,11 +10491,11 @@ ${foldCss}
       const signed = new URLSearchParams(localFollowWbiQuery({ web_location: "333.1365" }, await this.signingKey(new AbortController().signal)));
       return this.send("reply", { query: Object.fromEntries(signed), body: body2 });
     }
-    likeReply(oid, type, rpid, on8) {
-      return this.send("reply-like", { body: { oid, type, rpid, action: on8 ? 1 : 0 } });
+    likeReply(oid, type, rpid, on9) {
+      return this.send("reply-like", { body: { oid, type, rpid, action: on9 ? 1 : 0 } });
     }
-    hateReply(oid, type, rpid, on8) {
-      return this.send("reply-hate", { body: { oid, type, rpid, action: on8 ? 1 : 0 } });
+    hateReply(oid, type, rpid, on9) {
+      return this.send("reply-hate", { body: { oid, type, rpid, action: on9 ? 1 : 0 } });
     }
     deleteReply(oid, type, rpid) {
       return this.send("reply-delete", { body: { oid, type, rpid } });
@@ -10569,17 +10575,17 @@ ${foldCss}
     return node4;
   }
   function xpWindow(options) {
-    const root2 = el("section", `xp-window vl-window ${options.className}`);
-    root2.setAttribute("aria-label", options.label ?? options.title);
-    const caption2 = root2.appendChild(el("header", "xp-caption"));
-    const icon2 = caption2.appendChild(el("span", "vl-caption-icon"));
+    const root = el("section", `xp-window vl-window ${options.className}`);
+    root.setAttribute("aria-label", options.label ?? options.title);
+    const caption3 = root.appendChild(el("header", "xp-caption"));
+    const icon2 = caption3.appendChild(el("span", "vl-caption-icon"));
     icon2.append(options.icon);
-    const title = caption2.appendChild(el("h2", "xp-caption-title", options.title));
-    const body2 = root2.appendChild(el("div", "vl-body"));
-    return { root: root2, caption: caption2, icon: icon2, title, body: body2 };
+    const title = caption3.appendChild(el("h2", "xp-caption-title", options.title));
+    const body2 = root.appendChild(el("div", "vl-body"));
+    return { root, caption: caption3, icon: icon2, title, body: body2 };
   }
-  function captionButton(caption2, kind, label, action) {
-    const button6 = caption2.appendChild(el("button", "xp-caption-button"));
+  function captionButton(caption3, kind, label, action) {
+    const button6 = caption3.appendChild(el("button", "xp-caption-button"));
     button6.type = "button";
     button6.dataset.kind = kind;
     button6.title = label;
@@ -10641,7 +10647,7 @@ ${foldCss}
     });
     return button6;
   }
-  function viewedButton(id, label = (viewed2) => viewed2 ? "\u5DF2\u770B" : "\u672A\u770B") {
+  function viewedButton(id, label = (viewed) => viewed ? "\u5DF2\u770B" : "\u672A\u770B") {
     const button6 = el("button", "vl-viewed");
     button6.type = "button";
     button6.dataset.viewedId = id;
@@ -10651,10 +10657,10 @@ ${foldCss}
       toggleViewedVideo(id);
     });
     const paint2 = () => {
-      const viewed2 = isViewedVideo(id);
-      button6.textContent = label(viewed2);
-      button6.setAttribute("aria-pressed", String(viewed2));
-      button6.classList.toggle("btnIsView", viewed2);
+      const viewed = isViewedVideo(id);
+      button6.textContent = label(viewed);
+      button6.setAttribute("aria-pressed", String(viewed));
+      button6.classList.toggle("btnIsView", viewed);
     };
     button6.atelierPaint = paint2;
     paint2();
@@ -10744,9 +10750,9 @@ ${foldCss}
   }
   function createImageWindow() {
     const win = xpWindow({ className: "vl-image-window", icon: shellIcon(224, 16), title: "" });
-    const root2 = win.root;
-    root2.setAttribute("data-bili-blocker-ui", "true");
-    root2.setAttribute("role", "dialog");
+    const root = win.root;
+    root.setAttribute("data-bili-blocker-ui", "true");
+    root.setAttribute("role", "dialog");
     const close2 = win.caption.appendChild(el("button", "xp-caption-button"));
     close2.type = "button";
     close2.title = "\u5173\u95ED";
@@ -10763,11 +10769,11 @@ ${foldCss}
     const next = status2.appendChild(xpButton("\u4E0B\u4E00\u5F20", () => go(1), "vl-image-next"));
     const save = status2.appendChild(xpButton("\u4FDD\u5B58\u2026", () => void download()));
     let images2 = [], index = 0;
-    observeCrispText(root2);
+    observeCrispText(root);
     let dragged = false;
     const center = () => {
-      if (dragged || !root2.isConnected) return;
-      placeFixed(root2, { left: Math.max(0, Math.round((innerWidth - screenWidth(root2)) / 2)), top: Math.max(0, Math.round((innerHeight - screenHeight(root2)) / 2)) });
+      if (dragged || !root.isConnected) return;
+      placeFixed(root, { left: Math.max(0, Math.round((innerWidth - screenWidth(root)) / 2)), top: Math.max(0, Math.round((innerHeight - screenHeight(root)) / 2)) });
     };
     const fit = () => {
       view.classList.remove("vl-image-actual");
@@ -10823,7 +10829,7 @@ ${foldCss}
     function paint2() {
       const image6 = images2[index];
       win.title.textContent = image6.title;
-      root2.setAttribute("aria-label", image6.title);
+      root.setAttribute("aria-label", image6.title);
       const several = images2.length > 1;
       count2.hidden = prev.hidden = next.hidden = !several;
       count2.textContent = several ? `\u7B2C ${index + 1} / ${images2.length} \u5F20` : "";
@@ -10838,7 +10844,7 @@ ${foldCss}
     function dispose() {
       for (const image6 of images2) image6.dispose?.();
       images2 = [];
-      root2.remove();
+      root.remove();
       current = null;
       window.removeEventListener("keydown", keys, true);
     }
@@ -10861,12 +10867,12 @@ ${foldCss}
     win.caption.addEventListener("pointerdown", (event) => {
       if (event.button !== 0 || event.target.closest(".xp-caption-button")) return;
       event.preventDefault();
-      const rect = root2.getBoundingClientRect(), dx = event.clientX - rect.left, dy = event.clientY - rect.top;
+      const rect = root.getBoundingClientRect(), dx = event.clientX - rect.left, dy = event.clientY - rect.top;
       dragged = true;
       win.caption.setPointerCapture?.(event.pointerId);
       const move = (next2) => {
-        const z = zoomOf(root2);
-        placeFixed(root2, { left: Math.round(Math.min(Math.max(next2.clientX - dx, 40 * z - rect.width), innerWidth - 40 * z)), top: Math.round(Math.min(Math.max(next2.clientY - dy, 0), innerHeight - 30 * z)) });
+        const z = zoomOf(root);
+        placeFixed(root, { left: Math.round(Math.min(Math.max(next2.clientX - dx, 40 * z - rect.width), innerWidth - 40 * z)), top: Math.round(Math.min(Math.max(next2.clientY - dy, 0), innerHeight - 30 * z)) });
       };
       const done = () => {
         win.caption.removeEventListener("pointermove", move);
@@ -10882,9 +10888,9 @@ ${foldCss}
         for (const image6 of images2) if (!list.includes(image6)) image6.dispose?.();
         images2 = list;
         index = from;
-        if (!root2.isConnected) {
+        if (!root.isConnected) {
           dragged = false;
-          (document.fullscreenElement ?? document.body).append(root2);
+          (document.fullscreenElement ?? document.body).append(root);
         }
         paint2();
         center();
@@ -11123,14 +11129,14 @@ ${foldCss}
     const author2 = raw?.modules?.module_author ?? {}, card4 = node("article", nested ? "adc-card adc-nested" : "adc-card xp-window");
     if (!nested) card4.dataset.inactive = "";
     card4.dataset.dynamicId = String(raw?.id_str ?? "");
-    const caption2 = card4.appendChild(node("header", nested ? "adc-caption" : "adc-caption xp-caption"));
+    const caption3 = card4.appendChild(node("header", nested ? "adc-caption" : "adc-caption xp-caption"));
     const uid = /^\d+$/.test(String(author2.mid ?? "")) ? String(author2.mid) : "";
     const space = uid ? `https://space.bilibili.com/${uid}/dynamic` : "";
-    if (!nested) caption2.appendChild(link2(space, "adc-face-link")).append(image2(bilibiliThumb(author2.face, "32w_32h_1c"), "adc-face", ""));
-    caption2.append(link2(space, "adc-name xp-caption-title", nested ? `@${author2.name || uid || "\u672A\u77E5"}` : author2.name || uid || "\u672A\u77E5"));
-    if (author2.pub_action) caption2.append(node("span", "adc-action", author2.pub_action));
-    if (raw?.modules?.module_tag?.text) caption2.append(node("span", "adc-pin", raw.modules.module_tag.text));
-    caption2.append(node("span", "adc-tag", typeLabels[raw?.type] ?? "\u52A8\u6001"));
+    if (!nested) caption3.appendChild(link2(space, "adc-face-link")).append(image2(bilibiliThumb(author2.face, "32w_32h_1c"), "adc-face", ""));
+    caption3.append(link2(space, "adc-name xp-caption-title", nested ? `@${author2.name || uid || "\u672A\u77E5"}` : author2.name || uid || "\u672A\u77E5"));
+    if (author2.pub_action) caption3.append(node("span", "adc-action", author2.pub_action));
+    if (raw?.modules?.module_tag?.text) caption3.append(node("span", "adc-pin", raw.modules.module_tag.text));
+    caption3.append(node("span", "adc-tag", typeLabels[raw?.type] ?? "\u52A8\u6001"));
     const content = card4.appendChild(body(raw));
     for (const grid of content.querySelectorAll(".adc-pics:not([data-picture-title])")) grid.dataset.pictureTitle = `\u52A8\u6001\u56FE\u7247 - ${author2.name || uid || "\u672A\u77E5"}`;
     if (!nested) {
@@ -11175,9 +11181,9 @@ ${foldCss}
     }
     return parts2;
   }
-  var root = "#atelier-feed";
-  var viewed = `${root} .adc-card:has(> .adc-body > .adc-video .btnIsView, > .adc-body > .adc-last > .adc-video .btnIsView)`;
-  var dynamicCardCss = `
+  function dynamicCardStyles(root) {
+    const viewed = `${root} .adc-card:has(> .adc-body > .adc-video .btnIsView, > .adc-body > .adc-last > .adc-video .btnIsView)`;
+    return `
 ${root}{display:flex;flex-direction:column;gap:8px;color:var(--xp-ink);${xpFont};text-align:left}
 ${root} .adc-caption{gap:5px}
 ${root} .adc-face-link{flex:none;display:block}
@@ -11233,6 +11239,8 @@ ${viewed} .adc-body,${viewed} .adc-body :is(.adc-media-link,.adc-link,.adc-more,
 ${root} .adc-footer{margin:0 -1px}
 ${root} .btnView{z-index:3}
 `;
+  }
+  var dynamicCardCss = dynamicCardStyles("#atelier-feed");
 
   // src/modules/video-luna/dialog.ts
   function videoDialog(options) {
@@ -11241,11 +11249,11 @@ ${root} .btnView{z-index:3}
       const before = document.activeElement;
       const dialog = el("dialog", "atelier-dialog xp-window vl-dialog");
       dialog.setAttribute("data-bili-blocker-ui", "");
-      const caption2 = dialog.appendChild(el("header", "xp-caption"));
-      const heading = caption2.appendChild(el("h2", "", options.title));
+      const caption3 = dialog.appendChild(el("header", "xp-caption"));
+      const heading = caption3.appendChild(el("h2", "", options.title));
       heading.id = `vl-dialog-${crypto.randomUUID()}`;
       dialog.setAttribute("aria-labelledby", heading.id);
-      const dismiss = caption2.appendChild(el("button", "xp-caption-button"));
+      const dismiss = caption3.appendChild(el("button", "xp-caption-button"));
       dismiss.type = "button";
       dismiss.dataset.kind = "close";
       dismiss.title = "\u5173\u95ED";
@@ -11399,14 +11407,14 @@ ${root} .btnView{z-index:3}
   function localFollowButton(person) {
     const button6 = el("button", "atelier-control vl-local-follow");
     button6.type = "button";
-    const on8 = () => localFollowSnapshot().accounts.some((account) => account.uid === person.mid);
+    const on9 = () => localFollowSnapshot().accounts.some((account) => account.uid === person.mid);
     const paint2 = () => {
-      button6.textContent = on8() ? "\u79FB\u9664\u672C\u5730\u5173\u6CE8" : "\u6DFB\u52A0\u672C\u5730\u5173\u6CE8";
-      button6.setAttribute("aria-pressed", String(on8()));
+      button6.textContent = on9() ? "\u79FB\u9664\u672C\u5730\u5173\u6CE8" : "\u6DFB\u52A0\u672C\u5730\u5173\u6CE8";
+      button6.setAttribute("aria-pressed", String(on9()));
     };
     button6.addEventListener("click", () => {
       sound("click");
-      if (on8()) removeLocalFollow(person.mid);
+      if (on9()) removeLocalFollow(person.mid);
       else {
         addLocalFollow({ uid: person.mid, name: person.name, face: person.face });
         writeLocalFollowCache(person.mid, { name: person.name, face: person.face });
@@ -11548,12 +11556,12 @@ ${root} .btnView{z-index:3}
     close();
     const seed = { name: anchor.dataset.userName ?? "", face: anchor.dataset.userFace ?? "", level: Number(anchor.dataset.userLevel) || 0 };
     const space = `https://space.bilibili.com/${mid}`;
-    const root2 = el("div", "acm-card xp-menu");
-    root2.setAttribute("data-bili-blocker-ui", "");
-    root2.setAttribute("role", "dialog");
-    root2.setAttribute("aria-label", seed.name || mid);
-    root2.dataset.mid = mid;
-    const top = root2.appendChild(el("div", "acm-card-top"));
+    const root = el("div", "acm-card xp-menu");
+    root.setAttribute("data-bili-blocker-ui", "");
+    root.setAttribute("role", "dialog");
+    root.setAttribute("aria-label", seed.name || mid);
+    root.dataset.mid = mid;
+    const top = root.appendChild(el("div", "acm-card-top"));
     const avatar = top.appendChild(link("acm-card-face", "", space)).appendChild(el("img"));
     avatar.alt = "";
     avatar.referrerPolicy = "no-referrer";
@@ -11573,7 +11581,7 @@ ${root} .btnView{z-index:3}
     paint2(seed);
     if (mid !== host.me) {
       const person = { mid, name: seed.name || mid, face: seed.face };
-      const actions = root2.appendChild(el("div", "acm-card-actions"));
+      const actions = root.appendChild(el("div", "acm-card-actions"));
       const options = { api: host.api, me: host.me, failure: host.failure };
       const follow = followButton(person, options);
       const whisper = host.me ? link("xp-button", "\u79C1\u4FE1", `https://message.bilibili.com/#whisper/mid${mid}`) : xpButton("\u79C1\u4FE1", () => {
@@ -11595,13 +11603,13 @@ ${root} .btnView{z-index:3}
         }
       }
     }
-    (document.fullscreenElement ?? document.body).append(root2);
-    card2 = root2;
+    (document.fullscreenElement ?? document.body).append(root);
+    card2 = root;
     owner = anchor;
-    observeCrispText(root2);
-    place(root2, anchor);
+    observeCrispText(root);
+    place(root, anchor);
     read(host.api, mid).then((data) => {
-      if (card2 !== root2) return;
+      if (card2 !== root) return;
       paint2({ name: data.name || seed.name, face: data.face || seed.face, level: data.level || seed.level });
       if (data.official) {
         const icon2 = el("img");
@@ -11616,19 +11624,19 @@ ${root} .btnView{z-index:3}
         sign.hidden = false;
       }
       stats.replaceChildren(link("", `\u5173\u6CE8 ${formatCount(data.following) || 0}`, `${space}/fans/follow`), link("", `\u7C89\u4E1D ${formatCount(data.fans) || 0}`, `${space}/fans/fans`), el("span", "", `\u83B7\u8D5E ${formatCount(data.likes) || 0}`));
-      place(root2, anchor);
+      place(root, anchor);
     }, () => {
-      if (card2 === root2) {
+      if (card2 === root) {
         stats.textContent = "\u8BFB\u53D6\u5931\u8D25";
-        place(root2, anchor);
+        place(root, anchor);
       }
     });
   }
-  function place(root2, anchor) {
-    const rect = anchor.getBoundingClientRect(), width = screenWidth(root2), height = screenHeight(root2);
+  function place(root, anchor) {
+    const rect = anchor.getBoundingClientRect(), width = screenWidth(root), height = screenHeight(root);
     const across = document.documentElement.clientWidth || innerWidth, down = document.documentElement.clientHeight || innerHeight;
     const below = rect.bottom + 4;
-    placeFixed(root2, { left: Math.max(4, Math.min(rect.left, across - width - 4)), top: below + height > down - 4 ? Math.max(4, rect.top - height - 4) : below });
+    placeFixed(root, { left: Math.max(4, Math.min(rect.left, across - width - 4)), top: below + height > down - 4 ? Math.max(4, rect.top - height - 4) : below });
   }
   var userCardCss = `
 .acm-card{position:fixed;z-index:2147483645;box-sizing:border-box;width:280px;padding:8px;background:var(--xp-face);color:var(--xp-ink);${xpFont};text-align:left}
@@ -11749,9 +11757,9 @@ ${root} .btnView{z-index:3}
     panel.setAttribute("data-bili-blocker-ui", "");
     panel.setAttribute("role", "dialog");
     panel.setAttribute("aria-label", "\u8868\u60C5");
-    const caption2 = panel.appendChild(node2("header", "xp-caption"));
-    caption2.append(node2("span", "xp-caption-title", "\u8868\u60C5"));
-    const close2 = caption2.appendChild(button2("", "xp-caption-button", () => done()));
+    const caption3 = panel.appendChild(node2("header", "xp-caption"));
+    caption3.append(node2("span", "xp-caption-title", "\u8868\u60C5"));
+    const close2 = caption3.appendChild(button2("", "xp-caption-button", () => done()));
     close2.className = "xp-caption-button";
     close2.dataset.kind = "close";
     close2.title = "\u5173\u95ED";
@@ -11998,13 +12006,13 @@ ${root} .btnView{z-index:3}
       const rpid = String(reply?.rpid_str ?? reply?.rpid ?? ""), mid = String(reply?.mid_str ?? reply?.mid ?? reply?.member?.mid ?? "");
       element2.dataset.rpid = rpid;
       const space = /^\d+$/.test(mid) ? `https://space.bilibili.com/${mid}` : "";
-      const face = element2.appendChild(node2("a", "acm-face"));
+      const face2 = element2.appendChild(node2("a", "acm-face"));
       if (space) {
-        face.href = space;
-        face.target = "_blank";
-        face.rel = "noopener noreferrer";
+        face2.href = space;
+        face2.target = "_blank";
+        face2.rel = "noopener noreferrer";
       }
-      const avatar = face.appendChild(node2("img"));
+      const avatar = face2.appendChild(node2("img"));
       avatar.alt = "";
       avatar.referrerPolicy = "no-referrer";
       avatar.loading = "lazy";
@@ -12018,7 +12026,7 @@ ${root} .btnView{z-index:3}
         who.rel = "noopener noreferrer";
       }
       const level = Number(reply?.member?.level_info?.current_level);
-      if (space) for (const anchor of [face, who]) markUserCard(anchor, { mid, name: String(reply?.member?.uname ?? ""), face: String(reply?.member?.avatar ?? ""), level });
+      if (space) for (const anchor of [face2, who]) markUserCard(anchor, { mid, name: String(reply?.member?.uname ?? ""), face: String(reply?.member?.avatar ?? ""), level });
       const target = { kind: "comment", el: element2, insertionEl: element2, uid: Number(mid) || void 0, name: reply?.member?.uname, content: reply?.content?.message };
       targets2.set(element2, target);
       if (context.blocking && !(context.me && mid === context.me)) top.append(createCommentUserBlockButton(target, rescan, "acm-block"));
@@ -12041,13 +12049,13 @@ ${root} .btnView{z-index:3}
       };
       async function toggle(which) {
         if (!context.me) return;
-        const before = { likes, action }, on8 = action !== which;
-        if (which === 1) likes += on8 ? 1 : -1;
-        else if (on8 && action === 1) likes -= 1;
-        action = on8 ? which : 0;
+        const before = { likes, action }, on9 = action !== which;
+        if (which === 1) likes += on9 ? 1 : -1;
+        else if (on9 && action === 1) likes -= 1;
+        action = on9 ? which : 0;
         paint2();
         try {
-          await (which === 1 ? context.api.likeReply : context.api.hateReply).call(context.api, context.oid, context.type, rpid, on8);
+          await (which === 1 ? context.api.likeReply : context.api.hateReply).call(context.api, context.oid, context.type, rpid, on9);
         } catch (error) {
           ({ likes, action } = before);
           paint2();
@@ -12071,12 +12079,12 @@ ${root} .btnView{z-index:3}
           replyBox = null;
           return;
         }
-        const root2 = sub ? String(reply?.root_str ?? reply?.root ?? "") : rpid;
+        const root = sub ? String(reply?.root_str ?? reply?.root ?? "") : rpid;
         const compose = composer(context, {
           placeholder: `\u56DE\u590D @${reply?.member?.uname ?? ""}`,
           prefix: sub ? `\u56DE\u590D @${reply?.member?.uname ?? ""} :` : "",
           submit: async (message, pictures2) => {
-            const data = await context.api.post({ oid: context.oid, type: context.type, message, root: root2, parent: rpid, pictures: pictures2 });
+            const data = await context.api.post({ oid: context.oid, type: context.type, message, root, parent: rpid, pictures: pictures2 });
             const host = sub ? element2.parentElement : replies;
             if (data.reply && host) host.append(item(data.reply, true));
             count2(total + 1);
@@ -12202,47 +12210,47 @@ ${root} .btnView{z-index:3}
       area.remove();
     } };
   }
-  var commentAreaStyles = (root2) => `
-${root2} .adc-comments{display:flex;flex-direction:column;gap:6px;margin:4px 0 0;padding:6px 8px;background:var(--xp-face);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d);box-shadow:inset 1px 1px var(--xp-dark3d)}
-${root2} .acm-head{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px}
-${root2} .acm-sorts{display:flex;gap:10px}${root2} .acm-sort{display:inline-flex;align-items:center}
-${root2} .acm-status{flex:1;min-width:0;color:var(--xp-muted)}
-${root2} .acm-original{color:var(--xp-task-link)}${root2} .acm-original[data-emphasis=true]{font-weight:bold}
-${root2} .acm-compose{display:flex;flex-direction:column;gap:4px}
-${root2} .acm-input{width:100%;min-height:40px;resize:vertical}
-${root2} .acm-compose-row{display:flex;align-items:center;gap:4px}${root2} .acm-note{flex:1;min-width:0;color:var(--xp-danger)}
-${root2} .acm-compose-row .atelier-control{min-width:0}
-${root2} .acm-thumbs{display:flex;flex-wrap:wrap;gap:4px}${root2} .acm-thumbs:empty{display:none}
-${root2} .acm-thumb{position:relative;width:56px;height:56px;border:1px solid var(--xp-edge);background:var(--xp-window)}
-${root2} .acm-thumb img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
-${root2} .acm-thumb[data-failed]::after{content:"\u5931\u8D25";position:absolute;left:0;right:0;bottom:0;text-align:center;color:#fff;background:#a33024c0}
-${root2} .acm-thumb-remove{position:absolute;top:-6px;right:-6px;min-height:16px!important;padding:0 3px!important;line-height:14px!important}
-${root2} .acm-list{display:flex;flex-direction:column}
-${root2} .acm-item{display:flex;gap:8px;padding:6px 0;border-top:1px solid var(--xp-line)}
-${root2} .acm-list>.acm-item:first-child{border-top:0}
-${root2} .acm-face{flex:none}${root2} .acm-face img{display:block;width:32px;height:32px;object-fit:cover;image-rendering:auto}
-${root2} .acm-sub-item .acm-face img{width:16px;height:16px}
-${root2} .acm-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-${root2} .acm-top{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-${root2} .acm-name{font-weight:bold;color:var(--xp-ink)!important;text-decoration:none}
-${root2} .acm-top .acm-block{min-width:0}
-${root2} .acm-badge{padding:0 3px;color:var(--xp-caption-ink);background:var(--xp-caption)}
-${root2} .acm-level{color:var(--xp-group-text)}
-${root2} .acm-text{overflow-wrap:anywhere}${root2} .acm-link{color:var(--xp-task-link)}
-${root2} .acm-emote{width:20px;height:20px;vertical-align:text-bottom;image-rendering:auto}${root2} .acm-emote-large{width:40px;height:40px}
-${root2} .acm-pics{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}${root2} .acm-pic{display:block;width:80px;height:80px;border:1px solid var(--xp-edge)}
-${root2} .acm-pic img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
-${root2} .acm-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}${root2} .acm-when{flex:1;min-width:0;color:var(--xp-muted)}
-${root2} .acm-actions{display:flex;gap:3px}${root2} .acm-actions .atelier-control{min-width:0}
-${root2} .acm-sub{display:flex;flex-direction:column;margin-top:2px}
-${root2} .acm-sub:not(:empty){padding:0 6px;background:var(--xp-face);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d)}
-${root2} .acm-sub[data-loading]{opacity:.6}
-${root2} .acm-open{align-self:flex-start;margin:3px 0;color:var(--xp-task-link)}
-${root2} .acm-hidden{color:var(--xp-muted);font-weight:normal}
-${root2} .acm-pager{display:flex;align-items:center;gap:6px;padding:4px 0}
-${root2} .acm-reply-box{margin-top:3px}
-${root2} .acm-more{align-self:center}
-${root2} .acm-blocked{outline:1px dashed #a33024;outline-offset:-1px}
+  var commentAreaStyles = (root) => `
+${root} .adc-comments{display:flex;flex-direction:column;gap:6px;margin:4px 0 0;padding:6px 8px;background:var(--xp-face);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d);box-shadow:inset 1px 1px var(--xp-dark3d)}
+${root} .acm-head{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px}
+${root} .acm-sorts{display:flex;gap:10px}${root} .acm-sort{display:inline-flex;align-items:center}
+${root} .acm-status{flex:1;min-width:0;color:var(--xp-muted)}
+${root} .acm-original{color:var(--xp-task-link)}${root} .acm-original[data-emphasis=true]{font-weight:bold}
+${root} .acm-compose{display:flex;flex-direction:column;gap:4px}
+${root} .acm-input{width:100%;min-height:40px;resize:vertical}
+${root} .acm-compose-row{display:flex;align-items:center;gap:4px}${root} .acm-note{flex:1;min-width:0;color:var(--xp-danger)}
+${root} .acm-compose-row .atelier-control{min-width:0}
+${root} .acm-thumbs{display:flex;flex-wrap:wrap;gap:4px}${root} .acm-thumbs:empty{display:none}
+${root} .acm-thumb{position:relative;width:56px;height:56px;border:1px solid var(--xp-edge);background:var(--xp-window)}
+${root} .acm-thumb img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
+${root} .acm-thumb[data-failed]::after{content:"\u5931\u8D25";position:absolute;left:0;right:0;bottom:0;text-align:center;color:#fff;background:#a33024c0}
+${root} .acm-thumb-remove{position:absolute;top:-6px;right:-6px;min-height:16px!important;padding:0 3px!important;line-height:14px!important}
+${root} .acm-list{display:flex;flex-direction:column}
+${root} .acm-item{display:flex;gap:8px;padding:6px 0;border-top:1px solid var(--xp-line)}
+${root} .acm-list>.acm-item:first-child{border-top:0}
+${root} .acm-face{flex:none}${root} .acm-face img{display:block;width:32px;height:32px;object-fit:cover;image-rendering:auto}
+${root} .acm-sub-item .acm-face img{width:16px;height:16px}
+${root} .acm-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+${root} .acm-top{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+${root} .acm-name{font-weight:bold;color:var(--xp-ink)!important;text-decoration:none}
+${root} .acm-top .acm-block{min-width:0}
+${root} .acm-badge{padding:0 3px;color:var(--xp-caption-ink);background:var(--xp-caption)}
+${root} .acm-level{color:var(--xp-group-text)}
+${root} .acm-text{overflow-wrap:anywhere}${root} .acm-link{color:var(--xp-task-link)}
+${root} .acm-emote{width:20px;height:20px;vertical-align:text-bottom;image-rendering:auto}${root} .acm-emote-large{width:40px;height:40px}
+${root} .acm-pics{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}${root} .acm-pic{display:block;width:80px;height:80px;border:1px solid var(--xp-edge)}
+${root} .acm-pic img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
+${root} .acm-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}${root} .acm-when{flex:1;min-width:0;color:var(--xp-muted)}
+${root} .acm-actions{display:flex;gap:3px}${root} .acm-actions .atelier-control{min-width:0}
+${root} .acm-sub{display:flex;flex-direction:column;margin-top:2px}
+${root} .acm-sub:not(:empty){padding:0 6px;background:var(--xp-face);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d)}
+${root} .acm-sub[data-loading]{opacity:.6}
+${root} .acm-open{align-self:flex-start;margin:3px 0;color:var(--xp-task-link)}
+${root} .acm-hidden{color:var(--xp-muted);font-weight:normal}
+${root} .acm-pager{display:flex;align-items:center;gap:6px;padding:4px 0}
+${root} .acm-reply-box{margin-top:3px}
+${root} .acm-more{align-self:center}
+${root} .acm-blocked{outline:1px dashed #a33024;outline-offset:-1px}
 ${userCardCss}
 .acm-emotes{position:fixed;z-index:2147483646;width:330px;${xpFont}}
 .acm-emotes .xp-tabs{overflow-x:auto;flex-wrap:nowrap}
@@ -12445,14 +12453,14 @@ ${userCardCss}
     panel.className = `${panelClass} xp-window`;
     panel.setAttribute("data-atelier-local-ui", "");
     panel.setAttribute("data-bili-blocker-ui", "true");
-    const caption2 = panel.appendChild(document.createElement("header"));
-    caption2.className = "afp-caption xp-caption";
-    const icon2 = caption2.appendChild(document.createElement("span"));
+    const caption3 = panel.appendChild(document.createElement("header"));
+    caption3.className = "afp-caption xp-caption";
+    const icon2 = caption3.appendChild(document.createElement("span"));
     icon2.className = "afp-caption-icon";
-    const title = caption2.appendChild(document.createElement("h2"));
-    const note3 = caption2.appendChild(document.createElement("span"));
+    const title = caption3.appendChild(document.createElement("h2"));
+    const note3 = caption3.appendChild(document.createElement("span"));
     note3.className = "afp-note";
-    const toggle = caption2.appendChild(document.createElement("button"));
+    const toggle = caption3.appendChild(document.createElement("button"));
     toggle.type = "button";
     toggle.className = "afp-toggle xp-caption-button";
     const body2 = panel.appendChild(document.createElement("div"));
@@ -12519,12 +12527,12 @@ ${userCardCss}
 UID\uFF1A${person.uid}
 \u6700\u8FD1\u53D1\u5E03\uFF1A${when2}${person.online && person.local ? "\n\u8D26\u53F7\u5173\u6CE8 \xB7 \u672C\u5730\u5173\u6CE8" : person.local ? "\n\u672C\u5730\u5173\u6CE8" : ""}` : kind === "live" ? `${person.name}
 ${person.title || "\u6B63\u5728\u76F4\u64AD"}${person.local ? "\n\u672C\u5730\u5173\u6CE8" : ""}` : person.name;
-      const face2 = anchor.appendChild(document.createElement("span"));
-      face2.className = "afp-face";
-      face2.append(picture2);
-      if (person.fresh) face2.append(Object.assign(document.createElement("i"), { className: "afp-dot", title: "\u6709\u65B0\u52A8\u6001" }));
-      if (kind === "live") face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-live", textContent: "\u76F4\u64AD" }));
-      if (kind === "person" ? person.local && !person.online : kind === "live" && person.local) face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-local", textContent: "\u672C" }));
+      const face3 = anchor.appendChild(document.createElement("span"));
+      face3.className = "afp-face";
+      face3.append(picture2);
+      if (person.fresh) face3.append(Object.assign(document.createElement("i"), { className: "afp-dot", title: "\u6709\u65B0\u52A8\u6001" }));
+      if (kind === "live") face3.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-live", textContent: "\u76F4\u64AD" }));
+      if (kind === "person" ? person.local && !person.online : kind === "live" && person.local) face3.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-local", textContent: "\u672C" }));
       const name = anchor.appendChild(document.createElement("span"));
       name.className = "afp-name";
       for (const line of tileLines(person.name || person.uid)) name.append(Object.assign(document.createElement("span"), { className: "afp-line", textContent: line }));
@@ -12557,7 +12565,7 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}${person.local ? "\n\u672C\u5730\u5
       });
       return anchor;
     }
-    const face = (url) => {
+    const face2 = (url) => {
       const img = document.createElement("img");
       img.alt = "";
       img.loading = "lazy";
@@ -12667,7 +12675,7 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}${person.local ? "\n\u672C\u5730\u5
           },
           live.error
         ));
-        if (liveOpen && !never && live.list.length) sections.push(grid(...live.list.map((person) => tile("live", person, face(person.face)))));
+        if (liveOpen && !never && live.list.length) sections.push(grid(...live.list.map((person) => tile("live", person, face2(person.face)))));
       }
       sections.push(group(`${folder?.name ?? "\u52A8\u6001"} (${people2.length})`, dynamicOpen, () => {
         dynamicOpen = !dynamicOpen;
@@ -12677,7 +12685,7 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}${person.local ? "\n\u672C\u5730\u5
       }));
       if (dynamicOpen) {
         sections.push(grid(...folder ? [tile("up", { uid: "", name: "\u5411\u4E0A", face: "" }, picture(atelierIcons.up)), tile("folder-all", { uid: folder.id, name: "\u5168\u90E8", face: "" }, shellIcon(folder.icon, 32))] : [tile("all", { uid: "", name: "\u5168\u90E8\u52A8\u6001", face: "" }, picture(atelierIcons.folder)), ...source.folders().map((each) => tile("folder", { uid: each.id, name: each.name, face: "" }, shellIcon(each.icon, 32)))]));
-        if (people2.length) sections.push(grid(...people2.map((person) => tile("person", person, face(person.face)))));
+        if (people2.length) sections.push(grid(...people2.map((person) => tile("person", person, face2(person.face)))));
         else if (folder) sections.push(Object.assign(document.createElement("p"), { className: "afp-empty", textContent: "\u8FD9\u4E2A\u5206\u7EC4\u8FD8\u6CA1\u6709 UP \u4E3B\uFF0C\u53F3\u952E\u6587\u4EF6\u5939\u53EF\u4EE5\u7BA1\u7406\u5206\u7EC4" }));
       }
       view.replaceChildren(...sections);
@@ -12767,8 +12775,8 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     if (readUiPreferences().theme !== "page") saveUiPreferences({ theme: "page" });
   }
   function pageThemeSwitch(theme2) {
-    const app = document.getElementById("app")?.__vue__;
-    if (typeof app?.themeSwitchHandler === "function") app.themeSwitchHandler(theme2);
+    const app2 = document.getElementById("app")?.__vue__;
+    if (typeof app2?.themeSwitchHandler === "function") app2.themeSwitchHandler(theme2);
   }
 
   // src/modules/local-following/feed-quick.ts
@@ -12777,13 +12785,13 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     const win = document.createElement("section");
     win.className = "alf-quick xp-window";
     win.setAttribute("aria-label", "\u5FEB\u6377\u64CD\u4F5C");
-    const caption2 = win.appendChild(document.createElement("header"));
-    caption2.className = "xp-caption";
-    const icon2 = caption2.appendChild(document.createElement("img"));
+    const caption3 = win.appendChild(document.createElement("header"));
+    caption3.className = "xp-caption";
+    const icon2 = caption3.appendChild(document.createElement("img"));
     icon2.src = atelierIcons.up16;
     icon2.alt = "";
-    caption2.appendChild(document.createElement("h2")).textContent = "\u5FEB\u6377\u64CD\u4F5C";
-    const toggle = caption2.appendChild(document.createElement("button"));
+    caption3.appendChild(document.createElement("h2")).textContent = "\u5FEB\u6377\u64CD\u4F5C";
+    const toggle = caption3.appendChild(document.createElement("button"));
     toggle.type = "button";
     toggle.className = "xp-caption-button";
     const body2 = win.appendChild(document.createElement("div"));
@@ -12974,16 +12982,16 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
   }
   var hoverDelay = 250;
   var MenuChain = class {
-    constructor(host) {
+    constructor(host, signal) {
       this.host = host;
       this.panels = [];
       this.timer = 0;
       document.addEventListener("pointerdown", (event) => {
         if (this.panels.length && !event.composedPath().some((target) => this.panels.includes(target)) && !event.target?.closest?.("[data-menu-anchor]")) this.close();
-      }, true);
-      document.addEventListener("keydown", (event) => this.key(event), true);
-      window.addEventListener("resize", () => this.close());
-      window.addEventListener("blur", () => this.close());
+      }, { capture: true, signal });
+      document.addEventListener("keydown", (event) => this.key(event), { capture: true, signal });
+      window.addEventListener("resize", () => this.close(), { signal });
+      window.addEventListener("blur", () => this.close(), { signal });
     }
     get isOpen() {
       return this.panels.length > 0;
@@ -13141,17 +13149,17 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
   var RedDot = 2;
   var NoReminder = 3;
   var number = (value2) => Math.max(0, Number(value2) || 0);
-  function unreadBadge(feed, single, setting) {
+  function unreadBadge(feed2, single, setting) {
     const notify3 = [UnreadNumber, RedDot, NoReminder].includes(Number(setting?.msg_notify)) ? Number(setting.msg_notify) : UnreadNumber;
     const folded = Number(setting?.show_unfollowed_msg) === 1;
     const people2 = number(single?.follow_unread) + (folded ? 0 : number(single?.unfollow_unread));
     const services = number(single?.biz_msg_follow_unread) + (folded ? 0 : number(single?.biz_msg_unfollow_unread));
     const entries = {
-      reply: { count: number(feed?.reply), dot: false },
-      at: { count: number(feed?.at), dot: false },
-      like: { count: number(feed?.like), dot: false },
+      reply: { count: number(feed2?.reply), dot: false },
+      at: { count: number(feed2?.at), dot: false },
+      like: { count: number(feed2?.like), dot: false },
       // 系统通知 the account chose to see as a dot.
-      system: { count: number(feed?.sys_msg), dot: Number(feed?.sys_msg_style) === 1 },
+      system: { count: number(feed2?.sys_msg), dot: Number(feed2?.sys_msg_style) === 1 },
       // Messages from people are counted; from service accounts only a dot.
       whisper: people2 > 0 ? { count: people2, dot: false } : { count: services, dot: true }
     };
@@ -13218,7 +13226,8 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     const header = el2("header", "lh");
     header.setAttribute("data-bili-blocker-ui", "true");
     header.setAttribute("aria-label", "Bili Atelier \u9876\u680F");
-    const chain = new MenuChain(header);
+    const lifetime = new AbortController();
+    const chain = new MenuChain(header, lifetime.signal);
     let me = { mid: document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1] ?? "", name: "", face: "", level: 0 };
     const bar = header.appendChild(el2("div", "lh-band lh-menubar"));
     bar.setAttribute("role", "menubar");
@@ -13276,7 +13285,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     };
     fold.addEventListener("click", toggleFold);
     paintFold();
-    window.addEventListener(interfaceChanged, paintFold);
+    window.addEventListener(interfaceChanged, paintFold, { signal: lifetime.signal });
     const channels = [
       { label: "\u9996\u9875", href: "https://www.bilibili.com/" },
       "-",
@@ -13460,7 +13469,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
         }
       };
       paintReset();
-      window.addEventListener(pageLayoutChanged, paintReset);
+      window.addEventListener(pageLayoutChanged, paintReset, { signal: lifetime.signal });
     }
     let unread = unreadBadge(null, null, null);
     const entry = (label2, kind, href) => {
@@ -13619,16 +13628,16 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
         brand.classList.add("lh-brand-guest");
         return;
       }
-      const face = brand.appendChild(el2("button", "lh-face-button"));
-      face.type = "button";
-      face.title = me.name || "\u6211\u7684\u8D26\u53F7";
-      face.setAttribute("aria-label", "\u8D26\u53F7\u83DC\u5355");
-      face.setAttribute("data-menu-anchor", "");
-      const picture = face.appendChild(el2("img", "lh-face"));
+      const face2 = brand.appendChild(el2("button", "lh-face-button"));
+      face2.type = "button";
+      face2.title = me.name || "\u6211\u7684\u8D26\u53F7";
+      face2.setAttribute("aria-label", "\u8D26\u53F7\u83DC\u5355");
+      face2.setAttribute("data-menu-anchor", "");
+      const picture = face2.appendChild(el2("img", "lh-face"));
       picture.alt = "";
       picture.referrerPolicy = "no-referrer";
       if (me.face) picture.src = me.face.replace(/^http:/, "https:") + (/hdslb\.com\//.test(me.face) && !me.face.includes("@") ? "@48w_48h_1c.webp" : "");
-      face.addEventListener("click", () => toggleFrom(face, () => [
+      face2.addEventListener("click", () => toggleFrom(face2, () => [
         { label: me.name || "\u6211\u7684\u8D26\u53F7", bold: true, note: me.level ? `Lv${me.level}` : "", href: `https://space.bilibili.com/${me.mid}` },
         "-",
         { label: "\u4E2A\u4EBA\u7A7A\u95F4", href: `https://space.bilibili.com/${me.mid}` },
@@ -13658,14 +13667,14 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       if (!loggedIn || !force && Date.now() - lastCounts < 6e4) return;
       lastCounts = Date.now();
       const seen = dynamicOffsets(document.cookie, me.mid);
-      const [setting, feed, single, entrance] = await Promise.allSettled([
+      const [setting, feed2, single, entrance] = await Promise.allSettled([
         read3(`${vc}/link_setting/v1/link_setting/get?build=0&mobi_app=web&msg_notify=1&show_unfollowed_msg=1`),
         read3(`${vc}/x/im/web/msgfeed/unread?build=0&mobi_app=web`),
         read3(`${vc}/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0`),
         read3(`${api2}/x/web-interface/dynamic/entrance?alltype_offset=${encodeURIComponent(seen.all)}&video_offset=${encodeURIComponent(seen.video)}&article_offset=${encodeURIComponent(seen.article)}`)
       ]);
-      if (feed.status === "fulfilled" && single.status === "fulfilled") {
-        unread = unreadBadge(feed.value, single.value, setting.status === "fulfilled" ? setting.value : null);
+      if (feed2.status === "fulfilled" && single.status === "fulfilled") {
+        unread = unreadBadge(feed2.value, single.value, setting.status === "fulfilled" ? setting.value : null);
         paintCount(messages2, "\u6D88\u606F", unread.count, unread.dot);
         paintMini(miniMessages, "\u6D88\u606F", unread.count, unread.dot, "\u6761\u672A\u8BFB", "\u6709\u672A\u8BFB");
       }
@@ -13690,11 +13699,14 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     void refreshCounts(true);
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") void refreshCounts();
-    });
-    window.setInterval(() => {
+    }, { signal: lifetime.signal });
+    const interval = window.setInterval(() => {
       if (document.visibilityState === "visible") void refreshCounts();
     }, 6e4);
     return { element: header, compact, close: () => {
+      lifetime.abort();
+      window.clearInterval(interval);
+      window.clearTimeout(suggestTimer);
       chain.close();
       hideList();
     } };
@@ -13803,14 +13815,14 @@ a.lh-item{color:var(--xp-ink)}
     if (current2) return;
     prepareLunaHeader();
     zoomWholePage();
-    const root2 = document.documentElement;
+    const root = document.documentElement;
     const fail = (error) => {
       current2?.element.remove();
       current2?.compact.remove();
       current2 = null;
       zoomWholePage(false);
-      root2.removeAttribute(lunaHeaderAttribute);
-      root2.style.removeProperty(headerHeightVar);
+      root.removeAttribute(lunaHeaderAttribute);
+      root.style.removeProperty(headerHeightVar);
       warnLog("Luna \u9876\u680F\u6CA1\u80FD\u753B\u51FA\u6765\uFF0C\u5DF2\u6062\u590D B \u7AD9\u539F\u6765\u7684\u9876\u680F", error);
     };
     const timer2 = window.setTimeout(() => {
@@ -13832,17 +13844,24 @@ a.lh-item{color:var(--xp-ink)}
         read2 ??= startHeaderBridge();
         current2 = createLunaHeader({ page, read: read2 });
         document.body.append(current2.element);
-        observeCrispText(current2.element);
-        observeCrispText(current2.compact);
+        const releaseHeader = observeCrispText(current2.element), releaseCompact = observeCrispText(current2.compact);
         window.clearTimeout(timer2);
         const measure = () => {
           const element2 = current2?.element;
           if (!element2) return;
           const folded = element2.hasAttribute("data-folded"), height = folded ? 0 : element2.offsetHeight;
-          if (height > 0 || folded) root2.style.setProperty(headerHeightVar, `${height}px`);
+          if (height > 0 || folded) root.style.setProperty(headerHeightVar, `${height}px`);
         };
         measure();
-        if (typeof ResizeObserver === "function") new ResizeObserver(measure).observe(current2.element);
+        const sizes = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null;
+        sizes?.observe(current2.element);
+        const close2 = current2.close;
+        current2.close = () => {
+          sizes?.disconnect();
+          releaseHeader();
+          releaseCompact();
+          close2();
+        };
         current2.element.addEventListener(headerFoldEvent, () => {
           measure();
           window.dispatchEvent(new Event("resize"));
@@ -13854,6 +13873,15 @@ a.lh-item{color:var(--xp-ink)}
       }
     };
     attach();
+  }
+  function unmountLunaHeader() {
+    current2?.close();
+    current2?.element.remove();
+    current2?.compact.remove();
+    current2 = null;
+    zoomWholePage(false);
+    document.documentElement.removeAttribute(lunaHeaderAttribute);
+    document.documentElement.style.removeProperty(headerHeightVar);
   }
   function followStickyPanels() {
     const fix = () => {
@@ -13872,7 +13900,7 @@ a.lh-item{color:var(--xp-ink)}
   var searchIcon = 23;
   var on2 = "html[data-atelier-feed=drawn]";
   function mountFeedColumns(quick) {
-    const caption2 = (icon2, title) => {
+    const caption3 = (icon2, title) => {
       const header = document.createElement("header");
       header.className = "xp-caption alf-column-caption";
       header.setAttribute("data-bili-blocker-ui", "true");
@@ -13883,13 +13911,13 @@ a.lh-item{color:var(--xp-ink)}
     const card4 = info?.parentElement;
     if (info && card4 && !card4.classList.contains("alf-me")) {
       card4.classList.add("alf-me", "xp-window");
-      card4.prepend(caption2(Object.assign(document.createElement("img"), { src: atelierIcons.following, alt: "" }), "\u6211\u7684\u4FE1\u606F"));
+      card4.prepend(caption3(Object.assign(document.createElement("img"), { src: atelierIcons.following, alt: "" }), "\u6211\u7684\u4FE1\u606F"));
       observeCrispText(card4);
     }
     const trends = document.querySelector("aside.right .bili-dyn-search-trendings");
     if (trends && !trends.classList.contains("alf-trends")) {
       trends.classList.add("alf-trends", "xp-window");
-      trends.prepend(caption2(shellIcon(searchIcon, 16), "bilibili\u70ED\u641C"));
+      trends.prepend(caption3(shellIcon(searchIcon, 16), "bilibili\u70ED\u641C"));
       observeCrispText(trends);
     }
     const sticky = trends?.parentElement;
@@ -13991,12 +14019,12 @@ html[${attribute}=drag] *{user-select:none!important}
 `;
   var covers = "dialog,[role=dialog],[role=menu],header.lh,.vl-menu-host,.xp-tooltip";
   function startSideBounds(host) {
-    const root2 = document.documentElement;
+    const root = document.documentElement;
     if (!document.getElementById("atelier-side-bounds")) {
       const style = document.createElement("style");
       style.id = "atelier-side-bounds";
       style.textContent = sideBoundsCss;
-      (document.head || root2).append(style);
+      (document.head || root).append(style);
     }
     const bars = [0, 1].map(() => {
       const bar = document.createElement("div");
@@ -14019,8 +14047,8 @@ html[${attribute}=drag] *{user-select:none!important}
     };
     const setState = (state2) => {
       if (state2) {
-        if (root2.getAttribute(attribute) !== state2) root2.setAttribute(attribute, state2);
-      } else root2.removeAttribute(attribute);
+        if (root.getAttribute(attribute) !== state2) root.setAttribute(attribute, state2);
+      } else root.removeAttribute(attribute);
     };
     const covered = (x, y) => !!document.elementFromPoint?.(x, y)?.closest(covers);
     function hit(x, y) {
@@ -14038,7 +14066,7 @@ html[${attribute}=drag] *{user-select:none!important}
       if (found) {
         show(found.m.content.left, found.m.content.right);
         setState("hover");
-      } else if (root2.getAttribute(attribute) === "hover") {
+      } else if (root.getAttribute(attribute) === "hover") {
         hide();
         setState("");
       }
@@ -14317,15 +14345,15 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
   }
   var sized = `${on4}:not([data-atelier-screen=wide],[data-atelier-screen=web],[data-atelier-screen=full])`;
   function startLayout(kind) {
-    const root2 = document.documentElement;
+    const root = document.documentElement;
     const zoom = () => zoomOf(document.body);
     const style = document.createElement("style");
     style.id = "atelier-video-layout";
-    (document.head || root2).append(style);
+    (document.head || root).append(style);
     const records2 = layouts();
     let saved = records2.load();
     const grips = [], lists = /* @__PURE__ */ new Map();
-    const mode2 = () => root2.getAttribute("data-atelier-screen") || "normal";
+    const mode2 = () => root.getAttribute("data-atelier-screen") || "normal";
     const folded = (box2) => box2.hasAttribute("data-folded") || box2.classList.contains("bui-collapse-wrap-folded");
     let columns3 = null;
     function native2() {
@@ -14505,8 +14533,8 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     const setCursor = (next) => {
       if (next === cursor) return;
       cursor = next;
-      if (next) root2.setAttribute("data-vl-resize", next);
-      else root2.removeAttribute("data-vl-resize");
+      if (next) root.setAttribute("data-vl-resize", next);
+      else root.removeAttribute("data-vl-resize");
     };
     const covered = (x, y, box2) => {
       const top = document.elementFromPoint?.(x, y);
@@ -14546,7 +14574,7 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       sheet.setAttribute("data-bili-blocker-ui", "true");
       dragging = true;
       setCursor(cursors[found.edge]);
-      root2.setAttribute("data-vl-resizing", "");
+      root.setAttribute("data-vl-resizing", "");
       const x = event.clientX, y = event.clientY;
       let moved2 = false, last = [0, 0], frame2 = 0;
       const move = (next) => {
@@ -14570,7 +14598,7 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
         sheet.remove();
         dragging = false;
         cancelDrag = null;
-        root2.removeAttribute("data-vl-resizing");
+        root.removeAttribute("data-vl-resizing");
         setCursor("");
       };
       const finish = () => stop(true);
@@ -14600,7 +14628,7 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
         const width = entry.contentRect.width;
         if (width !== lastWidth && saved.blank !== void 0) remeasure();
         lastWidth = width;
-      }).observe(root2);
+      }).observe(root);
     }
     window.addEventListener("resize", () => {
       markViewport();
@@ -14631,7 +14659,7 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     });
     function markViewport() {
       const width = innerWidth / zoom(), marks = [1680, 2221, 2560].filter((at) => width >= at).map((at) => `w${at}`).join(" ");
-      if (root2.getAttribute("data-vl-viewport") !== marks) root2.setAttribute("data-vl-viewport", marks);
+      if (root.getAttribute("data-vl-viewport") !== marks) root.setAttribute("data-vl-viewport", marks);
     }
     markViewport();
     if (kind !== "bangumi") injectPageScript(`(${setSizePageWorld.toString()})(${JSON.stringify(pageZoomAttribute)});`);
@@ -14754,18 +14782,18 @@ html[${resizeAttribute}=drag] *{user-select:none!important}
 `;
   var covers2 = "dialog,[role=dialog],[role=menu],header.lh,.vl-menu-host,.xp-tooltip";
   function startFeedLayout() {
-    const root2 = document.documentElement;
+    const root = document.documentElement;
     const records2 = screenRecords("BiliAtelier_FeedLayoutByScreen", "BiliAtelier_FeedLayout", parse);
     let saved = records2.load(), native2 = null;
     const style = document.createElement("style");
     style.id = "atelier-feed-layout";
     style.textContent = `${on5} .bili-dyn-home--member>aside.left[style*="--alf-left:"]{width:var(--alf-left)!important;flex:none!important;min-width:0!important}
 ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!important;flex:none!important;min-width:0!important;max-width:none!important}`;
-    (document.head || root2).append(style);
+    (document.head || root).append(style);
     const zoom = () => zoomOf(document.body);
     const home = () => document.querySelector(".bili-dyn-home--member");
     const part = (selector) => document.querySelector(`.bili-dyn-home--member>${selector}`);
-    const drawn = () => root2.getAttribute("data-atelier-feed") === "drawn";
+    const drawn = () => root.getAttribute("data-atelier-feed") === "drawn";
     function measure() {
       if (style.sheet) style.sheet.disabled = true;
       try {
@@ -14847,8 +14875,8 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
       return false;
     }
     const setState = (state2) => {
-      if (!state2) root2.removeAttribute(resizeAttribute);
-      else if (root2.getAttribute(resizeAttribute) !== state2) root2.setAttribute(resizeAttribute, state2);
+      if (!state2) root.removeAttribute(resizeAttribute);
+      else if (root.getAttribute(resizeAttribute) !== state2) root.setAttribute(resizeAttribute, state2);
     };
     let dragging = false, cancelDrag = null, hover = null, frame2 = 0;
     window.addEventListener("pointermove", (event) => {
@@ -14858,7 +14886,7 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
         frame2 = 0;
         const over = !!hover && hover.pointerType !== "touch" && !hover.buttons && hit(hover.clientX, hover.clientY);
         if (over) setState("hover");
-        else if (root2.getAttribute(resizeAttribute) === "hover") setState("");
+        else if (root.getAttribute(resizeAttribute) === "hover") setState("");
       });
     }, { passive: true });
     window.addEventListener("pointerdown", (event) => {
@@ -14956,21 +14984,21 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
     const box2 = document.querySelector(".bili-dyn-home--member main>section>.bili-dyn-publishing");
     const section = box2?.parentElement;
     if (!section) return;
-    let caption2 = section.querySelector(":scope>.alf-publish-caption");
-    if (!section.classList.contains("alf-publish") || !caption2) {
+    let caption3 = section.querySelector(":scope>.alf-publish-caption");
+    if (!section.classList.contains("alf-publish") || !caption3) {
       section.classList.add("alf-publish", "xp-window");
-      caption2 = document.createElement("header");
-      caption2.className = "xp-caption alf-column-caption alf-publish-caption";
-      caption2.setAttribute("data-bili-blocker-ui", "true");
-      caption2.append(shellIcon(notepad, 16), Object.assign(document.createElement("h2"), { textContent: "\u53D1\u5E03\u52A8\u6001" }));
-      section.prepend(caption2);
+      caption3 = document.createElement("header");
+      caption3.className = "xp-caption alf-column-caption alf-publish-caption";
+      caption3.setAttribute("data-bili-blocker-ui", "true");
+      caption3.append(shellIcon(notepad, 16), Object.assign(document.createElement("h2"), { textContent: "\u53D1\u5E03\u52A8\u6001" }));
+      section.prepend(caption3);
       observeCrispText(section);
     }
     const fold = foldButton();
     const listCaption = document.querySelector("#atelier-feed-root>.alf-caption");
     const folded = readFolded2();
     section.toggleAttribute("data-folded", folded);
-    const home = folded ? listCaption : caption2;
+    const home = folded ? listCaption : caption3;
     if (home && fold.parentElement !== home) home.insertBefore(fold, folded ? home.querySelector(":scope>.xp-caption-button") : null);
     fold.toggleAttribute("data-folded", folded);
     fold.title = folded ? "\u5C55\u5F00\u53D1\u5E03\u6846" : "\u6298\u53E0\u53D1\u5E03\u6846";
@@ -15069,10 +15097,10 @@ ${on6} .bili-emoji__list__item:hover{background:color-mix(in srgb,var(--xp-highl
     panel.setAttribute("data-bili-blocker-ui", "");
     panel.setAttribute("role", "dialog");
     panel.setAttribute("aria-label", "\u7BA1\u7406\u672C\u5730\u5206\u7EC4");
-    const caption2 = panel.appendChild(document.createElement("header"));
-    caption2.className = "xp-caption";
-    caption2.append(shellIcon(shellFolderIcon, 16), Object.assign(document.createElement("h2"), { textContent: "\u7BA1\u7406\u672C\u5730\u5206\u7EC4" }));
-    const close2 = caption2.appendChild(document.createElement("button"));
+    const caption3 = panel.appendChild(document.createElement("header"));
+    caption3.className = "xp-caption";
+    caption3.append(shellIcon(shellFolderIcon, 16), Object.assign(document.createElement("h2"), { textContent: "\u7BA1\u7406\u672C\u5730\u5206\u7EC4" }));
+    const close2 = caption3.appendChild(document.createElement("button"));
     close2.type = "button";
     close2.className = "xp-caption-button";
     close2.dataset.kind = "close";
@@ -15155,12 +15183,12 @@ ${on6} .bili-emoji__list__item:hover{background:color-mix(in srgb,var(--xp-highl
         th.className = "agw-name";
         th.title = `${name(account)}
 UID\uFF1A${account.uid}`;
-        const face = th.appendChild(document.createElement("img"));
-        face.alt = "";
-        face.loading = "lazy";
-        face.decoding = "async";
-        face.referrerPolicy = "no-referrer";
-        face.src = bilibiliThumb(readLocalFollowCache(account.uid).face || account.face, "32w_32h_1c") || atelierIcons.app;
+        const face2 = th.appendChild(document.createElement("img"));
+        face2.alt = "";
+        face2.loading = "lazy";
+        face2.decoding = "async";
+        face2.referrerPolicy = "no-referrer";
+        face2.src = bilibiliThumb(readLocalFollowCache(account.uid).face || account.face, "32w_32h_1c") || atelierIcons.app;
         th.append(Object.assign(document.createElement("span"), { textContent: name(account) }));
         groups.forEach((group, index) => {
           const td = row.insertCell(), member = account.groupIds.includes(group.id);
@@ -15319,7 +15347,7 @@ UID\uFF1A${account.uid}`;
       current3 = null;
     }
     document.body.append(panel);
-    enableWindowDrag(panel, caption2, events.signal);
+    enableWindowDrag(panel, caption3, events.signal);
     const cleanup = observeCrispText(panel);
     render2();
     if (focusGroup) reveal(focusGroup);
@@ -15342,11 +15370,11 @@ UID\uFF1A${account.uid}`;
       const dialog = document.createElement("dialog");
       dialog.className = "atelier-dialog agw-picker xp-window";
       dialog.setAttribute("data-bili-blocker-ui", "");
-      const caption2 = dialog.appendChild(document.createElement("header"));
-      caption2.className = "xp-caption";
-      const heading = caption2.appendChild(Object.assign(document.createElement("h2"), { id: "agw-picker-title", textContent: "\u66F4\u6539\u56FE\u6807" }));
+      const caption3 = dialog.appendChild(document.createElement("header"));
+      caption3.className = "xp-caption";
+      const heading = caption3.appendChild(Object.assign(document.createElement("h2"), { id: "agw-picker-title", textContent: "\u66F4\u6539\u56FE\u6807" }));
       dialog.setAttribute("aria-labelledby", heading.id);
-      const dismiss = caption2.appendChild(document.createElement("button"));
+      const dismiss = caption3.appendChild(document.createElement("button"));
       dismiss.type = "button";
       dismiss.className = "xp-caption-button";
       dismiss.dataset.kind = "close";
@@ -15376,10 +15404,10 @@ UID\uFF1A${account.uid}`;
       function choose(id) {
         chosen = id;
         for (const option of options) {
-          const on8 = option.dataset.icon === String(id);
-          option.setAttribute("aria-selected", String(on8));
-          option.tabIndex = on8 ? 0 : -1;
-          if (on8) {
+          const on9 = option.dataset.icon === String(id);
+          option.setAttribute("aria-selected", String(on9));
+          option.tabIndex = on9 ? 0 : -1;
+          if (on9) {
             option.focus();
             option.scrollIntoView?.({ block: "nearest", inline: "nearest" });
           }
@@ -15623,7 +15651,7 @@ ${w2} .xp-status{flex:none}
       }
     };
   }
-  var pbpDotsCss = (on8, full2) => `${on8} .bpx-player-pbp{display:none!important}
+  var pbpDotsCss = (on9, full2) => `${on9} .bpx-player-pbp{display:none!important}
 .vl-pbp{position:absolute;left:0;width:100%;bottom:0;height:28px;z-index:71;pointer-events:none;opacity:var(--atelier-pbp-opacity,1)}
 .vl-pbp[hidden],html[data-atelier-screen=mini] .vl-pbp{display:none}
 .vl-pbp[data-vertical]{height:18px;transform-origin:top left;transform:rotate(90deg) translateY(-100%)}
@@ -16420,17 +16448,17 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     const savePrefs = () => GM_setValue(prefsKey, prefs);
     let type = "all", author2 = "", generation = 0, loading = false, more = false, status2 = "", abort = new AbortController();
     let queue = Promise.resolve();
-    const root2 = document.createElement("div");
-    root2.id = "atelier-feed-root";
-    root2.setAttribute("data-atelier-local-ui", "");
-    root2.setAttribute("data-bili-blocker-ui", "true");
-    const caption2 = root2.appendChild(document.createElement("header"));
-    caption2.className = "xp-caption alf-caption";
-    const captionIcon = caption2.appendChild(document.createElement("img"));
+    const root = document.createElement("div");
+    root.id = "atelier-feed-root";
+    root.setAttribute("data-atelier-local-ui", "");
+    root.setAttribute("data-bili-blocker-ui", "true");
+    const caption3 = root.appendChild(document.createElement("header"));
+    caption3.className = "xp-caption alf-caption";
+    const captionIcon = caption3.appendChild(document.createElement("img"));
     captionIcon.src = atelierIcons.data;
     captionIcon.alt = "";
-    const captionTitle = caption2.appendChild(document.createElement("h2"));
-    const closeAuthor = caption2.appendChild(document.createElement("button"));
+    const captionTitle = caption3.appendChild(document.createElement("h2"));
+    const closeAuthor = caption3.appendChild(document.createElement("button"));
     closeAuthor.type = "button";
     closeAuthor.className = "xp-caption-button";
     closeAuthor.dataset.kind = "close";
@@ -16441,13 +16469,13 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
       author2 = "";
       void reload();
     });
-    const bar = root2.appendChild(document.createElement("div"));
+    const bar = root.appendChild(document.createElement("div"));
     bar.className = barClass;
-    const pane = root2.appendChild(document.createElement("div"));
+    const pane = root.appendChild(document.createElement("div"));
     pane.className = "alf-pane xp-tabpanel";
     const list = pane.appendChild(document.createElement("div"));
     list.id = "atelier-feed";
-    const statusBar = root2.appendChild(document.createElement("div"));
+    const statusBar = root.appendChild(document.createElement("div"));
     statusBar.className = "xp-status";
     const statusText = statusBar.appendChild(document.createElement("span"));
     statusText.className = "alf-status xp-status-pane";
@@ -16467,7 +16495,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     loadMore.type = "button";
     loadMore.textContent = "\u52A0\u8F7D\u66F4\u591A";
     loadMore.addEventListener("click", () => void load(false));
-    const quick = createQuickWindow({ identity, list, feedWindow: root2, loggedIn });
+    const quick = createQuickWindow({ identity, list, feedWindow: root, loggedIn });
     quick.element.addEventListener("click", (event) => {
       if (event.target.closest?.("button:not(:disabled)")) sound("click");
     });
@@ -16668,14 +16696,14 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     }
     window.addEventListener("atelier-sync-applied", () => refilter());
     async function like(card4, raw, control) {
-      const on8 = control.getAttribute("aria-pressed") !== "true", before = Number(control.dataset.count) || 0;
-      control.setAttribute("aria-pressed", String(on8));
-      label(control, before + (on8 ? 1 : -1));
+      const on9 = control.getAttribute("aria-pressed") !== "true", before = Number(control.dataset.count) || 0;
+      control.setAttribute("aria-pressed", String(on9));
+      label(control, before + (on9 ? 1 : -1));
       control.disabled = true;
       try {
-        await interactions.like(String(raw.id_str), on8);
+        await interactions.like(String(raw.id_str), on9);
       } catch (error) {
-        control.setAttribute("aria-pressed", String(!on8));
+        control.setAttribute("aria-pressed", String(!on9));
         label(control, before);
         note3(card4, failure4(error));
       } finally {
@@ -16793,7 +16821,7 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     }
     const separator = () => Object.assign(document.createElement("span"), { className: "xp-tool-separator" });
     function renderBar() {
-      root2.classList.toggle("xp-window", !prefs.native);
+      root.classList.toggle("xp-window", !prefs.native);
       if (prefs.native) {
         bar.replaceChildren(button6("\u4F7F\u7528 Atelier \u52A8\u6001\u5217\u8868", () => {
           prefs = { ...prefs, native: false };
@@ -16908,17 +16936,17 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     }
     let quickText = null, layout2 = null;
     function mount() {
-      if (!root2.isConnected) {
+      if (!root.isConnected) {
         const tabsBar = document.querySelector(".bili-dyn-list-tabs"), native2 = document.querySelector(".bili-dyn-list");
         const anchor = tabsBar ?? native2;
         if (!anchor) return;
-        anchor.parentElement.insertBefore(root2, anchor);
+        anchor.parentElement.insertBefore(root, anchor);
         ensurePageControls();
-        observeCrispText(root2);
-        root2.addEventListener("click", (event) => {
+        observeCrispText(root);
+        root.addEventListener("click", (event) => {
           if (event.target.closest?.("button:not(:disabled)")) sound("click");
         });
-        root2.addEventListener("change", (event) => {
+        root.addEventListener("change", (event) => {
           if (event.target.matches?.("input,select")) sound("select");
         });
         styleAtelierAction(loadMore);
@@ -17238,15 +17266,15 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
           recordLocalFollowVisit(account.uid);
           sound("folder");
         });
-        const face = localFollowElement("img", "lf-face");
-        face.alt = "";
-        face.loading = "lazy";
-        face.referrerPolicy = "no-referrer";
-        face.src = cache.face || account.face || atelierIcons.app;
-        face.addEventListener("error", () => {
-          face.src = atelierIcons.app;
+        const face2 = localFollowElement("img", "lf-face");
+        face2.alt = "";
+        face2.loading = "lazy";
+        face2.referrerPolicy = "no-referrer";
+        face2.src = cache.face || account.face || atelierIcons.app;
+        face2.addEventListener("error", () => {
+          face2.src = atelierIcons.app;
         }, { once: true });
-        link3.append(face, localFollowElement("span", "lf-name", name));
+        link3.append(face2, localFollowElement("span", "lf-name", name));
         const select = checkbox(`\u9009\u62E9 ${name}`, selected.has(account.uid), (checked) => {
           if (checked) selected.add(account.uid);
           else selected.delete(account.uid);
@@ -17311,15 +17339,15 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   var actionClass2 = "atelier-local-follow-action";
   var cleanName = (value2) => typeof value2 === "string" ? value2.replace(/\s+/g, " ").trim() : "";
   function localProfileFromCard(container) {
-    const root2 = container.shadowRoot || container;
-    const data = container.__data?.card ?? root2.querySelector(".user-card-m-exp.card-loaded")?.__vue__?.userData;
-    const links = [...root2.querySelectorAll('a[href*="space.bilibili.com/"]')];
+    const root = container.shadowRoot || container;
+    const data = container.__data?.card ?? root.querySelector(".user-card-m-exp.card-loaded")?.__vue__?.userData;
+    const links = [...root.querySelectorAll('a[href*="space.bilibili.com/"]')];
     const link3 = links.find((link4) => parseLocalFollowInput(link4.href));
     const uid = normalizeLocalUid(data?.mid) || parseLocalFollowInput(link3?.href ?? "") || normalizeLocalUid(container.getAttribute("data-user-id") || container.getAttribute("data-usercard-mid"));
     if (!uid) return null;
-    const name = cleanName(data?.name) || cleanName(root2.querySelector(".name,.nickname,.username,.user-name")?.textContent) || cleanName(link3?.textContent);
-    const face = safeLocalFace(data?.face || root2.querySelector(".avatar img,.face img,img")?.src);
-    return { uid, name, face };
+    const name = cleanName(data?.name) || cleanName(root.querySelector(".name,.nickname,.username,.user-name")?.textContent) || cleanName(link3?.textContent);
+    const face2 = safeLocalFace(data?.face || root.querySelector(".avatar img,.face img,img")?.src);
+    return { uid, name, face: face2 };
   }
   function localProfileFromSpace() {
     if (location.hostname !== "space.bilibili.com") return null;
@@ -17328,8 +17356,8 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     const target = document.querySelector("#h-name,.h-name,.n-name,.space-header .name,.h-basic .name,.upinfo-detail__top .nickname,.upinfo-detail__top .name");
     if (!target || target.closest("[data-bili-blocker-ui]")) return null;
     const name = cleanName(target.textContent);
-    const face = safeLocalFace(document.querySelector("#h-avatar,.h-avatar img,.h-avatar,.space-header .avatar img,.upinfo-avatar img,.upinfo-avatar")?.src);
-    return { profile: { uid, name, face }, target };
+    const face2 = safeLocalFace(document.querySelector("#h-avatar,.h-avatar img,.h-avatar,.space-header .avatar img,.upinfo-avatar img,.upinfo-avatar")?.src);
+    return { profile: { uid, name, face: face2 }, target };
   }
   function observePageDynamics(channel2) {
     const observed = (value2) => {
@@ -17405,10 +17433,10 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
         }, 100);
       }
     }
-    function attach(target, getProfile, root2) {
+    function attach(target, getProfile, root) {
       const profile = getProfile();
       if (!profile) return;
-      let node4 = root2.querySelector(`.${actionClass2}:not(.atelier-local-follow-launcher)`);
+      let node4 = root.querySelector(`.${actionClass2}:not(.atelier-local-follow-launcher)`);
       if (!node4) {
         node4 = document.createElement("button");
         node4.type = "button";
@@ -17443,11 +17471,11 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
             schedule2();
           }
         });
-        if (target.matches("#action,.user") || target === root2) target.appendChild(node4);
+        if (target.matches("#action,.user") || target === root) target.appendChild(node4);
         else target.insertAdjacentElement("afterend", node4);
         styleAtelierAction(node4);
       }
-      placeVideoUpAction(root2, node4, "follow");
+      placeVideoUpAction(root, node4, "follow");
       const followed2 = localFollowSnapshot().accounts.some((account) => account.uid === profile.uid);
       const label = followed2 ? "\u79FB\u9664\u672C\u5730\u5173\u6CE8" : "\u6DFB\u52A0\u672C\u5730\u5173\u6CE8";
       if (node4.textContent !== label) node4.textContent = label;
@@ -17463,7 +17491,16 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       const space = localProfileFromSpace();
       if (space) {
         const parent = space.target.parentElement;
-        if (parent) attach(space.target, () => localProfileFromSpace()?.profile ?? null, parent);
+        if (parent) {
+          const head = space.target.closest(".space-header");
+          const actions = document.documentElement.hasAttribute("data-atelier-space") ? head?.querySelector(".interactions") : null;
+          const existing = head?.querySelector(`.${actionClass2}`);
+          if (existing && existing.parentElement !== (actions ?? parent)) {
+            if (actions) actions.prepend(existing);
+            else space.target.after(existing);
+          }
+          attach(actions ?? space.target, () => localProfileFromSpace()?.profile ?? null, actions ?? parent);
+        }
         const followed2 = localFollowSnapshot().accounts.some((account) => account.uid === space.profile.uid);
         if (followed2 && lastVisited !== space.profile.uid) {
           lastVisited = space.profile.uid;
@@ -17473,13 +17510,13 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       } else lastVisited = "";
       for (const container of document.querySelectorAll(".up-panel-container")) {
         if (container.closest("[data-bili-blocker-ui]")) continue;
-        const root2 = container.shadowRoot || container;
+        const root = container.shadowRoot || container;
         if (container.shadowRoot && !roots2.has(container.shadowRoot)) {
           roots2.add(container.shadowRoot);
           observer.observe(container.shadowRoot, { childList: true, subtree: true });
         }
-        const target = root2.querySelector("#action,.user,.name,.nickname,.username,.user-name") || container;
-        attach(target, () => localProfileFromCard(container), root2);
+        const target = root.querySelector("#action,.user,.name,.nickname,.username,.user-name") || container;
+        attach(target, () => localProfileFromCard(container), root);
       }
     }
     observer.observe(document.documentElement || document, { childList: true, subtree: true });
@@ -17492,6 +17529,587 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       schedule2();
     });
     schedule2();
+  }
+
+  // src/modules/space-luna/dynamics.ts
+  function installReader(eventName) {
+    const previous = /* @__PURE__ */ new WeakMap();
+    document.addEventListener(eventName, (event) => {
+      const item = event.target;
+      if (!item.matches?.(".bili-dyn-item") || !item.closest(".space-main")) return;
+      const raw = item.__vue__?.$props?.data;
+      let drawable = !!raw?.modules?.module_author && /^\d+$/.test(raw.id_str);
+      for (let part = raw; drawable && part; part = part.orig) {
+        if (part.visible === false || part.modules?.module_dynamic?.major?.type === "MAJOR_TYPE_BLOCKED" || part.basic?.is_only_fans) drawable = false;
+      }
+      if (!drawable) {
+        if (item.dataset.asId) item.dataset.asResponse = "null";
+        return;
+      }
+      if (previous.get(item) === raw && item.dataset.asId === raw.id_str) return;
+      item.dataset.asResponse = JSON.stringify(raw);
+      previous.set(item, raw);
+    }, true);
+  }
+  function createSpaceDynamics() {
+    const eventName = `atelier-space-card-${crypto.randomUUID()}`;
+    injectPageScript(`(${installReader.toString()})(${JSON.stringify(eventName)})`);
+    const cards2 = /* @__PURE__ */ new WeakMap();
+    let interactions;
+    let opened;
+    const close2 = () => {
+      opened?.dispose();
+      opened = void 0;
+    };
+    function restore(item) {
+      if (opened?.item === item) close2();
+      item.querySelector(":scope > .bili-dyn-item__main > .as-dyn-card")?.remove();
+      delete item.dataset.asId;
+      cards2.delete(item);
+    }
+    return {
+      sync(list) {
+        if (opened && !opened.item.isConnected) close2();
+        list.classList.add("as-dynamic-list");
+        for (const item of list.querySelectorAll(".bili-dyn-item")) {
+          const body2 = item.querySelector(":scope > .bili-dyn-item__main > .bili-dyn-item__body");
+          if (!body2) {
+            if (item.dataset.asId) restore(item);
+            continue;
+          }
+          if (item.dataset.asId && !body2.previousElementSibling?.classList.contains("as-dyn-card")) restore(item);
+          item.dispatchEvent(new Event(eventName));
+          const json = item.dataset.asResponse;
+          if (!json) continue;
+          delete item.dataset.asResponse;
+          restore(item);
+          const raw = JSON.parse(json);
+          if (!raw) continue;
+          const card4 = renderDynamicCard(raw);
+          card4.classList.add("as-dyn-card");
+          card4.querySelector(".adc-actions")?.remove();
+          const stamp = card4.querySelector(".adc-footer .xp-status-pane");
+          if (stamp) {
+            const link3 = document.createElement("a");
+            link3.href = dynamicUrl(raw);
+            link3.target = "_blank";
+            link3.rel = "noopener noreferrer";
+            link3.textContent = stamp.textContent;
+            stamp.replaceChildren(link3);
+          }
+          if (config.blocker.enabled) cardRuleMenu(card4, "dynamic", String(raw.modules.module_dynamic?.desc?.text ?? ""), dynamicUrl(raw));
+          body2.before(card4);
+          item.dataset.asId = raw.id_str;
+          cards2.set(item, raw);
+        }
+      },
+      comment(event) {
+        const button6 = event.target.closest(".bili-dyn-item__footer .bili-dyn-action.comment");
+        const item = button6?.closest(".bili-dyn-item[data-as-id]");
+        const raw = item && cards2.get(item), oid = String(raw?.basic?.comment_id_str ?? ""), type = Number(raw?.basic?.comment_type);
+        if (!item || !button6 || !/^\d+$/.test(oid) || !Number.isInteger(type) || type <= 0 || raw.modules.module_stat?.comment?.forbidden || raw.modules.module_stat?.comment?.disabled) return;
+        const same = opened?.item === item;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        close2();
+        if (same) return;
+        const me = document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1] ?? "";
+        if (!interactions) {
+          const relay = startPageRelay("space-comments", endpoints.spaceComments), api5 = new LocalFollowApi(relay.read);
+          interactions = new FeedInteractions(relay.read, relay.write, (signal) => api5.signingKey(signal), me);
+        }
+        const area = createCommentArea({
+          api: interactions,
+          me,
+          owner: String(raw.modules.module_author.mid),
+          oid,
+          type,
+          page: dynamicUrl(raw),
+          blocking: config.blocker.enabled,
+          onBlocked: () => {
+          },
+          onCount: (count2) => {
+            const label = [...button6.childNodes].find((node4) => node4.nodeType === Node.TEXT_NODE && node4.textContent?.trim());
+            if (label) label.textContent = formatCount(count2) || "\u8BC4\u8BBA";
+          }
+        });
+        button6.closest(".bili-dyn-item__footer").after(area.element);
+        button6.setAttribute("aria-expanded", "true");
+        opened = { item, dispose: () => {
+          area.dispose();
+          button6.setAttribute("aria-expanded", "false");
+        } };
+      },
+      reset() {
+        close2();
+        for (const item of document.querySelectorAll(".bili-dyn-item[data-as-id]")) restore(item);
+        document.querySelectorAll(".as-dynamic-list").forEach((list) => list.classList.remove("as-dynamic-list"));
+      }
+    };
+  }
+
+  // src/modules/space-luna/prefs.ts
+  var spaceLunaKey = "BiliAtelier_SpaceLuna";
+  var spaceLunaEnabled = () => typeof GM_getValue === "function" && GM_getValue(spaceLunaKey, true) !== false;
+  var setSpaceLunaEnabled = (enabled) => GM_setValue(spaceLunaKey, enabled);
+  function spaceRoute(where = location) {
+    if (where.hostname !== "space.bilibili.com") return null;
+    const match = /^\/(\d+)(?:\/(dynamic|upload(?:\/video)?|search))?\/?$/.exec(where.pathname);
+    if (!match) return null;
+    const tab = !match[2] ? "home" : match[2].startsWith("upload") ? "uploads" : match[2];
+    return { uid: match[1], tab };
+  }
+
+  // src/modules/space-luna/styles.ts
+  var on8 = "html[data-atelier-space]";
+  var app = `${on8} #app`;
+  var feed = `${app} .as-dynamic-list`;
+  var windows = ":is(.section-wrap:not(.lists-section),.lists-section .video-list,.aside-card,.ann-section,.info-section,.upload-content>.video,.search-content>.video,.space-dynamic__content)";
+  var captions = ":is(.section-wrap__header,.video-list__header,.aside-card-header,.ann-section__header,.info-section__header,.video-header__top,.elec-section__header,.as-caption)";
+  var face = `border:solid var(--xp-caption);border-width:var(--xp-frame-edge,0 4px 4px);border-radius:0;background:var(--xp-window);${image("frame", 0, false)};border-image-width:var(--xp-caption-h,29px) var(--xp-frame-r,4px) var(--xp-frame-b,4px) var(--xp-frame-l,4px)`;
+  var caption2 = `display:flex;align-items:center;gap:5px;min-height:var(--xp-caption-h,29px);box-sizing:border-box;padding:3px 7px;margin:0 calc(-1 * var(--xp-frame-r,4px)) 0 calc(-1 * var(--xp-frame-l,4px));color:var(--xp-caption-ink);background:var(--xp-caption);${image("caption", 0)};font:bold var(--xp-caption-size)/var(--xp-line) var(--xp-caption-font)`;
+  var dock = ":is(.space-home>.aside,.space-dynamic__right)";
+  var spaceCss = `
+${on8} body{min-width:0;background:var(--xp-window);color:var(--xp-ink)}
+${on8} #biliMainHeader{overflow-x:clip;min-width:0!important}
+${app}{min-width:0;margin-top:0!important;background:var(--xp-window);color:var(--xp-ink);--text1:var(--xp-ink);--text2:var(--xp-muted);--bg1:var(--xp-window);--bg2:var(--xp-face);--as-gap:clamp(10px,2.2%,34px);--as-tabs-height:var(--as-tabs-measured,36px)}
+${app} .space-theme-bg{display:none}
+${app} .space-header{isolation:isolate;height:142px;min-height:0;max-height:none;background:var(--xp-face);align-items:flex-end}
+${app} .header-toutu{z-index:0}
+${app} .header-toutu,${app} .formal-toutu{width:100%;height:100%;min-width:0;background-size:cover}
+${app} .header-upinfo-bg-shadow{z-index:1;pointer-events:none;background:linear-gradient(transparent 30%,#101826b3)}
+${app} .space-header[data-as-plain]{height:auto;min-height:82px;align-items:center}
+${app} .space-header[data-as-plain] .header-upinfo-bg-shadow{display:none}
+${app} .space-header[data-as-plain] :is(.nickname,.pure-text,.as-stats button){color:var(--xp-ink);text-shadow:none}
+${app} .header-upinfo{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-end;width:100%;min-width:0;max-width:1510px;margin:0 auto;padding:0 var(--as-gap) 11px;box-sizing:border-box}
+${app} .upinfo__main{min-width:0;flex:1}
+${app} .upinfo-detail{min-width:0}
+${app} .upinfo-detail__top .nickname{font:bold 20px/1.3 var(--xp-caption-font);color:white;text-shadow:0 1px 3px #101826}
+${app} .upinfo-detail__bottom .pure-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:white;text-shadow:0 1px 3px #101826}
+${app} .header-upinfo .operations{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none}
+${app} .header-upinfo .interactions{display:flex;align-items:center;gap:4px}
+${xpButtonCss(`${app} .space-header :is(.space-follow-btn,.message-btn,.more-actions__trigger)`)}
+${app} .space-header :is(.message-btn,.space-follow-btn){width:auto;height:auto;min-width:65px}
+${app} .header-upinfo .atelier-local-follow-action{margin:0!important;order:-1}
+${app} .space-header:has(.more-actions__trigger) .bili-blocker-space-profile-action{display:none!important}
+${app}[data-as-self] .space-header :is(.atelier-local-follow-action,.bili-blocker-space-profile-action){display:none!important}
+${app} .as-stats{display:flex;gap:14px;align-items:center}
+${app} .as-stats button{display:grid;justify-items:center;border:0;padding:0;background:transparent;color:white;text-shadow:0 1px 3px #101826;cursor:pointer;font:12px/15px var(--xp-font)}
+${app} .as-stats strong{font:bold 17px/20px var(--xp-caption-font);font-variant-numeric:tabular-nums}
+${app}:has(.as-stats) .nav-bar__main-right{display:none}
+${app} .space-navbar{position:sticky;top:${headerBottomCss};height:auto;min-height:0;z-index:21;background:var(--xp-face);border-bottom:1px solid var(--xp-shadow3d);box-shadow:none}
+${app} .nav-bar__main{display:flex;align-items:center;width:100%;max-width:1510px;min-width:0;height:auto;min-height:33px;margin:auto;padding:2px var(--as-gap) 0;box-sizing:border-box}
+${app} .nav-bar__main-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+${app} .nav-tab{display:flex;align-items:flex-end;flex-wrap:wrap;gap:0;min-width:0;height:auto}
+${app} .nav-tab__item{margin:0;padding:3px 9px;height:auto;min-height:24px;border:0 solid transparent;background:var(--xp-face);${image("tab", 0)};${xpFont};color:var(--xp-ink)}
+${app} .nav-tab__item:is(.active,[aria-current=page]){border-image-source:var(--xp-tab-2);color:var(--xp-ink);font-weight:bold}
+${app} .nav-tab__item :is(i,.nav-tab__item-num){font-size:inherit}
+${app} .nav-tab-cursor{display:none}
+${app} .nav-bar-search{margin:0 0 2px auto;flex:none;max-width:160px}
+${app} .space-main{min-width:0;max-width:1510px;width:100%;margin:0 auto;padding:12px var(--as-gap) 20px;box-sizing:border-box;${xpFont};color:var(--xp-ink)}
+${app} .space-home,${app} .space-dynamic{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(220px,1fr);gap:14px;align-items:start;margin:0}
+${app} :is(.space-home>.content,.space-dynamic__content,${dock}){width:auto;min-width:0;max-width:none;margin:0}
+${app} :is(.space-dynamic__left,.upload-sidenav,.search-sidebar){position:static;min-height:0;height:auto;margin:0}
+${app} .space-dynamic__left{grid-column:1/-1;width:auto}
+${app} :is(.space-dynamic__left,.upload-sidenav) .side-nav{display:flex;flex-wrap:wrap;gap:4px}
+${app} .space-upload,${app} .space-search{display:block;margin:0}
+${app} :is(.upload-sidenav,.upload-content,.search-sidebar,.search-content){width:auto;max-width:none;margin:0 0 8px}
+${app} .search-sidebar .side-nav{display:flex}
+${app} .space-main .side-nav__item{min-height:23px;height:auto;width:auto;margin:0;padding:2px 8px;border:1px solid var(--xp-shadow3d);border-radius:0;background:var(--xp-face);color:var(--xp-ink);${xpFont}}
+${app} .space-main .side-nav__item.active{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
+${app} ${dock}{align-self:stretch}
+${app} ${dock}>.lh-compact{top:calc(${headerBottomCss} + var(--as-tabs-height) + 4px)}
+${app} [data-as-empty-aside]{grid-template-columns:minmax(0,1fr)}
+${app} [data-as-empty-aside]>${dock}{display:none}
+${app} ${windows}{${face};margin-bottom:9px;padding:0;box-sizing:border-box;min-width:0}
+${app} ${captions}{${caption2}}
+${app} ${captions}::before{content:"";flex:none;width:16px;height:16px;background:url("${ie_media_16_default}") center/contain no-repeat;image-rendering:pixelated}
+${app} :is(.video-list__header,.info-section__header)::before{background-image:url("${folder_default}")}
+${app} .aside-card-header .living-section__follow{position:static;margin-left:auto}
+${app} ${captions} :is(.section-wrap__title,.video-list__title,.aside-card__title,.title,a){font:inherit;color:inherit}
+${app} .as-fold{margin-left:auto}
+${app} [data-as-folded]+*{display:none!important}
+${app} .section-wrap__content,${app} :is(.aside-card__content,.ann-section__content,.info-section__content,.video-body,.video-header__bottom,.video-list__content){padding:8px}
+${app} .lists-section>.section-wrap__content{padding:0}
+${app} .home-section,${app} .home-aside-section,${app} .dynamic-aside-section{margin:0}
+${app} .space-main :is(.video-list.grid-mode,.video-list__content,.video-section .items){display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 9px}
+${app} .space-main :is(.video-list__item,.upload-video-card.grid-mode){width:auto;min-width:0;margin:0;padding:0}
+${app} .masterpiece-block{display:flex;gap:10px}
+${app} .masterpiece-block__item{flex:1;min-width:0;max-width:33.33%;margin:0}
+${app} :is(.bili-video-card__title,.bili-video-card__title a){color:var(--xp-ink);font:bold 14px/1.45 SimSun,sans-serif}
+${app} .bili-video-card__subtitle{color:var(--xp-muted)}
+${app} .as-search{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+${app} :is(.search-content,.video)>.as-search{padding:6px}
+${app} :is(.video-order-filter,.breadcrumb){display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+${app} .video-header__bottom{min-height:0;height:auto;margin:0;padding:4px 8px}
+${app} .video-header__bottom .breadcrumb{min-height:0;height:auto;margin:0}
+${xpButtonCss(`${app} .space-main :is(.radio-filter__item,.playall-btn,.video-type-filter-switcher,.section-wrap__header button,.video-list__header button)`)}
+${app} .space-main .radio-filter__item--active{border-image-source:var(--xp-button-2);font-weight:bold}
+${app} :is(.auth-section,.elec-section){background:var(--xp-face);border:1px solid var(--xp-shadow3d);border-radius:0}
+${xpFieldCss(`${app} .as-search input`)}
+${app} .as-search input{width:145px;max-width:100%;height:23px}
+${app} .as-dyn-card~.bili-dyn-item__body{display:none}
+${app} .bili-dyn-item__main:has(>.as-dyn-card)>.bili-dyn-item__avatar,${app} .bili-dyn-item__main:has(>.as-dyn-card)>.bili-dyn-item__header :is(.bili-dyn-title,.bili-dyn-item__desc){display:none}
+${app} .bili-dyn-item__main:has(>.as-dyn-card){margin:0;padding:0;position:relative}
+${app} .bili-dyn-item__main:has(>.as-dyn-card)>.bili-dyn-item__header{margin:0;padding:0;height:0;min-height:0}
+${app} .as-dyn-card .adc-caption{padding-right:34px}
+${app} .as-dyn-card .adc-actions{display:none}
+${app} .as-dyn-card .adc-last{display:block}
+${app} .as-dyn-card~.bili-dyn-item__footer{background:var(--xp-face);margin:0;padding:2px 6px;min-height:24px}
+${app} .as-dyn-card .adc-footer a{color:var(--xp-task-link)}
+${app} .as-dynamic-list [hidden]{display:none!important}
+${dynamicCardStyles(feed)}
+${commentAreaStyles(feed)}
+${imageWindowCss}
+${lunaDialogCss}
+@media(max-width:750px){${app} :is(.space-home,.space-dynamic){grid-template-columns:minmax(0,1fr)}${app} .space-main :is(.video-list.grid-mode,.video-list__content,.video-section .items){grid-template-columns:repeat(2,minmax(0,1fr))}${app} .header-upinfo{flex-wrap:wrap;gap:3px}${app} .nav-bar__main-left{flex-wrap:wrap}${app} .as-stats{gap:6px}${app} .header-upinfo .operations{flex-direction:row;flex-wrap:wrap}}
+`;
+
+  // src/modules/space-luna/uploads.ts
+  var sortItems = ".space-main .video-order-filter .radio-filter__item";
+  var activeSort = () => document.querySelector(sortItems + ".radio-filter__item--active")?.textContent?.trim() ?? "";
+  function syncSpaceSearch(uid) {
+    const host = document.querySelector(".space-main :is(.upload-content>.video,.search-content)");
+    if (!host) return;
+    const header = host.querySelector(".video-header__bottom .breadcrumb") ?? host.querySelector(".video-header__top") ?? host;
+    const present = host.querySelector(".as-search");
+    const keyword = new URL(location.href).searchParams.get("keyword") ?? "";
+    if (present) {
+      if (present.parentElement !== header) header.prepend(present);
+      if (present.dataset.keyword !== keyword) {
+        present.querySelector("input").value = keyword;
+        present.dataset.keyword = keyword;
+      }
+      return;
+    }
+    const form = el("form", "as-search");
+    form.setAttribute("role", "search");
+    form.setAttribute("aria-label", "\u641C\u7D22 TA \u7684\u6295\u7A3F");
+    form.action = `/${uid}/search`;
+    const input = form.appendChild(el("input"));
+    input.type = "search";
+    input.name = "keyword";
+    input.maxLength = 100;
+    input.placeholder = "\u641C\u7D22 TA \u7684\u6295\u7A3F";
+    input.setAttribute("aria-label", input.placeholder);
+    input.value = keyword;
+    form.dataset.keyword = keyword;
+    form.appendChild(el("button", "xp-button", "\u641C\u7D22")).type = "submit";
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const keyword2 = input.value.trim(), url = new URL(`/${spaceRoute()?.uid ?? uid}/${keyword2 ? "search" : "upload/video"}`, location.origin);
+      if (keyword2) {
+        url.searchParams.set("keyword", keyword2);
+        url.searchParams.set("atelier_tab", "video");
+      }
+      const sort = activeSort();
+      if (sort) url.searchParams.set("atelier_order", sort);
+      location.assign(url.href);
+    });
+    header.prepend(form);
+  }
+  var currentPage = () => Number(document.querySelector(".video-pagination .vui_button--active")?.textContent) || 1;
+  function watchSpaceHistory() {
+    const save = (video2) => {
+      const tab = spaceRoute()?.tab;
+      if (!document.documentElement.hasAttribute("data-atelier-space") || tab !== "uploads" && tab !== "search") return;
+      const previous = history.state?.atelierSpace;
+      const position = { url: location.href, y: scrollY, sort: activeSort(), page: currentPage(), video: video2 ?? (previous?.url === location.href ? previous.video : void 0) };
+      history.replaceState({ ...history.state, atelierSpace: position }, "");
+    };
+    document.addEventListener("click", (event) => {
+      const link3 = event.target.closest?.(".space-main a[href*='/video/']");
+      if (link3) save(link3.pathname);
+    }, true);
+    window.addEventListener("pagehide", () => save());
+    let restore, soughtSort = false, soughtPage = false, choseSearchTab = false, observedUrl = "";
+    const read3 = () => {
+      const entry = history.state?.atelierSpace;
+      restore = entry?.url === location.href ? entry : void 0;
+      observedUrl = location.href;
+      choseSearchTab = soughtSort = soughtPage = false;
+    };
+    read3();
+    window.addEventListener("popstate", read3);
+    const cancel = () => {
+      restore = void 0;
+    };
+    window.addEventListener("wheel", cancel, { passive: true });
+    window.addEventListener("touchstart", cancel, { passive: true });
+    document.addEventListener("pointerdown", (event) => {
+      cancel();
+      if (event.target.closest?.(".search-sidebar")) choseSearchTab = true;
+    }, true);
+    return () => {
+      if (observedUrl !== location.href) read3();
+      const query = new URLSearchParams(location.search);
+      if (!choseSearchTab && query.get("atelier_tab") === "video" && document.querySelector(".search-content>:is(.dynamic,.dynamic-empty)")) {
+        const videoTab = document.querySelector(".search-sidebar .side-nav__item");
+        if (videoTab && !videoTab.classList.contains("active")) {
+          choseSearchTab = true;
+          videoTab.click();
+          return;
+        }
+      }
+      const sort = restore?.sort || query.get("atelier_order");
+      if (sort && !soughtSort) {
+        const button6 = [...document.querySelectorAll(sortItems)].find((el3) => el3.textContent?.trim() === sort);
+        if (button6) {
+          soughtSort = true;
+          if (activeSort() !== sort) {
+            button6.click();
+            return;
+          }
+        }
+      }
+      if (!restore) return;
+      if (restore.page > 1 && currentPage() !== restore.page && !soughtPage) {
+        const pager = document.querySelector(".video-pagination");
+        if (!pager) return;
+        const button6 = [...pager.querySelectorAll(".vui_pagenation--btn-num")].find((el3) => Number(el3.textContent) === restore.page);
+        const input = pager.querySelector("input");
+        soughtPage = true;
+        if (button6) button6.click();
+        else if (input) {
+          input.value = String(restore.page);
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          for (const type of ["keydown", "keyup"]) input.dispatchEvent(new KeyboardEvent(type, { key: "Enter", code: "Enter", bubbles: true }));
+        }
+        return;
+      }
+      if (restore.page > 1 && currentPage() !== restore.page) return;
+      if (restore.video && ![...document.querySelectorAll(".space-main a[href*='/video/']")].some((link3) => link3.pathname === restore.video)) return;
+      if (document.documentElement.scrollHeight - innerHeight >= restore.y) {
+        const y = restore.y;
+        restore = void 0;
+        window.scrollTo(0, y);
+      }
+    };
+  }
+
+  // src/modules/space-luna/statistic.ts
+  function statisticValue(value2) {
+    const strong = document.createElement("strong");
+    const digits = /^[\d.,]+/.exec(value2)?.[0];
+    if (!digits) {
+      strong.textContent = value2;
+      return strong;
+    }
+    const bars = [[1, 0, 4, 2], [5, 1, 2, 5], [5, 7, 2, 5], [1, 11, 4, 2], [0, 7, 2, 5], [0, 1, 2, 5], [1, 5, 4, 2]];
+    const masks = [63, 6, 91, 79, 102, 109, 125, 7, 127, 111];
+    const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), path = document.createElementNS(ns, "path");
+    let x = 0, shapes = "";
+    for (const digit of digits) {
+      if (digit === "." || digit === ",") {
+        shapes += `M${x} 11h2v2h-2z`;
+        x += 3;
+        continue;
+      }
+      bars.forEach(([left, top, width, height], index) => {
+        if (masks[Number(digit)] & 1 << index) shapes += `M${x + left} ${top}h${width}v${height}h-${width}z`;
+      });
+      x += 8;
+    }
+    svg.setAttribute("viewBox", `0 0 ${x} 13`);
+    svg.setAttribute("width", String(x));
+    svg.setAttribute("height", "13");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("shape-rendering", "crispEdges");
+    path.setAttribute("d", shapes);
+    path.setAttribute("fill", "currentColor");
+    svg.append(path);
+    strong.append(svg, value2.slice(digits.length));
+    return strong;
+  }
+
+  // src/modules/space-luna/runtime.ts
+  var attr2 = "data-atelier-space";
+  function syncStatistics(header) {
+    const actions = header.querySelector(".operations"), source = document.querySelector(".space-navbar .nav-statistics");
+    let bar = header.querySelector(".as-stats");
+    if (!actions || !source?.childElementCount) {
+      bar?.remove();
+      return;
+    }
+    const items = [...source.querySelectorAll(".nav-statistics__item")].filter((node4) => !node4.hidden && getComputedStyle(node4).display !== "none");
+    if (!items.length) {
+      bar?.remove();
+      return;
+    }
+    if (!bar) {
+      bar = el("div", "as-stats");
+      actions.prepend(bar);
+    }
+    const key6 = items.map((node4) => node4.textContent).join("|");
+    if (bar.dataset.counts === key6) return;
+    bar.dataset.counts = key6;
+    bar.replaceChildren(...items.map((node4) => {
+      const caption3 = node4.querySelector(".nav-statistics__item-text")?.textContent ?? "";
+      const value2 = node4.querySelector(".nav-statistics__item-num")?.textContent ?? node4.lastElementChild?.textContent ?? "";
+      const button6 = el("button");
+      button6.type = "button";
+      button6.setAttribute("aria-label", `${caption3} ${value2}`);
+      button6.append(statisticValue(value2), el("span", "", caption3));
+      button6.addEventListener("click", () => {
+        [...document.querySelectorAll(".space-navbar .nav-statistics__item")].find((item) => item.querySelector(".nav-statistics__item-text")?.textContent === caption3)?.click();
+      });
+      return button6;
+    }));
+  }
+  function syncBlockMenu(header) {
+    const block = header.querySelector(".bili-blocker-space-profile-action");
+    if (!block || !header.querySelector(".more-actions")) return;
+    for (const panel of document.querySelectorAll(".menu-popover__panel")) {
+      if (!header.querySelector(".more-actions:is(:hover,:focus-within)") && !panel.querySelector(".as-block")) continue;
+      if (![...panel.querySelectorAll(".menu-popover__panel-item")].some((item) => item.textContent?.includes("\u9ED1\u540D\u5355"))) continue;
+      let button6 = panel.querySelector(".as-block");
+      if (!button6) {
+        button6 = el("button", "as-block xp-button");
+        button6.type = "button";
+        panel.append(button6);
+        button6.addEventListener("click", (event) => {
+          event.stopPropagation();
+          header.querySelector(".bili-blocker-space-profile-action")?.click();
+        });
+      }
+      const label = block.dataset.confirmBlock === "true" ? "\u786E\u8BA4\uFF1F" : block.dataset.blocked === "true" ? "\u89E3\u9664\u672C\u5730\u5C4F\u853D" : "\u5C4F\u853D UP\uFF08\u672C\u5730\uFF09";
+      if (button6.textContent !== label) button6.textContent = label;
+    }
+  }
+  function enableSectionFolds(main) {
+    for (const head of main.querySelectorAll(".section-wrap__header,.video-list__header,.aside-card-header,.ann-section__header,.info-section__header")) {
+      if (!head.nextElementSibling || head.querySelector(".as-fold")) continue;
+      const button6 = captionButton(head, "minimize", "\u6298\u53E0", () => {
+        const folded = head.toggleAttribute("data-as-folded");
+        button6.dataset.kind = folded ? "restore" : "minimize";
+        button6.title = folded ? "\u5C55\u5F00" : "\u6298\u53E0";
+        button6.setAttribute("aria-label", button6.title);
+        button6.setAttribute("aria-expanded", String(!folded));
+      });
+      button6.classList.add("as-fold");
+      button6.setAttribute("aria-expanded", "true");
+    }
+  }
+  function startSpaceLuna() {
+    if (location.hostname !== "space.bilibili.com") return;
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", startSpaceLuna, { once: true });
+      return;
+    }
+    const root = document.documentElement;
+    const mode2 = { native: () => !root.hasAttribute(attr2), setNative: (native2) => {
+      setSpaceLunaEnabled(!native2);
+      location.reload();
+    } };
+    const restoreHistory = watchSpaceHistory();
+    let registered = false, active2 = false, frame2 = 0, dynamics;
+    let navbar = null;
+    const measure = () => {
+      if (navbar) root.style.setProperty("--as-tabs-measured", `${navbar.offsetHeight}px`);
+    };
+    const sizes = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null;
+    const reset = () => {
+      if (!active2) return;
+      active2 = false;
+      root.removeAttribute(attr2);
+      dynamics?.reset();
+      sizes?.disconnect();
+      navbar = null;
+      root.style.removeProperty("--as-tabs-measured");
+      unmountLunaHeader();
+      document.querySelector("#app")?.removeAttribute("data-as-self");
+      document.querySelectorAll(".as-stats,.as-search,.as-fold,.as-block,.as-caption").forEach((node4) => node4.remove());
+      document.querySelectorAll("[data-as-folded],[data-as-empty-aside],[data-as-plain]").forEach((node4) => {
+        node4.removeAttribute("data-as-folded");
+        node4.removeAttribute("data-as-empty-aside");
+        node4.removeAttribute("data-as-plain");
+      });
+    };
+    const sync = () => {
+      const route = spaceRoute();
+      if (registered !== !!route) {
+        registered = !!route;
+        registerPageMode(registered ? mode2 : null);
+      }
+      const app2 = document.querySelector("#app[data-v-app]");
+      const header = app2?.querySelector(".space-header"), nav2 = app2?.querySelector(".space-navbar");
+      const main = app2?.querySelector(".space-main");
+      if (!route || !spaceLunaEnabled() || !header || !nav2 || !main) {
+        reset();
+        return;
+      }
+      if (!active2) {
+        if (!document.getElementById("atelier-space-style")) {
+          const style = el("style");
+          style.id = "atelier-space-style";
+          setZoomedCss(style, spaceCss);
+          document.head.append(style);
+        }
+        mountLunaHeader("space");
+        if (!compactBar()) return;
+        active2 = true;
+      }
+      if (root.getAttribute(attr2) !== route.tab) root.setAttribute(attr2, route.tab);
+      app2.toggleAttribute("data-as-self", document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1] === route.uid);
+      if (navbar !== nav2) {
+        sizes?.disconnect();
+        navbar = nav2;
+        sizes?.observe(nav2);
+        measure();
+      }
+      const background = header.querySelector(".formal-toutu");
+      header.toggleAttribute("data-as-plain", !header.querySelector(".header-toutu :is(img,video,canvas)") && (!background || getComputedStyle(background).backgroundImage === "none"));
+      syncStatistics(header);
+      syncBlockMenu(header);
+      enableSectionFolds(main);
+      const aside = main.querySelector(".space-home>.aside,.space-dynamic__right");
+      const twoColumns = main.querySelector(".space-home,.space-dynamic");
+      const hasAside = !!aside && [...aside.children].some((node4) => node4.matches(".home-aside-section,.dynamic-aside-section") && node4.firstElementChild && getComputedStyle(node4).display !== "none" && getComputedStyle(node4.firstElementChild).display !== "none");
+      twoColumns?.toggleAttribute("data-as-empty-aside", !hasAside);
+      if (hasAside) dockCompactBar(aside);
+      else compactBar()?.remove();
+      const list = main.querySelector(".bili-dyn-list__items,.space-search .dynamic-list");
+      if (list) {
+        const column = main.querySelector(".space-dynamic__content");
+        if (column && !column.querySelector(":scope > .as-caption")) column.prepend(el("h2", "as-caption", "\u52A8\u6001"));
+        dynamics ??= createSpaceDynamics();
+        dynamics.sync(list);
+      } else dynamics?.reset();
+      if (route.tab === "uploads" || route.tab === "search") {
+        syncSpaceSearch(route.uid);
+        restoreHistory();
+      }
+    };
+    const schedule2 = () => {
+      if (!frame2) frame2 = requestAnimationFrame(() => {
+        frame2 = 0;
+        sync();
+      });
+    };
+    const observer = new MutationObserver((records2) => {
+      if (records2.some((record) => {
+        const node4 = record.target;
+        if (!(node4 instanceof Element)) return false;
+        if (record.type === "attributes") return record.attributeName === "data-v-app" || node4.matches(".formal-toutu,.home-aside-section,.dynamic-aside-section,.home-aside-section>*,.dynamic-aside-section>*");
+        return !node4.closest(".lh,.lh-compact,.as-dyn-card,.adc-comments,#atelier-launcher,#bili-atelier-blocker-panel");
+      })) schedule2();
+    });
+    const observe = () => {
+      observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ["style", "class", "hidden", "data-v-app"] });
+      schedule2();
+    };
+    window.addEventListener("popstate", schedule2);
+    window.addEventListener("pageshow", observe);
+    window.addEventListener("pagehide", (event) => {
+      observer.disconnect();
+      cancelAnimationFrame(frame2);
+      frame2 = 0;
+      if (!event.persisted) reset();
+    });
+    document.addEventListener("click", (event) => {
+      if (active2) dynamics?.comment(event);
+    }, true);
+    observe();
   }
 
   // src/modules/sync/panel.ts
@@ -17703,12 +18321,12 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   }
   function importAtelierDataInput(value2, mode2) {
     const normalized = normalizeAtelierDataInput(value2);
-    const viewed2 = writeViewedStorage(normalized.viewed, mode2);
+    const viewed = writeViewedStorage(normalized.viewed, mode2);
     const rulesResult = importRuleSnapshot(normalized.blocker.rules, mode2);
     return {
       status: true,
-      res: `\u5BFC\u5165\u5B8C\u6210\uFF1A\u5DF2\u770B ${viewed2.items.length} \u6761\uFF1B${rulesResult.res}`,
-      viewed: viewed2,
+      res: `\u5BFC\u5165\u5B8C\u6210\uFF1A\u5DF2\u770B ${viewed.items.length} \u6761\uFF1B${rulesResult.res}`,
+      viewed,
       rules: readRuleSnapshot()
     };
   }
@@ -17970,8 +18588,8 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   function mountSyncPanel() {
     const host = document.createElement("div");
     host.className = "luna-sync";
-    const root2 = host.attachShadow({ mode: "closed" });
-    root2.innerHTML = `<style>
+    const root = host.attachShadow({ mode: "closed" });
+    root.innerHTML = `<style>
     ${sharedControlCss}
     ${xpFieldCss("input")}
     :host { display:block; color:var(--xp-ink); ${xpFont}; }
@@ -18000,7 +18618,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   <p class="hint" style="margin-top:12px">\u542F\u7528\u540E\u81EA\u52A8\u540C\u6B65\uFF1B\u6682\u505C\u671F\u95F4\u4ECD\u4FDD\u7559\u672C\u5730\u6539\u52A8\uFF0C\u91CD\u65B0\u542F\u7528\u540E\u7EE7\u7EED\u4E0A\u4F20\u3002\u9996\u6B21\u4E91\u7AEF\u5408\u5E76\u524D\u4F1A\u4FDD\u7559\u672C\u5730\u5907\u4EFD\u3002</p></section>
   <section><h3>\u624B\u673A\u914D\u7F6E\u4E0E\u5907\u4EFD</h3><div class="actions transfer"></div><div class="qr"></div></section>`;
     const fields2 = /* @__PURE__ */ new Map();
-    const cleanupPixels = observeCrispText(root2);
+    const cleanupPixels = observeCrispText(root);
     const c = getConfig();
     for (const [key6, label, value2] of [["keyId", "Key ID", c?.keyId || ""], ["applicationKey", "\u5E94\u7528\u5BC6\u94A5", c?.applicationKey || ""], ["bucketId", "Bucket ID", c?.bucketId || ""], ["prefix", "\u540C\u6B65\u76EE\u5F55", c?.prefix || "atelier/"]]) {
       const row = document.createElement("label");
@@ -18014,7 +18632,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       input.addEventListener("input", () => hideSecrets());
       fields2.set(key6, input);
       row.append(input);
-      root2.querySelector(".fields").append(row);
+      root.querySelector(".fields").append(row);
     }
     const fieldValues = () => Object.fromEntries([...fields2].map(([k, v]) => [k, v.value.trim()]));
     let saved = JSON.stringify(fieldValues());
@@ -18023,12 +18641,12 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     let qrGeneration = 0;
     function hideSecrets() {
       qrGeneration++;
-      root2.querySelector(".qr").replaceChildren();
+      root.querySelector(".qr").replaceChildren();
     }
     const render2 = () => {
       if (disposed) return;
       const s = status();
-      root2.querySelector('[role="status"]').textContent = `${paused() ? "\u5DF2\u6682\u505C" : "\u5DF2\u542F\u7528"} \xB7 ${s.busy ? "\u540C\u6B65\u4E2D" : `\u5F85\u4E0A\u4F20 ${s.pending} \u6761\u64CD\u4F5C`}
+      root.querySelector('[role="status"]').textContent = `${paused() ? "\u5DF2\u6682\u505C" : "\u5DF2\u542F\u7528"} \xB7 ${s.busy ? "\u540C\u6B65\u4E2D" : `\u5F85\u4E0A\u4F20 ${s.pending} \u6761\u64CD\u4F5C`}
 \u6700\u8FD1\u6210\u529F\uFF1A${s.lastSuccess ? new Date(s.lastSuccess).toLocaleString() : "\u5C1A\u672A\u540C\u6B65"}${s.error ? `
 ${s.error}` : ""}${message ? `
 ${message}` : ""}`;
@@ -18058,7 +18676,7 @@ ${message}` : ""}`;
           render2();
         }
       };
-      root2.querySelector("." + group).append(button6);
+      root.querySelector("." + group).append(button6);
     };
     action("settings", "\u6D4B\u8BD5\u8FDE\u63A5", async () => {
       await testConnection(config2());
@@ -18077,7 +18695,7 @@ ${message}` : ""}`;
     action("transfer", "\u4E0B\u8F7D\u9996\u6B21\u5907\u4EFD", downloadBackup);
     action("transfer", "\u4E0B\u8F7D\u672C\u5730\u5173\u6CE8\u9996\u6B21\u5907\u4EFD", downloadLocalFollowBackup);
     action("transfer", "\u663E\u793A\u914D\u7F6E\u4E8C\u7EF4\u7801", async () => {
-      const qr = root2.querySelector(".qr");
+      const qr = root.querySelector(".qr");
       if (qr.childNodes.length) {
         hideSecrets();
         return;
@@ -18183,8 +18801,8 @@ ${message}` : ""}`;
       }
       return times;
     }
-    like(aid, on8) {
-      return this.send("like", { aid, like: on8 ? 1 : 2 });
+    like(aid, on9) {
+      return this.send("like", { aid, like: on9 ? 1 : 2 });
     }
     /** 一键三连: Bilibili answers which of the three went through. */
     async triple(aid) {
@@ -18239,8 +18857,8 @@ ${message}` : ""}`;
     watchLater(aid) {
       return this.send("watchlater", { aid });
     }
-    season(id, on8) {
-      return this.send(on8 ? "season-fav" : "season-unfav", { platform: "web", season_id: id });
+    season(id, on9) {
+      return this.send(on9 ? "season-fav" : "season-unfav", { platform: "web", season_id: id });
     }
     /** A 番剧 season: every episode, its sections, its other seasons, and the
      * viewer's 追番 and progress (`user_status`). */
@@ -18265,8 +18883,8 @@ ${message}` : ""}`;
       return pgcOk(await this.write(op, { query: Object.fromEntries(Object.entries(query).map(([name, value2]) => [name, String(value2)])) }));
     }
     /** 追番 / 追剧, or not. */
-    followSeason(seasonId, on8) {
-      return this.pgc(on8 ? "pgc-follow-add" : "pgc-follow-del", { season_id: seasonId });
+    followSeason(seasonId, on9) {
+      return this.pgc(on9 ? "pgc-follow-add" : "pgc-follow-del", { season_id: seasonId });
     }
     /** 1 想看, 2 在看, 3 看过. */
     followStatus(seasonId, status2) {
@@ -18282,7 +18900,7 @@ ${message}` : ""}`;
   // src/modules/video-luna/bridge.ts
   function videoPageWorld(channel2) {
     const post = (message) => window.postMessage({ channel: channel2, ...message }, location.origin);
-    const app = () => document.getElementById("app")?.__vue__;
+    const app2 = () => document.getElementById("app")?.__vue__;
     const actionList = () => document.querySelector(".action-list-container")?.__vue__;
     const clone = (value2) => {
       try {
@@ -18331,7 +18949,7 @@ ${message}` : ""}`;
     let signature = "", timer2 = 0;
     const snapshot = () => {
       timer2 = 0;
-      const state2 = app()?.$store?.state;
+      const state2 = app2()?.$store?.state;
       if (!state2?.bvid || !state2.videoData) return;
       const video2 = state2.videoData, list = state2.playlist ? playList() : null;
       const up = state2.upData ?? state2.upInfo, staff = state2.staffData ?? state2.staffInfo;
@@ -18377,8 +18995,8 @@ ${message}` : ""}`;
     let client = null;
     const queryClient = () => {
       if (client) return client;
-      const root2 = document.getElementById("__next"), key6 = root2 && Object.keys(root2).find((name) => name.startsWith("__reactContainer"));
-      const stack = key6 ? [root2[key6]] : [];
+      const root = document.getElementById("__next"), key6 = root && Object.keys(root).find((name) => name.startsWith("__reactContainer"));
+      const stack = key6 ? [root[key6]] : [];
       for (let seen = 0; stack.length && seen < 2e4; seen++) {
         const fiber = stack.pop();
         if (!fiber) continue;
@@ -18439,7 +19057,7 @@ ${message}` : ""}`;
         window.setInterval(schedule2, 1e3);
         return;
       }
-      const store = app()?.$store;
+      const store = app2()?.$store;
       if (!store) {
         window.setTimeout(watch, 200);
         return;
@@ -18483,7 +19101,7 @@ ${message}` : ""}`;
         signature = "";
         schedule2();
       } else if (data.kind === "switch") {
-        const vm = app(), list = actionList(), target = data.target ?? {};
+        const vm = app2(), list = actionList(), target = data.target ?? {};
         const router = window.next?.router;
         if (bangumi) {
           const ok4 = typeof router?.push === "function" && /^\/bangumi\/play\/(?:ep|ss)\d+$/.test(String(target.path ?? ""));
@@ -18539,7 +19157,7 @@ ${message}` : ""}`;
           done(false);
         }
       } else if (data.kind === "seek") {
-        const vm = app();
+        const vm = app2();
         if (typeof vm?.handleVideoSeek === "function") vm.handleVideoSeek({ time: Number(data.time) || 0 });
       } else if (data.kind === "player") {
         const player = window.player, value2 = Number(data.value);
@@ -18705,12 +19323,12 @@ ${message}` : ""}`;
       void toggleLike();
     });
     async function toggleLike() {
-      const on8 = !mine.like, before = { ...mine }, beforeCounts = { ...counts };
-      mine.like = on8;
-      counts.like += on8 ? 1 : -1;
+      const on9 = !mine.like, before = { ...mine }, beforeCounts = { ...counts };
+      mine.like = on9;
+      counts.like += on9 ? 1 : -1;
       paint2();
       try {
-        await context.actions.like(aid(), on8);
+        await context.actions.like(aid(), on9);
       } catch (error) {
         mine = before;
         counts = beforeCounts;
@@ -19095,9 +19713,9 @@ ${message}` : ""}`;
         check2.setAttribute("aria-label", viewedText.textContent);
         paintViewed();
       },
-      setWide(on8) {
-        wide2.dataset.kind = on8 ? "restore" : "maximize";
-        wide2.title = on8 ? "\u9000\u51FA\u5BBD\u5C4F" : "\u5BBD\u5C4F";
+      setWide(on9) {
+        wide2.dataset.kind = on9 ? "restore" : "maximize";
+        wide2.title = on9 ? "\u9000\u51FA\u5BBD\u5C4F" : "\u5BBD\u5C4F";
         wide2.setAttribute("aria-label", wide2.title);
       }
     };
@@ -19122,13 +19740,13 @@ ${message}` : ""}`;
     const sections = () => Array.isArray(season?.sections) ? season.sections.filter((part) => Array.isArray(part?.episodes) && part.episodes.length) : [];
     async function toggleSubscribe() {
       if (!season?.id) return;
-      const on8 = !subscribed;
+      const on9 = !subscribed;
       subscribe.disabled = true;
       try {
-        await context.actions.season(Number(season.id), on8);
-        subscribed = on8;
+        await context.actions.season(Number(season.id), on9);
+        subscribed = on9;
         paintSubscribe();
-        note(on8 ? "\u5DF2\u8BA2\u9605\u5408\u96C6" : "\u5DF2\u53D6\u6D88\u8BA2\u9605", "success");
+        note(on9 ? "\u5DF2\u8BA2\u9605\u5408\u96C6" : "\u5DF2\u53D6\u6D88\u8BA2\u9605", "success");
       } catch (error) {
         note(failure(error), "error");
       } finally {
@@ -19185,14 +19803,14 @@ ${message}` : ""}`;
           row.setAttribute("aria-current", "true");
         }
         if (item.sub) row.dataset.sub = "";
-        const viewed2 = !!item.viewedId && isViewedVideo(item.viewedId);
-        if (viewed2 && !item.current) row.dataset.viewed = "";
+        const viewed = !!item.viewedId && isViewedVideo(item.viewedId);
+        if (viewed && !item.current) row.dataset.viewed = "";
         row.append(el("span", "vl-lv-cell vl-num", item.index), el("span", "vl-lv-cell vl-ellipsis", item.title), el("span", "vl-lv-cell vl-num", formatDuration(item.duration)));
         const check2 = row.appendChild(el("span", "vl-lv-cell vl-check")).appendChild(el("input", "xp-check"));
         check2.type = "checkbox";
-        check2.checked = viewed2;
+        check2.checked = viewed;
         check2.disabled = !item.viewedId;
-        check2.title = viewed2 ? "\u5DF2\u770B" : "\u672A\u770B";
+        check2.title = viewed ? "\u5DF2\u770B" : "\u672A\u770B";
         check2.setAttribute("aria-label", `${item.title} \u5DF2\u770B`);
         check2.addEventListener("click", (event) => event.stopPropagation());
         check2.addEventListener("change", () => {
@@ -19411,8 +20029,8 @@ ${message}` : ""}`;
       if (page) node4.dataset.sub = "";
       if (invalid) node4.dataset.invalid = "";
       const viewedId = item.bvid ? viewedIdFromBvid(item.bvid, page && multi ? page.p : void 0) : "";
-      const viewed2 = !!viewedId && isViewedVideo(viewedId);
-      if (viewed2 && !current4) node4.dataset.viewed = "";
+      const viewed = !!viewedId && isViewedVideo(viewedId);
+      if (viewed && !current4) node4.dataset.viewed = "";
       const duration = page ? page.duration : item.pages.reduce((sum, part) => sum + (Number(part.duration) || 0), 0);
       const title = el("span", "vl-lv-cell vl-ellipsis");
       if (multi && !page) {
@@ -19439,9 +20057,9 @@ ${message}` : ""}`;
       else {
         const check2 = mark2.appendChild(el("input", "xp-check"));
         check2.type = "checkbox";
-        check2.checked = viewed2;
+        check2.checked = viewed;
         check2.disabled = !viewedId;
-        check2.title = viewed2 ? "\u5DF2\u770B" : "\u672A\u770B";
+        check2.title = viewed ? "\u5DF2\u770B" : "\u672A\u770B";
         check2.setAttribute("aria-label", `${page?.title || item.title} \u5DF2\u770B`);
         check2.addEventListener("click", (event) => event.stopPropagation());
         check2.addEventListener("change", () => {
@@ -19839,8 +20457,8 @@ ${message}` : ""}`;
         node4.dataset.current = "";
         node4.setAttribute("aria-current", "true");
       }
-      const viewedId = bangumiViewedId("ep", id), viewed2 = !!viewedId && isViewedVideo(viewedId);
-      if (viewed2 && !current4) node4.dataset.viewed = "";
+      const viewedId = bangumiViewedId("ep", id), viewed = !!viewedId && isViewedVideo(viewedId);
+      if (viewed && !current4) node4.dataset.viewed = "";
       const number2 = numberOf(episode, index);
       const title = String(episode.long_title || episode.show_title || episode.title || "");
       const published = formatDate(episode.pub_time), stat = stats?.get(id);
@@ -19853,9 +20471,9 @@ ${message}` : ""}`;
         else if (column.key === "viewed") {
           const check2 = node4.appendChild(el("span", "vl-lv-cell vl-check")).appendChild(el("input", "xp-check"));
           check2.type = "checkbox";
-          check2.checked = viewed2;
+          check2.checked = viewed;
           check2.disabled = !viewedId;
-          check2.title = viewed2 ? "\u5DF2\u770B" : "\u672A\u770B";
+          check2.title = viewed ? "\u5DF2\u770B" : "\u672A\u770B";
           check2.setAttribute("aria-label", `${title} \u5DF2\u770B`);
           check2.addEventListener("click", (event) => event.stopPropagation());
           check2.addEventListener("change", () => {
@@ -20184,13 +20802,13 @@ ${message}` : ""}`;
     return around(episodes, episodes.findIndex((episode) => episode.bvid === state2.bvid), (episode) => ({ aid: Number(episode.aid), bvid: String(episode.bvid), cid: Number(episode.cid), spm: "333.788.videopod.sections" }));
   }
   function createMediaBar(context, options = {}) {
-    const root2 = el("div", "vl-wmp");
-    if (options.status === false) root2.classList.add("vl-wmp-tight");
-    root2.setAttribute("data-bili-blocker-ui", "true");
-    root2.setAttribute("role", "toolbar");
-    root2.setAttribute("aria-label", "\u64AD\u653E\u63A7\u5236");
+    const root = el("div", "vl-wmp");
+    if (options.status === false) root.classList.add("vl-wmp-tight");
+    root.setAttribute("data-bili-blocker-ui", "true");
+    root.setAttribute("role", "toolbar");
+    root.setAttribute("aria-label", "\u64AD\u653E\u63A7\u5236");
     const button6 = (art2, title) => {
-      const node4 = root2.appendChild(el("button", "vl-wmp-button"));
+      const node4 = root.appendChild(el("button", "vl-wmp-button"));
       node4.type = "button";
       node4.dataset.art = art2;
       node4.title = title;
@@ -20199,19 +20817,19 @@ ${message}` : ""}`;
       return node4;
     };
     const rew = button6("rew", "\u540E\u9000 5 \u79D2\uFF08\u2190\uFF09"), ffwd = button6("ffwd", "\u524D\u8FDB 5 \u79D2\uFF08\u2192\uFF09");
-    const seek = root2.appendChild(el("div", "vl-wmp-seek"));
+    const seek = root.appendChild(el("div", "vl-wmp-seek"));
     seek.setAttribute("role", "slider");
     seek.setAttribute("aria-label", "\u64AD\u653E\u4F4D\u7F6E");
     seek.tabIndex = -1;
     const buffered = seek.appendChild(el("b", "vl-wmp-buffered")), played = seek.appendChild(el("b", "vl-wmp-played")), thumb2 = seek.appendChild(el("i", "vl-wmp-thumb"));
     const quick = button6("menu", "\u8BBE\u7F6E"), play = button6("play", "\u64AD\u653E\uFF08\u7A7A\u683C\uFF09"), stop = button6("stop", "\u505C\u6B62");
     const prev = button6("prev", "\u4E0A\u4E00\u4E2A"), next = button6("next", "\u4E0B\u4E00\u4E2A"), mute = button6("mute", "\u9759\u97F3\uFF08M\uFF09");
-    const volume2 = root2.appendChild(el("div", "vl-wmp-volume"));
+    const volume2 = root.appendChild(el("div", "vl-wmp-volume"));
     volume2.setAttribute("role", "slider");
     volume2.setAttribute("aria-label", "\u97F3\u91CF");
     volume2.tabIndex = -1;
     const level = volume2.appendChild(el("b")), knob = volume2.appendChild(el("i"));
-    const plate = root2.appendChild(el("div", "vl-wmp-plate"));
+    const plate = root.appendChild(el("div", "vl-wmp-plate"));
     const status2 = plate.appendChild(el("span", "vl-wmp-status"));
     const word = status2.appendChild(el("span", "vl-wmp-word")), clock2 = status2.appendChild(el("span", "vl-wmp-clock"));
     const tools = plate.appendChild(el("span", "vl-wmp-tools"));
@@ -20237,7 +20855,7 @@ ${message}` : ""}`;
     const screenTools = screens.map(([key6, title]) => [key6, tool3(title, glyphs[key6])]);
     let clockState = null, around = {};
     let seeking = null;
-    root2.classList.add("vl-wmp-art");
+    root.classList.add("vl-wmp-art");
     let painted = "";
     function paintArt() {
       const { scheme, dark } = appearanceState(), key6 = `${scheme}:${dark}`;
@@ -20474,15 +21092,15 @@ ${message}` : ""}`;
     const fit = () => {
       seek.style.setProperty("--track", `${seek.clientWidth}px`);
       if (options.status === false) return;
-      root2.classList.remove("vl-wmp-tight");
-      if (plate.scrollWidth > plate.clientWidth + 1) root2.classList.add("vl-wmp-tight");
+      root.classList.remove("vl-wmp-tight");
+      if (plate.scrollWidth > plate.clientWidth + 1) root.classList.add("vl-wmp-tight");
     };
     if (typeof ResizeObserver === "function") new ResizeObserver(fit).observe(seek);
     window.setInterval(() => {
-      if (root2.isConnected) paint2();
+      if (root.isConnected) paint2();
     }, 1e3);
     return {
-      element: root2,
+      element: root,
       seek,
       tools,
       setSideLayout(beforeExit) {
@@ -20512,9 +21130,9 @@ ${message}` : ""}`;
 
   // src/modules/video-luna/media-fullscreen.ts
   function createFullScreenBars(bar) {
-    const root2 = el("div", "vl-wmp-fs vl-wmp-art");
-    root2.setAttribute("data-bili-blocker-ui", "true");
-    const top = root2.appendChild(el("div", "vl-wmp-fs-top"));
+    const root = el("div", "vl-wmp-fs vl-wmp-art");
+    root.setAttribute("data-bili-blocker-ui", "true");
+    const top = root.appendChild(el("div", "vl-wmp-fs-top"));
     top.setAttribute("role", "toolbar");
     top.setAttribute("aria-label", "\u5168\u5C4F\u6807\u9898\u680F");
     const pin = top.appendChild(el("button", "vl-wmp-button"));
@@ -20529,7 +21147,7 @@ ${message}` : ""}`;
     exit.dataset.art = "exit";
     exit.title = "\u9000\u51FA\u5168\u5C4F\uFF08Esc\uFF09";
     exit.setAttribute("aria-label", "\u9000\u51FA\u5168\u5C4F");
-    const bottom = root2.appendChild(el("div", "vl-wmp-fs-bottom"));
+    const bottom = root.appendChild(el("div", "vl-wmp-fs-bottom"));
     const strip = bottom.appendChild(el("div", "vl-wmp-fs-strip"));
     const now = strip.appendChild(el("span", "vl-wmp-fs-now")), online = strip.appendChild(el("span", "vl-wmp-fs-online"));
     bottom.append(bar.element);
@@ -20541,18 +21159,18 @@ ${message}` : ""}`;
     send.setAttribute("aria-expanded", "false");
     let sides2 = readFolded("web-fullscreen-sides"), web = false;
     function setComposer(open2) {
-      root2.toggleAttribute("data-composing", open2);
+      root.toggleAttribute("data-composing", open2);
       send.setAttribute("aria-expanded", String(open2));
-      if (open2) root2.closest(".bpx-player-container")?.querySelector(".bpx-player-control-bottom-center .bpx-player-dm-input")?.focus({ preventScroll: true });
+      if (open2) root.closest(".bpx-player-container")?.querySelector(".bpx-player-control-bottom-center .bpx-player-dm-input")?.focus({ preventScroll: true });
     }
     send.addEventListener("click", () => {
       sound("click");
-      setComposer(!root2.hasAttribute("data-composing"));
+      setComposer(!root.hasAttribute("data-composing"));
     });
     window.addEventListener("keydown", (event) => {
-      if (event.key !== "Escape" || event.isComposing || !root2.hasAttribute("data-sides")) return;
-      const menuButton = root2.querySelector("[data-menu-open]");
-      if (!menuButton && !root2.hasAttribute("data-composing")) return;
+      if (event.key !== "Escape" || event.isComposing || !root.hasAttribute("data-sides")) return;
+      const menuButton = root.querySelector("[data-menu-open]");
+      if (!menuButton && !root.hasAttribute("data-composing")) return;
       event.preventDefault();
       event.stopImmediatePropagation();
       if (menuButton) {
@@ -20569,9 +21187,9 @@ ${message}` : ""}`;
       layout2.title = active2 ? "\u6062\u590D\u4E0A\u4E0B\u63A7\u5236\u680F" : "\u63A7\u4EF6\u79FB\u5230\u4E24\u4FA7";
       layout2.setAttribute("aria-label", layout2.title);
       layout2.setAttribute("aria-pressed", String(active2));
-      if (root2.hasAttribute("data-sides") === active2) return;
-      if (root2.querySelector("[data-menu-open]")) closeMenu();
-      root2.toggleAttribute("data-sides", active2);
+      if (root.hasAttribute("data-sides") === active2) return;
+      if (root.querySelector("[data-menu-open]")) closeMenu();
+      root.toggleAttribute("data-sides", active2);
       send.hidden = !active2;
       setComposer(false);
       bar.setSideLayout(active2 ? exit : null);
@@ -20586,7 +21204,7 @@ ${message}` : ""}`;
     const paintPin = () => {
       pin.classList.toggle("vl-wmp-on", pinned);
       pin.setAttribute("aria-pressed", String(pinned));
-      root2.toggleAttribute("data-pinned", pinned);
+      root.toggleAttribute("data-pinned", pinned);
       pin.title = pinned ? "\u53D6\u6D88\u56FA\u5B9A\u63A7\u4EF6" : "\u56FA\u5B9A\u63A7\u4EF6";
       pin.setAttribute("aria-label", pin.title);
     };
@@ -20602,7 +21220,7 @@ ${message}` : ""}`;
       const screen = document.querySelector(".bpx-player-container")?.getAttribute("data-screen");
       document.querySelector(screen === "full" ? ".bpx-player-ctrl-full" : ".bpx-player-ctrl-web")?.click();
     });
-    for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup", "click", "dblclick", "contextmenu", "wheel"]) root2.addEventListener(type, (event) => event.stopPropagation());
+    for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup", "click", "dblclick", "contextmenu", "wheel"]) root.addEventListener(type, (event) => event.stopPropagation());
     let over = false, x = 0, y = 0;
     for (const part of [top, bottom]) {
       part.addEventListener("pointerenter", () => {
@@ -20616,19 +21234,19 @@ ${message}` : ""}`;
         if (field instanceof HTMLElement && field.matches("input:not([type]),input[type=text],input[type=search],textarea,[contenteditable]:not([contenteditable=false])")) field.blur();
       });
     }
-    root2.addEventListener("pointermove", (event) => {
+    root.addEventListener("pointermove", (event) => {
       x = event.clientX;
       y = event.clientY;
     });
     window.setInterval(() => {
-      const area = root2.parentElement, screen = root2.closest(".bpx-player-container")?.getAttribute("data-screen");
+      const area = root.parentElement, screen = root.closest(".bpx-player-container")?.getAttribute("data-screen");
       const menu = !!document.querySelector(".vl-menu-host");
-      if ((pinned || over || menu || root2.hasAttribute("data-composing")) && area && (screen === "web" || screen === "full")) area.dispatchEvent(new MouseEvent("mousemove", { bubbles: true, clientX: x, clientY: y }));
+      if ((pinned || over || menu || root.hasAttribute("data-composing")) && area && (screen === "web" || screen === "full")) area.dispatchEvent(new MouseEvent("mousemove", { bubbles: true, clientX: x, clientY: y }));
       const count2 = area?.querySelector(".bpx-player-control-bottom-center .bpx-player-video-info-online") ? null : document.querySelector(".bpx-player-video-info-online");
       online.textContent = (count2?.textContent ?? "").trim();
     }, 1e3);
     return {
-      element: root2,
+      element: root,
       setScreen(mode2) {
         web = mode2 === "web";
         paintLayout();
@@ -21033,14 +21651,14 @@ ${message}` : ""}`;
     async function toggleFollow() {
       const seasonId = Number(state2?.seasonId), word = followWord(state2?.bangumi?.season?.season_type);
       if (!seasonId) return;
-      const set = async (on8) => {
+      const set = async (on9) => {
         follow.disabled = true;
         try {
-          await context.actions.followSeason(seasonId, on8);
-          followed2 = on8;
-          if (on8) followStatus = 2;
+          await context.actions.followSeason(seasonId, on9);
+          followed2 = on9;
+          if (on9) followStatus = 2;
           paintFollow();
-          note(on8 ? `\u5DF2${word}` : `\u5DF2\u53D6\u6D88${word}`, "success");
+          note(on9 ? `\u5DF2${word}` : `\u5DF2\u53D6\u6D88${word}`, "success");
         } catch (error) {
           note(failure(error), "error");
         } finally {
@@ -21082,12 +21700,12 @@ ${message}` : ""}`;
       if (!up?.mid) return;
       producer.append(el("span", "vl-muted", "\u51FA\u54C1\uFF1A"), link("vl-link", String(up.uname ?? ""), `https://space.bilibili.com/${up.mid}`));
       const button6 = producer.appendChild(xpButton(upFollowed ? "\u5DF2\u5173\u6CE8" : "\u5173\u6CE8", async () => {
-        const on8 = !upFollowed;
+        const on9 = !upFollowed;
         button6.disabled = true;
         try {
-          await context.actions.follow(String(up.mid), on8 ? 1 : 2);
-          upFollowed = on8;
-          note(on8 ? "\u5DF2\u5173\u6CE8" : "\u5DF2\u53D6\u6D88\u5173\u6CE8", "success");
+          await context.actions.follow(String(up.mid), on9 ? 1 : 2);
+          upFollowed = on9;
+          note(on9 ? "\u5DF2\u5173\u6CE8" : "\u5DF2\u53D6\u6D88\u5173\u6CE8", "success");
           paintProducer(up);
         } catch (error) {
           note(failure(error), "error");
@@ -21226,10 +21844,10 @@ ${message}` : ""}`;
 
   // src/modules/video-luna/up-window.ts
   function createUpWindow(context) {
-    const face = el("img", "vl-caption-face");
-    face.alt = "";
-    face.referrerPolicy = "no-referrer";
-    const win = xpWindow({ className: "vl-small vl-up-window", icon: face, title: "", label: "UP \u4E3B" });
+    const face2 = el("img", "vl-caption-face");
+    face2.alt = "";
+    face2.referrerPolicy = "no-referrer";
+    const win = xpWindow({ className: "vl-small vl-up-window", icon: face2, title: "", label: "UP \u4E3B" });
     foldable(win, "up");
     let people2 = [], key6 = "", generation = 0;
     const follow = { api: context.actions, me: context.me, failure };
@@ -21237,7 +21855,7 @@ ${message}` : ""}`;
       win.body.replaceChildren();
       if (people2.length > 1) {
         win.title.textContent = `\u521B\u4F5C\u56E2\u961F\uFF08${people2.length}\uFF09`;
-        face.src = thumb(people2[0].face, "32w_32h_1c");
+        face2.src = thumb(people2[0].face, "32w_32h_1c");
         const list = win.body.appendChild(el("div", "vl-team"));
         for (const person2 of people2) {
           const row = list.appendChild(el("div", "vl-member"));
@@ -21254,7 +21872,7 @@ ${message}` : ""}`;
       const person = people2[0];
       if (!person) return;
       win.title.textContent = person.name;
-      face.src = thumb(person.face, "32w_32h_1c");
+      face2.src = thumb(person.face, "32w_32h_1c");
       const top = win.body.appendChild(el("div", "vl-up"));
       const avatar = top.appendChild(link("vl-up-face", "", `https://space.bilibili.com/${person.mid}`)).appendChild(el("img"));
       avatar.src = thumb(person.face, "96w_96h_1c");
@@ -21402,8 +22020,8 @@ ${message}` : ""}`;
     const pod = bangumi ? createEpisodeWindow(context) : createPodWindow(context);
     const rec = recommendations2 ?? createSeasonRecWindow(context);
     const list = isLunaListPath(location.pathname) ? createListWindow(context) : null;
-    const windows = [["head", player], ["info", info], ["up", up], ["pod", pod], ...list ? [["list", list]] : [], ["rec", rec]];
-    for (const [, pane] of windows) {
+    const windows2 = [["head", player], ["info", info], ["up", up], ["pod", pod], ...list ? [["list", list]] : [], ["rec", rec]];
+    for (const [, pane] of windows2) {
       pane.element.setAttribute("data-bili-blocker-ui", "true");
       observeCrispText(pane.element);
     }
@@ -21421,7 +22039,7 @@ ${message}` : ""}`;
     observeCrispText(fullscreen.element);
     startEndingClicks();
     const pbp = createPbpDots(context, () => {
-      const full2 = /^(web|full)$/.test(root2.getAttribute("data-atelier-screen") ?? "");
+      const full2 = /^(web|full)$/.test(root.getAttribute("data-atelier-screen") ?? "");
       return (full2 ? fullBar : bar)?.seek ?? null;
     });
     player.status.insertBefore(pbp.toggle, player.status.querySelector(".vl-status-tools"));
@@ -21429,7 +22047,7 @@ ${message}` : ""}`;
       bar?.element.remove();
       fullscreen?.element.remove();
       bar = fullBar = fullscreen = null;
-      root2.removeAttribute("data-vl-wmp");
+      root.removeAttribute("data-vl-wmp");
       warnLog("Luna \u89C6\u9891\u9875\uFF1A\u64AD\u653E\u63A7\u5236\u6761\u51FA\u9519\uFF0C\u5DF2\u6062\u590D B \u7AD9\u7684\u63A7\u5236\u680F", error);
     };
     bridge.onPlayback((state2) => {
@@ -21439,7 +22057,7 @@ ${message}` : ""}`;
       try {
         bar.playback(state2);
         fullBar?.playback(state2);
-        if (!root2.hasAttribute("data-vl-wmp")) root2.setAttribute("data-vl-wmp", "");
+        if (!root.hasAttribute("data-vl-wmp")) root.setAttribute("data-vl-wmp", "");
       } catch (error) {
         barFailed(error);
       }
@@ -21447,7 +22065,7 @@ ${message}` : ""}`;
     const failed = /* @__PURE__ */ new Set();
     function render2() {
       if (!latest) return;
-      for (const [area, pane] of windows) {
+      for (const [area, pane] of windows2) {
         if (failed.has(area)) continue;
         try {
           pane.render(latest);
@@ -21526,12 +22144,12 @@ ${message}` : ""}`;
       if (latest) place3();
     }, 1e3);
     watchColumns();
-    const root2 = document.documentElement;
+    const root = document.documentElement;
     const sizes = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null;
     let watchedPlayer = null, watchedContainer = null;
     let lastPicture;
     function refreshDanmakuOrigin() {
-      if (root2.dataset.atelierVideo !== "luna") return;
+      if (root.dataset.atelierVideo !== "luna") return;
       const area = document.querySelector("#bilibili-player .bpx-player-video-area");
       if (!area) return;
       const rect = area.getBoundingClientRect(), x = Math.round(rect.left + window.scrollX), y = Math.round(rect.top + window.scrollY);
@@ -21561,13 +22179,13 @@ ${message}` : ""}`;
       share2("--vl-head-h", `${player.element.offsetHeight}px`);
       const cell = bangumi ? document.querySelector(".plp-player") : null, column = cell && document.querySelector(".plp-left-wrap");
       if (cell && column) {
-        const padding = root2.getAttribute("data-atelier-screen") === "wide" ? "" : `${cell.offsetHeight}px`;
+        const padding = root.getAttribute("data-atelier-screen") === "wide" ? "" : `${cell.offsetHeight}px`;
         if (column.style.paddingTop !== padding) column.style.setProperty("padding-top", padding, padding ? "important" : "");
       }
     }
     function paintScreen() {
       const mode2 = document.querySelector(".bpx-player-container")?.getAttribute("data-screen") || "normal";
-      if (root2.getAttribute("data-atelier-screen") !== mode2) root2.setAttribute("data-atelier-screen", mode2);
+      if (root.getAttribute("data-atelier-screen") !== mode2) root.setAttribute("data-atelier-screen", mode2);
       fullscreen?.setScreen(mode2);
       player.setWide(mode2 === "wide");
       measure();
@@ -21604,13 +22222,13 @@ ${message}` : ""}`;
         wrap.addEventListener("click", (event) => {
           if (!event.isTrusted) return;
           const arrow = wrap.querySelector(".bui-collapse-arrow"), head = wrap.querySelector(".bui-collapse-header")?.getBoundingClientRect();
-          const caption2 = event.target === wrap && !!head && event.clientY >= head.top && event.clientY < head.bottom;
-          if (!caption2 && !arrow?.contains(event.target)) return;
+          const caption3 = event.target === wrap && !!head && event.clientY >= head.top && event.clientY < head.bottom;
+          if (!caption3 && !arrow?.contains(event.target)) return;
           const task = click = soundTask();
           window.setTimeout(() => {
             if (click === task) click = null;
           }, 0);
-          if (caption2) arrow?.click();
+          if (caption3) arrow?.click();
         }, true);
         new MutationObserver(() => {
           const now = wrap.classList.contains("bui-collapse-wrap-folded");
@@ -21634,20 +22252,20 @@ ${message}` : ""}`;
     dmCount();
     function paintIcons() {
       const dark = appearanceState().dark, index = shellIconIds.indexOf(151);
-      if (shellIconSheets[16] && index >= 0) root2.style.setProperty("--vl-dm-icon", `url("${shellIconSheets[16]}") ${-(index % shellIconColumns) * 16}px ${-Math.floor(index / shellIconColumns) * 16}px`);
-      root2.style.setProperty("--vl-icon-bubble", iconUrl("bubble", "#000"));
-      root2.style.setProperty("--vl-icon-font", iconUrl("fontColor", dark ? "#e8e8e8" : "#000"));
+      if (shellIconSheets[16] && index >= 0) root.style.setProperty("--vl-dm-icon", `url("${shellIconSheets[16]}") ${-(index % shellIconColumns) * 16}px ${-Math.floor(index / shellIconColumns) * 16}px`);
+      root.style.setProperty("--vl-icon-bubble", iconUrl("bubble", "#000"));
+      root.style.setProperty("--vl-icon-font", iconUrl("fontColor", dark ? "#e8e8e8" : "#000"));
       bar?.paintArt();
       fullBar?.paintArt();
     }
     paintIcons();
     window.addEventListener(appearanceChanged, paintIcons);
     document.addEventListener("biliThemeChange", () => window.setTimeout(paintIcons, 0));
-    new MutationObserver(paintIcons).observe(root2, { attributes: true, attributeFilter: ["class"] });
+    new MutationObserver(paintIcons).observe(root, { attributes: true, attributeFilter: ["class"] });
     window.addEventListener("atelier-sync-applied", () => window.dispatchEvent(new Event(viewedMarksChanged)));
     window.setTimeout(() => {
       if (latest && placed) return;
-      for (const [, pane] of windows) pane.element.remove();
+      for (const [, pane] of windows2) pane.element.remove();
       showNativePage();
       syncDanmakuFont();
       warnLog("Luna \u89C6\u9891\u9875\u6CA1\u80FD\u753B\u51FA\u6765\uFF0C\u5DF2\u6062\u590D B \u7AD9\u539F\u6765\u7684\u9875\u9762");
@@ -21743,7 +22361,7 @@ ${message}` : ""}`;
   function viewedPage(where = location) {
     const { hostname, pathname } = where;
     if (hostname === "search.bilibili.com") return { spots: [cards, card3(".media-card")] };
-    if (hostname === "space.bilibili.com") return { spots: [card3(".bili-video-card__cover"), dynamicVideo] };
+    if (hostname === "space.bilibili.com") return { spots: [card3(".bili-video-card__cover"), feedVideo, dynamicVideo] };
     if (hostname === "t.bilibili.com") return { spots: [feedVideo, dynamicVideo] };
     if (hostname !== "www.bilibili.com") return null;
     if (/^\/video\//i.test(pathname)) return { spots: [mainVideo, recommendations, ...collection, endScreen] };
@@ -21765,20 +22383,20 @@ ${message}` : ""}`;
 [${coverMark}]{opacity:var(--atelier-viewed-opacity,.45)!important}`;
   var buttons = /* @__PURE__ */ new WeakMap();
   var covers3 = /* @__PURE__ */ new WeakMap();
-  function paint(button6, viewed2) {
-    const label = viewed2 ? "\u5DF2\u770B" : "\u672A\u770B";
+  function paint(button6, viewed) {
+    const label = viewed ? "\u5DF2\u770B" : "\u672A\u770B";
     if (button6.textContent !== label) button6.textContent = label;
-    if (button6.classList.contains("btnIsView") !== viewed2) {
-      button6.classList.toggle("btnIsView", viewed2);
-      button6.classList.toggle("btnNotView", !viewed2);
+    if (button6.classList.contains("btnIsView") !== viewed) {
+      button6.classList.toggle("btnIsView", viewed);
+      button6.classList.toggle("btnNotView", !viewed);
     }
-    if (button6.getAttribute("aria-pressed") !== String(viewed2)) button6.setAttribute("aria-pressed", String(viewed2));
+    if (button6.getAttribute("aria-pressed") !== String(viewed)) button6.setAttribute("aria-pressed", String(viewed));
     const cover = covers3.get(button6);
-    if (cover && cover.hasAttribute(coverMark) !== viewed2) cover.toggleAttribute(coverMark, viewed2);
+    if (cover && cover.hasAttribute(coverMark) !== viewed) cover.toggleAttribute(coverMark, viewed);
   }
   function repaintAll() {
-    const viewed2 = viewedLookup();
-    for (const button6 of document.querySelectorAll("button.btnView[data-av]")) paint(button6, viewed2(button6.dataset.av));
+    const viewed = viewedLookup();
+    for (const button6 of document.querySelectorAll("button.btnView[data-av]")) paint(button6, viewed(button6.dataset.av));
   }
   function makeButton() {
     const button6 = document.createElement("button");
@@ -21802,7 +22420,7 @@ ${message}` : ""}`;
       cover.toggleAttribute(coverMark, button6.classList.contains("btnIsView"));
     } else covers3.delete(button6);
   }
-  function mark(spot, host, viewed2) {
+  function mark(spot, host, viewed) {
     let button6 = buttons.get(host);
     if (button6 && !host.contains(button6)) {
       setCover(button6, null);
@@ -21820,7 +22438,7 @@ ${message}` : ""}`;
     if (!button6) {
       button6 = makeButton();
       button6.dataset.av = id;
-      paint(button6, viewed2(id));
+      paint(button6, viewed(id));
       if (spot.cover) host.append(button6);
       else {
         button6.classList.add("atelier-viewed-inline");
@@ -21830,7 +22448,7 @@ ${message}` : ""}`;
     } else if (spot.cover && button6.parentElement !== host) host.append(button6);
     if (button6.dataset.av !== id) {
       button6.dataset.av = id;
-      paint(button6, viewed2(id));
+      paint(button6, viewed(id));
     }
     setCover(button6, cover);
   }
@@ -21875,12 +22493,12 @@ ${message}` : ""}`;
 ${page.css ?? ""}`;
     document.head.append(style);
     const scan = () => {
-      const viewed2 = viewedLookup();
+      const viewed = viewedLookup();
       for (const spot of page.spots) {
         for (const host of document.querySelectorAll(spot.hosts)) {
           if (spot.outermost && host.parentElement?.closest(spot.hosts)) continue;
           if (host.closest(".bili-header, a[href]")) continue;
-          mark(spot, host, viewed2);
+          mark(spot, host, viewed);
         }
       }
       ensureBulk(page);
@@ -22188,14 +22806,14 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     const loggedIn = biliLoggedIn();
     let relay = null;
     if (loggedIn) relay = startPageRelay("history", endpoints.history);
-    const root2 = el("section", "xp-window ahp");
-    root2.id = "atelier-history";
-    root2.setAttribute("aria-label", "\u5386\u53F2\u8BB0\u5F55");
-    root2.setAttribute("data-bili-blocker-ui", "true");
-    const caption2 = root2.appendChild(el("header", "xp-caption"));
-    caption2.append(image5(ie_history_16_default));
-    const title = caption2.appendChild(el("h2", "xp-caption-title", "\u5386\u53F2\u8BB0\u5F55"));
-    const toolbar = root2.appendChild(el("div", "xp-toolbar ahp-toolbar"));
+    const root = el("section", "xp-window ahp");
+    root.id = "atelier-history";
+    root.setAttribute("aria-label", "\u5386\u53F2\u8BB0\u5F55");
+    root.setAttribute("data-bili-blocker-ui", "true");
+    const caption3 = root.appendChild(el("header", "xp-caption"));
+    caption3.append(image5(ie_history_16_default));
+    const title = caption3.appendChild(el("h2", "xp-caption-title", "\u5386\u53F2\u8BB0\u5F55"));
+    const toolbar = root.appendChild(el("div", "xp-toolbar ahp-toolbar"));
     toolbar.setAttribute("role", "toolbar");
     toolbar.setAttribute("aria-label", "\u5386\u53F2\u8BB0\u5F55\u5DE5\u5177\u680F");
     const toolButton = (label, action, icon2) => {
@@ -22233,7 +22851,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     const go = search.appendChild(el("button", "xp-tool ahp-go"));
     go.type = "submit";
     go.append(image5(ie_go_16_default), el("span", "", "\u641C\u7D22"));
-    const main = root2.appendChild(el("div", "ahp-main"));
+    const main = root.appendChild(el("div", "ahp-main"));
     const taskColumn = main.appendChild(el("div", "ahp-taskcol"));
     const tasks = taskColumn.appendChild(el("div", "xp-taskpane ahp-tasks"));
     const view = main.appendChild(el("div", "ahp-view"));
@@ -22241,7 +22859,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     view.setAttribute("aria-label", "\u5386\u53F2\u8BB0\u5F55");
     const groups = view.appendChild(el("div", "ahp-groups"));
     const foot = view.appendChild(el("div", "ahp-foot"));
-    const statusBar = root2.appendChild(el("div", "xp-status ahp-status"));
+    const statusBar = root.appendChild(el("div", "xp-status ahp-status"));
     const countPane = statusBar.appendChild(el("span", "xp-status-pane ahp-count"));
     countPane.setAttribute("role", "status");
     const recordPane = statusBar.appendChild(el("span", "xp-status-pane ahp-record"));
@@ -22295,7 +22913,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
         sound("click");
         openBiliLogin();
       });
-      place2(root2);
+      place2(root);
       return;
     }
     const actions = taskGroup("\u5386\u53F2\u8BB0\u5F55\u4EFB\u52A1", true);
@@ -22328,9 +22946,9 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     });
     const paintFilters = () => {
       for (const button6 of filterButtons) {
-        const on8 = button6.dataset.type === type;
-        button6.setAttribute("aria-pressed", String(on8));
-        button6.setAttribute("aria-checked", String(on8));
+        const on9 = button6.dataset.type === type;
+        button6.setAttribute("aria-pressed", String(on9));
+        button6.setAttribute("aria-checked", String(on9));
       }
     };
     paintFilters();
@@ -22373,22 +22991,22 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     }
     function paintSelection() {
       for (const [key6, entry] of cards2) {
-        const on8 = selected.has(key6);
-        entry.check.checked = on8;
-        entry.element.toggleAttribute("data-selected", on8);
-        entry.element.setAttribute("aria-selected", String(on8));
+        const on9 = selected.has(key6);
+        entry.check.checked = on9;
+        entry.element.toggleAttribute("data-selected", on9);
+        entry.element.setAttribute("aria-selected", String(on9));
       }
       deleteSelected.lastElementChild.textContent = `\u5220\u9664\u6240\u9009\uFF08${selected.size}\uFF09`;
       deleteSelected.disabled = !selected.size;
       paintCount();
     }
-    function setSelecting(on8) {
-      selecting = on8;
+    function setSelecting(on9) {
+      selecting = on9;
       selected.clear();
-      root2.toggleAttribute("data-selecting", on8);
-      filters.hidden = on8;
-      selectBar.hidden = !on8;
-      batch2.node.toggleAttribute("disabled", on8);
+      root.toggleAttribute("data-selecting", on9);
+      filters.hidden = on9;
+      selectBar.hidden = !on9;
+      batch2.node.toggleAttribute("disabled", on9);
       paintSelection();
     }
     function paintFoot(text4) {
@@ -22645,24 +23263,24 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     }
     paintPaused();
     paintSelection();
-    place2(root2);
-    startHistoryBounds(root2);
+    place2(root);
+    startHistoryBounds(root);
     if (typeof IntersectionObserver === "function") new IntersectionObserver((entries) => {
       if (entries.some((entry) => entry.isIntersecting)) void more();
     }, { rootMargin: "600px 0px" }).observe(foot);
     void reload();
     void readPaused();
   }
-  function place2(root2) {
+  function place2(root) {
     const attach = () => {
       if (!document.body) {
         window.setTimeout(attach, 50);
         return;
       }
-      const app = document.getElementById("app");
-      if (app?.parentElement) app.before(root2);
-      else document.body.append(root2);
-      observeCrispText(root2);
+      const app2 = document.getElementById("app");
+      if (app2?.parentElement) app2.before(root);
+      else document.body.append(root);
+      observeCrispText(root);
     };
     attach();
   }
@@ -22982,16 +23600,16 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     const sample = (className, title, inactive, kinds2, body2) => {
       const frame2 = element("div", "xp-window " + className);
       if (inactive) frame2.dataset.inactive = "";
-      const caption2 = element("div", "xp-caption");
-      caption2.append(element("span", "xp-caption-title", title));
+      const caption3 = element("div", "xp-caption");
+      caption3.append(element("span", "xp-caption-title", title));
       for (const kind of kinds2) {
         const control = element("span", "xp-caption-button");
         control.dataset.kind = kind;
-        caption2.append(control);
+        caption3.append(control);
       }
       const content = element("div", "preview-body");
       content.append(...body2);
-      frame2.append(caption2, content);
+      frame2.append(caption3, content);
       return frame2;
     };
     preview.append(
@@ -23256,14 +23874,15 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       element("h2", "", "\u754C\u9762"),
       group(
         "Luna \u9875\u9762",
-        check2("\u89C6\u9891\u64AD\u653E\u9875\u4F7F\u7528 Luna \u754C\u9762", videoLunaEnabled, (on8) => switchPage(isLunaVideoLocation(), on8, setVideoLunaEnabled)),
-        check2("\u89C2\u770B\u5386\u53F2\u4F7F\u7528 Luna \u754C\u9762", historyLunaEnabled, (on8) => switchPage(isHistoryLocation(), on8, setHistoryLunaEnabled)),
-        check2(`\u52A8\u6001\u9875\u4F7F\u7528 Luna \u754C\u9762\uFF08${feedWho}\uFF09`, localFeedLuna, (on8) => switchPage(location.hostname === "t.bilibili.com", on8, setLocalFeedLuna)),
+        check2("\u89C6\u9891\u64AD\u653E\u9875\u4F7F\u7528 Luna \u754C\u9762", videoLunaEnabled, (on9) => switchPage(isLunaVideoLocation(), on9, setVideoLunaEnabled)),
+        check2("\u89C2\u770B\u5386\u53F2\u4F7F\u7528 Luna \u754C\u9762", historyLunaEnabled, (on9) => switchPage(isHistoryLocation(), on9, setHistoryLunaEnabled)),
+        check2("UP \u7A7A\u95F4\u4F7F\u7528 Luna \u754C\u9762", spaceLunaEnabled, (on9) => switchPage(!!spaceRoute(), on9, setSpaceLunaEnabled)),
+        check2(`\u52A8\u6001\u9875\u4F7F\u7528 Luna \u754C\u9762\uFF08${feedWho}\uFF09`, localFeedLuna, (on9) => switchPage(location.hostname === "t.bilibili.com", on9, setLocalFeedLuna)),
         element("p", "luna-hint", "\u5173\u95ED\u540E\u663E\u793A B \u7AD9\u539F\u6765\u7684\u9875\u9762\u3002\u6B63\u5728\u770B\u7684\u5C31\u662F\u8FD9\u4E2A\u9875\u9762\u65F6\uFF0C\u4F1A\u50CF\u7535\u89C6\u83DC\u5355\u7684\u300C\u539F\u751F\u9875\u9762\u300D\u4E00\u6837\u5237\u65B0\u3002")
       ),
       group(
         "\u9876\u680F",
-        check2("\u6298\u53E0\u9876\u680F\u540E\uFF0C\u5728\u53F3\u680F\u9876\u90E8\u663E\u793A\u7D27\u51D1\u5DE5\u5177\u680F\uFF08\u89C6\u9891\u64AD\u653E\u9875\u548C\u52A8\u6001\u9875\uFF09", () => readInterfacePrefs().compactBar, (on8) => saveInterfacePrefs({ compactBar: on8 }))
+        check2("\u6298\u53E0\u9876\u680F\u540E\uFF0C\u5728\u53F3\u680F\u9876\u90E8\u663E\u793A\u7D27\u51D1\u5DE5\u5177\u680F\uFF08\u64AD\u653E\u9875\u3001\u52A8\u6001\u9875\u548C UP \u7A7A\u95F4\uFF09", () => readInterfacePrefs().compactBar, (on9) => saveInterfacePrefs({ compactBar: on9 }))
       ),
       group(
         "\u89C6\u9891\u64AD\u653E",
@@ -23274,20 +23893,20 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       ),
       group(
         "\u8BC4\u8BBA\u533A",
-        check2("\u60AC\u505C\u5934\u50CF\u548C\u540D\u5B57\u65F6\u663E\u793A\u7528\u6237\u5361\u7247", () => readInterfacePrefs().userCard, (on8) => saveInterfacePrefs({ userCard: on8 })),
-        check2("\u8BC4\u8BBA\u533A\u548C\u52A8\u6001\u7684\u56FE\u7247\u5728\u9875\u5185\u6253\u5F00\uFF08\u5173\u95ED\u540E\u5728\u65B0\u6807\u7B7E\u9875\u6253\u5F00\uFF09", () => readInterfacePrefs().pictureWindow, (on8) => saveInterfacePrefs({ pictureWindow: on8 })),
-        check2("\u56DE\u590D\u6570\u540E\u663E\u793A\u672C\u5730\u9690\u85CF\u6570\uFF08\u5DF2\u52A0\u8F7D\u7684\u8BC4\u8BBA\u4E2D\u88AB\u672C\u5730\u9ED1\u540D\u5355\u9690\u85CF\u4E86\u51E0\u6761\uFF09", () => readUiPreferences().hiddenCount, (on8) => saveUiPreferences({ hiddenCount: on8 })),
-        check2("\u663E\u793A IP \u5C5E\u5730\uFF08B \u7AD9\u539F\u6765\u7684\u8BC4\u8BBA\u533A\u8981\u5237\u65B0\u540E\u751F\u6548\uFF09", () => readInterfacePrefs().ipLocation, (on8) => saveInterfacePrefs({ ipLocation: on8 }))
+        check2("\u60AC\u505C\u5934\u50CF\u548C\u540D\u5B57\u65F6\u663E\u793A\u7528\u6237\u5361\u7247", () => readInterfacePrefs().userCard, (on9) => saveInterfacePrefs({ userCard: on9 })),
+        check2("\u8BC4\u8BBA\u533A\u548C\u52A8\u6001\u7684\u56FE\u7247\u5728\u9875\u5185\u6253\u5F00\uFF08\u5173\u95ED\u540E\u5728\u65B0\u6807\u7B7E\u9875\u6253\u5F00\uFF09", () => readInterfacePrefs().pictureWindow, (on9) => saveInterfacePrefs({ pictureWindow: on9 })),
+        check2("\u56DE\u590D\u6570\u540E\u663E\u793A\u672C\u5730\u9690\u85CF\u6570\uFF08\u5DF2\u52A0\u8F7D\u7684\u8BC4\u8BBA\u4E2D\u88AB\u672C\u5730\u9ED1\u540D\u5355\u9690\u85CF\u4E86\u51E0\u6761\uFF09", () => readUiPreferences().hiddenCount, (on9) => saveUiPreferences({ hiddenCount: on9 })),
+        check2("\u663E\u793A IP \u5C5E\u5730\uFF08B \u7AD9\u539F\u6765\u7684\u8BC4\u8BBA\u533A\u8981\u5237\u65B0\u540E\u751F\u6548\uFF09", () => readInterfacePrefs().ipLocation, (on9) => saveInterfacePrefs({ ipLocation: on9 }))
       ),
       group(
         "\u5DF2\u770B",
-        check2("\u5DF2\u770B\u89C6\u9891\u7684\u5C01\u9762\u53D8\u6DE1", () => readInterfacePrefs().viewedDim, (on8) => saveInterfacePrefs({ viewedDim: on8 })),
+        check2("\u5DF2\u770B\u89C6\u9891\u7684\u5C01\u9762\u53D8\u6DE1", () => readInterfacePrefs().viewedDim, (on9) => saveInterfacePrefs({ viewedDim: on9 })),
         opacity("\u5DF2\u770B\u5C01\u9762\u4E0D\u900F\u660E\u5EA6", () => readInterfacePrefs().viewedOpacity, (share2) => saveInterfacePrefs({ viewedOpacity: share2 }), () => readInterfacePrefs().viewedDim)
       ),
       element("p", "luna-hint", "\u8FD9\u4E9B\u8BBE\u7F6E\u53EA\u4FDD\u5B58\u5728\u8FD9\u53F0\u6D4F\u89C8\u5668\u91CC\uFF0C\u4E0D\u53C2\u4E0E\u540C\u6B65\uFF1B\u9664\u4E86 B \u7AD9\u539F\u6765\u8BC4\u8BBA\u533A\u7684 IP \u5C5E\u5730\uFF0C\u6539\u52A8\u5728\u5DF2\u6253\u5F00\u7684\u9875\u9762\u4E0A\u7ACB\u5373\u751F\u6548\u3002")
     );
     paint2();
-    for (const key6 of [videoLunaKey, historyLunaKey, localFeedPrefsKey()]) relayRemoteChanges(key6, pageSwitchChanged);
+    for (const key6 of [videoLunaKey, historyLunaKey, spaceLunaKey, localFeedPrefsKey()]) relayRemoteChanges(key6, pageSwitchChanged);
     for (const event of [interfaceChanged, appearanceChanged, pbpShownChanged, videoCoverChanged, pageModeChanged, pageSwitchChanged]) window.addEventListener(event, sync, { signal });
     return page;
   }
@@ -23603,6 +24222,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       registerWatchHistoryMode();
       mountWatchHistory();
     }, recover: showNativeHistory },
+    { name: "Luna UP \u7A7A\u95F4", phase: "page", gm: {}, start: startSpaceLuna },
     { name: "\u7535\u89C6\u5165\u53E3", phase: "page", gm: {}, start: startAtelierLauncher },
     { name: "\u672C\u5730\u5173\u6CE8", phase: "page", gm: {}, start: () => whenHeadExists("\u672C\u5730\u5173\u6CE8", startLocalFollowing) },
     { name: "\u5DF2\u770B\u6A21\u5757", phase: "page", gm: { missing: "\u5DF2\u770B\u6A21\u5757\u9700\u8981 GM_* \u5B58\u50A8\u6743\u9650\uFF0C\u5F53\u524D\u73AF\u5883\u4E0D\u53EF\u7528\u3002" }, enabled: config.viewedMarker.enabled, start: () => whenHeadExists("\u5DF2\u770B\u6A21\u5757", startViewedMarker) },
