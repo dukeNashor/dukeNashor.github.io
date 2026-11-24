@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.11.3
+// @version      0.11.4
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -1405,12 +1405,12 @@
     "node_modules/dijkstrajs/dijkstra.js"(exports, module) {
       "use strict";
       var dijkstra = {
-        single_source_shortest_paths: function(graph, s, d) {
+        single_source_shortest_paths: function(graph, s2, d) {
           var predecessors = {};
           var costs = {};
-          costs[s] = 0;
+          costs[s2] = 0;
           var open2 = dijkstra.PriorityQueue.make();
-          open2.push(s, 0);
+          open2.push(s2, 0);
           var closest, u, v, cost_of_s_to_u, adjacent_nodes, cost_of_e, cost_of_s_to_u_plus_cost_of_e, cost_of_s_to_v, first_visit;
           while (!open2.empty()) {
             closest = open2.pop();
@@ -1432,7 +1432,7 @@
             }
           }
           if (typeof d !== "undefined" && typeof costs[d] === "undefined") {
-            var msg = ["Could not find a path from ", s, " to ", d, "."].join("");
+            var msg = ["Could not find a path from ", s2, " to ", d, "."].join("");
             throw new Error(msg);
           }
           return predecessors;
@@ -1449,8 +1449,8 @@
           nodes.reverse();
           return nodes;
         },
-        find_path: function(graph, s, d) {
-          var predecessors = dijkstra.single_source_shortest_paths(graph, s, d);
+        find_path: function(graph, s2, d) {
+          var predecessors = dijkstra.single_source_shortest_paths(graph, s2, d);
           return dijkstra.extract_shortest_path_from_predecessor_list(
             predecessors,
             d
@@ -2245,8 +2245,8 @@
     const isReady = () => {
       if (document.readyState === "loading") return false;
       if (bangumi) return !!document.querySelector("#bilibili-player .bpx-player-container");
-      const app2 = document.getElementById("app");
-      return app2 !== null && app2.childElementCount > 0 && !app2.hasAttribute("data-server-rendered");
+      const app = document.getElementById("app");
+      return app !== null && app.childElementCount > 0 && !app.hasAttribute("data-server-rendered");
     };
     if (isReady()) {
       callback();
@@ -4034,7 +4034,7 @@
       groupText: value(scheme, "Button.GroupBox", "textcolor", "#0046d5")
     };
     const base = dark ? darkPalettes[scheme] : light;
-    const caption3 = sys("activecaption", "#0054e3"), inactive = sys("inactivecaption", "#7a96df");
+    const caption2 = sys("activecaption", "#0054e3"), inactive = sys("inactivecaption", "#7a96df");
     return {
       ...Object.fromEntries(Object.entries(base).filter(([key6]) => key6 !== "lift")),
       graytext: dark ? dim(sys("graytext", "#aca899")) : sys("graytext", "#aca899"),
@@ -4042,7 +4042,7 @@
       "highlight-ink": sys("highlighttext", "#ffffff"),
       // DrawFocusRect inverts the pixels under its dots.
       "highlight-xor": "#" + (16777215 ^ parseInt(sys("highlight", "#316ac5").slice(1), 16)).toString(16).padStart(6, "0"),
-      caption: dark ? dim(caption3) : caption3,
+      caption: dark ? dim(caption2) : caption2,
       "caption-ink": sys("captiontext", "#ffffff"),
       "inactive-caption": dark ? dim(inactive) : inactive,
       "inactive-caption-ink": sys("inactivecaptiontext", "#d8e4f8"),
@@ -4073,7 +4073,7 @@
   }
   function parts(scheme, dpr) {
     const hiDpi = dpr >= 1.5 && Math.abs(dpr - Math.round(dpr)) > 1e-6;
-    const caption3 = (name) => ({ source: `${name}_caption_button_${hiDpi ? 144 : 96}`, states: 8, kind: "chrome", sourceScale: hiDpi ? 1.5 : 1 });
+    const caption2 = (name) => ({ source: `${name}_caption_button_${hiDpi ? 144 : 96}`, states: 8, kind: "chrome", sourceScale: hiDpi ? 1.5 : 1 });
     return {
       caption: { source: "frame_caption", states: 2, margins: margins(scheme, "Window.Caption", [28, 35, 9, 17]), kind: "chrome" },
       // Left, right and bottom edges in one image, for one border-image.
@@ -4088,10 +4088,10 @@
         context.drawImage(bottom, 0, left.height);
         return canvas;
       }, states: 2, margins: [5, 5, 0, 5], kind: "chrome" },
-      minimize: caption3("minimize"),
-      maximize: caption3("maximize"),
-      restore: caption3("restore"),
-      close: caption3("close"),
+      minimize: caption2("minimize"),
+      maximize: caption2("maximize"),
+      restore: caption2("restore"),
+      close: caption2("close"),
       button: { source: "button", states: 5, margins: margins(scheme, "Button.Pushbutton", [8, 8, 9, 9]), kind: "face" },
       checkbox: { source: "checkbox_96", states: 12, kind: "face" },
       radio: { source: "radio_button_96", states: 8, kind: "face" },
@@ -4151,7 +4151,7 @@
     canvas.height = y.map.length;
     const context = canvas.getContext("2d"), output = context.createImageData(canvas.width, canvas.height);
     const rgb = (hex) => [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16));
-    const [face2, lift] = dark ? [rgb(dark.face), rgb(dark.lift)] : [[0, 0, 0], [0, 0, 0]];
+    const [face, lift] = dark ? [rgb(dark.face), rgb(dark.lift)] : [[0, 0, 0], [0, 0, 0]];
     for (let row = 0; row < y.map.length; row++) for (let column = 0; column < x.map.length; column++) {
       const from = (y.map[row] * source.width + x.map[column]) * 4, to = (row * canvas.width + column) * 4;
       let r = input[from], g = input[from + 1], b = input[from + 2];
@@ -4160,7 +4160,7 @@
         g *= 0.7;
         b *= 0.7;
       } else if (dark) {
-        const luma = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255, mix = (index, channel2) => face2[index] + (1 - luma) * (lift[index] - face2[index]) + (channel2 - luma * 255) * 0.6;
+        const luma = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255, mix = (index, channel2) => face[index] + (1 - luma) * (lift[index] - face[index]) + (channel2 - luma * 255) * 0.6;
         [r, g, b] = [mix(0, r), mix(1, g), mix(2, b)];
       }
       output.data[to] = r;
@@ -4394,9 +4394,9 @@ ${unzoomedScope}{zoom:${back}}`;
   }
   function xpFontCss(dpr) {
     const faces = Object.entries(strikes).flatMap(([strike, [regular, bold]]) => [[regular, 400], [bold, 700]].filter(([url]) => url).map(([url, weight]) => `@font-face{font-family:"Atelier XP ${strike}";src:url("${url}") format("woff");font-weight:${weight};font-display:block}`));
-    const body2 = xpTextFor(9, dpr), caption3 = xpTextFor(10, dpr), title = xpTextFor(12, dpr);
+    const body2 = xpTextFor(9, dpr), caption2 = xpTextFor(10, dpr), title = xpTextFor(12, dpr);
     const family = (text4) => `"Atelier XP ${text4.strike}",SimSun,"NSimSun",monospace`;
-    return { faces: faces.join("\n"), vars: `--xp-font:${family(body2)};--xp-font-size:${body2.size}px;--xp-line:${body2.line}px;--xp-caption-font:${family(caption3)};--xp-caption-size:${caption3.size}px;--xp-title-font:${family(title)};--xp-title-size:${title.size}px;--xp-dot:${body2.factor / dpr}px;--xp-crisp:${xpCrispFilter}` };
+    return { faces: faces.join("\n"), vars: `--xp-font:${family(body2)};--xp-font-size:${body2.size}px;--xp-line:${body2.line}px;--xp-caption-font:${family(caption2)};--xp-caption-size:${caption2.size}px;--xp-title-font:${family(title)};--xp-title-size:${title.size}px;--xp-dot:${body2.factor / dpr}px;--xp-crisp:${xpCrispFilter}` };
   }
   var fallback = /[^\u0000-\u007e\u00a0-\u024f\u2000-\u206f\u2e80-\u9fff\uff00-\uffef]/u;
   var graphemes;
@@ -4561,14 +4561,14 @@ ${selector}:checked{background-image:var(--xp-${part}-${checked})}${selector}:ch
 ${part === "checkbox" ? `${selector}:indeterminate{background-image:var(--xp-checkbox-8)}` : ""}`;
   }
   function xpScrollbarCss(scope) {
-    const s = scope.split(",").flatMap((part) => [`${part.trim()}::-webkit-scrollbar`, `${part.trim()} ::-webkit-scrollbar`]);
+    const s2 = scope.split(",").flatMap((part) => [`${part.trim()}::-webkit-scrollbar`, `${part.trim()} ::-webkit-scrollbar`]);
     const pseudo = (name) => scope.split(",").flatMap((part) => [`${part.trim()}::-webkit-scrollbar-${name}`, `${part.trim()} ::-webkit-scrollbar-${name}`]).join(",");
     const button6 = (axis2, edge, direction, from) => {
       const sel = pseudo(`button:${axis2}:${edge}:${direction}`);
       return `${sel}{display:block;width:var(--xp-arrow-w,17px);height:var(--xp-arrow-h,17px);background:var(--xp-arrow-${from}) center/100% 100% no-repeat}
 ${pseudo(`button:${axis2}:${edge}:${direction}:hover`)}{background-image:var(--xp-arrow-${from + 1})}${pseudo(`button:${axis2}:${edge}:${direction}:active`)}{background-image:var(--xp-arrow-${from + 2})}`;
     };
-    return `${s.join(",")}{width:var(--xp-arrow-w,17px);height:var(--xp-arrow-h,17px);image-rendering:pixelated}
+    return `${s2.join(",")}{width:var(--xp-arrow-w,17px);height:var(--xp-arrow-h,17px);image-rendering:pixelated}
 ${pseudo("button")}{display:none}
 ${button6("vertical", "start", "decrement", 0)}${button6("vertical", "end", "increment", 4)}${button6("horizontal", "start", "decrement", 8)}${button6("horizontal", "end", "increment", 12)}
 ${pseudo("track:vertical")}{${image("shaft-v", 0)}}${pseudo("track:horizontal")}{${image("shaft-h", 0)}}
@@ -6312,8 +6312,8 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
       const dialog = document.createElement("dialog");
       dialog.className = "atelier-dialog xp-window";
       dialog.setAttribute("data-bili-blocker-ui", "");
-      const caption3 = document.createElement("header");
-      caption3.className = "xp-caption";
+      const caption2 = document.createElement("header");
+      caption2.className = "xp-caption";
       const heading = document.createElement("h2");
       heading.id = "atelier-dialog-title";
       heading.textContent = options.title;
@@ -6323,7 +6323,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
       dismiss.dataset.kind = "close";
       dismiss.setAttribute("aria-label", "\u5173\u95ED");
       dismiss.title = "\u5173\u95ED";
-      caption3.append(heading, dismiss);
+      caption2.append(heading, dismiss);
       dialog.setAttribute("aria-labelledby", heading.id);
       const message = document.createElement("p");
       message.textContent = options.message;
@@ -6373,7 +6373,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
         body2.append(choices);
       } else add(options.confirmLabel || (options.readOnly || options.alert ? "\u5173\u95ED" : "\u786E\u5B9A"), () => input?.value ?? "ok");
       if (!options.alert && !options.readOnly) add(options.cancelLabel || "\u53D6\u6D88", () => null);
-      dialog.append(caption3, body2, actions);
+      dialog.append(caption2, body2, actions);
       dialog.addEventListener("cancel", (event) => {
         event.preventDefault();
         finish(null);
@@ -6440,7 +6440,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
   }
 
   // src/ui/window-drag.ts
-  function enableWindowDrag(panel, caption3, signal) {
+  function enableWindowDrag(panel, caption2, signal) {
     const positions = {};
     let drag;
     const mode2 = () => panel.dataset.minimized === "true" ? "minimized" : "normal";
@@ -6456,20 +6456,20 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
       drag = void 0;
       for (const property of ["left", "top", "right", "bottom", "margin"]) panel.style.removeProperty(property);
       if (!maximized() && positions[mode2()]) place3(positions[mode2()]);
-      caption3.style.cursor = maximized() ? "default" : "move";
+      caption2.style.cursor = maximized() ? "default" : "move";
     };
-    caption3.style.touchAction = "none";
-    caption3.querySelectorAll("img").forEach((img) => {
+    caption2.style.touchAction = "none";
+    caption2.querySelectorAll("img").forEach((img) => {
       img.draggable = false;
     });
-    caption3.addEventListener("pointerdown", (event) => {
+    caption2.addEventListener("pointerdown", (event) => {
       if (event.button !== 0 || maximized() || event.target.closest("button")) return;
       const rect = panel.getBoundingClientRect();
       drag = { id: event.pointerId, x: event.clientX, y: event.clientY, origin: { x: rect.left, y: rect.top }, moved: false };
-      caption3.setPointerCapture(event.pointerId);
+      caption2.setPointerCapture(event.pointerId);
       event.preventDefault();
     }, { signal });
-    caption3.addEventListener("pointermove", (event) => {
+    caption2.addEventListener("pointermove", (event) => {
       if (!drag || drag.id !== event.pointerId) return;
       if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 4) drag.moved = true;
       if (!drag.moved) return;
@@ -6485,7 +6485,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
       }
       drag = void 0;
     };
-    for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) caption3.addEventListener(event, release, { signal });
+    for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) caption2.addEventListener(event, release, { signal });
     window.addEventListener("resize", update, { signal });
     update();
     return update;
@@ -6561,7 +6561,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
     function save() {
       groupOf2(section)?.save?.();
     }
-    const caption3 = element("header", "luna-caption xp-caption");
+    const caption2 = element("header", "luna-caption xp-caption");
     const title = element("h1", "", "Bili Atelier");
     title.id = "bili-atelier-title";
     const captionActions = element("div", "luna-caption-actions");
@@ -6595,8 +6595,8 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
       sound(maximized ? "maximize" : "restore");
     });
     captionButton2("close", "\u5173\u95ED\u7A97\u53E3", close2);
-    caption3.append(icon(atelierIcons.tv, 16), title, captionActions);
-    const updateWindowPosition = enableWindowDrag(panel, caption3, events.signal);
+    caption2.append(icon(atelierIcons.tv, 16), title, captionActions);
+    const updateWindowPosition = enableWindowDrag(panel, caption2, events.signal);
     const layout2 = element("div", "luna-layout");
     const sidebar = element("div", "luna-sidebar xp-taskpane");
     const group = element("section", "xp-task-group");
@@ -6630,7 +6630,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
     layout2.append(sidebar, main);
     const statusBar = element("div", "xp-status");
     statusBar.append(status2);
-    panel.append(caption3, layout2, statusBar);
+    panel.append(caption2, layout2, statusBar);
     let drawnClass = "";
     function show(next, user = false) {
       if (user && next !== section) sound("folder");
@@ -6724,7 +6724,7 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
           }
         }
         const keyword = value2.replace(/\s+/g, "").toLowerCase();
-        const matches = (s) => !!s && (regex ? regex.test(s) : !!keyword && s.replace(/\s+/g, "").toLowerCase().includes(keyword));
+        const matches = (s2) => !!s2 && (regex ? regex.test(s2) : !!keyword && s2.replace(/\s+/g, "").toLowerCase().includes(keyword));
         if (parts2.some((part) => (kind !== "dynamic" || group.scope !== "video" || part.video) && (matches(part.title) || group.fields === "text" && matches(part.body)))) {
           const label = group.scope === "dynamic" ? "\u52A8\u6001" : "\u6807\u9898";
           return { type: label + (regex ? "regex" : "fuzzy"), matching: pattern, ruleValue: pattern, ruleKey: group.key, fold: true };
@@ -9050,8 +9050,32 @@ ${foldCss}
   };
   var endpoints = {
     space: {
-      reads: { [api]: [nav, card, ...replyReads, "/x/relation", "/x/relation/tags", "/x/relation/tag/user"] },
-      writes: feedWrites
+      reads: {
+        [api]: [
+          nav,
+          card,
+          ...replyReads,
+          "/x/relation",
+          "/x/relation/stat",
+          "/x/relation/tags",
+          "/x/relation/tag/user",
+          "/x/relation/followings",
+          "/x/relation/fans",
+          "/x/space/wbi/acc/info",
+          "/x/space/upstat",
+          "/x/space/notice",
+          "/x/space/masterpiece",
+          "/x/space/top/arc",
+          "/x/space/wbi/arc/search",
+          "/x/polymer/web-space/seasons_series_list",
+          "/x/polymer/web-dynamic/v1/feed/space",
+          "/x/polymer/web-dynamic/v1/feed/space/search"
+        ]
+      },
+      writes: {
+        ...feedWrites,
+        watchlater: ["/x/v2/history/toview/add", "form", "body", 0]
+      }
     },
     /** Requests with the browser's cookies from any page: local follow checks. */
     gm: { reads: { [api]: followReads }, writes: {} },
@@ -10019,15 +10043,15 @@ ${foldCss}
   function xpWindow(options) {
     const root = el("section", `xp-window vl-window ${options.className}`);
     root.setAttribute("aria-label", options.label ?? options.title);
-    const caption3 = root.appendChild(el("header", "xp-caption"));
-    const icon2 = caption3.appendChild(el("span", "vl-caption-icon"));
+    const caption2 = root.appendChild(el("header", "xp-caption"));
+    const icon2 = caption2.appendChild(el("span", "vl-caption-icon"));
     icon2.append(options.icon);
-    const title = caption3.appendChild(el("h2", "xp-caption-title", options.title));
+    const title = caption2.appendChild(el("h2", "xp-caption-title", options.title));
     const body2 = root.appendChild(el("div", "vl-body"));
-    return { root, caption: caption3, icon: icon2, title, body: body2 };
+    return { root, caption: caption2, icon: icon2, title, body: body2 };
   }
-  function captionButton(caption3, kind, label, action) {
-    const button6 = caption3.appendChild(el("button", "xp-caption-button"));
+  function captionButton(caption2, kind, label, action) {
+    const button6 = caption2.appendChild(el("button", "xp-caption-button"));
     button6.type = "button";
     button6.dataset.kind = kind;
     button6.title = label;
@@ -10113,9 +10137,9 @@ ${foldCss}
     for (const button6 of document.querySelectorAll(".vl-viewed")) button6.atelierPaint?.();
   });
   function formatDuration(seconds2) {
-    const total = Math.max(0, Math.floor(Number(seconds2) || 0)), h = Math.floor(total / 3600), m = Math.floor(total % 3600 / 60), s = total % 60;
+    const total = Math.max(0, Math.floor(Number(seconds2) || 0)), h = Math.floor(total / 3600), m = Math.floor(total % 3600 / 60), s2 = total % 60;
     const two2 = (value2) => String(value2).padStart(2, "0");
-    return h ? `${h}:${two2(m)}:${two2(s)}` : `${two2(m)}:${two2(s)}`;
+    return h ? `${h}:${two2(m)}:${two2(s2)}` : `${two2(m)}:${two2(s2)}`;
   }
   function formatDate(seconds2) {
     const value2 = Number(seconds2);
@@ -10183,6 +10207,17 @@ ${foldCss}
       return response.blob();
     }) };
   }
+  var edgeCursors = {
+    n: "ns-resize",
+    s: "ns-resize",
+    e: "ew-resize",
+    w: "ew-resize",
+    ne: "nesw-resize",
+    sw: "nesw-resize",
+    nw: "nwse-resize",
+    se: "nwse-resize"
+  };
+  var wireThickness = 4;
   var current = null;
   function showImageWindow(image6) {
     showImages([image6], 0);
@@ -10191,18 +10226,27 @@ ${foldCss}
     if (images2.length) (current ??= createImageWindow()).show(images2, Math.min(Math.max(0, index), images2.length - 1));
   }
   function createImageWindow() {
+    const backdrop = el("div", "vl-image-backdrop");
     const win = xpWindow({ className: "vl-image-window", icon: shellIcon(224, 16), title: "" });
     const root = win.root;
     root.setAttribute("data-bili-blocker-ui", "true");
     root.setAttribute("role", "dialog");
-    const close2 = win.caption.appendChild(el("button", "xp-caption-button"));
-    close2.type = "button";
-    close2.title = "\u5173\u95ED";
-    close2.setAttribute("aria-label", "\u5173\u95ED");
+    const makeCapBtn = (kind, label) => {
+      const btn = win.caption.appendChild(el("button", "xp-caption-button"));
+      btn.type = "button";
+      btn.dataset.kind = kind;
+      btn.title = label;
+      btn.setAttribute("aria-label", label);
+      return btn;
+    };
+    const minBtn = makeCapBtn("minimize", "\u6700\u5C0F\u5316");
+    const maxBtn = makeCapBtn("maximize", "\u6700\u5927\u5316");
+    const close2 = makeCapBtn("close", "\u5173\u95ED");
     const view = win.body.appendChild(el("div", "vl-image-view"));
     const picture = view.appendChild(el("img"));
     picture.alt = "";
     picture.referrerPolicy = "no-referrer";
+    picture.draggable = false;
     const status2 = win.body.appendChild(el("div", "xp-status vl-image-status"));
     const count2 = status2.appendChild(el("span", "xp-status-pane vl-image-count"));
     const size = status2.appendChild(el("span", "xp-status-pane"));
@@ -10212,36 +10256,343 @@ ${foldCss}
     const save = status2.appendChild(xpButton("\u4FDD\u5B58\u2026", () => void download()));
     let images2 = [], index = 0;
     observeCrispText(root);
-    let dragged = false;
+    const outline = el("div", "vl-image-outline");
+    outline.setAttribute("aria-hidden", "true");
+    outline.setAttribute("data-bili-blocker-ui", "true");
+    const wires = ["top", "bottom", "left", "right"].map((side) => outline.appendChild(el("div", `vl-image-wire vl-image-wire-${side}`)));
+    let dragged = false, minimized = false, maximized = false, sized2 = false;
+    let savedBox = null;
+    let resizing = null;
     const center = () => {
-      if (dragged || !root.isConnected) return;
+      if (dragged || maximized || !root.isConnected) return;
       placeFixed(root, { left: Math.max(0, Math.round((innerWidth - screenWidth(root)) / 2)), top: Math.max(0, Math.round((innerHeight - screenHeight(root)) / 2)) });
     };
+    let zoomed = false;
+    let boxW = 0, boxH = 0;
+    let fitScale = 1, scale = 1;
+    let panX = 0, panY = 0;
+    let suppressClick = false;
+    const paintStatus = () => {
+      if (!picture.naturalWidth || !picture.naturalHeight) return;
+      const base = `${picture.naturalWidth}\xD7${picture.naturalHeight}`;
+      size.textContent = zoomed ? `${base} \xB7 ${Math.round(scale * 100)}%` : base;
+    };
+    const clampPan = () => {
+      const imgW = picture.naturalWidth * scale;
+      const imgH = picture.naturalHeight * scale;
+      panX = imgW <= boxW ? (boxW - imgW) / 2 : Math.min(0, Math.max(boxW - imgW, panX));
+      panY = imgH <= boxH ? (boxH - imgH) / 2 : Math.min(0, Math.max(boxH - imgH, panY));
+    };
+    const canPan = () => zoomed && (picture.naturalWidth * scale > boxW + 0.5 || picture.naturalHeight * scale > boxH + 0.5);
+    const applyCanvas = () => {
+      clampPan();
+      const imgW = picture.naturalWidth * scale;
+      const imgH = picture.naturalHeight * scale;
+      picture.style.width = `${imgW}px`;
+      picture.style.height = `${imgH}px`;
+      picture.style.transform = `translate(${panX}px, ${panY}px)`;
+      view.classList.toggle("vl-image-pannable", canPan());
+      paintStatus();
+    };
+    const isSized = () => sized2 || maximized;
+    const syncZoomIndicator = () => {
+      if (zoomed) {
+        view.dataset.zoom = "out";
+        picture.title = "\u6EDA\u8F6E\u7F29\u653E\uFF0C\u5DE6\u952E\u62D6\u52A8\uFF0C\u5355\u51FB\u9002\u5E94\u7A97\u53E3";
+      } else {
+        const canZoomIn = picture.complete && picture.naturalWidth > 0 && picture.naturalHeight > 0 && (isSized() ? view.clientWidth < picture.naturalWidth || view.clientHeight < picture.naturalHeight : picture.clientWidth < picture.naturalWidth || picture.clientHeight < picture.naturalHeight);
+        view.dataset.zoom = canZoomIn ? "in" : "";
+        picture.title = view.dataset.zoom ? "\u5355\u51FB\u67E5\u770B\u5B9E\u9645\u5927\u5C0F\uFF0C\u6EDA\u8F6E\u53EF\u7F29\u653E" : "\u6EDA\u8F6E\u53EF\u7F29\u653E";
+      }
+    };
+    const enterZoom = () => {
+      if (zoomed) return true;
+      const width = isSized() ? view.clientWidth : picture.clientWidth;
+      const height = isSized() ? view.clientHeight : picture.clientHeight;
+      if (!width || !height || !picture.naturalWidth || !picture.naturalHeight) return false;
+      boxW = width;
+      boxH = height;
+      fitScale = Math.min(width / picture.naturalWidth, height / picture.naturalHeight);
+      scale = fitScale;
+      panX = (boxW - picture.naturalWidth * scale) / 2;
+      panY = (boxH - picture.naturalHeight * scale) / 2;
+      zoomed = true;
+      if (!isSized()) {
+        view.style.width = `${boxW}px`;
+        view.style.height = `${boxH}px`;
+      }
+      view.classList.add("vl-image-actual");
+      syncZoomIndicator();
+      return true;
+    };
+    const refreshViewport = () => {
+      if (minimized) return;
+      if (zoomed && isSized()) {
+        boxW = view.clientWidth || boxW;
+        boxH = view.clientHeight || boxH;
+        fitScale = picture.naturalWidth && picture.naturalHeight ? Math.min(boxW / picture.naturalWidth, boxH / picture.naturalHeight) : 1;
+        applyCanvas();
+      } else {
+        syncZoomIndicator();
+      }
+    };
     const fit = () => {
-      view.classList.remove("vl-image-actual");
+      zoomed = false;
+      boxW = boxH = 0;
+      scale = fitScale = 1;
+      panX = panY = 0;
+      view.classList.remove("vl-image-actual", "vl-image-pannable", "vl-image-panning");
       view.style.removeProperty("width");
       view.style.removeProperty("height");
-      view.dataset.zoom = picture.complete && (picture.clientWidth < picture.naturalWidth || picture.clientHeight < picture.naturalHeight) ? "in" : "";
-      picture.title = view.dataset.zoom ? "\u5355\u51FB\u67E5\u770B\u5B9E\u9645\u5927\u5C0F" : "";
+      picture.style.removeProperty("width");
+      picture.style.removeProperty("height");
+      picture.style.removeProperty("transform");
+      syncZoomIndicator();
+      paintStatus();
     };
+    const paintWindowChrome = () => {
+      root.toggleAttribute("data-minimized", minimized);
+      root.toggleAttribute("data-maximized", maximized);
+      root.toggleAttribute("data-sized", isSized());
+      win.body.hidden = minimized;
+      backdrop.hidden = minimized;
+      minBtn.dataset.kind = minimized ? "restore" : "minimize";
+      minBtn.title = minimized ? "\u8FD8\u539F" : "\u6700\u5C0F\u5316";
+      minBtn.setAttribute("aria-label", minBtn.title);
+      maxBtn.dataset.kind = maximized ? "restore" : "maximize";
+      maxBtn.title = maximized ? "\u8FD8\u539F" : "\u6700\u5927\u5316";
+      maxBtn.setAttribute("aria-label", maxBtn.title);
+    };
+    const clearExplicitSize = () => {
+      sized2 = false;
+      root.style.removeProperty("width");
+      root.style.removeProperty("height");
+    };
+    const toggleMinimize = () => {
+      resizing?.cancel();
+      minimized = !minimized;
+      sound(minimized ? "minimize" : "restore");
+      paintWindowChrome();
+      if (!minimized) refreshViewport();
+    };
+    const toggleMaximize = () => {
+      resizing?.cancel();
+      if (minimized) minimized = false;
+      if (!maximized) {
+        const rect = root.getBoundingClientRect();
+        savedBox = { left: rect.left, top: rect.top, width: rect.width, height: rect.height, sized: sized2, dragged };
+        maximized = true;
+        view.style.removeProperty("width");
+        view.style.removeProperty("height");
+        placeFixed(root, { left: 0, top: 0, width: innerWidth, height: innerHeight });
+        sound("maximize");
+      } else {
+        maximized = false;
+        if (savedBox?.sized) {
+          sized2 = true;
+          dragged = savedBox.dragged;
+          placeFixed(root, { left: savedBox.left, top: savedBox.top, width: savedBox.width, height: savedBox.height });
+        } else {
+          clearExplicitSize();
+          dragged = savedBox?.dragged ?? false;
+          if (savedBox?.dragged) placeFixed(root, { left: savedBox.left, top: savedBox.top });
+          else center();
+        }
+        savedBox = null;
+        sound("restore");
+      }
+      paintWindowChrome();
+      if (zoomed && !isSized()) fit();
+      else refreshViewport();
+      if (!maximized && !sized2 && !dragged) center();
+    };
+    minBtn.addEventListener("click", toggleMinimize);
+    maxBtn.addEventListener("click", toggleMaximize);
+    win.caption.addEventListener("dblclick", (event) => {
+      if (event.target.closest(".xp-caption-button")) return;
+      if (minimized) toggleMinimize();
+      else toggleMaximize();
+    });
+    const hitEdge2 = (x, y) => {
+      if (minimized || maximized) return null;
+      const rect = root.getBoundingClientRect();
+      const z = zoomOf(root), edge = 6 * z;
+      if (x < rect.left - 2 * z || x > rect.right + 2 * z || y < rect.top - 2 * z || y > rect.bottom + 2 * z) return null;
+      const left = x <= rect.left + edge, right = x >= rect.right - edge;
+      const top = y <= rect.top + edge, bottom = y >= rect.bottom - edge;
+      if (!left && !right && !top && !bottom) return null;
+      if (top && left) return "nw";
+      if (top && right) return "ne";
+      if (bottom && left) return "sw";
+      if (bottom && right) return "se";
+      if (top) return "n";
+      if (bottom) return "s";
+      if (left) return "w";
+      return "e";
+    };
+    const paintOutline = (box2) => {
+      const dot = currentPixelScale().scale ? 1 : 1 / (window.devicePixelRatio || 1), tile = `${2 * dot}px`;
+      const host = document.fullscreenElement ?? document.body;
+      if (!outline.isConnected) host.append(outline);
+      for (const wire of wires) wire.style.backgroundSize = `${tile} ${tile}`;
+      placeFixed(outline, box2);
+    };
+    root.addEventListener("pointermove", (event) => {
+      if (resizing) return;
+      const edge = hitEdge2(event.clientX, event.clientY);
+      root.style.cursor = edge ? edgeCursors[edge] : "";
+    });
+    root.addEventListener("pointerleave", () => {
+      if (!resizing) root.style.cursor = "";
+    });
+    root.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || resizing) return;
+      const edge = hitEdge2(event.clientX, event.clientY);
+      if (!edge) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const startRect = root.getBoundingClientRect();
+      const z = zoomOf(root);
+      const minW = Math.min(innerWidth, Math.round(240 * z));
+      const minH = Math.min(innerHeight, Math.round(160 * z));
+      const startX = event.clientX, startY = event.clientY;
+      let draft = {
+        left: Math.round(startRect.left),
+        top: Math.round(startRect.top),
+        width: Math.round(startRect.width),
+        height: Math.round(startRect.height)
+      };
+      let moved2 = false;
+      const computeBox = (cx, cy) => {
+        const dx = cx - startX, dy = cy - startY;
+        let left = startRect.left, top = startRect.top, right = startRect.right, bottom = startRect.bottom;
+        if (edge.includes("w")) left = Math.min(right - minW, Math.max(0, startRect.left + dx));
+        if (edge.includes("e")) right = Math.max(left + minW, Math.min(innerWidth, startRect.right + dx));
+        if (edge.includes("n")) top = Math.min(bottom - minH, Math.max(0, startRect.top + dy));
+        if (edge.includes("s")) bottom = Math.max(top + minH, Math.min(innerHeight, startRect.bottom + dy));
+        return { left: Math.round(left), top: Math.round(top), width: Math.round(right - left), height: Math.round(bottom - top) };
+      };
+      paintOutline(draft);
+      document.documentElement.style.cursor = edgeCursors[edge];
+      root.setPointerCapture?.(event.pointerId);
+      const cleanup = () => {
+        outline.remove();
+        document.documentElement.style.removeProperty("cursor");
+        root.style.cursor = "";
+        window.removeEventListener("pointermove", move, true);
+        window.removeEventListener("pointerup", finish, true);
+        window.removeEventListener("pointercancel", cancel, true);
+        resizing = null;
+      };
+      const move = (next2) => {
+        moved2 = true;
+        draft = computeBox(next2.clientX, next2.clientY);
+        paintOutline(draft);
+      };
+      const cancel = () => cleanup();
+      const finish = (next2) => {
+        if (moved2) draft = computeBox(next2.clientX, next2.clientY);
+        cleanup();
+        if (!moved2) return;
+        sized2 = true;
+        dragged = true;
+        view.style.removeProperty("width");
+        view.style.removeProperty("height");
+        placeFixed(root, draft);
+        paintWindowChrome();
+        refreshViewport();
+      };
+      resizing = { cancel };
+      window.addEventListener("pointermove", move, true);
+      window.addEventListener("pointerup", finish, true);
+      window.addEventListener("pointercancel", cancel, true);
+    }, true);
     picture.addEventListener("click", (event) => {
-      if (view.dataset.zoom === "out") {
+      if (suppressClick) {
+        suppressClick = false;
+        return;
+      }
+      if (zoomed) {
         fit();
         center();
         return;
       }
       if (view.dataset.zoom !== "in") return;
-      const width = picture.clientWidth, height = picture.clientHeight, x = event.offsetX / width, y = event.offsetY / height;
-      view.style.width = `${width}px`;
-      view.style.height = `${height}px`;
-      view.classList.add("vl-image-actual");
-      view.dataset.zoom = "out";
-      picture.title = "\u5355\u51FB\u9002\u5E94\u7A97\u53E3";
-      view.scrollLeft = x * picture.naturalWidth - width / 2;
-      view.scrollTop = y * picture.naturalHeight - height / 2;
+      let rx = 0.5, ry = 0.5;
+      if (isSized() && picture.naturalWidth && picture.naturalHeight) {
+        const vw = view.clientWidth, vh2 = view.clientHeight;
+        const ratio = Math.min(vw / picture.naturalWidth, vh2 / picture.naturalHeight);
+        const drawW = picture.naturalWidth * ratio, drawH = picture.naturalHeight * ratio;
+        const offX = (vw - drawW) / 2, offY = (vh2 - drawH) / 2;
+        rx = drawW ? Math.min(1, Math.max(0, (event.offsetX - offX) / drawW)) : 0.5;
+        ry = drawH ? Math.min(1, Math.max(0, (event.offsetY - offY) / drawH)) : 0.5;
+      } else {
+        const width = picture.clientWidth, height = picture.clientHeight;
+        rx = width ? event.offsetX / width : 0.5;
+        ry = height ? event.offsetY / height : 0.5;
+      }
+      if (!enterZoom()) return;
+      scale = 1;
+      panX = boxW / 2 - rx * picture.naturalWidth;
+      panY = boxH / 2 - ry * picture.naturalHeight;
+      applyCanvas();
+    });
+    view.addEventListener("wheel", (event) => {
+      if (!picture.complete || !picture.naturalWidth || !picture.naturalHeight) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (!zoomed && !enterZoom()) return;
+      const rect = view.getBoundingClientRect(), z = zoomOf(view);
+      const cx = rect.width ? (event.clientX - rect.left) / z : boxW / 2;
+      const cy = rect.height ? (event.clientY - rect.top) / z : boxH / 2;
+      const ix = (cx - panX) / scale;
+      const iy = (cy - panY) / scale;
+      const steps = Math.min(3, Math.abs(event.deltaY) / 100 || 1);
+      const factor = Math.pow(1.15, event.deltaY < 0 ? steps : -steps);
+      const minScale = Math.min(0.5, fitScale * 0.5);
+      const maxScale = Math.max(8, fitScale * 8);
+      const nextScale = Math.min(maxScale, Math.max(minScale, scale * factor));
+      scale = nextScale;
+      panX = cx - ix * scale;
+      panY = cy - iy * scale;
+      applyCanvas();
+    }, { passive: false });
+    view.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || !picture.complete || resizing) return;
+      event.preventDefault();
+      const startX = event.clientX, startY = event.clientY;
+      const startPanX = panX, startPanY = panY;
+      let moved2 = false;
+      view.setPointerCapture?.(event.pointerId);
+      const move = (next2) => {
+        const dx = next2.clientX - startX, dy = next2.clientY - startY;
+        if (!moved2 && Math.hypot(dx, dy) > 4) {
+          moved2 = true;
+          if (canPan()) view.classList.add("vl-image-panning");
+        }
+        if (!moved2 || !canPan()) return;
+        const z = zoomOf(view);
+        panX = startPanX + dx / z;
+        panY = startPanY + dy / z;
+        applyCanvas();
+      };
+      const done = () => {
+        view.classList.remove("vl-image-panning");
+        if (moved2) {
+          suppressClick = true;
+          window.setTimeout(() => {
+            suppressClick = false;
+          }, 0);
+        }
+        view.removeEventListener("pointermove", move);
+        view.removeEventListener("pointerup", done);
+        view.removeEventListener("pointercancel", done);
+      };
+      view.addEventListener("pointermove", move);
+      view.addEventListener("pointerup", done);
+      view.addEventListener("pointercancel", done);
     });
     picture.addEventListener("load", () => {
-      size.textContent = `${picture.naturalWidth}\xD7${picture.naturalHeight}`;
       fit();
       center();
     });
@@ -10253,8 +10604,53 @@ ${foldCss}
       sound("close");
       dispose();
     });
+    let downInside = false;
+    root.addEventListener("pointerdown", () => {
+      downInside = true;
+    }, true);
+    const clearDown = () => {
+      window.setTimeout(() => {
+        downInside = false;
+      }, 0);
+    };
+    window.addEventListener("pointerup", clearDown, true);
+    window.addEventListener("pointercancel", clearDown, true);
+    backdrop.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
+      downInside = false;
+      event.preventDefault();
+      event.stopPropagation();
+    });
+    backdrop.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (downInside) return;
+      sound("close");
+      dispose();
+    });
+    const onViewportResize = () => {
+      if (maximized && root.isConnected) {
+        placeFixed(root, { left: 0, top: 0, width: innerWidth, height: innerHeight });
+        refreshViewport();
+      } else if (!dragged) {
+        center();
+      }
+    };
+    window.addEventListener("resize", onViewportResize);
     const keys = (event) => {
-      if (images2.length < 2 || event.key !== "ArrowLeft" && event.key !== "ArrowRight" || event.ctrlKey || event.altKey || event.metaKey || event.shiftKey) return;
+      if (event.ctrlKey || event.altKey || event.metaKey || event.shiftKey) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if (resizing) {
+          resizing.cancel();
+          return;
+        }
+        sound("close");
+        dispose();
+        return;
+      }
+      if (images2.length < 2 || event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
       const target = event.target;
       if (target?.closest?.("input,textarea,select,[contenteditable]:not([contenteditable=false])")) return;
       event.preventDefault();
@@ -10277,18 +10673,24 @@ ${foldCss}
       count2.textContent = several ? `\u7B2C ${index + 1} / ${images2.length} \u5F20` : "";
       prev.disabled = index === 0;
       next.disabled = index === images2.length - 1;
-      size.textContent = "";
-      save.disabled = false;
       fit();
       view.dataset.zoom = "";
+      size.textContent = "";
+      save.disabled = false;
       picture.src = image6.src;
     }
     function dispose() {
+      resizing?.cancel();
       for (const image6 of images2) image6.dispose?.();
       images2 = [];
+      outline.remove();
+      backdrop.remove();
       root.remove();
       current = null;
       window.removeEventListener("keydown", keys, true);
+      window.removeEventListener("pointerup", clearDown, true);
+      window.removeEventListener("pointercancel", clearDown, true);
+      window.removeEventListener("resize", onViewportResize);
     }
     async function download() {
       const image6 = images2[index];
@@ -10307,7 +10709,7 @@ ${foldCss}
       }
     }
     win.caption.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0 || event.target.closest(".xp-caption-button")) return;
+      if (event.button !== 0 || maximized || resizing || event.target.closest(".xp-caption-button")) return;
       event.preventDefault();
       const rect = root.getBoundingClientRect(), dx = event.clientX - rect.left, dy = event.clientY - rect.top;
       dragged = true;
@@ -10327,28 +10729,46 @@ ${foldCss}
     });
     return {
       show(list, from) {
+        resizing?.cancel();
         for (const image6 of images2) if (!list.includes(image6)) image6.dispose?.();
         images2 = list;
         index = from;
-        if (!root.isConnected) {
-          dragged = false;
-          (document.fullscreenElement ?? document.body).append(root);
-        }
+        dragged = false;
+        minimized = false;
+        maximized = false;
+        savedBox = null;
+        clearExplicitSize();
+        paintWindowChrome();
+        const host = document.fullscreenElement ?? document.body;
+        if (!backdrop.isConnected) host.append(backdrop);
+        if (!root.isConnected) host.append(root);
         paint2();
         center();
       }
     };
   }
   var imageWindowCss = `
+.vl-image-backdrop{position:fixed;inset:0;z-index:2147482999;background:transparent;pointer-events:auto}
+.vl-image-outline{position:fixed;z-index:2147483001;margin:0;padding:0;border:0;pointer-events:none}
+.vl-image-wire{position:absolute;background:repeating-conic-gradient(#fff 0 25%,#000 0 50%) 0 0/2px 2px;mix-blend-mode:difference}
+.vl-image-wire-top{top:0;left:0;right:0;height:${wireThickness}px}
+.vl-image-wire-bottom{bottom:0;left:0;right:0;height:${wireThickness}px}
+.vl-image-wire-left{top:${wireThickness}px;bottom:${wireThickness}px;left:0;width:${wireThickness}px}
+.vl-image-wire-right{top:${wireThickness}px;bottom:${wireThickness}px;right:0;width:${wireThickness}px}
 .vl-image-window{position:fixed;z-index:2147483000;margin:0;${xpFont};color:var(--xp-ink);text-align:left;letter-spacing:normal;pointer-events:auto}
 .vl-image-window *{box-sizing:border-box}.vl-image-window [hidden]{display:none!important}
-.vl-image-window>.vl-body{display:flex;flex-direction:column;min-width:0;background:var(--xp-face)}
+.vl-image-window>.vl-body{display:flex;flex-direction:column;min-width:0;min-height:0;flex:1 1 auto;background:var(--xp-face)}
 .vl-image-window .vl-caption-icon{flex:none;display:inline-flex;width:16px;height:16px}
+.vl-image-window[data-minimized]{height:auto!important;min-width:220px}
 /* The picture at its own size, the whole window at most 90 % of the viewport. */
-.vl-image-view{line-height:0;background:#000}
-.vl-image-view>img{display:block;max-width:calc(90vw - 8px);max-height:calc(90vh - 64px);width:auto;height:auto}
+.vl-image-view{position:relative;line-height:0;background:#000;user-select:none;touch-action:none}
+.vl-image-view>img{display:block;max-width:calc(90vw - 8px);max-height:calc(90vh - 64px);width:auto;height:auto;transform-origin:0 0;image-rendering:auto!important}
+.vl-image-window[data-sized] .vl-image-view{flex:1 1 0;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.vl-image-window[data-sized] .vl-image-view:not(.vl-image-actual)>img{width:100%;height:100%;max-width:none;max-height:none;object-fit:contain}
+.vl-image-window[data-sized] .vl-image-view.vl-image-actual{display:block}
 .vl-image-view[data-zoom=in]>img{cursor:zoom-in}.vl-image-view[data-zoom=out]>img{cursor:zoom-out}
-.vl-image-view.vl-image-actual{overflow:auto}.vl-image-view.vl-image-actual>img{max-width:none;max-height:none}
+.vl-image-view.vl-image-actual{overflow:hidden}.vl-image-view.vl-image-actual>img{max-width:none;max-height:none;object-fit:fill}
+.vl-image-view.vl-image-pannable>img{cursor:grab}.vl-image-view.vl-image-panning>img{cursor:grabbing}
 .vl-image-status{display:flex;align-items:center;gap:2px}
 .vl-image-status>.vl-status-spring{flex:1 1 auto}
 .vl-image-status>.xp-button{flex:none}
@@ -10571,14 +10991,14 @@ ${foldCss}
     const author2 = raw?.modules?.module_author ?? {}, card4 = node("article", nested ? "adc-card adc-nested" : "adc-card xp-window");
     if (!nested) card4.dataset.inactive = "";
     card4.dataset.dynamicId = String(raw?.id_str ?? "");
-    const caption3 = card4.appendChild(node("header", nested ? "adc-caption" : "adc-caption xp-caption"));
+    const caption2 = card4.appendChild(node("header", nested ? "adc-caption" : "adc-caption xp-caption"));
     const uid = /^\d+$/.test(String(author2.mid ?? "")) ? String(author2.mid) : "";
     const space = uid ? `https://space.bilibili.com/${uid}/dynamic` : "";
-    if (!nested) caption3.appendChild(link2(space, "adc-face-link")).append(image2(bilibiliThumb(author2.face, "32w_32h_1c"), "adc-face", ""));
-    caption3.append(link2(space, "adc-name xp-caption-title", nested ? `@${author2.name || uid || "\u672A\u77E5"}` : author2.name || uid || "\u672A\u77E5"));
-    if (author2.pub_action) caption3.append(node("span", "adc-action", author2.pub_action));
-    if (raw?.modules?.module_tag?.text) caption3.append(node("span", "adc-pin", raw.modules.module_tag.text));
-    caption3.append(node("span", "adc-tag", typeLabels[raw?.type] ?? "\u52A8\u6001"));
+    if (!nested) caption2.appendChild(link2(space, "adc-face-link")).append(image2(bilibiliThumb(author2.face, "32w_32h_1c"), "adc-face", ""));
+    caption2.append(link2(space, "adc-name xp-caption-title", nested ? `@${author2.name || uid || "\u672A\u77E5"}` : author2.name || uid || "\u672A\u77E5"));
+    if (author2.pub_action) caption2.append(node("span", "adc-action", author2.pub_action));
+    if (raw?.modules?.module_tag?.text) caption2.append(node("span", "adc-pin", raw.modules.module_tag.text));
+    caption2.append(node("span", "adc-tag", typeLabels[raw?.type] ?? "\u52A8\u6001"));
     const content = card4.appendChild(body(raw, linkTimes));
     for (const grid of content.querySelectorAll(".adc-pics:not([data-picture-title])")) grid.dataset.pictureTitle = `\u52A8\u6001\u56FE\u7247 - ${author2.name || uid || "\u672A\u77E5"}`;
     if (!nested) {
@@ -10699,11 +11119,11 @@ ${root} .btnView{z-index:3}
       const before = document.activeElement;
       const dialog = el("dialog", "atelier-dialog xp-window vl-dialog");
       dialog.setAttribute("data-bili-blocker-ui", "");
-      const caption3 = dialog.appendChild(el("header", "xp-caption"));
-      const heading = caption3.appendChild(el("h2", "", options.title));
+      const caption2 = dialog.appendChild(el("header", "xp-caption"));
+      const heading = caption2.appendChild(el("h2", "", options.title));
       heading.id = `vl-dialog-${crypto.randomUUID()}`;
       dialog.setAttribute("aria-labelledby", heading.id);
-      const dismiss = caption3.appendChild(el("button", "xp-caption-button"));
+      const dismiss = caption2.appendChild(el("button", "xp-caption-button"));
       dismiss.type = "button";
       dismiss.dataset.kind = "close";
       dismiss.title = "\u5173\u95ED";
@@ -10763,6 +11183,7 @@ ${root} .btnView{z-index:3}
 
   // src/modules/local-following/follow-controls.ts
   var followed = (attribute2) => attribute2 === 1 || attribute2 === 2 || attribute2 === 6;
+  var blacklisted = (attribute2) => attribute2 === 128;
   var followLabel = (attribute2) => attribute2 === 6 ? "\u5DF2\u4E92\u7C89" : attribute2 === 1 ? "\u6084\u6084\u5173\u6CE8" : attribute2 === 2 ? "\u5DF2\u5173\u6CE8" : "\uFF0B \u5173\u6CE8";
   var states2 = /* @__PURE__ */ new Map();
   var painters = /* @__PURE__ */ new WeakMap();
@@ -10772,7 +11193,7 @@ ${root} .btnView{z-index:3}
   var knownFollowState = (mid) => states2.get(mid);
   function setFollowState(mid, attribute2) {
     states2.set(mid, attribute2);
-    repaint(`.vl-follow[data-follow-mid="${mid}"]`);
+    repaint(`.vl-follow[data-follow-mid="${mid}"],.vl-relation[data-follow-mid="${mid}"]`);
   }
   var note2 = (message, tone) => showInfoLog(message, tone);
   function followButton(person, options, className = "") {
@@ -10875,7 +11296,135 @@ ${root} .btnView{z-index:3}
     painters.set(button6, paint2);
     if (!watchingLocal) {
       watchingLocal = true;
-      window.addEventListener(localFollowChangedEvent, () => repaint(".vl-local-follow[data-follow-mid]"));
+      window.addEventListener(localFollowChangedEvent, () => repaint(".vl-local-follow[data-follow-mid],.vl-relation[data-follow-mid]"));
+    }
+    paint2();
+    return button6;
+  }
+  var watchingRelation = false;
+  var isLocallyBlocked = (mid) => config.blocker.enabled && readRuleSnapshot().precise_uid.some((uid) => String(uid) === mid);
+  function relationButton(person, options, className = "") {
+    const button6 = xpButton("", () => openRelationMenu(), `vl-relation ${className}`.trim());
+    const isLocal = () => localFollowSnapshot().accounts.some((account) => account.uid === person.mid);
+    const paint2 = () => {
+      const attribute2 = states2.get(person.mid) ?? 0;
+      const blocked = isLocallyBlocked(person.mid);
+      const platBlack = blacklisted(attribute2);
+      const platFollow = followed(attribute2);
+      const localFollow = isLocal();
+      let label = "\uFF0B \u5173\u6CE8";
+      if (blocked) label = "\u5DF2\u5C4F\u853D";
+      else if (platBlack) label = "\u5DF2\u62C9\u9ED1";
+      else if (platFollow && localFollow) label = attribute2 === 6 ? "\u5DF2\u4E92\u7C89\xB7\u672C" : "\u5DF2\u5173\u6CE8\xB7\u672C";
+      else if (platFollow) label = followLabel(attribute2);
+      else if (localFollow) label = "\u672C\u5730\u5173\u6CE8";
+      button6.textContent = label;
+      button6.append(el("span", "vl-drop"));
+      button6.classList.toggle("xp-default", !blocked && !platBlack && !platFollow && !localFollow);
+      button6.classList.toggle("vl-rel-blocked", blocked || platBlack);
+      button6.setAttribute("aria-pressed", String(blocked || platBlack || platFollow || localFollow));
+    };
+    async function doPlatformFollow(on9) {
+      const attribute2 = states2.get(person.mid) ?? 0;
+      if (!on9) {
+        if (!await atelierConfirm(`\u786E\u5B9A\u4E0D\u518D\u5173\u6CE8 ${person.name} \u5417\uFF1F`, "\u53D6\u6D88\u5173\u6CE8")) return;
+      }
+      button6.disabled = true;
+      try {
+        await options.api.follow(person.mid, on9 ? 1 : attribute2 === 1 ? 4 : 2);
+        setFollowState(person.mid, on9 ? 2 : 0);
+        note2(on9 ? `\u5DF2\u5173\u6CE8 ${person.name}` : `\u5DF2\u53D6\u6D88\u5173\u6CE8 ${person.name}`, "success");
+      } catch (error) {
+        note2(options.failure(error), "error");
+      } finally {
+        button6.disabled = false;
+        paint2();
+      }
+    }
+    function doLocalFollow(on9) {
+      if (on9) {
+        addLocalFollow({ uid: person.mid, name: person.name, face: person.face });
+        writeLocalFollowCache(person.mid, { name: person.name, face: person.face });
+        note2(`\u5DF2\u6DFB\u52A0\u672C\u5730\u5173\u6CE8\uFF1A${person.name}`, "success");
+      } else {
+        removeLocalFollow(person.mid);
+        note2(`\u5DF2\u79FB\u9664\u672C\u5730\u5173\u6CE8\uFF1A${person.name}`, "success");
+      }
+      repaint(`.vl-local-follow[data-follow-mid="${person.mid}"],.vl-relation[data-follow-mid="${person.mid}"]`);
+    }
+    async function doLocalBlock() {
+      const attribute2 = states2.get(person.mid) ?? 0;
+      const platFollow = followed(attribute2) && !!options.me;
+      const localFollow = isLocal();
+      const extra = platFollow && localFollow ? "\u8FD9\u5C06\u540C\u65F6\u53D6\u6D88\u5E73\u53F0\u5173\u6CE8\u5E76\u79FB\u9664\u672C\u5730\u5173\u6CE8\u3002" : platFollow ? "\u8FD9\u5C06\u540C\u65F6\u53D6\u6D88\u5E73\u53F0\u5173\u6CE8\u3002" : localFollow ? "\u8FD9\u5C06\u540C\u65F6\u79FB\u9664\u672C\u5730\u5173\u6CE8\u3002" : "";
+      const message = `\u786E\u5B9A\u5728\u672C\u5730\u5C4F\u853D UP \u4E3B\u300C${person.name}\u300D\uFF08UID: ${person.mid}\uFF09\u5417\uFF1F${extra}`;
+      if (!await atelierConfirm(message, "\u5C4F\u853D UP\uFF08\u672C\u5730\uFF09")) return;
+      button6.disabled = true;
+      try {
+        if (platFollow) {
+          await options.api.follow(person.mid, attribute2 === 1 ? 4 : 2);
+          setFollowState(person.mid, 0);
+        }
+        if (localFollow) removeLocalFollow(person.mid);
+        addRuleItem("precise_uid", person.mid);
+        notifyBlockHistoryChanged();
+        note2(`\u5DF2\u672C\u5730\u5C4F\u853D UP\uFF1A${person.name}`, "success");
+      } catch (error) {
+        note2(options.failure(error), "error");
+      } finally {
+        button6.disabled = false;
+        repaint(`.vl-relation[data-follow-mid="${person.mid}"]`);
+      }
+    }
+    function doLocalUnblock() {
+      const uid = Number(person.mid) || person.mid;
+      removeRuleItem("precise_uid", uid);
+      removeHistoryByRules([{ key: "precise_uid", value: uid }]);
+      notifyBlockHistoryChanged();
+      note2(`\u5DF2\u89E3\u9664\u672C\u5730\u5C4F\u853D\uFF1A${person.name}`, "success");
+      repaint(`.vl-relation[data-follow-mid="${person.mid}"]`);
+    }
+    function openRelationMenu() {
+      const attribute2 = states2.get(person.mid) ?? 0;
+      const blocked = isLocallyBlocked(person.mid);
+      const platBlack = blacklisted(attribute2);
+      if (blocked) {
+        openMenu([{ label: "\u89E3\u9664\u672C\u5730\u5C4F\u853D", action: doLocalUnblock }], button6);
+        return;
+      }
+      if (platBlack) {
+        const items2 = [{ label: "B \u7AD9\u8D26\u53F7\u5DF2\u62C9\u9ED1\u8BE5\u7528\u6237", disabled: true }];
+        if (config.blocker.enabled) {
+          items2.push("separator", { label: "\u540C\u65F6\u52A0\u5165\u672C\u5730\u5C4F\u853D", action: () => void doLocalBlock() });
+        }
+        openMenu(items2, button6);
+        return;
+      }
+      const platFollow = followed(attribute2);
+      const localFollow = isLocal();
+      const items = [];
+      if (!options.me) {
+        items.push({ label: "\u5E73\u53F0\u5173\u6CE8\uFF08\u767B\u5F55\u540E\u53EF\u7528\uFF09", disabled: true });
+      } else if (!platFollow) {
+        items.push({ label: "\u5E73\u53F0\u5173\u6CE8", action: () => void doPlatformFollow(true) });
+      } else {
+        items.push(
+          { label: "\u8BBE\u7F6E\u5173\u6CE8\u5206\u7EC4\u2026", action: () => void chooseTags(person, options) },
+          { label: "\u53D6\u6D88\u5E73\u53F0\u5173\u6CE8", action: () => void doPlatformFollow(false) }
+        );
+      }
+      items.push(localFollow ? { label: "\u79FB\u9664\u672C\u5730\u5173\u6CE8", checked: true, action: () => doLocalFollow(false) } : { label: "\u6DFB\u52A0\u672C\u5730\u5173\u6CE8", action: () => doLocalFollow(true) });
+      if (config.blocker.enabled) {
+        items.push("separator", { label: "\u5C4F\u853D UP\uFF08\u672C\u5730\uFF09", action: () => void doLocalBlock() });
+      }
+      openMenu(items, button6);
+    }
+    button6.dataset.followMid = person.mid;
+    painters.set(button6, paint2);
+    if (!watchingRelation) {
+      watchingRelation = true;
+      window.addEventListener(localFollowChangedEvent, () => repaint(".vl-relation[data-follow-mid]"));
+      window.addEventListener(historyChangedEvent, () => repaint(".vl-relation[data-follow-mid]"));
     }
     paint2();
     return button6;
@@ -11207,9 +11756,9 @@ ${root} .btnView{z-index:3}
     panel.setAttribute("data-bili-blocker-ui", "");
     panel.setAttribute("role", "dialog");
     panel.setAttribute("aria-label", "\u8868\u60C5");
-    const caption3 = panel.appendChild(node2("header", "xp-caption"));
-    caption3.append(node2("span", "xp-caption-title", "\u8868\u60C5"));
-    const close2 = caption3.appendChild(button2("", "xp-caption-button", () => done()));
+    const caption2 = panel.appendChild(node2("header", "xp-caption"));
+    caption2.append(node2("span", "xp-caption-title", "\u8868\u60C5"));
+    const close2 = caption2.appendChild(button2("", "xp-caption-button", () => done()));
     close2.className = "xp-caption-button";
     close2.dataset.kind = "close";
     close2.title = "\u5173\u95ED";
@@ -11456,13 +12005,13 @@ ${root} .btnView{z-index:3}
       const rpid = String(reply?.rpid_str ?? reply?.rpid ?? ""), mid = String(reply?.mid_str ?? reply?.mid ?? reply?.member?.mid ?? "");
       element2.dataset.rpid = rpid;
       const space = /^\d+$/.test(mid) ? `https://space.bilibili.com/${mid}` : "";
-      const face2 = element2.appendChild(node2("a", "acm-face"));
+      const face = element2.appendChild(node2("a", "acm-face"));
       if (space) {
-        face2.href = space;
-        face2.target = "_blank";
-        face2.rel = "noopener noreferrer";
+        face.href = space;
+        face.target = "_blank";
+        face.rel = "noopener noreferrer";
       }
-      const avatar = face2.appendChild(node2("img"));
+      const avatar = face.appendChild(node2("img"));
       avatar.alt = "";
       avatar.referrerPolicy = "no-referrer";
       avatar.loading = "lazy";
@@ -11476,7 +12025,7 @@ ${root} .btnView{z-index:3}
         who.rel = "noopener noreferrer";
       }
       const level = Number(reply?.member?.level_info?.current_level);
-      if (space) for (const anchor of [face2, who]) markUserCard(anchor, { mid, name: String(reply?.member?.uname ?? ""), face: String(reply?.member?.avatar ?? ""), level });
+      if (space) for (const anchor of [face, who]) markUserCard(anchor, { mid, name: String(reply?.member?.uname ?? ""), face: String(reply?.member?.avatar ?? ""), level });
       const target = { kind: "comment", el: element2, insertionEl: element2, uid: Number(mid) || void 0, name: reply?.member?.uname, content: reply?.content?.message };
       targets2.set(element2, target);
       if (context.blocking && !(context.me && mid === context.me)) top.append(createCommentUserBlockButton(target, rescan, "acm-block"));
@@ -12661,14 +13210,14 @@ ${userCardCss}
     panel.className = `${panelClass} xp-window`;
     panel.setAttribute("data-atelier-local-ui", "");
     panel.setAttribute("data-bili-blocker-ui", "true");
-    const caption3 = panel.appendChild(document.createElement("header"));
-    caption3.className = "afp-caption xp-caption";
-    const icon2 = caption3.appendChild(document.createElement("span"));
+    const caption2 = panel.appendChild(document.createElement("header"));
+    caption2.className = "afp-caption xp-caption";
+    const icon2 = caption2.appendChild(document.createElement("span"));
     icon2.className = "afp-caption-icon";
-    const title = caption3.appendChild(document.createElement("h2"));
-    const note3 = caption3.appendChild(document.createElement("span"));
+    const title = caption2.appendChild(document.createElement("h2"));
+    const note3 = caption2.appendChild(document.createElement("span"));
     note3.className = "afp-note";
-    const toggle = caption3.appendChild(document.createElement("button"));
+    const toggle = caption2.appendChild(document.createElement("button"));
     toggle.type = "button";
     toggle.className = "afp-toggle xp-caption-button";
     const body2 = panel.appendChild(document.createElement("div"));
@@ -12735,12 +13284,12 @@ ${userCardCss}
 UID\uFF1A${person.uid}
 \u6700\u8FD1\u53D1\u5E03\uFF1A${when2}${person.online && person.local ? "\n\u8D26\u53F7\u5173\u6CE8 \xB7 \u672C\u5730\u5173\u6CE8" : person.local ? "\n\u672C\u5730\u5173\u6CE8" : ""}` : kind === "live" ? `${person.name}
 ${person.title || "\u6B63\u5728\u76F4\u64AD"}${person.local ? "\n\u672C\u5730\u5173\u6CE8" : ""}` : person.name;
-      const face3 = anchor.appendChild(document.createElement("span"));
-      face3.className = "afp-face";
-      face3.append(picture2);
-      if (person.fresh) face3.append(Object.assign(document.createElement("i"), { className: "afp-dot", title: "\u6709\u65B0\u52A8\u6001" }));
-      if (kind === "live") face3.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-live", textContent: "\u76F4\u64AD" }));
-      if (kind === "person" ? person.local && !person.online : kind === "live" && person.local) face3.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-local", textContent: "\u672C" }));
+      const face2 = anchor.appendChild(document.createElement("span"));
+      face2.className = "afp-face";
+      face2.append(picture2);
+      if (person.fresh) face2.append(Object.assign(document.createElement("i"), { className: "afp-dot", title: "\u6709\u65B0\u52A8\u6001" }));
+      if (kind === "live") face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-live", textContent: "\u76F4\u64AD" }));
+      if (kind === "person" ? person.local && !person.online : kind === "live" && person.local) face2.append(Object.assign(document.createElement("i"), { className: "afp-badge afp-local", textContent: "\u672C" }));
       const name = anchor.appendChild(document.createElement("span"));
       name.className = "afp-name";
       for (const line of tileLines(person.name || person.uid)) name.append(Object.assign(document.createElement("span"), { className: "afp-line", textContent: line }));
@@ -12773,7 +13322,7 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}${person.local ? "\n\u672C\u5730\u5
       });
       return anchor;
     }
-    const face2 = (url) => {
+    const face = (url) => {
       const img = document.createElement("img");
       img.alt = "";
       img.loading = "lazy";
@@ -12883,7 +13432,7 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}${person.local ? "\n\u672C\u5730\u5
           },
           live.error
         ));
-        if (liveOpen && !never && live.list.length) sections.push(grid(...live.list.map((person) => tile("live", person, face2(person.face)))));
+        if (liveOpen && !never && live.list.length) sections.push(grid(...live.list.map((person) => tile("live", person, face(person.face)))));
       }
       sections.push(group(`${folder?.name ?? "\u52A8\u6001"} (${people2.length})`, dynamicOpen, () => {
         dynamicOpen = !dynamicOpen;
@@ -12893,7 +13442,7 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}${person.local ? "\n\u672C\u5730\u5
       }));
       if (dynamicOpen) {
         sections.push(grid(...folder ? [tile("up", { uid: "", name: "\u5411\u4E0A", face: "" }, picture(atelierIcons.up)), tile("folder-all", { uid: folder.id, name: "\u5168\u90E8", face: "" }, shellIcon(folder.icon, 32))] : [tile("all", { uid: "", name: "\u5168\u90E8\u52A8\u6001", face: "" }, picture(atelierIcons.folder)), ...source.folders().map((each) => tile("folder", { uid: each.id, name: each.name, face: "" }, shellIcon(each.icon, 32)))]));
-        if (people2.length) sections.push(grid(...people2.map((person) => tile("person", person, face2(person.face)))));
+        if (people2.length) sections.push(grid(...people2.map((person) => tile("person", person, face(person.face)))));
         else if (folder) sections.push(Object.assign(document.createElement("p"), { className: "afp-empty", textContent: "\u8FD9\u4E2A\u5206\u7EC4\u8FD8\u6CA1\u6709 UP \u4E3B\uFF0C\u53F3\u952E\u6587\u4EF6\u5939\u53EF\u4EE5\u7BA1\u7406\u5206\u7EC4" }));
       }
       view.replaceChildren(...sections);
@@ -12983,8 +13532,8 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     if (readUiPreferences().theme !== "page") saveUiPreferences({ theme: "page" });
   }
   function pageThemeSwitch(theme2) {
-    const app2 = document.getElementById("app")?.__vue__;
-    if (typeof app2?.themeSwitchHandler === "function") app2.themeSwitchHandler(theme2);
+    const app = document.getElementById("app")?.__vue__;
+    if (typeof app?.themeSwitchHandler === "function") app.themeSwitchHandler(theme2);
   }
 
   // src/modules/local-following/feed-quick.ts
@@ -12993,13 +13542,13 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     const win = document.createElement("section");
     win.className = "alf-quick xp-window";
     win.setAttribute("aria-label", "\u5FEB\u6377\u64CD\u4F5C");
-    const caption3 = win.appendChild(document.createElement("header"));
-    caption3.className = "xp-caption";
-    const icon2 = caption3.appendChild(document.createElement("img"));
+    const caption2 = win.appendChild(document.createElement("header"));
+    caption2.className = "xp-caption";
+    const icon2 = caption2.appendChild(document.createElement("img"));
     icon2.src = atelierIcons.up16;
     icon2.alt = "";
-    caption3.appendChild(document.createElement("h2")).textContent = "\u5FEB\u6377\u64CD\u4F5C";
-    const toggle = caption3.appendChild(document.createElement("button"));
+    caption2.appendChild(document.createElement("h2")).textContent = "\u5FEB\u6377\u64CD\u4F5C";
+    const toggle = caption2.appendChild(document.createElement("button"));
     toggle.type = "button";
     toggle.className = "xp-caption-button";
     const body2 = win.appendChild(document.createElement("div"));
@@ -13827,16 +14376,16 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
         brand.classList.add("lh-brand-guest");
         return;
       }
-      const face2 = brand.appendChild(el2("button", "lh-face-button"));
-      face2.type = "button";
-      face2.title = me.name || "\u6211\u7684\u8D26\u53F7";
-      face2.setAttribute("aria-label", "\u8D26\u53F7\u83DC\u5355");
-      face2.setAttribute("data-menu-anchor", "");
-      const picture = face2.appendChild(el2("img", "lh-face"));
+      const face = brand.appendChild(el2("button", "lh-face-button"));
+      face.type = "button";
+      face.title = me.name || "\u6211\u7684\u8D26\u53F7";
+      face.setAttribute("aria-label", "\u8D26\u53F7\u83DC\u5355");
+      face.setAttribute("data-menu-anchor", "");
+      const picture = face.appendChild(el2("img", "lh-face"));
       picture.alt = "";
       picture.referrerPolicy = "no-referrer";
       if (me.face) picture.src = me.face.replace(/^http:/, "https:") + (/hdslb\.com\//.test(me.face) && !me.face.includes("@") ? "@48w_48h_1c.webp" : "");
-      face2.addEventListener("click", () => toggleFrom(face2, () => [
+      face.addEventListener("click", () => toggleFrom(face, () => [
         { label: me.name || "\u6211\u7684\u8D26\u53F7", bold: true, note: me.level ? `Lv${me.level}` : "", href: `https://space.bilibili.com/${me.mid}` },
         "-",
         { label: "\u4E2A\u4EBA\u7A7A\u95F4", href: `https://space.bilibili.com/${me.mid}` },
@@ -14099,7 +14648,7 @@ a.lh-item{color:var(--xp-ink)}
   var searchIcon = 23;
   var on2 = "html[data-atelier-feed=drawn]";
   function mountFeedColumns(quick) {
-    const caption3 = (icon2, title) => {
+    const caption2 = (icon2, title) => {
       const header = document.createElement("header");
       header.className = "xp-caption alf-column-caption";
       header.setAttribute("data-bili-blocker-ui", "true");
@@ -14110,13 +14659,13 @@ a.lh-item{color:var(--xp-ink)}
     const card4 = info?.parentElement;
     if (info && card4 && !card4.classList.contains("alf-me")) {
       card4.classList.add("alf-me", "xp-window");
-      card4.prepend(caption3(Object.assign(document.createElement("img"), { src: atelierIcons.following, alt: "" }), "\u6211\u7684\u4FE1\u606F"));
+      card4.prepend(caption2(Object.assign(document.createElement("img"), { src: atelierIcons.following, alt: "" }), "\u6211\u7684\u4FE1\u606F"));
       observeCrispText(card4);
     }
     const trends = document.querySelector("aside.right .bili-dyn-search-trendings");
     if (trends && !trends.classList.contains("alf-trends")) {
       trends.classList.add("alf-trends", "xp-window");
-      trends.prepend(caption3(shellIcon(searchIcon, 16), "bilibili\u70ED\u641C"));
+      trends.prepend(caption2(shellIcon(searchIcon, 16), "bilibili\u70ED\u641C"));
       observeCrispText(trends);
     }
     const sticky = trends?.parentElement;
@@ -14554,7 +15103,7 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     const grips = [], lists = /* @__PURE__ */ new Map();
     const mode2 = () => root.getAttribute("data-atelier-screen") || "normal";
     const folded = (box2) => box2.hasAttribute("data-folded") || box2.classList.contains("bui-collapse-wrap-folded");
-    let columns4 = null;
+    let columns3 = null;
     function native2() {
       if (style.sheet) style.sheet.disabled = true;
       try {
@@ -14626,19 +15175,19 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       }
     };
     function paint2() {
-      const all = columns4 ? total(columns4) : 0, sizes = columns4 && columnWidths(columns4, saved.right, all), px2 = (value2) => value2 ? `${value2}px` : null;
-      const widened = !!columns4 && !!sizes && Math.abs(all - columns4.left - columns4.right) >= 0.5;
+      const all = columns3 ? total(columns3) : 0, sizes = columns3 && columnWidths(columns3, saved.right, all), px2 = (value2) => value2 ? `${value2}px` : null;
+      const widened = !!columns3 && !!sizes && Math.abs(all - columns3.left - columns3.right) >= 0.5;
       if (kind === "bangumi") {
-        mark2(".plp-layout", { "--vl-grid": sizes ? `${sizes.left}px ${columns4.gap}px ${sizes.right}px` : null });
-        mark2(containers.bangumi, { "--vl-main": widened ? px2(all + columns4.gap) : null });
+        mark2(".plp-layout", { "--vl-grid": sizes ? `${sizes.left}px ${columns3.gap}px ${sizes.right}px` : null });
+        mark2(containers.bangumi, { "--vl-main": widened ? px2(all + columns3.gap) : null });
       } else {
-        const held = !sizes && columns4 && zoom() !== 1 ? columns4.right : 0;
+        const held = !sizes && columns3 && zoom() !== 1 ? columns3.right : 0;
         const [left, right] = columnSelectors[kind], height = px2(sizes ? playerHeight(sizes.left) : 0);
         mark2(left, { "--vl-col": px2(sizes?.left) });
         mark2(right, { "--vl-col": px2(sizes?.right ?? held) });
         mark2("#bilibili-player", { "--vl-col": px2(sizes?.left), "--vl-col-h": height });
         mark2("#playerWrap", { "--vl-col-h": height });
-        const across2 = widened ? all + columns4.gap : 0, high = px2(across2 ? playerHeight(across2) : 0);
+        const across2 = widened ? all + columns3.gap : 0, high = px2(across2 ? playerHeight(across2) : 0);
         mark2(containers[kind], { "--vl-blank": widened ? "1" : null });
         mark2("#bilibili-player", { "--vl-wide-w": px2(across2), "--vl-wide-h": high });
         for (const selector of ["#playerWrap", "#danmukuBox", "#oldfanfollowEntry"]) mark2(selector, { "--vl-wide-h": high });
@@ -14651,7 +15200,7 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       }
     }
     function measureColumns() {
-      columns4 = native2();
+      columns3 = native2();
       paint2();
     }
     function save() {
@@ -14665,10 +15214,10 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       saved = { ...saved, heights };
     };
     function lineDrag(to) {
-      columns4 = native2();
-      const all = columns4 ? total(columns4) : 0;
-      if (!columns4 || all - rightMin < playerMin) return null;
-      const start2 = columnWidths(columns4, saved.right, all)?.right ?? columns4.right;
+      columns3 = native2();
+      const all = columns3 ? total(columns3) : 0;
+      if (!columns3 || all - rightMin < playerMin) return null;
+      const start2 = columnWidths(columns3, saved.right, all)?.right ?? columns3.right;
       return {
         move(dx, dy) {
           const z = zoom(), right = Math.min(Math.max(all - to(dx / z, dy / z, all - start2), rightMin), all - playerMin);
@@ -14676,7 +15225,7 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
           paint2();
         },
         end() {
-          if (saved.right === Math.round(columns4.right)) {
+          if (saved.right === Math.round(columns3.right)) {
             const { right, ...rest } = saved;
             saved = rest;
             paint2();
@@ -14715,13 +15264,13 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
       save();
     };
     function setBlank(blank) {
-      columns4 = native2();
-      if (!columns4) return;
-      const before = columnWidths(columns4, saved.right, total(columns4)) ?? { left: columns4.left, right: columns4.right };
+      columns3 = native2();
+      if (!columns3) return;
+      const before = columnWidths(columns3, saved.right, total(columns3)) ?? { left: columns3.left, right: columns3.right };
       const { blank: _old, right: _right, ...rest } = saved;
       saved = blank === void 0 ? rest : { ...rest, blank };
-      const right = splitRight(before, total(columns4));
-      if (blank !== void 0 || right !== Math.round(columns4.right)) saved = { ...saved, right };
+      const right = splitRight(before, total(columns3));
+      if (blank !== void 0 || right !== Math.round(columns3.right)) saved = { ...saved, right };
       paint2();
       save();
       window.dispatchEvent(new Event("resize"));
@@ -14867,8 +15416,8 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
     startSideBounds({
       measure() {
         const box2 = stage(), edges = content();
-        if (!columns4 || !box2 || !edges || mode2() === "web" || mode2() === "full") return null;
-        return { stage: box2, content: edges, least: contentLeast(columns4.gap) * zoom() };
+        if (!columns3 || !box2 || !edges || mode2() === "web" || mode2() === "full") return null;
+        return { stage: box2, content: edges, least: contentLeast(columns3.gap) * zoom() };
       },
       commit: (blank) => setBlank(blank),
       reset: () => setBlank()
@@ -15183,21 +15732,21 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
     const box2 = document.querySelector(".bili-dyn-home--member main>section>.bili-dyn-publishing");
     const section = box2?.parentElement;
     if (!section) return;
-    let caption3 = section.querySelector(":scope>.alf-publish-caption");
-    if (!section.classList.contains("alf-publish") || !caption3) {
+    let caption2 = section.querySelector(":scope>.alf-publish-caption");
+    if (!section.classList.contains("alf-publish") || !caption2) {
       section.classList.add("alf-publish", "xp-window");
-      caption3 = document.createElement("header");
-      caption3.className = "xp-caption alf-column-caption alf-publish-caption";
-      caption3.setAttribute("data-bili-blocker-ui", "true");
-      caption3.append(shellIcon(notepad, 16), Object.assign(document.createElement("h2"), { textContent: "\u53D1\u5E03\u52A8\u6001" }));
-      section.prepend(caption3);
+      caption2 = document.createElement("header");
+      caption2.className = "xp-caption alf-column-caption alf-publish-caption";
+      caption2.setAttribute("data-bili-blocker-ui", "true");
+      caption2.append(shellIcon(notepad, 16), Object.assign(document.createElement("h2"), { textContent: "\u53D1\u5E03\u52A8\u6001" }));
+      section.prepend(caption2);
       observeCrispText(section);
     }
     const fold = foldButton();
     const listCaption = document.querySelector("#atelier-feed-root>.alf-caption");
     const folded = readFolded2();
     section.toggleAttribute("data-folded", folded);
-    const home = folded ? listCaption : caption3;
+    const home = folded ? listCaption : caption2;
     if (home && fold.parentElement !== home) home.insertBefore(fold, folded ? home.querySelector(":scope>.xp-caption-button") : null);
     fold.toggleAttribute("data-folded", folded);
     fold.title = folded ? "\u5C55\u5F00\u53D1\u5E03\u6846" : "\u6298\u53E0\u53D1\u5E03\u6846";
@@ -15296,10 +15845,10 @@ ${on6} .bili-emoji__list__item:hover{background:color-mix(in srgb,var(--xp-highl
     panel.setAttribute("data-bili-blocker-ui", "");
     panel.setAttribute("role", "dialog");
     panel.setAttribute("aria-label", "\u7BA1\u7406\u672C\u5730\u5206\u7EC4");
-    const caption3 = panel.appendChild(document.createElement("header"));
-    caption3.className = "xp-caption";
-    caption3.append(shellIcon(shellFolderIcon, 16), Object.assign(document.createElement("h2"), { textContent: "\u7BA1\u7406\u672C\u5730\u5206\u7EC4" }));
-    const close2 = caption3.appendChild(document.createElement("button"));
+    const caption2 = panel.appendChild(document.createElement("header"));
+    caption2.className = "xp-caption";
+    caption2.append(shellIcon(shellFolderIcon, 16), Object.assign(document.createElement("h2"), { textContent: "\u7BA1\u7406\u672C\u5730\u5206\u7EC4" }));
+    const close2 = caption2.appendChild(document.createElement("button"));
     close2.type = "button";
     close2.className = "xp-caption-button";
     close2.dataset.kind = "close";
@@ -15382,12 +15931,12 @@ ${on6} .bili-emoji__list__item:hover{background:color-mix(in srgb,var(--xp-highl
         th.className = "agw-name";
         th.title = `${name(account)}
 UID\uFF1A${account.uid}`;
-        const face2 = th.appendChild(document.createElement("img"));
-        face2.alt = "";
-        face2.loading = "lazy";
-        face2.decoding = "async";
-        face2.referrerPolicy = "no-referrer";
-        face2.src = bilibiliThumb(readLocalFollowCache(account.uid).face || account.face, "32w_32h_1c") || atelierIcons.app;
+        const face = th.appendChild(document.createElement("img"));
+        face.alt = "";
+        face.loading = "lazy";
+        face.decoding = "async";
+        face.referrerPolicy = "no-referrer";
+        face.src = bilibiliThumb(readLocalFollowCache(account.uid).face || account.face, "32w_32h_1c") || atelierIcons.app;
         th.append(Object.assign(document.createElement("span"), { textContent: name(account) }));
         groups.forEach((group, index) => {
           const td = row.insertCell(), member = account.groupIds.includes(group.id);
@@ -15546,7 +16095,7 @@ UID\uFF1A${account.uid}`;
       current3 = null;
     }
     document.body.append(panel);
-    enableWindowDrag(panel, caption3, events.signal);
+    enableWindowDrag(panel, caption2, events.signal);
     const cleanup = observeCrispText(panel);
     render2();
     if (focusGroup) reveal(focusGroup);
@@ -15569,11 +16118,11 @@ UID\uFF1A${account.uid}`;
       const dialog = document.createElement("dialog");
       dialog.className = "atelier-dialog agw-picker xp-window";
       dialog.setAttribute("data-bili-blocker-ui", "");
-      const caption3 = dialog.appendChild(document.createElement("header"));
-      caption3.className = "xp-caption";
-      const heading = caption3.appendChild(Object.assign(document.createElement("h2"), { id: "agw-picker-title", textContent: "\u66F4\u6539\u56FE\u6807" }));
+      const caption2 = dialog.appendChild(document.createElement("header"));
+      caption2.className = "xp-caption";
+      const heading = caption2.appendChild(Object.assign(document.createElement("h2"), { id: "agw-picker-title", textContent: "\u66F4\u6539\u56FE\u6807" }));
       dialog.setAttribute("aria-labelledby", heading.id);
-      const dismiss = caption3.appendChild(document.createElement("button"));
+      const dismiss = caption2.appendChild(document.createElement("button"));
       dismiss.type = "button";
       dismiss.className = "xp-caption-button";
       dismiss.dataset.kind = "close";
@@ -15715,11 +16264,11 @@ ${w2} .xp-status{flex:none}
     if (!(step > 0) || !Array.isArray(values) || !values.length) return null;
     return { step, values: values.map((value2) => Math.max(0, Number(value2) || 0)) };
   }
-  function pbpDots(data, duration, columns4, rows) {
-    if (columns4 <= 0 || rows <= 0) return [];
+  function pbpDots(data, duration, columns3, rows) {
+    if (columns3 <= 0 || rows <= 0) return [];
     const steps = Math.max(data.values.length, Math.floor(duration / data.step)), loudest = Math.max(...data.values) || 1;
-    return Array.from({ length: columns4 }, (_, column) => {
-      const value2 = data.values[Math.floor((column + 0.5) / columns4 * steps)] ?? 0;
+    return Array.from({ length: columns3 }, (_, column) => {
+      const value2 = data.values[Math.floor((column + 0.5) / columns3 * steps)] ?? 0;
       return Math.max(1, Math.min(rows, Math.round((0.2 + 0.8 * value2 / loudest) * rows)));
     });
   }
@@ -15799,8 +16348,8 @@ ${w2} .xp-status{flex:none}
       const ratio = window.devicePixelRatio || 1, unit = Math.max(1, Math.round(currentPixelScale().drawn)), pitch = 3 * unit;
       const down = element2.hasAttribute("data-vertical");
       const width = Math.round((down ? rect.height : rect.width) * ratio), height = Math.round((down ? rect.width : rect.height) * ratio);
-      const columns4 = Math.floor((width + unit) / pitch), rows = Math.floor((height + unit) / pitch);
-      const reached = Math.round(played * columns4), next = [width, height, unit, reached, duration].join();
+      const columns3 = Math.floor((width + unit) / pitch), rows = Math.floor((height + unit) / pitch);
+      const reached = Math.round(played * columns3), next = [width, height, unit, reached, duration].join();
       if (next === drawn) return;
       drawn = next;
       if (canvas.width !== width) canvas.width = width;
@@ -15808,8 +16357,8 @@ ${w2} .xp-status{flex:none}
       const paintCanvas = canvas.getContext("2d");
       if (!paintCanvas) return;
       paintCanvas.clearRect(0, 0, width, height);
-      const left = Math.floor((width - (columns4 * pitch - unit)) / 2);
-      pbpDots(data, duration, columns4, rows).forEach((lit, column) => {
+      const left = Math.floor((width - (columns3 * pitch - unit)) / 2);
+      pbpDots(data, duration, columns3, rows).forEach((lit, column) => {
         paintCanvas.fillStyle = column < reached ? pbpColours.played : pbpColours.ahead;
         for (let row = 0; row < lit; row++) paintCanvas.fillRect(left + column * pitch, height - row * pitch - 2 * unit, 2 * unit, 2 * unit);
       });
@@ -16648,13 +17197,13 @@ html[data-atelier-list=drawn] .bili-dyn-list,html[data-atelier-list=drawn] .bili
     root.id = "atelier-feed-root";
     root.setAttribute("data-atelier-local-ui", "");
     root.setAttribute("data-bili-blocker-ui", "true");
-    const caption3 = root.appendChild(document.createElement("header"));
-    caption3.className = "xp-caption alf-caption";
-    const captionIcon = caption3.appendChild(document.createElement("img"));
+    const caption2 = root.appendChild(document.createElement("header"));
+    caption2.className = "xp-caption alf-caption";
+    const captionIcon = caption2.appendChild(document.createElement("img"));
     captionIcon.src = atelierIcons.data;
     captionIcon.alt = "";
-    const captionTitle = caption3.appendChild(document.createElement("h2"));
-    const closeAuthor = caption3.appendChild(document.createElement("button"));
+    const captionTitle = caption2.appendChild(document.createElement("h2"));
+    const closeAuthor = caption2.appendChild(document.createElement("button"));
     closeAuthor.type = "button";
     closeAuthor.className = "xp-caption-button";
     closeAuthor.dataset.kind = "close";
@@ -17308,15 +17857,15 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
           recordLocalFollowVisit(account.uid);
           sound("folder");
         });
-        const face2 = localFollowElement("img", "lf-face");
-        face2.alt = "";
-        face2.loading = "lazy";
-        face2.referrerPolicy = "no-referrer";
-        face2.src = cache.face || account.face || atelierIcons.app;
-        face2.addEventListener("error", () => {
-          face2.src = atelierIcons.app;
+        const face = localFollowElement("img", "lf-face");
+        face.alt = "";
+        face.loading = "lazy";
+        face.referrerPolicy = "no-referrer";
+        face.src = cache.face || account.face || atelierIcons.app;
+        face.addEventListener("error", () => {
+          face.src = atelierIcons.app;
         }, { once: true });
-        link3.append(face2, localFollowElement("span", "lf-name", name));
+        link3.append(face, localFollowElement("span", "lf-name", name));
         const select = checkbox(`\u9009\u62E9 ${name}`, selected.has(account.uid), (checked) => {
           if (checked) selected.add(account.uid);
           else selected.delete(account.uid);
@@ -17388,8 +17937,8 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     const uid = normalizeLocalUid(data?.mid) || parseLocalFollowInput(link3?.href ?? "") || normalizeLocalUid(container.getAttribute("data-user-id") || container.getAttribute("data-usercard-mid"));
     if (!uid) return null;
     const name = cleanName(data?.name) || cleanName(root.querySelector(".name,.nickname,.username,.user-name")?.textContent) || cleanName(link3?.textContent);
-    const face2 = safeLocalFace(data?.face || root.querySelector(".avatar img,.face img,img")?.src);
-    return { uid, name, face: face2 };
+    const face = safeLocalFace(data?.face || root.querySelector(".avatar img,.face img,img")?.src);
+    return { uid, name, face };
   }
   function localProfileFromSpace() {
     if (location.hostname !== "space.bilibili.com") return null;
@@ -17398,8 +17947,8 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     const target = document.querySelector("#h-name,.h-name,.n-name,.space-header .name,.h-basic .name,.upinfo-detail__top .nickname,.upinfo-detail__top .name");
     if (!target || target.closest("[data-bili-blocker-ui]")) return null;
     const name = cleanName(target.textContent);
-    const face2 = safeLocalFace(document.querySelector("#h-avatar,.h-avatar img,.h-avatar,.space-header .avatar img,.upinfo-avatar img,.upinfo-avatar")?.src);
-    return { profile: { uid, name, face: face2 }, target };
+    const face = safeLocalFace(document.querySelector("#h-avatar,.h-avatar img,.h-avatar,.space-header .avatar img,.upinfo-avatar img,.upinfo-avatar")?.src);
+    return { profile: { uid, name, face }, target };
   }
   function observePageDynamics(channel2) {
     const observed = (value2) => {
@@ -17573,107 +18122,934 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     schedule2();
   }
 
-  // src/modules/space-luna/dynamics.ts
-  function installReader(eventName) {
-    const previous = /* @__PURE__ */ new WeakMap();
-    document.addEventListener(eventName, (event) => {
-      const item = event.target;
-      if (!item.matches?.(".bili-dyn-item") || !item.closest(".space-main")) return;
-      const raw = item.__vue__?.$props?.data ?? item.__vueParentComponent?.props?.data;
-      let drawable = !!raw?.modules?.module_author && /^\d+$/.test(raw.id_str);
-      for (let part = raw; drawable && part; part = part.orig) {
-        if (part.visible === false || part.modules?.module_dynamic?.major?.type === "MAJOR_TYPE_BLOCKED" || part.basic?.is_only_fans) drawable = false;
-      }
-      if (!drawable) {
-        if (item.dataset.asId) item.dataset.asResponse = "null";
-        return;
-      }
-      if (previous.get(item) === raw && item.dataset.asId === raw.id_str) return;
-      item.dataset.asResponse = JSON.stringify(raw);
-      previous.set(item, raw);
-    }, true);
+  // src/modules/space-luna/prefs.ts
+  var spaceLunaKey = "BiliAtelier_SpaceLuna";
+  var spaceAttribute = "data-atelier-space";
+  var spaceFoldKey = "BiliAtelier_SpaceWindows";
+  var spaceViewModeKey = "BiliAtelier_SpaceUploadView";
+  var spaceMaxColsKey = "BiliAtelier_SpaceMaxCols";
+  var spaceMaxColsChanged = "atelier-space-max-cols-changed";
+  var defaultSpaceMaxCols = 6;
+  var spaceMaxColChoices = [2, 3, 4, 5, 6, 7, 8];
+  var spaceLunaEnabled = () => typeof GM_getValue === "function" && GM_getValue(spaceLunaKey, true) !== false;
+  var setSpaceLunaEnabled = (enabled) => {
+    if (typeof GM_setValue === "function") GM_setValue(spaceLunaKey, enabled);
+  };
+  function spaceRoute(where = location) {
+    if (where.hostname !== "space.bilibili.com") return null;
+    if (where.hash && /^#\//.test(where.hash)) return null;
+    const match = /^\/(\d+)(?:\/(dynamic|upload(?:\/video)?|search|(?:relation|fans)\/(follow|fans)))?\/?$/.exec(where.pathname);
+    if (!match) return null;
+    if (match[3] === "follow" || match[3] === "fans") {
+      return { uid: match[1], tab: "relation", relationKind: match[3] };
+    }
+    const tab = !match[2] ? "home" : match[2].startsWith("upload") ? "uploads" : match[2];
+    return { uid: match[1], tab };
   }
-  function createSpaceDynamics() {
-    const eventName = `atelier-space-card-${crypto.randomUUID()}`;
-    injectPageScript(`(${installReader.toString()})(${JSON.stringify(eventName)})`);
-    let host, cards2;
-    let releaseText;
-    const relay = startPageRelay("space-dynamics", endpoints.space), api5 = new LocalFollowApi(relay.read);
-    const mid = document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1] ?? "";
-    const interactions = new FeedInteractions(relay.read, relay.write, (signal) => api5.signingKey(signal), mid);
-    function restore(item) {
-      item.querySelector(":scope > .bili-dyn-item__main > .as-dyn-card")?.remove();
-      delete item.dataset.asId;
-      delete item.dataset.asBlocked;
+  function spacePath(uid, tab, extra = "") {
+    if (tab === "home") return `/${uid}`;
+    if (tab === "dynamic") return `/${uid}/dynamic`;
+    if (tab === "uploads") return `/${uid}/upload/video`;
+    if (tab === "relation") return `/${uid}/relation/${extra === "fans" ? "fans" : "follow"}`;
+    const q = extra.trim();
+    return q ? `/${uid}/search?keyword=${encodeURIComponent(q)}` : `/${uid}/search`;
+  }
+  var hideCss = `html[${spaceAttribute}=drawn] #app{display:none!important}`;
+  function prepareSpaceLuna() {
+    if (typeof GM_getValue !== "function" || !spaceRoute() || !spaceLunaEnabled()) return false;
+    document.documentElement.setAttribute(spaceAttribute, "drawn");
+    prepareLunaHeader();
+    if (!document.getElementById("atelier-space-hide")) {
+      const style = document.createElement("style");
+      style.id = "atelier-space-hide";
+      style.textContent = hideCss;
+      (document.head || document.documentElement).append(style);
     }
-    function reset() {
-      releaseText?.();
-      releaseText = void 0;
-      cards2?.dispose();
-      cards2 = void 0;
-      host?.querySelectorAll(".bili-dyn-item[data-as-id]").forEach(restore);
-      host?.classList.remove("as-dynamic-list");
-      host = void 0;
+    return true;
+  }
+  function showNativeSpace() {
+    document.documentElement.removeAttribute(spaceAttribute);
+    document.getElementById("atelier-space-hide")?.remove();
+    document.getElementById("atelier-space")?.remove();
+  }
+  function readSpaceFolded(name, fallback2 = false) {
+    const stored = typeof GM_getValue === "function" ? GM_getValue(spaceFoldKey, {}) : {};
+    return typeof stored?.[name] === "boolean" ? stored[name] : fallback2;
+  }
+  function writeSpaceFolded(name, folded) {
+    if (typeof GM_setValue !== "function") return;
+    GM_setValue(spaceFoldKey, { ...GM_getValue(spaceFoldKey, {}) ?? {}, [name]: folded });
+  }
+  function readUploadViewMode() {
+    const stored = typeof GM_getValue === "function" ? GM_getValue(spaceViewModeKey, "grid") : "grid";
+    return stored === "list" ? "list" : "grid";
+  }
+  function writeUploadViewMode(mode2) {
+    if (typeof GM_setValue === "function") GM_setValue(spaceViewModeKey, mode2);
+  }
+  function readSpaceMaxCols() {
+    const raw = typeof GM_getValue === "function" ? Number(GM_getValue(spaceMaxColsKey, defaultSpaceMaxCols)) : defaultSpaceMaxCols;
+    const n = Math.round(raw);
+    return Number.isFinite(n) && n >= 2 && n <= 8 ? n : defaultSpaceMaxCols;
+  }
+  function writeSpaceMaxCols(cols) {
+    const n = Math.max(2, Math.min(8, Math.round(cols)));
+    if (typeof GM_setValue === "function") GM_setValue(spaceMaxColsKey, n);
+    document.getElementById("atelier-space")?.style.setProperty("--as-cols", String(n));
+    window.dispatchEvent(new CustomEvent(spaceMaxColsChanged, { detail: n }));
+  }
+  function spaceWindow(options) {
+    const win = xpWindow(options);
+    win.root.classList.add("as-win");
+    if (options.foldName) {
+      let folded = readSpaceFolded(options.foldName);
+      const toggle = () => {
+        folded = !folded;
+        sound(folded ? "minimize" : "restore");
+        writeSpaceFolded(options.foldName, folded);
+        paint2();
+      };
+      const button6 = captionButton(win.caption, "minimize", "\u6298\u53E0", toggle);
+      win.caption.addEventListener("click", (event) => {
+        if (!event.target.closest(".xp-caption-button,button,a,input,select")) toggle();
+      });
+      const paint2 = () => {
+        win.body.hidden = folded;
+        win.root.toggleAttribute("data-folded", folded);
+        button6.dataset.kind = folded ? "restore" : "minimize";
+        button6.title = folded ? "\u5C55\u5F00" : "\u6298\u53E0";
+        button6.setAttribute("aria-label", button6.title);
+        button6.setAttribute("aria-expanded", String(!folded));
+      };
+      paint2();
     }
+    return win;
+  }
+
+  // src/modules/space-luna/api.ts
+  var httpsUrl = (value2) => {
+    if (typeof value2 !== "string" || !value2.trim()) return "";
+    const url = value2.trim();
+    if (url.startsWith("//")) return "https:" + url;
+    if (url.startsWith("http://")) return "https://" + url.slice(7);
+    return url;
+  };
+  function okData(raw, fallback2 = "\u52A0\u8F7D\u5931\u8D25") {
+    if (!raw || Number(raw.code) !== 0) {
+      const code = Number(raw?.code) || 0;
+      const msg = typeof raw?.message === "string" && raw.message && raw.message !== "0" ? raw.message : fallback2;
+      throw new BiliReadError(msg, code);
+    }
+    return raw.data;
+  }
+  function formatLen(value2) {
+    if (typeof value2 === "string" && value2.includes(":")) return value2;
+    const total = Math.max(0, Math.floor(Number(value2) || 0));
+    if (!total) return "";
+    const h = Math.floor(total / 3600), m = Math.floor(total % 3600 / 60), s2 = total % 60;
+    const two2 = (n) => String(n).padStart(2, "0");
+    return h ? `${h}:${two2(m)}:${two2(s2)}` : `${two2(m)}:${two2(s2)}`;
+  }
+  function mapArchive(raw, isTop = false) {
+    const bvid = typeof raw?.bvid === "string" ? raw.bvid : "";
+    const aid = Number(raw?.aid) || 0;
+    if (!bvid && !aid) return null;
+    const playRaw = raw?.play ?? raw?.stat?.view;
+    const play = Number.isFinite(Number(playRaw)) ? Number(playRaw) : 0;
     return {
-      sync(list) {
-        if (host !== list) {
-          reset();
-          host = list;
-          list.classList.add("as-dynamic-list");
-          releaseText = observeCrispText(list, ".as-dyn-card");
-          cards2 = mountDynamicCards(list, interactions, mid, true, (card4) => {
-            const item = card4.closest(".bili-dyn-item");
-            if (item) item.dataset.asBlocked = "";
-            card4.remove();
+      bvid,
+      aid,
+      title: String(raw?.title ?? "").trim() || "(\u65E0\u6807\u9898)",
+      pic: httpsUrl(raw?.pic ?? raw?.cover),
+      duration: formatLen(raw?.length ?? raw?.duration),
+      play,
+      danmaku: Number(raw?.video_review ?? raw?.stat?.danmaku) || void 0,
+      pubdate: Number(raw?.created ?? raw?.pubdate) || 0,
+      description: typeof raw?.description === "string" ? raw.description.trim() : typeof raw?.desc === "string" ? raw.desc.trim() : "",
+      isUnion: Number(raw?.is_union_video) === 1,
+      isTop
+    };
+  }
+  function pickBanner(info, spacePhoto) {
+    return httpsUrl(
+      info?.top_photo_v2?.l_200h_img || info?.top_photo_v2?.l_img || info?.top_photo || spacePhoto?.l_img || spacePhoto?.s_img
+    );
+  }
+  var SpaceApi = class {
+    constructor(read3, write, me) {
+      this.read = read3;
+      this.write = write;
+      this.me = me;
+      this.helper = new LocalFollowApi(read3);
+      this.interactions = new FeedInteractions(
+        read3,
+        (op, payload) => write(op, payload),
+        (signal) => this.helper.signingKey(signal),
+        me
+      );
+    }
+    async wbiGet(path, params, signal) {
+      const key6 = await this.helper.signingKey(signal);
+      const query = localFollowWbiQuery(params, key6);
+      return this.read(`https://api.bilibili.com${path}?${query}`, signal);
+    }
+    async profile(uid, signal) {
+      const [infoRes, statRes, upstatRes] = await Promise.allSettled([
+        this.wbiGet("/x/space/wbi/acc/info", { mid: uid, platform: "web", web_location: "1550101" }, signal),
+        this.read(`https://api.bilibili.com/x/relation/stat?vmid=${encodeURIComponent(uid)}`, signal),
+        this.me ? this.read(`https://api.bilibili.com/x/space/upstat?mid=${encodeURIComponent(uid)}`, signal) : Promise.resolve(null)
+      ]);
+      let info = null;
+      let spacePhoto = null;
+      if (infoRes.status === "fulfilled" && Number(infoRes.value?.code) === 0 && infoRes.value?.data) {
+        info = infoRes.value.data;
+      } else {
+        const cardRaw = await this.read(`https://api.bilibili.com/x/web-interface/card?mid=${encodeURIComponent(uid)}&photo=true`, signal);
+        const cardData = okData(cardRaw, "\u65E0\u6CD5\u83B7\u53D6 UP \u4E3B\u8D44\u6599");
+        const card4 = cardData?.card ?? {};
+        spacePhoto = cardData?.space ?? null;
+        info = {
+          mid: card4.mid ?? uid,
+          name: card4.name ?? `UID ${uid}`,
+          face: card4.face ?? "",
+          sign: card4.sign ?? "",
+          sex: card4.sex ?? "",
+          level: card4.level_info?.current_level ?? 0,
+          official: card4.Official ?? card4.official_verify ?? {},
+          vip: card4.vip ?? {},
+          top_photo: spacePhoto?.l_img ?? spacePhoto?.s_img ?? ""
+        };
+      }
+      const stat = statRes.status === "fulfilled" && Number(statRes.value?.code) === 0 ? statRes.value.data : null;
+      const upstat = upstatRes.status === "fulfilled" && Number(upstatRes.value?.code) === 0 ? upstatRes.value.data : null;
+      const topPhoto = pickBanner(info, spacePhoto);
+      const live = info.live_room;
+      return {
+        uid: String(info.mid ?? uid),
+        name: String(info.name ?? `UID ${uid}`).trim(),
+        face: httpsUrl(info.face),
+        sign: String(info.sign ?? "").trim(),
+        sex: String(info.sex ?? ""),
+        level: Number(info.level) || 0,
+        birthday: String(info.birthday ?? "").trim(),
+        topPhoto,
+        hasCustomBanner: !!topPhoto,
+        official: {
+          role: Number(info.official?.role) || 0,
+          title: String(info.official?.title ?? "").trim(),
+          desc: String(info.official?.desc ?? "").trim()
+        },
+        vipLabel: Number(info.vip?.status) === 1 ? String(info.vip?.label?.text ?? "").trim() : "",
+        liveRoom: live && Number(live.roomStatus) === 1 ? {
+          roomId: Number(live.roomid) || 0,
+          live: Number(live.liveStatus) === 1,
+          title: String(live.title ?? "").trim(),
+          url: httpsUrl(live.url) || (live.roomid ? `https://live.bilibili.com/${live.roomid}` : ""),
+          cover: httpsUrl(live.cover)
+        } : void 0,
+        stats: {
+          following: stat && Number.isFinite(Number(stat.following)) ? Number(stat.following) : void 0,
+          follower: stat && Number.isFinite(Number(stat.follower)) ? Number(stat.follower) : void 0,
+          likes: upstat && Number.isFinite(Number(upstat.likes)) ? Number(upstat.likes) : void 0,
+          views: upstat?.archive && Number.isFinite(Number(upstat.archive.view)) ? Number(upstat.archive.view) : void 0
+        }
+      };
+    }
+    async notice(uid, signal) {
+      try {
+        const raw = await this.read(`https://api.bilibili.com/x/space/notice?mid=${encodeURIComponent(uid)}`, signal);
+        return Number(raw?.code) === 0 && typeof raw.data === "string" ? raw.data.trim() : "";
+      } catch {
+        return "";
+      }
+    }
+    async masterpieces(uid, signal) {
+      const [topRes, mpRes] = await Promise.allSettled([
+        this.read(`https://api.bilibili.com/x/space/top/arc?vmid=${encodeURIComponent(uid)}`, signal),
+        this.read(`https://api.bilibili.com/x/space/masterpiece?vmid=${encodeURIComponent(uid)}`, signal)
+      ]);
+      const list = [];
+      const seen = /* @__PURE__ */ new Set();
+      const add = (video2) => {
+        if (!video2) return;
+        const key6 = video2.bvid || String(video2.aid);
+        if (seen.has(key6)) return;
+        seen.add(key6);
+        list.push(video2);
+      };
+      if (topRes.status === "fulfilled" && Number(topRes.value?.code) === 0 && topRes.value?.data) {
+        add(mapArchive(topRes.value.data, true));
+      }
+      if (mpRes.status === "fulfilled" && Number(mpRes.value?.code) === 0 && Array.isArray(mpRes.value?.data)) {
+        for (const item of mpRes.value.data) add(mapArchive(item, false));
+      }
+      return list;
+    }
+    async collections(uid, signal) {
+      try {
+        const raw = await this.read(`https://api.bilibili.com/x/polymer/web-space/seasons_series_list?mid=${encodeURIComponent(uid)}&page_num=1&page_size=10`, signal);
+        if (Number(raw?.code) !== 0 || !raw?.data?.items_lists) return [];
+        const lists = raw.data.items_lists;
+        const out = [];
+        for (const season of lists.seasons_list ?? []) {
+          const meta = season?.meta;
+          if (!meta?.season_id) continue;
+          out.push({
+            id: Number(meta.season_id),
+            kind: "season",
+            name: String(meta.name ?? "\u5408\u96C6"),
+            cover: httpsUrl(meta.cover),
+            total: Number(meta.total) || 0,
+            url: `https://space.bilibili.com/${uid}/lists/${meta.season_id}?type=season`,
+            archives: (season.archives ?? []).map((a) => mapArchive(a)).filter((v) => !!v)
           });
         }
-        let rules;
-        for (const item of list.querySelectorAll(".bili-dyn-item")) {
-          const body2 = item.querySelector(":scope > .bili-dyn-item__main > .bili-dyn-item__body");
-          if (!body2) {
-            if (item.dataset.asId) restore(item);
-            continue;
-          }
-          if (item.dataset.asId && !item.hasAttribute("data-as-blocked") && !body2.previousElementSibling?.classList.contains("as-dyn-card")) restore(item);
-          item.dispatchEvent(new Event(eventName));
-          const json = item.dataset.asResponse;
-          if (!json) continue;
-          delete item.dataset.asResponse;
-          const raw = JSON.parse(json);
-          restore(item);
-          if (!raw) continue;
-          if (rules === void 0) rules = feedRules();
-          const card4 = cards2.render(raw, rules);
-          if (card4) {
-            card4.classList.add("as-dyn-card");
-            body2.before(card4);
-          } else item.dataset.asBlocked = "";
-          item.dataset.asId = raw.id_str;
+        for (const series of lists.series_list ?? []) {
+          const meta = series?.meta;
+          if (!meta?.series_id) continue;
+          out.push({
+            id: Number(meta.series_id),
+            kind: "series",
+            name: String(meta.name ?? "\u89C6\u9891\u5217\u8868"),
+            cover: httpsUrl(meta.cover),
+            total: Number(meta.total) || 0,
+            url: `https://space.bilibili.com/${uid}/lists/${meta.series_id}?type=series`,
+            archives: (series.archives ?? []).map((a) => mapArchive(a)).filter((v) => !!v)
+          });
         }
-        cards2?.prune();
-      },
-      reset
+        return out;
+      } catch {
+        return [];
+      }
+    }
+    async archives(options, signal) {
+      const params = {
+        mid: options.uid,
+        pn: String(Math.max(1, options.page ?? 1)),
+        ps: String(options.pageSize ?? 24),
+        order: options.order ?? "pubdate",
+        tid: String(options.tid ?? 0),
+        web_location: "1550101"
+      };
+      if (options.keyword?.trim()) params.keyword = options.keyword.trim();
+      const raw = await this.wbiGet("/x/space/wbi/arc/search", params, signal);
+      const data = okData(raw, "\u52A0\u8F7D\u89C6\u9891\u6295\u7A3F\u5931\u8D25");
+      const vlist = Array.isArray(data?.list?.vlist) ? data.list.vlist : [];
+      const tlist = data?.list?.tlist && typeof data.list.tlist === "object" ? Object.values(data.list.tlist) : [];
+      const partitions = tlist.map((item) => ({ tid: Number(item?.tid) || 0, name: String(item?.name ?? ""), count: Number(item?.count) || 0 })).filter((item) => item.tid > 0 && item.name).sort((a, b) => b.count - a.count);
+      return {
+        videos: vlist.map((v) => mapArchive(v)).filter((v) => !!v),
+        partitions,
+        page: Number(data?.page?.pn) || options.page || 1,
+        pageSize: Number(data?.page?.ps) || options.pageSize || 24,
+        total: Number(data?.page?.count) || 0
+      };
+    }
+    async dynamics(uid, offset, signal) {
+      const params = {
+        host_mid: uid,
+        offset,
+        timezone_offset: String((/* @__PURE__ */ new Date()).getTimezoneOffset()),
+        features: localFollowFeatures,
+        web_location: "333.1387"
+      };
+      const raw = await this.wbiGet("/x/polymer/web-dynamic/v1/feed/space", params, signal);
+      const data = okData(raw, "\u52A0\u8F7D\u52A8\u6001\u5931\u8D25");
+      return {
+        items: Array.isArray(data?.items) ? data.items : [],
+        hasMore: !!data?.has_more,
+        offset: typeof data?.offset === "string" ? data.offset : ""
+      };
+    }
+    async searchDynamics(uid, keyword, page, offset, signal) {
+      const query = new URLSearchParams({
+        host_mid: uid,
+        page: String(Math.max(1, page)),
+        offset,
+        keyword: keyword.trim(),
+        features: localFollowFeatures,
+        web_location: "333.1387"
+      });
+      const raw = await this.read(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space/search?${query}`, signal);
+      const data = okData(raw, "\u641C\u7D22\u52A8\u6001\u5931\u8D25");
+      return {
+        items: Array.isArray(data?.items) ? data.items : [],
+        hasMore: !!data?.has_more,
+        offset: typeof data?.offset === "string" ? data.offset : "",
+        total: Number.isFinite(Number(data?.total)) ? Number(data.total) : void 0
+      };
+    }
+    async relations(options, signal) {
+      const page = Math.max(1, options.page ?? 1);
+      const pageSize2 = options.pageSize ?? 24;
+      const path = options.kind === "fans" ? "/x/relation/fans" : "/x/relation/followings";
+      const query = new URLSearchParams({
+        vmid: options.uid,
+        pn: String(page),
+        ps: String(pageSize2),
+        order: "desc"
+      });
+      if (options.kind === "follow" && options.orderType) query.set("order_type", options.orderType);
+      const raw = await this.read(`https://api.bilibili.com${path}?${query}`, signal);
+      const code = Number(raw?.code);
+      if (code === 22115 || code === 22118) {
+        return {
+          items: [],
+          total: 0,
+          page,
+          pageSize: pageSize2,
+          restricted: true,
+          message: typeof raw?.message === "string" && raw.message ? raw.message : "\u7531\u4E8E\u8BE5\u7528\u6237\u9690\u79C1\u8BBE\u7F6E\uFF0C\u65E0\u6CD5\u67E5\u770B\u6B64\u5217\u8868"
+        };
+      }
+      const data = okData(raw, options.kind === "fans" ? "\u52A0\u8F7D\u7C89\u4E1D\u5217\u8868\u5931\u8D25" : "\u52A0\u8F7D\u5173\u6CE8\u5217\u8868\u5931\u8D25");
+      const list = Array.isArray(data?.list) ? data.list : [];
+      const items = list.filter((item) => item && item.mid).map((item) => ({
+        mid: String(item.mid),
+        name: String(item.uname ?? `UID ${item.mid}`).trim(),
+        face: httpsUrl(item.face),
+        sign: String(item.sign ?? "").trim(),
+        attribute: Number(item.attribute) || 0,
+        officialTitle: String(item.official_verify?.desc ?? "").trim(),
+        vipLabel: Number(item.vip?.vipStatus) === 1 ? String(item.vip?.label?.text ?? "").trim() : ""
+      }));
+      return {
+        items,
+        total: Number(data?.total) || items.length,
+        page,
+        pageSize: pageSize2
+      };
+    }
+    async addWatchLater(bvid, aid) {
+      const body2 = bvid ? { bvid } : { aid };
+      const raw = await this.write("watchlater", { body: body2 });
+      if (!raw || Number(raw.code) !== 0) {
+        throw new BiliActionError(typeof raw?.message === "string" && raw.message ? raw.message : "\u52A0\u5165\u7A0D\u540E\u518D\u770B\u5931\u8D25", Number(raw?.code) || 0);
+      }
+      return raw.data;
+    }
+  };
+
+  // src/modules/space-luna/dynamics.ts
+  var iconImg = (src) => {
+    const img = el("img");
+    img.src = src;
+    img.alt = "";
+    img.width = 16;
+    img.height = 16;
+    return img;
+  };
+  function matchesFilter(raw, filter) {
+    if (filter === "all") return true;
+    const type = String(raw?.type ?? "");
+    if (filter === "video") return type === "DYNAMIC_TYPE_AV" || type === "DYNAMIC_TYPE_PGC" || type === "DYNAMIC_TYPE_UGC_SEASON";
+    if (filter === "draw") return type === "DYNAMIC_TYPE_DRAW" || type === "DYNAMIC_TYPE_WORD" || type === "DYNAMIC_TYPE_FORWARD";
+    if (filter === "article") return type === "DYNAMIC_TYPE_ARTICLE";
+    return true;
+  }
+  function showVideoTitle(card4) {
+    const media2 = card4.querySelector(".adc-video > .adc-media-link");
+    if (!media2) return;
+    const title = media2.querySelector(".adc-media-title");
+    const name = card4.querySelector(".adc-caption .adc-name");
+    if (!title || !name) return;
+    const headline = media2.cloneNode(false);
+    headline.className = "xp-caption-title as-video-title";
+    headline.textContent = headline.title = title.textContent ?? "";
+    media2.setAttribute("aria-label", headline.title);
+    name.replaceWith(headline);
+    const author2 = document.createElement("div");
+    author2.className = "as-byline";
+    name.classList.remove("xp-caption-title");
+    author2.append(name);
+    const action = headline.parentElement?.querySelector(".adc-action");
+    if (action) author2.append(action);
+    if (media2.closest(".adc-card") === card4) {
+      title.setAttribute("hidden", "");
+      const info = title.parentElement;
+      media2.after(info);
+      info.prepend(author2);
+      media2.parentElement.classList.add("as-titled-video");
+    } else {
+      card4.querySelector(":scope > .adc-body")?.prepend(author2);
+    }
+  }
+  function mountSpaceDynamicView(options) {
+    const { uid, api: api5, host } = options;
+    const controller = new AbortController();
+    const { signal } = controller;
+    const win = spaceWindow({
+      className: "as-dyn-win",
+      icon: iconImg(ie_notes_16_default),
+      title: "\u52A8\u6001",
+      foldName: "space-dynamic"
+    });
+    const toolbar = win.body.appendChild(el("div", "xp-toolbar as-dyn-toolbar"));
+    toolbar.setAttribute("role", "toolbar");
+    let filter = "all";
+    const filterDefs = [
+      ["all", "\u5168\u90E8"],
+      ["video", "\u89C6\u9891"],
+      ["draw", "\u56FE\u6587/\u65E5\u5E38"],
+      ["article", "\u4E13\u680F"]
+    ];
+    const filterBtns = /* @__PURE__ */ new Map();
+    for (const [id, label] of filterDefs) {
+      const btn = el("button", "xp-tool", label);
+      btn.type = "button";
+      btn.setAttribute("aria-pressed", String(id === filter));
+      btn.addEventListener("click", () => {
+        if (filter === id) return;
+        sound("click");
+        filter = id;
+        for (const [k, b] of filterBtns) b.setAttribute("aria-pressed", String(k === filter));
+        renderLoaded();
+      });
+      filterBtns.set(id, btn);
+      toolbar.append(btn);
+    }
+    const list = win.body.appendChild(el("div", "as-dynamic-list"));
+    const foot = win.body.appendChild(el("div", "as-feed-foot"));
+    host.replaceChildren(win.root);
+    const cards2 = mountDynamicCards(list, api5.interactions, api5.me, true);
+    const releaseText = observeCrispText(list, ".as-dyn-card");
+    const loaded = [];
+    const seen = /* @__PURE__ */ new Set();
+    let offset = "";
+    let hasMore = true;
+    let busy2 = false;
+    const renderLoaded = () => {
+      const rules = feedRules();
+      const frag = document.createDocumentFragment();
+      let shown2 = 0;
+      for (const raw of loaded) {
+        if (!matchesFilter(raw, filter)) continue;
+        const card4 = cards2.render(raw, rules);
+        if (!card4) continue;
+        card4.classList.add("as-dyn-card");
+        frag.append(card4);
+        shown2++;
+      }
+      list.replaceChildren(frag);
+      cards2.prune();
+      if (!shown2 && !busy2) {
+        list.append(el("div", "as-empty", loaded.length ? "\u5F53\u524D\u7B5B\u9009\u4E0B\u6682\u65E0\u52A8\u6001" : "\u8BE5 UP \u6682\u65E0\u516C\u5F00\u52A8\u6001"));
+      }
+    };
+    const paintFoot = (error) => {
+      foot.replaceChildren();
+      if (error) {
+        foot.append(el("span", "as-feed-note", error), xpButton("\u91CD\u8BD5", () => void loadMore()));
+        return;
+      }
+      if (busy2) {
+        foot.append(el("span", "as-feed-note", "\u6B63\u5728\u52A0\u8F7D\u52A8\u6001\u2026"));
+        return;
+      }
+      if (hasMore) {
+        foot.append(xpButton("\u52A0\u8F7D\u66F4\u591A\u52A8\u6001", () => void loadMore()));
+      } else if (loaded.length > 0) {
+        foot.append(el("span", "as-feed-note", "\u5DF2\u7ECF\u5230\u5E95\u4E86"));
+      }
+    };
+    const loadMore = async () => {
+      if (busy2 || !hasMore || signal.aborted) return;
+      busy2 = true;
+      paintFoot();
+      try {
+        const page = await api5.dynamics(uid, offset, signal);
+        if (signal.aborted) return;
+        for (const item of page.items) {
+          const id = String(item?.id_str ?? "");
+          if (!id || seen.has(id)) continue;
+          seen.add(id);
+          loaded.push(item);
+        }
+        offset = page.offset;
+        hasMore = page.hasMore && !!page.offset;
+        busy2 = false;
+        renderLoaded();
+        paintFoot();
+      } catch (error) {
+        if (signal.aborted) return;
+        busy2 = false;
+        paintFoot(error instanceof Error ? error.message : "\u52A0\u8F7D\u52A8\u6001\u5931\u8D25");
+      }
+    };
+    let observer;
+    if (typeof IntersectionObserver === "function") {
+      observer = new IntersectionObserver((entries) => {
+        if (entries.some((e) => e.isIntersecting) && hasMore && !busy2) void loadMore();
+      }, { rootMargin: "240px 0px" });
+      observer.observe(foot);
+    }
+    void loadMore();
+    return () => {
+      controller.abort();
+      observer?.disconnect();
+      releaseText();
+      cards2.dispose();
+    };
+  }
+  function mountDynamicSearchList(options) {
+    const { uid, keyword, api: api5, host, onTotal } = options;
+    const controller = new AbortController();
+    const { signal } = controller;
+    const list = el("div", "as-dynamic-list as-dyn-grid");
+    const foot = el("div", "as-feed-foot");
+    host.replaceChildren(list, foot);
+    const cards2 = mountDynamicCards(list, api5.interactions, api5.me, true);
+    const releaseText = observeCrispText(list, ".as-dyn-card");
+    const seen = /* @__PURE__ */ new Set();
+    let page = 1;
+    let offset = "";
+    let hasMore = true;
+    let busy2 = false;
+    let count2 = 0;
+    const paintFoot = (error) => {
+      foot.replaceChildren();
+      if (error) {
+        foot.append(el("span", "as-feed-note", error), xpButton("\u91CD\u8BD5", () => void loadMore()));
+        return;
+      }
+      if (busy2) {
+        foot.append(el("span", "as-feed-note", "\u6B63\u5728\u641C\u7D22\u52A8\u6001\u2026"));
+        return;
+      }
+      if (hasMore) {
+        foot.append(xpButton("\u52A0\u8F7D\u66F4\u591A\u52A8\u6001", () => void loadMore()));
+      } else if (count2 > 0) {
+        foot.append(el("span", "as-feed-note", `\u5DF2\u52A0\u8F7D\u5168\u90E8 ${count2} \u6761\u5339\u914D\u52A8\u6001`));
+      }
+    };
+    const loadMore = async () => {
+      if (busy2 || !hasMore || signal.aborted) return;
+      busy2 = true;
+      paintFoot();
+      try {
+        const res = await api5.searchDynamics(uid, keyword, page, offset, signal);
+        if (signal.aborted) return;
+        if (page === 1) onTotal?.(res.total);
+        const rules = feedRules();
+        const frag = document.createDocumentFragment();
+        for (const raw of res.items) {
+          const id = String(raw?.id_str ?? "");
+          if (!id || seen.has(id)) continue;
+          seen.add(id);
+          const card4 = cards2.render(raw, rules);
+          if (!card4) continue;
+          showVideoTitle(card4);
+          card4.classList.add("as-dyn-card");
+          frag.append(card4);
+          count2++;
+        }
+        list.append(frag);
+        cards2.prune();
+        page++;
+        offset = res.offset;
+        hasMore = res.hasMore && res.items.length > 0;
+        busy2 = false;
+        if (count2 === 0) {
+          list.replaceChildren(el("div", "as-empty", `\u6CA1\u6709\u627E\u5230\u5305\u542B\u300C${keyword}\u300D\u7684\u52A8\u6001`));
+        }
+        paintFoot();
+      } catch (error) {
+        if (signal.aborted) return;
+        busy2 = false;
+        paintFoot(error instanceof Error ? error.message : "\u641C\u7D22\u52A8\u6001\u5931\u8D25");
+      }
+    };
+    void loadMore();
+    return () => {
+      controller.abort();
+      releaseText();
+      cards2.dispose();
     };
   }
 
-  // src/modules/space-luna/prefs.ts
-  var spaceLunaKey = "BiliAtelier_SpaceLuna";
-  var spaceLunaEnabled = () => typeof GM_getValue === "function" && GM_getValue(spaceLunaKey, true) !== false;
-  var setSpaceLunaEnabled = (enabled) => GM_setValue(spaceLunaKey, enabled);
-  function spaceRoute(where = location) {
-    if (where.hostname !== "space.bilibili.com") return null;
-    const match = /^\/(\d+)(?:\/(dynamic|upload(?:\/video)?|search))?\/?$/.exec(where.pathname);
-    if (!match) return null;
-    const tab = !match[2] ? "home" : match[2].startsWith("upload") ? "uploads" : match[2];
-    return { uid: match[1], tab };
+  // src/modules/space-luna/cards.ts
+  function videoUrl2(video2) {
+    return video2.bvid ? `https://www.bilibili.com/video/${video2.bvid}/` : `https://www.bilibili.com/video/av${video2.aid}/`;
+  }
+  function copyText(text4, label) {
+    if (navigator.clipboard?.writeText) {
+      void navigator.clipboard.writeText(text4).then(
+        () => showInfoLog(`\u5DF2\u590D\u5236${label}`, "success"),
+        () => showInfoLog("\u590D\u5236\u5931\u8D25", "error")
+      );
+    }
+  }
+  function shortDate(seconds2) {
+    if (!Number.isFinite(seconds2) || seconds2 <= 0) return "";
+    const date2 = new Date(seconds2 * 1e3);
+    const now = /* @__PURE__ */ new Date();
+    const two2 = (n) => String(n).padStart(2, "0");
+    if (date2.getFullYear() === now.getFullYear()) {
+      return `${two2(date2.getMonth() + 1)}-${two2(date2.getDate())}`;
+    }
+    return `${date2.getFullYear()}-${two2(date2.getMonth() + 1)}-${two2(date2.getDate())}`;
+  }
+  function renderSpaceVideoCard(video2, options) {
+    const url = videoUrl2(video2);
+    const viewedId = viewedIdFromBvid(video2.bvid);
+    const card4 = el("article", "as-card");
+    if (video2.bvid) card4.dataset.bvid = video2.bvid;
+    const media2 = card4.appendChild(el("div", "as-card-media"));
+    const coverLink = link("as-card-cover-link", "", url, true);
+    coverLink.setAttribute("aria-label", video2.title);
+    const frame2 = coverLink.appendChild(el("div", "as-card-thumb"));
+    if (video2.pic) {
+      const img = frame2.appendChild(el("img"));
+      img.src = thumb(video2.pic, "480w_270h_1c");
+      img.loading = "lazy";
+      img.alt = video2.title;
+    }
+    if (video2.isTop) frame2.append(el("span", "as-card-badge as-card-top", "\u7F6E\u9876"));
+    else if (video2.isUnion) frame2.append(el("span", "as-card-badge", "\u8054\u5408"));
+    if (video2.duration) frame2.append(el("span", "as-card-dur", video2.duration));
+    media2.append(coverLink);
+    if (viewedId) {
+      const mark2 = viewedButton(viewedId);
+      mark2.classList.add("as-card-viewed");
+      media2.append(mark2);
+    }
+    const info = card4.appendChild(el("div", "as-card-info"));
+    const titleLink = link("as-card-title", video2.title, url, true);
+    titleLink.title = video2.title;
+    info.append(titleLink);
+    if (video2.description) {
+      const desc = el("p", "as-card-desc", video2.description);
+      desc.title = video2.description;
+      info.append(desc);
+    }
+    const meta = info.appendChild(el("div", "as-card-meta"));
+    meta.append(el("span", "as-card-stat", `${shortCount(video2.play)} \u64AD\u653E`));
+    if (video2.danmaku !== void 0 && video2.danmaku > 0) {
+      meta.append(el("span", "as-card-stat as-card-dm", `${shortCount(video2.danmaku)} \u5F39\u5E55`));
+    }
+    if (video2.pubdate > 0) {
+      const time2 = el("span", "as-card-date", shortDate(video2.pubdate));
+      time2.title = formatDate(video2.pubdate);
+      meta.append(time2);
+    }
+    const trackOpen = () => options.onOpen?.(video2);
+    coverLink.addEventListener("click", trackOpen);
+    titleLink.addEventListener("click", trackOpen);
+    card4.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+      const items = [
+        { label: "\u5728\u65B0\u6807\u7B7E\u9875\u6253\u5F00", action: () => {
+          trackOpen();
+          window.open(url, "_blank", "noopener,noreferrer");
+        } }
+      ];
+      if (viewedId) {
+        items.push({
+          label: isViewedVideo(viewedId) ? "\u53D6\u6D88\u5DF2\u770B\u6807\u8BB0" : "\u6807\u8BB0\u4E3A\u5DF2\u770B",
+          action: () => toggleViewedVideo(viewedId)
+        });
+      }
+      if (options.api.me) {
+        items.push({
+          label: "\u52A0\u5165\u7A0D\u540E\u518D\u770B",
+          action: async () => {
+            try {
+              await options.api.addWatchLater(video2.bvid, video2.aid);
+              showInfoLog("\u5DF2\u52A0\u5165\u7A0D\u540E\u518D\u770B", "success");
+            } catch (error) {
+              showInfoLog(error instanceof Error ? error.message : "\u52A0\u5165\u7A0D\u540E\u518D\u770B\u5931\u8D25", "error");
+            }
+          }
+        });
+      }
+      items.push("separator");
+      items.push({ label: "\u590D\u5236\u89C6\u9891\u94FE\u63A5", action: () => copyText(url, "\u89C6\u9891\u94FE\u63A5") });
+      if (video2.bvid) items.push({ label: `\u590D\u5236 ${video2.bvid}`, action: () => copyText(video2.bvid, "BV \u53F7") });
+      openMenu(items, { x: event.clientX, y: event.clientY });
+    });
+    return card4;
+  }
+  function renderPagination(options) {
+    const totalPages = Math.ceil(options.total / Math.max(1, options.pageSize));
+    if (totalPages <= 1) return null;
+    const nav2 = el("nav", "as-pager");
+    nav2.setAttribute("aria-label", "\u5206\u9875\u5BFC\u822A");
+    const prev = xpButton("\u4E0A\u4E00\u9875", () => options.onChange(options.page - 1));
+    prev.disabled = options.page <= 1;
+    nav2.append(prev);
+    const pages = [];
+    const cur = options.page;
+    pages.push(1);
+    if (cur > 4) pages.push("...");
+    for (let p2 = Math.max(2, cur - 2); p2 <= Math.min(totalPages - 1, cur + 2); p2++) pages.push(p2);
+    if (cur < totalPages - 3) pages.push("...");
+    if (totalPages > 1) pages.push(totalPages);
+    for (const item of pages) {
+      if (item === "...") {
+        nav2.append(el("span", "as-pager-gap", "\u2026"));
+      } else {
+        const btn = xpButton(String(item), () => {
+          if (item !== cur) options.onChange(item);
+        }, item === cur ? "as-pager-active" : "");
+        if (item === cur) btn.setAttribute("aria-current", "page");
+        nav2.append(btn);
+      }
+    }
+    const next = xpButton("\u4E0B\u4E00\u9875", () => options.onChange(options.page + 1));
+    next.disabled = options.page >= totalPages;
+    nav2.append(next);
+    const jump = el("form", "as-pager-jump");
+    jump.append(el("span", "as-pager-info", `\u5171 ${totalPages} \u9875\uFF0C\u8DF3\u81F3`));
+    const input = el("input", "xp-field as-pager-input");
+    input.type = "number";
+    input.min = "1";
+    input.max = String(totalPages);
+    input.value = String(cur);
+    input.setAttribute("aria-label", "\u9875\u7801");
+    jump.append(input, el("span", "as-pager-info", "\u9875"));
+    const go = el("button", "xp-button", "\u786E\u5B9A");
+    go.type = "submit";
+    jump.append(go);
+    jump.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const target = Math.floor(Number(input.value));
+      if (Number.isFinite(target) && target >= 1 && target <= totalPages && target !== cur) {
+        sound("click");
+        options.onChange(target);
+      }
+    });
+    nav2.append(jump);
+    return nav2;
+  }
+  function createMaxColsSelect(className = "") {
+    const select = el("select", `xp-field as-cols-select ${className}`.trim());
+    select.setAttribute("aria-label", "\u6BCF\u884C\u6700\u591A\u663E\u793A\u5361\u7247\u6570");
+    select.title = "\u6BCF\u884C\u6700\u591A\u663E\u793A\u5361\u7247\u6570";
+    for (const n of spaceMaxColChoices) {
+      const opt = el("option", "", `\u6BCF\u884C\u6700\u591A ${n} \u5F20`);
+      opt.value = String(n);
+      select.append(opt);
+    }
+    const sync = () => {
+      select.value = String(readSpaceMaxCols());
+    };
+    sync();
+    select.addEventListener("change", () => {
+      sound("click");
+      writeSpaceMaxCols(Number(select.value));
+    });
+    select.addEventListener("click", (event) => event.stopPropagation());
+    window.addEventListener(spaceMaxColsChanged, sync);
+    return select;
+  }
+
+  // src/modules/space-luna/home.ts
+  var iconImg2 = (src) => {
+    const img = el("img");
+    img.src = src;
+    img.alt = "";
+    img.width = 16;
+    img.height = 16;
+    return img;
+  };
+  function mountHomeView(options) {
+    const { uid, api: api5, host } = options;
+    const controller = new AbortController();
+    const { signal } = controller;
+    const loading = el("div", "as-loading", "\u6B63\u5728\u52A0\u8F7D\u4E3B\u9875\u5185\u5BB9\u2026");
+    host.replaceChildren(loading);
+    void Promise.allSettled([
+      api5.masterpieces(uid, signal),
+      api5.archives({ uid, page: 1, pageSize: 12, order: "pubdate" }, signal),
+      api5.collections(uid, signal)
+    ]).then(([mpRes, arcRes, colRes]) => {
+      if (signal.aborted) return;
+      const frag = document.createDocumentFragment();
+      let sections = 0;
+      if (mpRes.status === "fulfilled" && mpRes.value.length > 0) {
+        sections++;
+        const list = mpRes.value;
+        const win = spaceWindow({
+          className: "as-mp-win",
+          icon: iconImg2(ie_media_16_default),
+          title: list.some((v) => v.isTop) && list.length === 1 ? "\u7F6E\u9876\u89C6\u9891" : "\u4EE3\u8868\u4F5C",
+          foldName: "space-masterpiece"
+        });
+        const grid = win.body.appendChild(el("div", list.length === 1 ? "as-mp-single" : "as-grid as-mp-grid"));
+        for (const video2 of list) grid.append(renderSpaceVideoCard(video2, { api: api5 }));
+        frag.append(win.root);
+      }
+      const arcWin = spaceWindow({
+        className: "as-latest-win",
+        icon: iconImg2(ie_media_16_default),
+        title: "\u6700\u65B0\u6295\u7A3F",
+        foldName: "space-latest"
+      });
+      const moreBtn = xpButton("\u67E5\u770B\u66F4\u591A", options.onMoreUploads, "as-cap-action");
+      const foldBtn = arcWin.caption.querySelector(".xp-caption-button");
+      if (foldBtn) foldBtn.before(moreBtn);
+      else arcWin.caption.append(moreBtn);
+      if (arcRes.status === "fulfilled") {
+        if (arcRes.value.total > 0) {
+          arcWin.title.textContent = `\u6700\u65B0\u6295\u7A3F (${arcRes.value.total})`;
+        }
+        if (arcRes.value.videos.length > 0) {
+          sections++;
+          const grid = arcWin.body.appendChild(el("div", "as-grid"));
+          for (const video2 of arcRes.value.videos) grid.append(renderSpaceVideoCard(video2, { api: api5 }));
+        } else {
+          arcWin.body.append(el("div", "as-empty", "\u8BE5 UP \u6682\u65E0\u516C\u5F00\u89C6\u9891\u6295\u7A3F"));
+        }
+      } else {
+        const errBox = arcWin.body.appendChild(el("div", "as-empty"));
+        errBox.append(el("p", "", arcRes.reason instanceof Error ? arcRes.reason.message : "\u52A0\u8F7D\u89C6\u9891\u6295\u7A3F\u5931\u8D25"));
+        errBox.append(xpButton("\u91CD\u8BD5", () => {
+          controller.abort();
+          mountHomeView(options);
+        }));
+      }
+      frag.append(arcWin.root);
+      if (colRes.status === "fulfilled" && colRes.value.length > 0) {
+        sections++;
+        const colWin = spaceWindow({
+          className: "as-col-win",
+          icon: iconImg2(folder_default),
+          title: `\u5408\u96C6\u4E0E\u89C6\u9891\u5217\u8868 (${colRes.value.length})`,
+          foldName: "space-collections"
+        });
+        const allLink = link("xp-button as-cap-action", "\u5168\u90E8\u5408\u96C6", `https://space.bilibili.com/${uid}/lists`, false);
+        const colFold = colWin.caption.querySelector(".xp-caption-button");
+        if (colFold) colFold.before(allLink);
+        else colWin.caption.append(allLink);
+        const listEl = colWin.body.appendChild(el("div", "as-collections"));
+        for (const col of colRes.value) {
+          const block = listEl.appendChild(el("div", "as-col-block"));
+          const head = block.appendChild(el("div", "as-col-head"));
+          head.append(
+            link("as-col-name", col.name, col.url, false),
+            el("span", "as-col-count", `\u5171 ${col.total} \u4E2A\u89C6\u9891`)
+          );
+          if (col.archives.length > 0) {
+            const grid = block.appendChild(el("div", "as-grid as-col-grid"));
+            for (const video2 of col.archives.slice(0, 6)) grid.append(renderSpaceVideoCard(video2, { api: api5 }));
+          }
+        }
+        frag.append(colWin.root);
+      }
+      if (sections === 0 && !frag.childElementCount) {
+        host.replaceChildren(el("div", "as-empty", "\u4E3B\u9875\u6682\u65E0\u5185\u5BB9"));
+      } else {
+        host.replaceChildren(frag);
+      }
+    });
+    return () => controller.abort();
   }
 
   // src/modules/space-luna/layout.ts
   var mainMin = 480;
   var asideMin = 220;
-  var columnGap = 14;
-  var narrowSpace = 750;
+  var columnGap = 12;
+  var narrowSpace = 780;
   function parse2(value2) {
     const saved = {};
     if (Number.isFinite(value2?.blank)) saved.blank = Math.max(0, value2.blank);
@@ -17682,17 +19058,20 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
   }
   function startSpaceLayout() {
     const records2 = screenRecords("BiliAtelier_SpaceLayoutByScreen", null, parse2);
-    let saved = records2.load(), main = null, aside = null;
+    let saved = records2.load();
+    let stage = null;
+    let columns3 = null;
+    let aside = null;
     const grip = document.createElement("div");
     grip.className = "as-divider";
     grip.setAttribute("aria-hidden", "true");
     let drag;
     const paint2 = () => {
-      if (!main) return;
-      if (saved.blank === void 0) document.documentElement.style.removeProperty("--as-blank");
-      else document.documentElement.style.setProperty("--as-blank", saved.blank / zoomOf(main) + "px");
-      if (saved.right === void 0) main.style.removeProperty("--as-right");
-      else main.style.setProperty("--as-right", saved.right + "px");
+      if (!stage) return;
+      if (saved.blank === void 0) stage.style.removeProperty("--as-blank");
+      else stage.style.setProperty("--as-blank", saved.blank / zoomOf(stage) + "px");
+      if (saved.right === void 0) columns3?.style.removeProperty("--as-right");
+      else columns3?.style.setProperty("--as-right", saved.right + "px");
     };
     const save = (next) => {
       saved = next;
@@ -17700,7 +19079,10 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       paint2();
       notifyPageLayoutChanged();
     };
-    const layout2 = { isDefault: () => saved.blank === void 0 && saved.right === void 0, reset: () => save({}) };
+    const layout2 = {
+      isDefault: () => saved.blank === void 0 && saved.right === void 0,
+      reset: () => save({})
+    };
     function cancel() {
       if (!drag) return;
       if (grip.hasPointerCapture(drag.id)) grip.releasePointerCapture(drag.id);
@@ -17722,7 +19104,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       event.preventDefault();
     });
     grip.addEventListener("pointermove", (event) => {
-      if (drag?.id === event.pointerId) main?.style.setProperty("--as-right", width(event.clientX, drag) + "px");
+      if (drag?.id === event.pointerId) columns3?.style.setProperty("--as-right", width(event.clientX, drag) + "px");
     });
     grip.addEventListener("pointerup", (event) => {
       if (drag?.id !== event.pointerId) return;
@@ -17742,13 +19124,19 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     });
     startSideBounds({
       measure() {
-        if (!main?.isConnected) return null;
-        const rect = main.getBoundingClientRect(), zoom = zoomOf(main);
-        const least = mainMin + (aside && main.clientWidth > narrowSpace ? asideMin + columnGap : 0);
-        if (main.clientWidth <= least) return null;
-        const blank = parseFloat(getComputedStyle(main).paddingLeft) * zoom;
-        const top = Math.max(rect.top, document.querySelector(".space-navbar")?.getBoundingClientRect().bottom ?? 0);
-        return { stage: rect, content: { left: rect.left + blank, right: rect.right - blank }, least: least * zoom, top };
+        if (!stage?.isConnected || !columns3?.isConnected) return null;
+        const rect = columns3.getBoundingClientRect();
+        const zoom = zoomOf(columns3);
+        const least = mainMin + (aside && columns3.clientWidth > narrowSpace ? asideMin + columnGap : 0);
+        if (columns3.clientWidth <= least) return null;
+        const blank = parseFloat(getComputedStyle(columns3).paddingLeft) * zoom;
+        const navBottom = document.querySelector("#atelier-space .as-nav-host")?.getBoundingClientRect().bottom ?? rect.top;
+        return {
+          stage: rect,
+          content: { left: rect.left + blank, right: rect.right - blank },
+          least: least * zoom,
+          top: Math.max(rect.top, navBottom)
+        };
       },
       commit: (blank) => save({ ...saved, blank }),
       reset() {
@@ -17763,464 +19151,19 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       paint2();
       notifyPageLayoutChanged();
     });
-    return (next, right) => {
-      if (main !== next || aside !== right) {
+    return (nextStage, nextColumns, nextAside) => {
+      if (stage !== nextStage || columns3 !== nextColumns || aside !== nextAside) {
         cancel();
         grip.remove();
-        document.documentElement.style.removeProperty("--as-blank");
-        main?.style.removeProperty("--as-right");
-        main = next;
-        aside = right;
+        stage?.style.removeProperty("--as-blank");
+        columns3?.style.removeProperty("--as-right");
+        stage = nextStage;
+        columns3 = nextColumns;
+        aside = nextAside;
         paint2();
-        registerPageLayout(main ? layout2 : null);
+        registerPageLayout(stage ? layout2 : null);
       }
       if (aside && grip.parentElement !== aside) aside.append(grip);
-    };
-  }
-
-  // src/modules/space-luna/styles.ts
-  var on8 = "html[data-atelier-space]";
-  var app = `${on8} #app`;
-  var feed = `${app} .as-dynamic-list`;
-  var generalSearch = "html[data-atelier-space=search]:not([data-as-upload-search]) #app .space-search";
-  var uploadSearch = "html[data-as-upload-search] #app .space-search";
-  var windows = ":is(.section-wrap:not(.lists-section),.lists-section .video-list,.aside-card,.ann-section,.info-section,.upload-content>.video,.search-content>.video,.space-dynamic__content)";
-  var captions = ":is(.section-wrap__header,.video-list__header,.aside-card-header,.ann-section__header,.info-section__header,.video-header__top,.elec-section__header,.as-caption,.as-results-title,.as-upload-heading)";
-  var face = `border:solid var(--xp-caption);border-width:var(--xp-frame-edge,0 4px 4px);border-radius:0;background:var(--xp-window);${image("frame", 0, false)};border-image-width:var(--xp-caption-h,29px) var(--xp-frame-r,4px) var(--xp-frame-b,4px) var(--xp-frame-l,4px)`;
-  var caption2 = `display:flex;align-items:center;gap:5px;min-height:var(--xp-caption-h,29px);box-sizing:border-box;padding:3px 7px;margin:0 calc(-1 * var(--xp-frame-r,4px)) 0 calc(-1 * var(--xp-frame-l,4px));color:var(--xp-caption-ink);background:var(--xp-caption);${image("caption", 0)};font:bold var(--xp-caption-size)/var(--xp-line) var(--xp-caption-font)`;
-  var commands = ":is(.playall-btn,.video-type-filter-switcher,.section-wrap__header button:not(.as-fold),.video-list__header button:not(.as-fold),.radio-filter__item,.living-section__follow,.charge-btn,.search-content .empty-button .vui_button,.video-pagination .vui_button)";
-  var dock = ":is(.space-home>.aside,.space-dynamic__right,.space-upload>.aside,.space-search>.aside)";
-  var columns2 = ":is(.space-home,.space-dynamic,.space-upload,.space-search)";
-  var videos = ":is(.video-list.grid-mode,.video-list__content,.video-section .items)";
-  var spaceCss = `
-${on8} body{min-width:0;background:var(--xp-window);color:var(--xp-ink)}
-${on8} #biliMainHeader{overflow-x:clip;min-width:0!important}
-${app}{min-width:0;margin-top:0!important;background:var(--xp-window);color:var(--xp-ink);--text1:var(--xp-ink);--text2:var(--xp-muted);--bg1:var(--xp-window);--bg2:var(--xp-face);--as-gap:clamp(10px,2.2%,34px);--as-min:${mainMin}px;--as-padding:clamp(0px,var(--as-blank,max(var(--as-gap),calc((100% - 1442px)/2))),max(0px,calc((100% - var(--as-min))/2)));--as-tabs-height:var(--as-tabs-measured,36px)}
-${app} :is(.header-upinfo,.nav-bar__main-left,.space-main){${xpFont};letter-spacing:normal}
-${app} :is(.header-upinfo,.nav-bar__main-left,.space-main) .xp-text:not(.as-dyn-card *,.lh-compact *){font-family:var(--as-font,var(--xp-font));font-size:var(--as-size,var(--xp-font-size));line-height:var(--xp-line);letter-spacing:normal}
-${app} .space-theme-bg{display:none}
-${app} .space-header{isolation:isolate;height:142px;min-height:0;max-height:none;background:var(--xp-face);align-items:flex-end}
-${app} .header-toutu{z-index:0}
-${app} .header-toutu,${app} .formal-toutu{width:100%;height:100%;min-width:0;background-size:cover}
-${app} .header-upinfo-bg-shadow{z-index:1;pointer-events:none;background:linear-gradient(transparent 30%,#101826b3)}
-${app} .space-header[data-as-plain]{height:auto;min-height:82px;align-items:center}
-${app} .space-header[data-as-plain] :is(.header-upinfo-bg-shadow,.header-toutu){display:none}
-${app} .space-header[data-as-plain] :is(.nickname,.pure-text,.as-stats button){color:var(--xp-ink);text-shadow:none}
-${app} .header-upinfo{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-end;width:100%;min-width:0;max-width:1510px;margin:0 auto;padding:0 var(--as-gap) 11px;box-sizing:border-box}
-${app} .upinfo__main{min-width:0;flex:1}
-${app} .upinfo-detail{min-width:0}
-${app} .upinfo-detail__top .nickname{--as-font:var(--xp-title-font);--as-size:var(--xp-title-size);font:bold var(--as-size)/1.3 var(--as-font);color:white;text-shadow:0 1px 3px #101826}
-${app} .upinfo-detail__bottom .pure-text{${xpFont};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:white;text-shadow:0 1px 3px #101826}
-${app} .header-upinfo .operations{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none}
-${app} .header-upinfo .interactions{display:flex;align-items:center;gap:4px}
-${xpButtonCss(`${app} .space-header :is(.space-follow-btn,.message-btn,.more-actions__trigger)`)}
-${app} .space-header :is(.message-btn,.space-follow-btn){width:auto;height:auto;min-width:65px}
-${app} .header-upinfo .atelier-local-follow-action{margin:0!important;order:-1}
-${app} .space-header:has(.more-actions__trigger) .bili-blocker-space-profile-action{display:none!important}
-${app}[data-as-self] .space-header :is(.atelier-local-follow-action,.bili-blocker-space-profile-action){display:none!important}
-${app} .as-stats{display:flex;gap:14px;align-items:center}
-${app} .as-stats button{display:grid;justify-items:center;border:0;padding:0;background:transparent;color:white;text-shadow:0 1px 3px #101826;cursor:pointer;${xpFont}}
-${app} .as-stats strong{--as-font:var(--xp-title-font);--as-size:var(--xp-title-size);font:bold var(--as-size)/var(--xp-line) var(--as-font);font-variant-numeric:tabular-nums}
-${app}:has(.as-stats) .nav-bar__main-right{display:none}
-${app} .space-navbar{position:sticky;top:${headerBottomCss};height:auto;min-height:0;z-index:21;background:var(--xp-face);border-bottom:1px solid var(--xp-shadow3d);box-shadow:none}
-${app} .nav-bar__main{display:flex;align-items:center;width:100%;max-width:none;min-width:0;height:auto;min-height:33px;margin:auto;padding:2px var(--as-padding) 0;box-sizing:border-box}
-${app} .nav-bar__main-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
-${app} .nav-tab{display:flex;align-items:flex-end;flex-wrap:wrap;gap:0;min-width:0;height:auto}
-${app} .nav-tab__item{margin:0;padding:3px 9px;height:auto;min-height:24px;border:0 solid transparent;background:var(--xp-face);${image("tab", 0)};${xpFont};color:var(--xp-ink)}
-${app} .nav-tab__item:is(.active,[aria-current=page],[data-as-current-upload]){border-image-source:var(--xp-tab-2);color:var(--xp-ink);font-weight:bold}
-${app} .nav-tab__item :is(i,.nav-tab__item-num){font-size:inherit}
-${app} :is(.nav-tab__item,.side-nav__item) .xp-text{color:var(--xp-ink)}
-${app} .nav-tab-cursor{display:none}
-html:is([data-atelier-space=uploads],[data-as-upload-search]) #app .nav-bar-search{display:none}
-${app} .nav-bar-search{margin:0 0 2px auto;flex:none;max-width:160px}
-${app} .space-main{min-width:0;max-width:none;width:100%;margin:0 auto;padding:12px var(--as-padding) 20px;box-sizing:border-box;${xpFont};color:var(--xp-ink)}
-${app}:has(.space-main ${columns2}:not([data-as-empty-aside])){--as-min:${mainMin + columnGap + asideMin}px}
-${app} ${columns2}{display:grid;grid-template-columns:minmax(0,1fr) clamp(${asideMin}px,var(--as-right,calc((100% - ${columnGap}px)/3.2)),calc(100% - ${mainMin + columnGap}px));gap:${columnGap}px;align-items:start;margin:0}
-${app} :is(.space-home>.content,.space-dynamic__content,${dock}){width:auto;min-width:0;max-width:none;margin:0}
-${app} :is(.space-dynamic__left,.upload-sidenav,.search-sidebar){position:static;min-height:0;height:auto;margin:0}
-${app} .space-dynamic__left{grid-column:1/-1;width:auto}
-${app} :is(.space-dynamic__left,.upload-sidenav) .side-nav{display:flex;flex-wrap:wrap;gap:4px}
-${app} :is(.space-upload,.space-search):not(:has(>.aside)){display:block;margin:0}
-${app} :is(.upload-sidenav,.upload-content,.search-sidebar,.search-content){width:auto;max-width:none;margin:0 0 8px}
-${app} .search-sidebar .side-nav{display:flex}
-${xpButtonCss(`${app} .space-main .side-nav__item`)}
-${app} .space-main .side-nav__item{height:auto;width:auto}
-${app} .space-main .side-nav__item.active{border-image-source:var(--xp-button-2)}
-${app} ${dock}{align-self:stretch;position:relative}
-${app} :is(.space-upload,.space-search):has(>.aside)>:is(.upload-sidenav,.search-sidebar){grid-column:1/-1}
-${app} .as-divider{position:absolute;top:0;bottom:0;left:-${columnGap + 4}px;width:${columnGap + 8}px;cursor:ew-resize;touch-action:none;user-select:none;z-index:2}
-${app} ${dock}>.lh-compact{top:calc(${headerBottomCss} + var(--as-tabs-height) + 4px)}
-${app} ${columns2}[data-as-empty-aside]{grid-template-columns:minmax(0,1fr)}
-${app} [data-as-empty-aside]>${dock}{position:absolute;visibility:hidden;pointer-events:none;width:0;height:0;overflow:hidden}
-${generalSearch},${app} ${windows}{${face};margin-bottom:9px;padding:0;box-sizing:border-box;min-width:0}
-${app} ${captions}{${caption2};--as-font:var(--xp-caption-font);--as-size:var(--xp-caption-size);height:auto;justify-content:flex-start}
-${app} ${captions}::before{content:"";flex:none;width:16px;height:16px;background:url("${ie_media_16_default}") center/contain no-repeat;image-rendering:pixelated}
-${app} :is(.video-list__header,.info-section__header)::before{background-image:url("${folder_default}")}
-${app} .space-main .aside-card-header .living-section__follow{position:static;margin-left:auto}
-${app} .living-section__link{color:var(--xp-task-link)}
-${app} ${captions} :is(.section-wrap__title,.video-list__title,.aside-card__title,.title,a){font:inherit;color:inherit}
-${app} ${captions}>.as-fold{margin-left:auto}
-${app} :is(.video-list__btns,.section-wrap__header>.btns){display:inline-flex;align-items:center;flex:0 0 auto;gap:3px;margin:0 0 0 auto}
-${app} ${captions}>:is(.video-list__btns,.btns)+.as-fold{margin-left:0}
-${app} [data-as-folded]+*{display:none!important}
-${app} .section-wrap__content,${app} :is(.aside-card__content,.ann-section__content,.info-section__content,.video-body,.video-header__bottom,.video-list__content){padding:8px}
-${app} .lists-section>.section-wrap__content{padding:0}
-${app} .home-section,${app} .home-aside-section,${app} .dynamic-aside-section{margin:0}
-${app} :is(.space-home>.content,.upload-content,.search-content){container:as-posts / inline-size}
-${app} .space-main ${videos}{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 9px}
-${app} .space-main :is(.video-list__item,.upload-video-card.grid-mode){width:auto;min-width:0;margin:0;padding:0}
-${app} .masterpiece-block{display:flex;flex-wrap:nowrap;gap:10px;overflow-x:auto}
-${app} .masterpiece-block__item{flex:1 0 min(200px,100%);min-width:0;margin:0}
-${app} :is(.bili-video-card__title,.bili-video-card__title a){${xpFont};font-weight:normal;color:var(--xp-ink);letter-spacing:normal}
-${app} .bili-video-card__title a:hover{color:var(--xp-highlight);text-decoration:underline}
-${app} .masterpiece-block__item:only-child .bili-video-card__wrap{display:flex;align-items:center;gap:12px}
-${app} .masterpiece-block__item:only-child .bili-video-card__cover{width:min(42%,235px);flex:none}
-${app} .bili-video-card__subtitle{${xpFont};color:var(--xp-muted)}
-${generalSearch}:not(:has(>.aside)){display:grid;grid-template-columns:max-content minmax(0,1fr);gap:0;container:as-posts / inline-size}
-${generalSearch}>.as-results-title{grid-area:1/1/2/-1}
-${generalSearch}>.search-content,${generalSearch} .search-content>.video,${generalSearch} .video-header,${generalSearch} .video-header__bottom{display:contents;container-type:normal}
-${generalSearch} .search-content>*,${generalSearch} :is(.video-body,.video-footer,.video-type-filter){grid-column:1/-1}
-${generalSearch} .breadcrumb{grid-area:2/2/3/3;min-width:0;justify-content:flex-end;align-content:center;padding:2px 8px;background:var(--xp-face)}
-${generalSearch} .search-content :is(.video-header__top,.dynamic-header,.dynamic-empty-title),${uploadSearch}>.search-sidebar{display:none}
-${generalSearch}>.search-sidebar{grid-area:2/1/3/-1;display:flex;flex-wrap:wrap;align-items:end;margin:0;padding:2px 8px 0;background:var(--xp-face)}
-${generalSearch}:has(.breadcrumb)>.search-sidebar{grid-column:1}
-${generalSearch} .search-sidebar .side-nav{display:flex;gap:0;flex-wrap:wrap}
-${generalSearch} .search-sidebar .side-nav__item{display:inline-flex;gap:4px;align-items:center;margin:0;padding:2px 8px;min-width:0;width:auto;min-height:22px;height:auto;border:0 solid transparent;${image("tab", 0)};${xpFont};color:var(--xp-ink)}
-${generalSearch} .search-sidebar .side-nav__item.active{border-image-source:var(--xp-tab-2);font-weight:bold}
-${app} .search-sidebar .side-nav__item :is(.side-nav__item__sub,.side-nav__item__sub-text){margin:0;padding:0;font:inherit;color:inherit}
-${generalSearch} .as-results-tools{display:inline-flex}
-${generalSearch}:has(.as-results-tools>.as-sort) .video-order-filter{display:none}
-${uploadSearch} .video-header__top .sub-title{margin:0;${xpFont};color:inherit}
-${uploadSearch} .as-upload-nav .side-nav{display:flex;gap:4px}
-${uploadSearch} .as-upload-nav a{text-decoration:none}
-${uploadSearch}:has(>.search-sidebar .side-nav__item:first-child:not(.active))>.search-content>:is(.dynamic,.dynamic-empty){visibility:hidden}
-${uploadSearch} .search-content:has(>.as-upload-header){${face}}
-${uploadSearch} .search-content>.dynamic-empty>.dynamic-empty-title{display:none}
-${app} .as-search{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
-${app} :is(.search-content,.video)>.as-search{padding:6px}
-${app} :is(.video-order-filter,.breadcrumb){display:flex;align-items:center;flex-wrap:wrap;gap:4px}
-${app} .video-header__bottom{min-height:0;height:auto;margin:0;padding:4px 8px}
-${app} .video-header__bottom .breadcrumb{min-height:0;height:auto;margin:0}
-${xpButtonCss(`${app} .space-main ${commands}`)}
-${app} .space-main ${commands}{--as-font:var(--xp-font);--as-size:var(--xp-font-size);width:auto;min-width:0;height:auto;flex:none;transition:none}
-${app} .space-main ${commands} :is(i,svg){font-size:var(--xp-font-size)!important;width:1em;height:1em;margin:0}
-${app} .space-main .video-header__top>button.playall-btn{margin-left:auto}
-${app} .space-main :is(.radio-filter__item--active,.vui_pagenation--btn.vui_button--active){border-image-source:var(--xp-button-2)}
-${app} .space-main .vui_button--disabled{border-image-source:var(--xp-button-3);color:var(--xp-graytext)}
-${app} :is(.upload-content>.video,.search-content):has(.as-search>.as-sort) .video-order-filter{display:none}
-${app} :is(.auth-section,.elec-section){background:var(--xp-face);border:1px solid var(--xp-shadow3d);border-radius:0}
-${xpFieldCss(`${app} :is(.as-search input,.as-sort,.nav-search-input,.video-pagination input)`)}
-${xpSelectCss(`${app} :is(.as-search,.as-results-tools) .as-sort`)}
-${app} .as-sort{width:auto;min-width:0;height:23px}
-${app} .as-search input{width:145px;max-width:100%;height:23px}
-${app} .as-dyn-card~.bili-dyn-item__body{display:none}
-${app} .bili-dyn-item__main:has(>.as-dyn-card)>.bili-dyn-item__avatar,${app} .bili-dyn-item__main:has(>.as-dyn-card)>.bili-dyn-item__header :is(.bili-dyn-title,.bili-dyn-item__desc){display:none}
-${app} .bili-dyn-item__main:has(>.as-dyn-card){margin:0;padding:0;position:relative}
-${app} .bili-dyn-item__main:has(>.as-dyn-card)>.bili-dyn-item__header{margin:0;padding:0;height:0;min-height:0}
-${app} .as-dyn-card{${xpFont};letter-spacing:normal}
-${app} .as-dyn-card .adc-caption{padding-right:34px}
-${app} .as-dyn-card~.bili-dyn-item__footer,${app} .bili-dyn-item[data-as-blocked]{display:none!important}
-${app} .as-dyn-card .adc-footer a{color:var(--xp-task-link)}
-${app} .as-dynamic-list [hidden]{display:none!important}
-${dynamicCardStyles(feed)}
-${commentAreaStyles(feed)}
-${imageWindowCss}
-${lunaDialogCss}
-@container as-posts (max-width:750px){${app} .space-main ${videos}{grid-template-columns:repeat(2,minmax(0,1fr))}${app} .video-pagination,${app} .video-pagination>.vui_pagenation--btns{flex-wrap:wrap;max-width:100%;row-gap:4px}}
-@media(max-width:${narrowSpace}px){${app}:has(.space-main ${columns2}:not([data-as-empty-aside])){--as-min:${mainMin}px}${app} ${columns2}{grid-template-columns:minmax(0,1fr)}${app} .as-divider{display:none}${app} .header-upinfo{flex-wrap:wrap;gap:3px}${app} .nav-bar__main-left{flex-wrap:wrap}${app} .as-stats{gap:6px}${app} .header-upinfo .operations{flex-direction:row;flex-wrap:wrap;min-width:0;max-width:100%}${app} .header-upinfo .interactions{max-width:100%;flex-wrap:wrap}}
-@media(max-width:520px){${app} .space-header{height:auto;min-height:142px}${app} .space-header[data-as-plain]{min-height:82px}${app} .header-upinfo{align-items:flex-start;padding-top:6px}${app} .upinfo__main{flex-basis:100%}${app} .upinfo-detail__top{flex-wrap:wrap}${app} .nickname{white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
-${app} :is(.section-wrap__header,.video-list__header,.video-header__top){flex-wrap:wrap}${app} .section-wrap__header .btns{max-width:100%;flex-wrap:wrap}${app} .section-wrap__header .btns button{min-width:0;width:auto}${app} .bili-cover-card__stats{min-width:0;max-width:100%;overflow:hidden}}
-`;
-
-  // src/modules/space-luna/uploads.ts
-  var sortItems = ".space-main .video-order-filter .radio-filter__item";
-  var activeSort = () => document.querySelector(sortItems + ".radio-filter__item--active")?.textContent?.trim() ?? "";
-  function syncSort(box2, group, saved) {
-    const existing = box2.querySelector(".as-sort");
-    const native2 = group && !group.hidden && group.style.display !== "none" ? [...group.querySelectorAll(".radio-filter__item")].filter((item) => !item.hidden && item.getAttribute("aria-hidden") !== "true" && getComputedStyle(item).display !== "none" && item.textContent?.trim()) : [];
-    const labels = native2.length ? native2.map((item) => item.textContent.trim()) : saved?.choices ?? [];
-    if (!labels.length) {
-      existing?.remove();
-      return;
-    }
-    const select = existing ?? box2.appendChild(el("select", "xp-field as-sort"));
-    select.setAttribute("aria-label", "\u6295\u7A3F\u6392\u5E8F");
-    if (select.length !== labels.length || labels.some((label, i) => select.options[i].value !== label)) {
-      select.replaceChildren(...labels.map((label) => el("option", "", label)));
-    }
-    labels.forEach((_, i) => {
-      select.options[i].disabled = !!native2[i]?.matches("[disabled],[aria-disabled=true],.disabled,.vui_button--disabled");
-    });
-    const preferred = saved?.sort || activeSort();
-    select.value = labels.includes(preferred) ? preferred : labels[0];
-    select.onchange = () => {
-      if (saved) {
-        saved.sort = select.value;
-        history.replaceState({ ...history.state, atelierUploadSearch: saved }, "");
-      }
-      const target = [...document.querySelectorAll(sortItems)].find((item) => item.textContent?.trim() === select.value);
-      if (target && !target.classList.contains("radio-filter__item--active")) target.click();
-    };
-  }
-  function uploadTab(uid) {
-    return [...document.querySelectorAll(".space-navbar .nav-tab__item[href]")].find((link3) => {
-      const path = link3.pathname.replace(/\/$/, "");
-      return path === "/" + uid + "/upload" || path === "/" + uid + "/upload/video";
-    });
-  }
-  function uploadTabs() {
-    const items = [...document.querySelectorAll(".upload-sidenav .side-nav__item")];
-    return items.map((item, i) => ({
-      name: item.querySelector(".side-nav__item__main-text")?.textContent?.trim() ?? "",
-      count: item.querySelector(".side-nav__item__sub-text")?.textContent?.trim() ?? "",
-      kind: i === 0 ? "video" : i === items.length - 1 ? "audio" : "opus"
-    }));
-  }
-  function uploadToolbar(host, form, scope) {
-    const video2 = host.matches(".video") ? host : host.querySelector(":scope > .video");
-    const native2 = video2?.querySelector(":scope > .video-header:not(.as-upload-header) .breadcrumb") ?? video2?.querySelector(":scope > .video-header__bottom .breadcrumb");
-    let fallback2 = host.querySelector(":scope > .as-upload-header");
-    if (!native2 && !fallback2) {
-      fallback2 = el("div", "video-header as-upload-header");
-      fallback2.append(el("h2", "as-upload-heading", scope?.title || "\u89C6\u9891\u6295\u7A3F"));
-      fallback2.appendChild(el("div", "video-header__bottom")).append(el("div", "breadcrumb"));
-      host.prepend(fallback2);
-    }
-    const toolbar = native2 ?? fallback2.querySelector(".breadcrumb");
-    if (form.parentElement !== toolbar) toolbar.prepend(form);
-    if (native2) fallback2?.remove();
-  }
-  function spaceRouter() {
-    const doc = typeof unsafeWindow === "undefined" ? document : unsafeWindow.document;
-    return doc.getElementById("app")?.__vue_app__?.config.globalProperties.$router;
-  }
-  function createSpaceSearch() {
-    const form = el("form", "as-search");
-    form.setAttribute("role", "search");
-    form.setAttribute("aria-label", "\u641C\u7D22 TA \u7684\u6295\u7A3F");
-    const input = form.appendChild(el("input"));
-    input.type = "search";
-    input.name = "keyword";
-    input.maxLength = 100;
-    input.placeholder = "\u641C\u7D22 TA \u7684\u6295\u7A3F";
-    input.setAttribute("aria-label", input.placeholder);
-    form.appendChild(el("button", "xp-button", "\u641C\u7D22")).type = "submit";
-    let scope, pending3, url = "";
-    let restoreSort;
-    let forced, refocus = false;
-    window.addEventListener("popstate", () => {
-      url = "";
-      pending3 = void 0;
-    });
-    const onSubmit = () => {
-      const route = spaceRoute();
-      if (!route) return;
-      const term = input.value.trim();
-      if (!term) {
-        pending3 = void 0;
-        refocus = false;
-        if (scope && route.tab === "search") {
-          restoreSort = { uid: scope.uid, label: scope.originalSort };
-          uploadTab(scope.uid)?.click();
-        }
-        return;
-      }
-      if (scope?.keyword === term && route.tab === "search") return;
-      const bar = document.querySelector(".space-navbar .nav-search-input");
-      if (!bar) return;
-      const order = form.querySelector(".as-sort")?.value || activeSort();
-      pending3 = {
-        uid: route.uid,
-        keyword: term,
-        sort: order,
-        originalSort: scope?.originalSort ?? order,
-        title: scope?.title ?? document.querySelector(".upload-content .video-header__top .title")?.textContent?.trim(),
-        tabs: scope?.tabs ?? uploadTabs(),
-        choices: Array.from(form.querySelectorAll("option"), (option) => option.value)
-      };
-      refocus = form.contains(document.activeElement);
-      bar.value = term;
-      bar.dispatchEvent(new Event("input", { bubbles: true }));
-      bar.dispatchEvent(new KeyboardEvent("keyup", { key: "Enter", code: "Enter", bubbles: true }));
-    };
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      onSubmit();
-    });
-    function clear() {
-      scope = pending3 = void 0;
-      url = "";
-      restoreSort = void 0;
-      forced = void 0;
-      refocus = false;
-      form.remove();
-      document.querySelectorAll(".as-results-title,.as-results-tools,.as-upload-nav,.as-upload-header").forEach((e) => e.remove());
-      document.documentElement.removeAttribute("data-as-upload-search");
-      const current4 = document.querySelector(".space-navbar [data-as-current-upload]");
-      current4?.removeAttribute("aria-current");
-      current4?.removeAttribute("data-as-current-upload");
-    }
-    function sync(uid, tab, main) {
-      const term = new URLSearchParams(location.search).get("keyword") ?? "";
-      if (url !== location.href) {
-        const stored = history.state?.atelierUploadSearch;
-        const next = pending3?.uid === uid && pending3.keyword === term ? pending3 : stored;
-        scope = tab === "search" && next?.uid === uid && next.keyword === term ? next : void 0;
-        if (tab === "search" && !scope && new URLSearchParams(location.search).get("atelier_tab") === "video") {
-          const order = new URLSearchParams(location.search).get("atelier_order") ?? "";
-          scope = { uid, keyword: term, sort: order, originalSort: order, choices: [], tabs: [] };
-        }
-        if (scope) history.replaceState({ ...history.state, atelierUploadSearch: scope }, "");
-        if (tab !== "uploads" || restoreSort?.uid !== uid) restoreSort = void 0;
-        pending3 = void 0;
-        forced = void 0;
-        url = location.href;
-        input.value = scope?.keyword ?? "";
-      }
-      const uploading = tab === "uploads" || !!scope;
-      document.documentElement.toggleAttribute("data-as-upload-search", !!scope);
-      const uploadLink = uploadTab(uid);
-      if (scope) {
-        uploadLink?.setAttribute("aria-current", "page");
-        uploadLink?.setAttribute("data-as-current-upload", "");
-      } else if (uploadLink?.hasAttribute("data-as-current-upload")) {
-        uploadLink.removeAttribute("aria-current");
-        uploadLink.removeAttribute("data-as-current-upload");
-      }
-      const search = main.querySelector(".space-search");
-      if (tab === "search" && search) {
-        const side = search.querySelector(".search-sidebar");
-        if (scope) {
-          const video2 = side?.querySelector(".side-nav__item");
-          if (video2 && !video2.classList.contains("active")) video2.click();
-          if (side && !search.querySelector(".as-upload-nav") && scope.tabs.length) {
-            const nav2 = el("div", "upload-sidenav as-upload-nav"), strip = nav2.appendChild(el("div", "side-nav"));
-            for (const [i, entry] of scope.tabs.entries()) {
-              const link3 = strip.appendChild(el("a", "side-nav__item" + (i === 0 ? " active" : ""), entry.name));
-              link3.append(el("span", "as-tab-count", entry.count));
-              link3.href = "/" + uid + "/upload/" + entry.kind;
-              link3.addEventListener("click", (event) => {
-                const router = spaceRouter();
-                if (!router || event.button || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-                event.preventDefault();
-                router.push(link3.pathname);
-              });
-            }
-            side.before(nav2);
-          }
-          search.querySelectorAll(".as-results-title,.as-results-tools").forEach((e) => e.remove());
-        } else {
-          search.querySelector(".as-upload-nav")?.remove();
-          if (!search.querySelector(".as-results-title")) search.prepend(el("h2", "as-results-title", "\u641C\u7D22\u7ED3\u679C"));
-          const group2 = search.querySelector(".search-content > .video .video-order-filter");
-          if (group2?.parentElement) {
-            let tools = group2.parentElement.querySelector(".as-results-tools");
-            if (!tools) {
-              tools = el("div", "as-results-tools");
-              group2.before(tools);
-            }
-            syncSort(tools, group2);
-          }
-        }
-      }
-      if (!uploading) {
-        form.remove();
-        return;
-      }
-      const host = main.querySelector(scope ? ".search-content" : ".upload-content>.video");
-      if (!host) return;
-      uploadToolbar(host, form, scope);
-      const group = host.querySelector(".video-order-filter");
-      const desired = scope?.sort || restoreSort?.label;
-      const item = desired && group && [...group.querySelectorAll(".radio-filter__item")].find((e) => e.textContent?.trim() === desired);
-      if (item && !item.classList.contains("radio-filter__item--active") && forced !== item) {
-        forced = item;
-        item.click();
-      }
-      if (item && item.classList.contains("radio-filter__item--active")) {
-        forced = void 0;
-        restoreSort = void 0;
-      }
-      syncSort(form, group, scope);
-      if (scope && refocus) {
-        if (document.activeElement === document.body) input.focus({ preventScroll: true });
-        refocus = false;
-      }
-    }
-    return { sync, clear };
-  }
-  var currentPage = () => Number(document.querySelector(".video-pagination .vui_button--active")?.textContent) || 1;
-  function watchSpaceHistory() {
-    const save = (video2) => {
-      const tab = spaceRoute()?.tab;
-      if (!document.documentElement.hasAttribute("data-atelier-space") || tab !== "uploads" && tab !== "search") return;
-      const previous = history.state?.atelierSpace;
-      const sort = activeSort(), page = currentPage();
-      const sameList = previous?.url === location.href && previous.sort === sort && previous.page === page;
-      const position = { url: location.href, y: scrollY, sort, page, video: video2 ?? (sameList ? previous.video : void 0) };
-      history.replaceState({ ...history.state, atelierSpace: position }, "");
-    };
-    document.addEventListener("click", (event) => {
-      const link3 = event.target.closest?.(".space-main a[href*='/video/']");
-      if (link3) save(link3.pathname);
-    }, true);
-    document.addEventListener("submit", (event) => {
-      if (event.target.matches(".as-search")) save();
-    }, true);
-    window.addEventListener("pagehide", () => save());
-    let restore, soughtSort = false, soughtPage = false, observedUrl = "";
-    const read3 = () => {
-      const entry = history.state?.atelierSpace;
-      restore = entry?.url === location.href ? entry : void 0;
-      observedUrl = location.href;
-      soughtSort = soughtPage = false;
-    };
-    read3();
-    window.addEventListener("popstate", read3);
-    const cancel = () => {
-      restore = void 0;
-    };
-    window.addEventListener("wheel", cancel, { passive: true });
-    window.addEventListener("touchstart", cancel, { passive: true });
-    document.addEventListener("pointerdown", cancel, true);
-    return () => {
-      if (observedUrl !== location.href) read3();
-      const query = new URLSearchParams(location.search);
-      const sort = restore?.sort || query.get("atelier_order");
-      if (sort && !soughtSort) {
-        const button6 = [...document.querySelectorAll(sortItems)].find((el3) => el3.textContent?.trim() === sort);
-        if (!button6 && restore) return;
-        if (button6) {
-          soughtSort = true;
-          if (activeSort() !== sort) {
-            button6.click();
-            return;
-          }
-        }
-      }
-      if (!restore) return;
-      if (restore.page > 1 && currentPage() !== restore.page && !soughtPage) {
-        const pager = document.querySelector(".video-pagination");
-        if (!pager) return;
-        const button6 = [...pager.querySelectorAll(".vui_pagenation--btn-num")].find((el3) => Number(el3.textContent) === restore.page);
-        const input = pager.querySelector("input");
-        if (!button6 && !input) return;
-        soughtPage = true;
-        if (button6) button6.click();
-        else if (input) {
-          input.value = String(restore.page);
-          input.dispatchEvent(new Event("input", { bubbles: true }));
-          for (const type of ["keydown", "keyup"]) input.dispatchEvent(new KeyboardEvent(type, { key: "Enter", code: "Enter", bubbles: true }));
-        }
-        return;
-      }
-      if (restore.page > 1 && currentPage() !== restore.page) return;
-      if (restore.video && ![...document.querySelectorAll(".space-main a[href*='/video/']")].some((link3) => link3.pathname === restore.video)) return;
-      if (document.documentElement.scrollHeight - innerHeight >= restore.y) {
-        const y = restore.y;
-        restore = void 0;
-        window.scrollTo(0, y);
-      }
     };
   }
 
@@ -18259,212 +19202,1194 @@ ${app} :is(.section-wrap__header,.video-list__header,.video-header__top){flex-wr
     return strong;
   }
 
-  // src/modules/space-luna/runtime.ts
-  var attr2 = "data-atelier-space";
-  function hasSpaceBanner(app2, header, uid) {
-    if (header.querySelector(".sefdef-img,.preview-toutu,.header-toutu :is(img,video,canvas)")) return true;
-    const banner = header.querySelector(".formal-toutu");
-    if (!banner || getComputedStyle(banner).backgroundImage === "none") return false;
-    const nativeApp = typeof unsafeWindow === "undefined" ? app2 : unsafeWindow.document.getElementById("app");
-    const owner2 = nativeApp?.__vue_app__?.config.globalProperties.$pinia?.state.value.global?.ownerInfo;
-    return String(owner2?.mid) !== uid || owner2?.top_photo_v2?.sid !== 1;
+  // src/modules/space-luna/profile.ts
+  var iconImg3 = (src) => {
+    const img = el("img");
+    img.src = src;
+    img.alt = "";
+    img.width = 16;
+    img.height = 16;
+    return img;
+  };
+  var actionFailure = (error) => error instanceof BiliActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u539F\u751F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
+  function copyText2(text4, label) {
+    if (navigator.clipboard?.writeText) {
+      void navigator.clipboard.writeText(text4).then(
+        () => showInfoLog(`\u5DF2\u590D\u5236${label}`, "success"),
+        () => showInfoLog("\u590D\u5236\u5931\u8D25", "error")
+      );
+    }
   }
-  function syncStatistics(header) {
-    const actions = header.querySelector(".operations"), source = document.querySelector(".space-navbar .nav-statistics");
-    let bar = header.querySelector(".as-stats");
-    if (!actions || !source?.childElementCount) {
-      bar?.remove();
-      return;
+  function buildProfileWindow(options) {
+    const { profile, api: api5 } = options;
+    const isSelf = !!api5.me && api5.me === profile.uid;
+    const hero = el("header", "as-header as-hero");
+    if (profile.hasCustomBanner && profile.topPhoto) {
+      hero.classList.add("as-hero-banner");
+      hero.style.backgroundImage = `url("${profile.topPhoto.replace(/"/g, "%22")}")`;
+    } else {
+      hero.classList.add("as-hero-plain");
     }
-    const items = [...source.querySelectorAll(".nav-statistics__item")].filter((node4) => !node4.hidden && getComputedStyle(node4).display !== "none");
-    if (!items.length) {
-      bar?.remove();
-      return;
+    const inner = hero.appendChild(el("div", "as-hero-inner"));
+    const identity = inner.appendChild(el("div", "as-identity"));
+    const avatarWrap = identity.appendChild(el("div", "as-avatar-box"));
+    if (profile.face) {
+      const img = el("img", "as-avatar");
+      img.src = profile.face;
+      img.alt = profile.name;
+      avatarWrap.append(img);
     }
-    if (!bar) {
-      bar = el("div", "as-stats");
-      actions.prepend(bar);
+    const info = identity.appendChild(el("div", "as-id-text"));
+    const topLine = info.appendChild(el("div", "as-id-top"));
+    topLine.append(el("h1", "as-nickname", profile.name));
+    if (profile.level > 0) topLine.append(el("span", "as-badge as-lv", `LV${profile.level}`));
+    if (profile.vipLabel) topLine.append(el("span", "as-badge as-vip", profile.vipLabel));
+    if (profile.official.title) {
+      const off = el("span", "as-badge as-official", profile.official.title);
+      off.title = profile.official.desc || profile.official.title;
+      topLine.append(off);
     }
-    const key6 = items.map((node4) => node4.textContent).join("|");
-    if (bar.dataset.counts === key6) return;
-    bar.dataset.counts = key6;
-    bar.replaceChildren(...items.map((node4) => {
-      const caption3 = node4.querySelector(".nav-statistics__item-text")?.textContent ?? "";
-      const value2 = node4.querySelector(".nav-statistics__item-num")?.textContent ?? node4.lastElementChild?.textContent ?? "";
-      const button6 = el("button");
-      button6.type = "button";
-      button6.setAttribute("aria-label", `${caption3} ${value2}`);
-      button6.append(statisticValue(value2), el("span", "", caption3));
-      button6.addEventListener("click", () => {
-        [...document.querySelectorAll(".space-navbar .nav-statistics__item")].find((item) => item.querySelector(".nav-statistics__item-text")?.textContent === caption3)?.click();
-      });
-      return button6;
-    }));
-  }
-  function syncBlockMenu(header) {
-    const block = header.querySelector(".bili-blocker-space-profile-action");
-    if (!block || !header.querySelector(".more-actions")) return;
-    for (const panel of document.querySelectorAll(".menu-popover__panel")) {
-      if (!header.querySelector(".more-actions:is(:hover,:focus-within)") && !panel.querySelector(".as-block")) continue;
-      if (![...panel.querySelectorAll(".menu-popover__panel-item")].some((item) => item.textContent?.includes("\u9ED1\u540D\u5355"))) continue;
-      let button6 = panel.querySelector(".as-block");
-      if (!button6) {
-        button6 = el("button", "as-block xp-button");
-        button6.type = "button";
-        panel.append(button6);
-        button6.addEventListener("click", (event) => {
-          event.stopPropagation();
-          header.querySelector(".bili-blocker-space-profile-action")?.click();
+    if (profile.sign) {
+      const sign = el("p", "as-sign", profile.sign);
+      sign.title = profile.sign;
+      info.append(sign);
+    }
+    const ops = inner.appendChild(el("div", "as-ops"));
+    const stats = ops.appendChild(el("div", "as-stats"));
+    const addStat = (label, value2, href, relation) => {
+      if (value2 === void 0) return;
+      const item = href ? link("as-stat-item", "", href, false) : el("div", "as-stat-item");
+      item.append(statisticValue(shortCount(value2)), el("span", "as-stat-label", label));
+      if (relation) {
+        item.addEventListener("click", (event) => {
+          if (event.button || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+          event.preventDefault();
+          sound("click");
+          options.onRelation(relation);
         });
       }
-      const label = block.dataset.confirmBlock === "true" ? "\u786E\u8BA4\uFF1F" : block.dataset.blocked === "true" ? "\u89E3\u9664\u672C\u5730\u5C4F\u853D" : "\u5C4F\u853D UP\uFF08\u672C\u5730\uFF09";
-      if (button6.textContent !== label) button6.textContent = label;
+      stats.append(item);
+    };
+    addStat("\u5173\u6CE8", profile.stats.following, `https://space.bilibili.com/${profile.uid}/relation/follow`, "follow");
+    addStat("\u7C89\u4E1D", profile.stats.follower, `https://space.bilibili.com/${profile.uid}/relation/fans`, "fans");
+    addStat("\u83B7\u8D5E", profile.stats.likes);
+    addStat("\u64AD\u653E", profile.stats.views);
+    const actions = ops.appendChild(el("div", "as-actions"));
+    if (!isSelf) {
+      const person = { mid: profile.uid, name: profile.name, face: profile.face };
+      const relation = relationButton(person, { api: api5.interactions, me: api5.me, failure: actionFailure }, "as-relation-btn");
+      const msg = xpButton("\u53D1\u79C1\u4FE1", () => {
+        window.open(`https://message.bilibili.com/#/whisper/mid${profile.uid}`, "_blank", "noopener,noreferrer");
+      });
+      actions.append(relation, msg);
+      if (api5.me) {
+        void api5.interactions.followState(profile.uid).then((attr2) => setFollowState(profile.uid, attr2)).catch(() => {
+        });
+      }
+    } else {
+      actions.append(xpButton("\u539F\u751F\u7BA1\u7406\u7A7A\u95F4", options.onSwitchNative));
+    }
+    const moreBtn = xpButton("\u66F4\u591A \u25BE", () => {
+      const items = [
+        { label: `\u590D\u5236 UID (${profile.uid})`, action: () => copyText2(profile.uid, "UID") },
+        { label: "\u590D\u5236\u7A7A\u95F4\u94FE\u63A5", action: () => copyText2(`https://space.bilibili.com/${profile.uid}`, "\u7A7A\u95F4\u94FE\u63A5") },
+        "separator",
+        { label: "\u67E5\u770B\u5408\u96C6\u4E0E\u5217\u8868\uFF08\u539F\u751F\uFF09", action: () => {
+          location.href = `https://space.bilibili.com/${profile.uid}/lists`;
+        } },
+        { label: "\u67E5\u770B\u6536\u85CF\u5939\uFF08\u539F\u751F\uFF09", action: () => {
+          location.href = `https://space.bilibili.com/${profile.uid}/favlist`;
+        } },
+        { label: "\u67E5\u770B\u8FFD\u756A/\u8FFD\u5267\uFF08\u539F\u751F\uFF09", action: () => {
+          location.href = `https://space.bilibili.com/${profile.uid}/bangumi`;
+        } },
+        "separator",
+        { label: "\u5207\u6362\u81F3 B \u7AD9\u539F\u751F\u9875\u9762", action: options.onSwitchNative }
+      ];
+      openMenu(items, moreBtn);
+    });
+    actions.append(moreBtn);
+    return hero;
+  }
+  function buildNavBar(options) {
+    const wrap = el("nav", "as-nav-wrap");
+    wrap.setAttribute("aria-label", "\u7A7A\u95F4\u5BFC\u822A");
+    const tabs2 = wrap.appendChild(el("div", "xp-tabs as-nav-tabs"));
+    tabs2.setAttribute("role", "tablist");
+    const defs = [
+      { id: "home", label: "\u4E3B\u9875" },
+      { id: "dynamic", label: "\u52A8\u6001" },
+      { id: "uploads", label: "\u6295\u7A3F" },
+      { id: "relation", label: "\u5173\u6CE8 / \u7C89\u4E1D" },
+      { id: "search", label: "\u641C\u7D22" }
+    ];
+    const tabButtons = /* @__PURE__ */ new Map();
+    for (const def of defs) {
+      const btn = el("button", "xp-tab as-nav-tab", def.label);
+      btn.type = "button";
+      btn.setAttribute("role", "tab");
+      btn.addEventListener("click", () => {
+        sound("click");
+        options.onTab(def.id);
+      });
+      tabButtons.set(def.id, btn);
+      tabs2.append(btn);
+    }
+    const extras = wrap.appendChild(el("div", "as-nav-extras"));
+    const nativeLinks = [
+      ["\u5408\u96C6", `https://space.bilibili.com/${options.uid}/lists`],
+      ["\u6536\u85CF", `https://space.bilibili.com/${options.uid}/favlist`],
+      ["\u8FFD\u756A", `https://space.bilibili.com/${options.uid}/bangumi`]
+    ];
+    for (const [label, href] of nativeLinks) {
+      extras.append(link("as-nav-native-link", label, href, false));
+    }
+    const form = wrap.appendChild(el("form", "as-nav-search"));
+    form.setAttribute("role", "search");
+    const input = form.appendChild(el("input", "xp-field as-nav-search-input"));
+    input.type = "search";
+    input.placeholder = "\u641C\u7D22 TA \u7684\u89C6\u9891/\u52A8\u6001";
+    input.setAttribute("aria-label", input.placeholder);
+    input.value = options.keyword;
+    const submit = form.appendChild(el("button", "xp-button", "\u641C\u7D22"));
+    submit.type = "submit";
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sound("click");
+      options.onSearch(input.value.trim());
+    });
+    const sync = (tab, keyword = "") => {
+      for (const [id, btn] of tabButtons) {
+        btn.setAttribute("aria-selected", String(id === tab));
+        if (id === "search") btn.hidden = tab !== "search" && !keyword;
+        if (id === "relation") btn.hidden = tab !== "relation";
+      }
+      if (document.activeElement !== input) input.value = keyword;
+    };
+    sync(options.activeTab, options.keyword);
+    return { root: wrap, sync, input };
+  }
+  function buildToolsWindow(loggedIn) {
+    const win = spaceWindow({
+      className: "as-tools-win",
+      icon: iconImg3(atelierIcons.up16),
+      title: "\u7A7A\u95F4\u5DE5\u5177",
+      foldName: "space-tools"
+    });
+    const body2 = win.body.appendChild(el("div", "as-aside-pad as-tools-body"));
+    const colsRow = body2.appendChild(el("label", "as-tools-row"));
+    colsRow.append(el("span", "as-tools-label", "\u6BCF\u884C\u5361\u7247"), createMaxColsSelect("as-tools-select"));
+    const pageTop = xpButton("\u56DE\u5230\u9876\u90E8", () => window.scrollTo({ top: 0, behavior: "instant" }), "as-tools-btn");
+    pageTop.prepend(iconImg3(atelierIcons.up));
+    body2.append(pageTop);
+    const night = xpButton("\u591C\u95F4\u6A21\u5F0F", () => {
+      toggleBiliNight();
+      paintNight();
+    }, "as-tools-btn");
+    const paintNight = () => night.setAttribute("aria-pressed", String(loggedIn && biliTheme() === "dark"));
+    if (!loggedIn) {
+      night.disabled = true;
+      night.title = "\u767B\u5F55\u540E\u53EF\u7528";
+    }
+    paintNight();
+    body2.append(night);
+    const updateScroll = () => {
+      pageTop.disabled = window.scrollY < 1;
+    };
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    document.addEventListener("biliThemeChange", paintNight);
+    return {
+      root: win.root,
+      dispose: () => {
+        window.removeEventListener("scroll", updateScroll);
+        document.removeEventListener("biliThemeChange", paintNight);
+      }
+    };
+  }
+  function buildAsideColumn(profile, notice, loggedIn) {
+    const aside = el("aside", "as-aside");
+    let count2 = 0;
+    if (profile.liveRoom) {
+      count2++;
+      const live = profile.liveRoom;
+      const win = spaceWindow({
+        className: "as-live-win",
+        icon: iconImg3(ie_media_16_default),
+        title: live.live ? "\u76F4\u64AD\u4E2D" : "\u76F4\u64AD\u95F4",
+        foldName: "space-live"
+      });
+      const box2 = win.body.appendChild(el("div", "as-aside-pad as-live-box"));
+      if (live.live && live.cover) {
+        const a = link("as-live-cover-link", "", live.url, true);
+        const img = el("img", "as-live-cover");
+        img.src = live.cover;
+        img.alt = live.title || "\u76F4\u64AD\u95F4";
+        a.append(img);
+        box2.append(a);
+      }
+      const status2 = el("div", "as-live-status");
+      status2.append(el("span", live.live ? "as-live-dot as-live-on" : "as-live-dot", live.live ? "\u6B63\u5728\u76F4\u64AD" : "\u672A\u5F00\u64AD"));
+      box2.append(status2);
+      if (live.title) box2.append(el("p", "as-live-title", live.title));
+      if (live.url) box2.append(link("xp-button as-live-btn", "\u524D\u5F80\u76F4\u64AD\u95F4", live.url, true));
+      aside.append(win.root);
+    }
+    if (notice) {
+      count2++;
+      const win = spaceWindow({
+        className: "as-notice-win",
+        icon: iconImg3(ie_notes_16_default),
+        title: "\u516C\u544A",
+        foldName: "space-notice"
+      });
+      const box2 = win.body.appendChild(el("div", "as-aside-pad"));
+      box2.append(el("p", "as-notice-text", notice));
+      aside.append(win.root);
+    }
+    count2++;
+    const infoWin = spaceWindow({
+      className: "as-info-win",
+      icon: iconImg3(folder_default),
+      title: "\u4E2A\u4EBA\u8D44\u6599",
+      foldName: "space-info"
+    });
+    const dl = infoWin.body.appendChild(el("dl", "as-aside-pad as-info-list"));
+    const addRow = (k, v) => {
+      if (!v) return;
+      dl.append(el("dt", "", k), el("dd", "", v));
+    };
+    addRow("UID", profile.uid);
+    if (profile.official.title) addRow("\u8BA4\u8BC1", profile.official.title);
+    if (profile.sex && profile.sex !== "\u4FDD\u5BC6") addRow("\u6027\u522B", profile.sex);
+    if (profile.birthday) addRow("\u751F\u65E5", profile.birthday);
+    if (profile.sign) addRow("\u7B80\u4ECB", profile.sign);
+    aside.append(infoWin.root);
+    count2++;
+    const tools = buildToolsWindow(loggedIn);
+    aside.append(tools.root);
+    return { root: aside, hasContent: count2 > 0, dispose: tools.dispose };
+  }
+
+  // src/modules/space-luna/relation.ts
+  var iconImg4 = (src) => {
+    const img = el("img");
+    img.src = src;
+    img.alt = "";
+    img.width = 16;
+    img.height = 16;
+    return img;
+  };
+  var actionFailure2 = (error) => error instanceof BiliActionError && error.needsVerification ? "\u9700\u8981\u9A8C\u8BC1\uFF0C\u8BF7\u5728\u539F\u751F\u9875\u9762\u64CD\u4F5C" : error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25";
+  function renderPersonRow(person, api5) {
+    const row = el("article", "as-rel-row");
+    const spaceUrl = `https://space.bilibili.com/${person.mid}`;
+    const avatarLink = link("as-rel-avatar-link", "", spaceUrl, true);
+    avatarLink.setAttribute("aria-label", person.name);
+    if (person.face) {
+      const img = avatarLink.appendChild(el("img", "as-rel-avatar"));
+      img.src = thumb(person.face, "96w_96h_1c");
+      img.loading = "lazy";
+      img.alt = person.name;
+    }
+    row.append(avatarLink);
+    const info = row.appendChild(el("div", "as-rel-info"));
+    const top = info.appendChild(el("div", "as-rel-top"));
+    top.append(link("as-rel-name", person.name, spaceUrl, true));
+    if (person.vipLabel) top.append(el("span", "as-badge as-vip", person.vipLabel));
+    if (person.officialTitle) {
+      const off = el("span", "as-badge as-official", person.officialTitle);
+      off.title = person.officialTitle;
+      top.append(off);
+    }
+    if (person.sign) {
+      const sign = el("p", "as-rel-sign", person.sign);
+      sign.title = person.sign;
+      info.append(sign);
+    }
+    if (person.mid !== api5.me) {
+      setFollowState(person.mid, person.attribute);
+      const actions = row.appendChild(el("div", "as-rel-actions"));
+      const target = { mid: person.mid, name: person.name, face: person.face };
+      actions.append(relationButton(target, { api: api5.interactions, me: api5.me, failure: actionFailure2 }, "as-relation-btn"));
+    }
+    return row;
+  }
+  function mountRelationView(options) {
+    const { uid, api: api5, host, onKindChange } = options;
+    const isSelf = !!api5.me && api5.me === uid;
+    let kind = options.kind;
+    let page = 1;
+    let orderType = "";
+    let activeController;
+    const titleFor = (k, total) => {
+      const base = `${isSelf ? "\u6211\u7684" : "TA \u7684"}${k === "fans" ? "\u7C89\u4E1D" : "\u5173\u6CE8"}`;
+      return total && total > 0 ? `${base} (${total})` : base;
+    };
+    const win = spaceWindow({
+      className: "as-rel-win",
+      icon: iconImg4(folder_default),
+      title: titleFor(kind)
+    });
+    const subTabs = win.body.appendChild(el("div", "xp-tabs as-sub-tabs"));
+    subTabs.setAttribute("role", "tablist");
+    const followTab = el("button", "xp-tab", isSelf ? "\u6211\u7684\u5173\u6CE8" : "TA \u7684\u5173\u6CE8");
+    followTab.type = "button";
+    followTab.setAttribute("role", "tab");
+    const fansTab = el("button", "xp-tab", isSelf ? "\u6211\u7684\u7C89\u4E1D" : "TA \u7684\u7C89\u4E1D");
+    fansTab.type = "button";
+    fansTab.setAttribute("role", "tab");
+    subTabs.append(followTab, fansTab);
+    const toolbar = win.body.appendChild(el("div", "xp-toolbar as-rel-toolbar"));
+    const orderSelect = toolbar.appendChild(el("select", "xp-field as-sort"));
+    orderSelect.setAttribute("aria-label", "\u5173\u6CE8\u6392\u5E8F");
+    orderSelect.append(new Option("\u6700\u8FD1\u5173\u6CE8", ""), new Option("\u6700\u5E38\u8BBF\u95EE", "attention"));
+    orderSelect.value = orderType;
+    orderSelect.addEventListener("change", () => {
+      sound("click");
+      orderType = orderSelect.value === "attention" ? "attention" : "";
+      page = 1;
+      void load();
+    });
+    const body2 = win.body.appendChild(el("div", "as-rel-body"));
+    const pagerHost = win.body.appendChild(el("div", "as-pager-host"));
+    host.replaceChildren(win.root);
+    const paintTabs = () => {
+      followTab.setAttribute("aria-selected", String(kind === "follow"));
+      fansTab.setAttribute("aria-selected", String(kind === "fans"));
+      toolbar.hidden = kind !== "follow";
+    };
+    const switchKind = (next) => {
+      if (kind === next) return;
+      sound("click");
+      kind = next;
+      page = 1;
+      paintTabs();
+      onKindChange(kind);
+      void load();
+    };
+    followTab.addEventListener("click", () => switchKind("follow"));
+    fansTab.addEventListener("click", () => switchKind("fans"));
+    const load = async () => {
+      activeController?.abort();
+      const controller = new AbortController();
+      activeController = controller;
+      win.title.textContent = titleFor(kind);
+      body2.replaceChildren(el("div", "as-loading", kind === "fans" ? "\u6B63\u5728\u52A0\u8F7D\u7C89\u4E1D\u5217\u8868\u2026" : "\u6B63\u5728\u52A0\u8F7D\u5173\u6CE8\u5217\u8868\u2026"));
+      pagerHost.replaceChildren();
+      try {
+        const res = await api5.relations({ uid, kind, page, pageSize: 24, orderType }, controller.signal);
+        if (controller.signal.aborted) return;
+        if (res.restricted) {
+          body2.replaceChildren(el("div", "as-empty as-rel-restricted", res.message || "\u7531\u4E8E\u8BE5\u7528\u6237\u9690\u79C1\u8BBE\u7F6E\uFF0C\u65E0\u6CD5\u67E5\u770B\u6B64\u5217\u8868"));
+          return;
+        }
+        win.title.textContent = titleFor(kind, res.total);
+        if (res.items.length === 0) {
+          body2.replaceChildren(el("div", "as-empty", kind === "fans" ? "\u6682\u65E0\u7C89\u4E1D" : "\u6682\u65E0\u5173\u6CE8"));
+          return;
+        }
+        const list = el("div", "as-rel-list");
+        for (const person of res.items) list.append(renderPersonRow(person, api5));
+        body2.replaceChildren(list);
+        const effectiveTotal = isSelf ? res.total : Math.min(res.total, res.pageSize * 5);
+        const pager = renderPagination({
+          page: res.page,
+          pageSize: res.pageSize,
+          total: effectiveTotal,
+          onChange: (next) => {
+            page = next;
+            void load();
+            win.root.scrollIntoView({ behavior: "auto", block: "start" });
+          }
+        });
+        if (pager) pagerHost.replaceChildren(pager);
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        const errBox = el("div", "as-empty");
+        errBox.append(el("p", "", error instanceof Error ? error.message : "\u52A0\u8F7D\u5931\u8D25"));
+        errBox.append(xpButton("\u91CD\u8BD5", () => void load()));
+        body2.replaceChildren(errBox);
+      }
+    };
+    paintTabs();
+    void load();
+    return () => activeController?.abort();
+  }
+
+  // src/modules/space-luna/styles.ts
+  var on8 = `html[${spaceAttribute}=drawn]`;
+  var s = "#atelier-space";
+  var feed = `${s} .as-dynamic-list`;
+  var spaceCss = `
+${on8} body{min-width:0;margin:0;background:var(--xp-window);color:var(--xp-ink)}
+${on8} :is(#biliMainHeader,#bili-header-container){height:0!important;min-height:0!important;overflow:hidden!important}
+
+${s}{${xpFont};color:var(--xp-ink);text-align:left;letter-spacing:normal;min-width:0;width:100%;box-sizing:border-box;margin-top:${headerBottomCss};--as-gap:clamp(10px,2%,28px);--as-min:${mainMin}px;--as-padding:clamp(0px,var(--as-blank,max(var(--as-gap),calc((100% - 1440px)/2))),max(0px,calc((100% - var(--as-min))/2)));padding:0 0 24px}
+${s}:has(.as-columns:not([data-as-empty-aside])){--as-min:${mainMin + columnGap + asideMin}px}
+${s} *{box-sizing:border-box}
+${s} [hidden]{display:none!important}
+${s} .vl-body{display:flex;flex-direction:column;min-width:0;background:var(--xp-face)}
+${s} .vl-caption-icon{flex:none;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px}
+${s} .vl-caption-face{width:16px;height:16px;object-fit:cover;border:1px solid #0004}
+${s} .vl-drop{flex:none;width:0;height:0;margin-left:3px;border:3px solid transparent;border-top-color:currentColor;border-bottom:0}
+${s} .as-win{margin:0 0 10px}
+${s} .as-cap-action{margin:0 3px 0 0;min-height:19px!important;padding:1px 7px!important}
+${s} .as-cols-select{height:23px;width:auto;min-width:0}
+${s} .as-cap-select{height:19px;margin:0 3px 0 0;padding-top:0;padding-bottom:0}
+
+/* Full-width borderless UP profile banner */
+${s} .as-header{position:relative;overflow:hidden;border-bottom:1px solid var(--xp-shadow3d)}
+${s} .as-hero-banner{min-height:146px;display:flex;align-items:flex-end;background-size:cover;background-position:center;background-color:#1c2a3f}
+${s} .as-hero-banner::before{content:"";position:absolute;inset:0;background:linear-gradient(transparent 18%,rgba(10,18,32,0.78) 100%);pointer-events:none}
+${s} .as-hero-plain{min-height:84px;display:flex;align-items:center;background:var(--xp-face)}
+${s} .as-hero-inner{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end;gap:14px;width:100%;padding:12px var(--as-padding)}
+${s} .as-hero-plain .as-hero-inner{align-items:center}
+${s} .as-identity{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+${s} .as-avatar-box{flex:none;width:56px;height:56px;border:1px solid var(--xp-shadow3d);background:var(--xp-window);padding:1px}
+${s} .as-avatar{display:block;width:100%;height:100%;object-fit:cover;image-rendering:auto!important}
+${s} .as-id-text{min-width:0;flex:1}
+${s} .as-id-top{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+${s} .as-nickname{margin:0;font:bold var(--xp-title-size)/var(--xp-line) var(--xp-title-font);color:var(--xp-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+${s} .as-hero-banner .as-nickname,${s} .as-hero-banner .as-sign,${s} .as-hero-banner .as-stat-item{color:#fff;text-shadow:0 1px 3px #000b}
+${s} .as-badge{display:inline-flex;align-items:center;padding:0 5px;height:18px;border:1px solid var(--xp-shadow3d);background:var(--xp-window);color:var(--xp-ink);${xpFont};white-space:nowrap}
+${s} .as-lv{background:var(--xp-caption);color:var(--xp-caption-ink);border-color:var(--xp-caption)}
+${s} .as-vip{background:#d94b7a;color:#fff;border-color:#9e2a50}
+${s} .as-official{background:var(--xp-face);color:var(--xp-task-link);max-width:260px;overflow:hidden;text-overflow:ellipsis}
+${s} .as-sign{margin:4px 0 0;color:var(--xp-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+${s} .as-ops{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none}
+${s} .as-stats{display:flex;align-items:center;gap:14px}
+${s} .as-stat-item{display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--xp-ink)}
+${s} a.as-stat-item:hover{text-decoration:underline}
+${s} .as-stat-item strong{font:bold var(--xp-title-size)/var(--xp-line) var(--xp-title-font);font-variant-numeric:tabular-nums}
+${s} .as-stat-label{${xpFont};opacity:0.9}
+${s} .as-actions{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+${s} .vl-rel-blocked{color:var(--xp-danger)!important;font-weight:bold}
+
+/* Sticky navigation bar */
+${s} .as-nav-host{position:sticky;top:${headerBottomCss};z-index:20;background:var(--xp-face);border-bottom:1px solid var(--xp-shadow3d);box-shadow:inset 0 1px var(--xp-light3d)}
+${s} .as-nav-wrap{display:flex;align-items:flex-end;flex-wrap:wrap;gap:6px;padding:3px var(--as-padding) 0}
+${s} .as-nav-tabs{padding:0;margin-bottom:-1px;flex:none}
+${s} .as-nav-tab{min-height:24px;padding:2px 12px 3px}
+${s} .as-nav-extras{display:flex;align-items:center;gap:8px;padding:0 4px 5px;margin-left:4px}
+${s} .as-nav-native-link{color:var(--xp-task-link);text-decoration:none;white-space:nowrap}
+${s} .as-nav-native-link:hover{color:var(--xp-highlight);text-decoration:underline}
+${s} .as-nav-search{display:flex;align-items:center;gap:4px;margin:0 0 3px auto}
+${s} .as-nav-search-input{width:170px;height:23px}
+
+/* Two-column resizable workspace */
+${s} .as-columns{display:grid;grid-template-columns:minmax(0,1fr) clamp(${asideMin}px,var(--as-right,280px),calc(100% - ${mainMin + columnGap}px));gap:${columnGap}px;align-items:start;padding:12px var(--as-padding) 0}
+${s} .as-columns[data-as-empty-aside]{grid-template-columns:minmax(0,1fr)}
+${s} .as-columns[data-as-empty-aside]>.as-aside-host{display:none}
+${s} .as-main-col{min-width:0;container:as-main / inline-size}
+${s} .as-aside-host{min-width:0;position:relative;align-self:stretch}
+${s} .as-aside-host>.lh-compact{top:calc(${headerBottomCss} + 38px)}
+${s} .as-divider{position:absolute;top:0;bottom:0;left:-${columnGap + 4}px;width:${columnGap + 8}px;cursor:ew-resize;touch-action:none;user-select:none;z-index:2}
+
+/* Aside windows */
+${s} .as-aside-pad{padding:8px 10px;background:var(--xp-window)}
+${s} .as-live-box{display:flex;flex-direction:column;gap:6px}
+${s} .as-live-cover-link{display:block;border:1px solid var(--xp-line);overflow:hidden}
+${s} .as-live-cover{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;image-rendering:auto!important}
+${s} .as-live-status{display:flex;align-items:center;gap:6px}
+${s} .as-live-dot{display:inline-block;padding:0 5px;background:var(--xp-face);border:1px solid var(--xp-shadow3d);color:var(--xp-muted)}
+${s} .as-live-dot.as-live-on{background:var(--xp-danger);border-color:var(--xp-danger);color:#fff;font-weight:bold}
+${s} .as-live-title{margin:0;${xpFont};letter-spacing:normal;color:var(--xp-ink);overflow-wrap:anywhere}
+${s} .as-live-btn{align-self:flex-start}
+${s} .as-notice-text{margin:0;${xpFont};letter-spacing:normal;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--xp-ink)}
+${s} .as-info-list{margin:0;${xpFont};letter-spacing:normal;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px}
+${s} .as-info-list :is(dt,dd){${xpFont};font-weight:normal;letter-spacing:normal}
+${s} .as-info-list dt{color:var(--xp-muted);white-space:nowrap}
+${s} .as-info-list dd{margin:0;color:var(--xp-ink);overflow-wrap:anywhere}
+${s} .as-tools-win{position:sticky;top:calc(${headerBottomCss} + 40px)}
+${s} .as-aside-host:has(>.lh-compact:not([hidden])) .as-tools-win{top:calc(${headerBottomCss} + 72px)}
+${s} .as-tools-body{display:flex;flex-direction:column;gap:6px;background:var(--xp-face)}
+${s} .as-tools-row{display:flex;align-items:center;justify-content:space-between;gap:8px;${xpFont};color:var(--xp-ink)}
+${s} .as-tools-label{white-space:nowrap}
+${s} .as-tools-select{flex:1;min-width:0}
+${s} .as-tools-btn{width:100%;justify-content:center}
+${s} .as-tools-btn img{width:16px;height:16px;flex:none}
+${s} :is(.as-sign,.as-card-title,.as-card-desc,.as-col-name,.as-col-count,.as-loading,.as-empty,.as-feed-note){${xpFont};letter-spacing:normal}
+
+/* Video cards & grids: adaptive up to --as-cols (default 6), min 160px per card */
+${s} .as-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,max(160px,calc((100% - (var(--as-cols,6) - 1) * 8px - 1px) / var(--as-cols,6)))),1fr));gap:10px 8px;padding:8px;background:var(--xp-window)}
+${s} .as-mp-single{padding:8px;background:var(--xp-window)}
+${s} .as-mp-single .as-card{flex-direction:row;align-items:center;gap:12px}
+${s} .as-mp-single .as-card-media{width:min(42%,260px);flex:none}
+${s} .as-mp-single .as-card-desc{display:-webkit-box}
+
+${s} .as-card{position:relative;display:flex;flex-direction:column;gap:3px;min-width:0;padding:3px;border:1px solid transparent;background:var(--xp-window)}
+${s} .as-card:hover{background:var(--atelier-hover);border-color:var(--xp-line)}
+${s} .as-card-media{position:relative}
+${s} .as-card-cover-link{display:block;text-decoration:none}
+${s} .as-card-thumb{position:relative;aspect-ratio:16/9;border:1px solid var(--xp-line);background:var(--xp-face);overflow:hidden}
+${s} .as-card-thumb>img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:auto!important}
+${s} .as-card:has(.as-card-viewed.btnIsView) .as-card-thumb>img{opacity:var(--atelier-viewed-opacity,.45)}
+${s} .as-card-badge{position:absolute;left:3px;top:3px;padding:0 4px;background:var(--xp-caption);color:var(--xp-caption-ink);${xpFont}}
+${s} .as-card-top{background:var(--xp-highlight);color:var(--xp-highlight-ink)}
+${s} .as-card-dur{position:absolute;right:3px;bottom:3px;padding:0 4px;background:rgba(0,0,0,0.72);color:#fff;${xpFont};font-variant-numeric:tabular-nums}
+${s} .as-card-viewed{position:absolute;left:3px;bottom:3px;z-index:2;min-height:19px!important;padding:0 5px!important}
+${s} .as-card-info{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+${s} .as-card-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:calc(var(--xp-line) * 2);color:var(--xp-ink);text-decoration:none;overflow-wrap:anywhere}
+${s} .as-card-title:hover{color:var(--xp-highlight);text-decoration:underline}
+${s} .as-card-desc{display:none;margin:2px 0;color:var(--xp-muted);-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+${s} .as-card-meta{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;color:var(--xp-muted);${xpFont}}
+${s} .as-card-dm{display:none}
+${s} .as-card-date{margin-left:auto;font-variant-numeric:tabular-nums}
+
+/* List view mode for Uploads / Search */
+${s} .as-uploads-body[data-view=list] .as-uploads-list{display:flex;flex-direction:column;gap:6px}
+${s} .as-uploads-body[data-view=list] .as-card{flex-direction:row;align-items:flex-start;gap:10px;padding:5px;border-bottom:1px solid var(--xp-line)}
+${s} .as-uploads-body[data-view=list] .as-card-media{width:168px;flex:none}
+${s} .as-uploads-body[data-view=list] .as-card-title{min-height:0;-webkit-line-clamp:1;font-weight:bold}
+${s} .as-uploads-body[data-view=list] .as-card-desc{display:-webkit-box}
+${s} .as-uploads-body[data-view=list] .as-card-dm{display:inline}
+
+/* Collections on Home */
+${s} .as-collections{display:flex;flex-direction:column;gap:10px;padding:8px;background:var(--xp-window)}
+${s} .as-col-block{border:1px solid var(--xp-line);background:var(--xp-face)}
+${s} .as-col-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 8px;border-bottom:1px solid var(--xp-line)}
+${s} .as-col-name{font-weight:bold;color:var(--xp-task-link);text-decoration:none}
+${s} .as-col-name:hover{color:var(--xp-highlight);text-decoration:underline}
+${s} .as-col-count{color:var(--xp-muted);white-space:nowrap}
+
+/* Uploads & Search toolbars, partitions, pagination */
+${s} .as-uploads-toolbar,${s} .as-search-toolbar,${s} .as-dyn-toolbar{gap:3px;padding:3px 6px}
+${s} .as-sort{height:23px;min-width:96px}
+${s} .as-spring{flex:1 1 auto}
+${s} .as-inline-search{display:flex;align-items:center;gap:4px}
+${s} .as-inline-search-input{width:155px;height:23px}
+${s} .as-partitions{display:flex;flex-wrap:wrap;gap:2px;padding:4px 6px;background:var(--xp-face);border-bottom:1px solid var(--xp-line)}
+${s} .as-part-btn{min-height:20px;padding:1px 6px}
+${s} .as-sub-tabs{padding:4px 6px 0;background:var(--xp-face);border-bottom:1px solid var(--xp-edge)}
+${s} .as-pager-host{background:var(--xp-face);border-top:1px solid var(--xp-line)}
+${s} .as-pager{display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:6px 8px}
+${s} .as-pager-active{border-image-source:var(--xp-button-2)!important;font-weight:bold}
+${s} .as-pager-gap{padding:0 3px;color:var(--xp-muted)}
+${s} .as-pager-jump{display:inline-flex;align-items:center;gap:4px;margin-left:auto}
+${s} .as-pager-info{color:var(--xp-muted)}
+${s} .as-pager-input{width:54px;height:23px}
+
+/* Dynamics & dynamic search grid */
+${s} .as-dynamic-list{display:flex;flex-direction:column;gap:8px;padding:8px;background:var(--xp-window)}
+${s} .as-dynamic-list.as-dyn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));align-items:start;gap:8px}
+${s} .as-dyn-card{min-width:0}
+${s} .as-dyn-card .adc-footer a{color:var(--xp-task-link)}
+${s} .as-dyn-grid .as-video-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:inherit;text-decoration:none}
+${s} .as-dyn-grid .as-byline{display:flex;gap:4px;flex-wrap:wrap;align-items:baseline;color:var(--xp-muted)}
+${s} .as-dyn-grid .adc-media{--adc-cover-w:clamp(90px,35%,170px)}
+${s} .as-dyn-grid .as-titled-video{display:grid;grid-template-columns:var(--adc-cover-w) minmax(0,1fr);align-items:center;gap:8px;padding:var(--adc-pad)}
+${s} .as-dyn-grid .as-titled-video>.adc-media-link{display:block;padding:0}
+${s} .as-dyn-grid .adc-last{flex-wrap:wrap}
+${s} .as-dyn-grid .adc-last>:not(.adc-actions){flex:1 1 100%}
+${s} .as-dyn-grid :is(.adc-actions,.acm-actions,.acm-compose-row,.adc-forward-box){flex-wrap:wrap}
+${s} .as-dyn-grid :is(.adc-media-info,.acm-compose-row input,.adc-body){min-width:0}
+${s} .as-feed-foot{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;background:var(--xp-window);border-top:1px solid var(--xp-line)}
+${s} .as-feed-note{color:var(--xp-muted)}
+
+/* Relation (followings / fans) list */
+${s} .as-rel-toolbar{gap:4px;padding:3px 6px}
+${s} .as-rel-list{display:flex;flex-direction:column;background:var(--xp-window)}
+${s} .as-rel-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--xp-line)}
+${s} .as-rel-row:last-child{border-bottom:0}
+${s} .as-rel-row:hover{background:var(--atelier-hover)}
+${s} .as-rel-avatar-link{flex:none;width:42px;height:42px;border:1px solid var(--xp-shadow3d);background:var(--xp-face);padding:1px;display:block}
+${s} .as-rel-avatar{display:block;width:100%;height:100%;object-fit:cover;image-rendering:auto!important}
+${s} .as-rel-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+${s} .as-rel-top{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+${s} .as-rel-name{${xpFont};font-weight:bold;color:var(--xp-ink);text-decoration:none}
+${s} .as-rel-name:hover{color:var(--xp-highlight);text-decoration:underline}
+${s} .as-rel-sign{margin:0;${xpFont};letter-spacing:normal;color:var(--xp-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+${s} .as-rel-actions{flex:none;display:flex;align-items:center;gap:4px}
+
+/* States */
+${s} .as-loading,${s} .as-empty{padding:24px 12px;text-align:center;color:var(--xp-muted);background:var(--xp-window)}
+${s} .as-empty p{margin:0 0 8px}
+${s} .as-error-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:8px 12px;margin-bottom:10px;background:var(--xp-face);border:1px solid var(--xp-shadow3d)}
+
+${dynamicCardStyles(feed)}
+${commentAreaStyles(feed)}
+${imageWindowCss}
+${lunaDialogCss}
+
+@container as-main (max-width:740px){
+  ${s} .as-mp-single .as-card{flex-direction:column;align-items:stretch}
+  ${s} .as-mp-single .as-card-media{width:100%}
+}
+@media (max-width:${narrowSpace}px){
+  ${s} .as-columns{grid-template-columns:minmax(0,1fr)}
+  ${s} .as-divider{display:none}
+  ${s} .as-hero-inner{flex-direction:column;align-items:flex-start}
+  ${s} .as-ops{align-items:flex-start;width:100%}
+  ${s} .as-nav-search{width:100%}
+  ${s} .as-nav-search-input{flex:1;width:auto}
+}
+`;
+
+  // src/modules/space-luna/uploads.ts
+  var iconImg5 = (src) => {
+    const img = el("img");
+    img.src = src;
+    img.alt = "";
+    img.width = 16;
+    img.height = 16;
+    return img;
+  };
+  var orderChoices = [
+    ["pubdate", "\u6700\u65B0\u53D1\u5E03"],
+    ["click", "\u6700\u591A\u64AD\u653E"],
+    ["stow", "\u6700\u591A\u6536\u85CF"]
+  ];
+  function saveUploadState(state2) {
+    try {
+      history.replaceState({ ...history.state, atelierSpaceUploads: state2 }, "");
+    } catch {
     }
   }
-  function enableSectionFolds(main) {
-    for (const head of main.querySelectorAll(".section-wrap__header,.video-list__header,.aside-card-header,.ann-section__header,.info-section__header")) {
-      if (!head.nextElementSibling || head.querySelector(".as-fold")) continue;
-      const button6 = captionButton(head, "minimize", "\u6298\u53E0", () => {
-        const folded = head.toggleAttribute("data-as-folded");
-        button6.dataset.kind = folded ? "restore" : "minimize";
-        button6.title = folded ? "\u5C55\u5F00" : "\u6298\u53E0";
-        button6.setAttribute("aria-label", button6.title);
-        button6.setAttribute("aria-expanded", String(!folded));
-      });
-      button6.classList.add("as-fold");
-      button6.setAttribute("aria-expanded", "true");
+  function readUploadState(uid) {
+    const s2 = history.state?.atelierSpaceUploads;
+    return s2 && s2.uid === uid ? s2 : null;
+  }
+  function mountUploadsView(options) {
+    const { uid, api: api5, host } = options;
+    const saved = readUploadState(uid);
+    let page = saved?.page ?? 1;
+    let order = saved?.order ?? "pubdate";
+    let tid = saved?.tid ?? 0;
+    let keyword = saved?.keyword ?? "";
+    let viewMode = readUploadViewMode();
+    let restoreY = saved?.y ?? 0;
+    let activeController;
+    let cachedPartitions = [];
+    const win = spaceWindow({
+      className: "as-uploads-win",
+      icon: iconImg5(ie_media_16_default),
+      title: "\u89C6\u9891\u6295\u7A3F",
+      foldName: "space-uploads"
+    });
+    const toolbar = win.body.appendChild(el("div", "xp-toolbar as-uploads-toolbar"));
+    toolbar.setAttribute("role", "toolbar");
+    const sortSelect = toolbar.appendChild(el("select", "xp-field as-sort"));
+    sortSelect.setAttribute("aria-label", "\u6295\u7A3F\u6392\u5E8F");
+    for (const [value2, label] of orderChoices) {
+      const opt = el("option", "", label);
+      opt.value = value2;
+      sortSelect.append(opt);
     }
+    sortSelect.value = order;
+    sortSelect.addEventListener("change", () => {
+      sound("click");
+      order = sortSelect.value;
+      page = 1;
+      void load();
+    });
+    toolbar.append(el("span", "xp-tool-separator"));
+    const gridBtn = el("button", "xp-tool", "\u7F51\u683C");
+    gridBtn.type = "button";
+    const listBtn = el("button", "xp-tool", "\u5217\u8868");
+    listBtn.type = "button";
+    const paintViewBtns = () => {
+      gridBtn.setAttribute("aria-pressed", String(viewMode === "grid"));
+      listBtn.setAttribute("aria-pressed", String(viewMode === "list"));
+      body2.dataset.view = viewMode;
+    };
+    gridBtn.addEventListener("click", () => {
+      if (viewMode === "grid") return;
+      sound("click");
+      viewMode = "grid";
+      writeUploadViewMode(viewMode);
+      paintViewBtns();
+    });
+    listBtn.addEventListener("click", () => {
+      if (viewMode === "list") return;
+      sound("click");
+      viewMode = "list";
+      writeUploadViewMode(viewMode);
+      paintViewBtns();
+    });
+    toolbar.append(gridBtn, listBtn);
+    const spring = toolbar.appendChild(el("span", "as-spring"));
+    spring.setAttribute("aria-hidden", "true");
+    const searchForm = toolbar.appendChild(el("form", "as-inline-search"));
+    searchForm.setAttribute("role", "search");
+    const searchInput = searchForm.appendChild(el("input", "xp-field as-inline-search-input"));
+    searchInput.type = "search";
+    searchInput.placeholder = "\u7B5B\u9009 TA \u7684\u6295\u7A3F";
+    searchInput.setAttribute("aria-label", searchInput.placeholder);
+    searchInput.value = keyword;
+    const searchBtn = searchForm.appendChild(el("button", "xp-button", "\u641C\u7D22"));
+    searchBtn.type = "submit";
+    const clearBtn = xpButton("\u6E05\u7A7A", () => {
+      if (!keyword && !searchInput.value) return;
+      searchInput.value = "";
+      keyword = "";
+      page = 1;
+      void load();
+    });
+    clearBtn.hidden = !keyword;
+    searchForm.append(clearBtn);
+    searchForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sound("click");
+      keyword = searchInput.value.trim();
+      clearBtn.hidden = !keyword;
+      page = 1;
+      void load();
+    });
+    const partBar = win.body.appendChild(el("div", "as-partitions"));
+    partBar.hidden = true;
+    const body2 = win.body.appendChild(el("div", "as-uploads-body"));
+    const pagerHost = win.body.appendChild(el("div", "as-pager-host"));
+    paintViewBtns();
+    host.replaceChildren(win.root);
+    const renderPartitions = (partitions, totalAll) => {
+      if (partitions.length > 0) cachedPartitions = partitions;
+      if (!cachedPartitions.length) {
+        partBar.hidden = true;
+        return;
+      }
+      partBar.hidden = false;
+      partBar.replaceChildren();
+      const allCount = totalAll ?? cachedPartitions.reduce((sum, p2) => sum + p2.count, 0);
+      const items = [
+        { id: 0, label: allCount ? `\u5168\u90E8 (${allCount})` : "\u5168\u90E8" },
+        ...cachedPartitions.map((p2) => ({ id: p2.tid, label: `${p2.name} (${p2.count})` }))
+      ];
+      for (const item of items) {
+        const btn = el("button", "xp-tool as-part-btn", item.label);
+        btn.type = "button";
+        btn.setAttribute("aria-pressed", String(tid === item.id));
+        btn.addEventListener("click", () => {
+          if (tid === item.id) return;
+          sound("click");
+          tid = item.id;
+          page = 1;
+          void load();
+        });
+        partBar.append(btn);
+      }
+    };
+    const persist = () => saveUploadState({ uid, page, order, tid, keyword, y: window.scrollY });
+    const load = async () => {
+      activeController?.abort();
+      const controller = new AbortController();
+      activeController = controller;
+      clearBtn.hidden = !keyword;
+      body2.replaceChildren(el("div", "as-loading", "\u6B63\u5728\u52A0\u8F7D\u6295\u7A3F\u2026"));
+      pagerHost.replaceChildren();
+      try {
+        const res = await api5.archives({ uid, page, pageSize: 24, order, tid, keyword }, controller.signal);
+        if (controller.signal.aborted) return;
+        win.title.textContent = keyword ? `\u89C6\u9891\u6295\u7A3F \xB7 \u201C${keyword}\u201D (${res.total})` : res.total > 0 ? `\u89C6\u9891\u6295\u7A3F (${res.total})` : "\u89C6\u9891\u6295\u7A3F";
+        renderPartitions(res.partitions, tid === 0 && !keyword ? res.total : void 0);
+        if (res.videos.length === 0) {
+          body2.replaceChildren(el("div", "as-empty", keyword ? `\u6CA1\u6709\u627E\u5230\u5305\u542B\u300C${keyword}\u300D\u7684\u6295\u7A3F` : "\u6682\u65E0\u516C\u5F00\u89C6\u9891\u6295\u7A3F"));
+        } else {
+          const container = el("div", "as-grid as-uploads-list");
+          for (const video2 of res.videos) {
+            container.append(renderSpaceVideoCard(video2, { api: api5, onOpen: persist }));
+          }
+          body2.replaceChildren(container);
+        }
+        const pager = renderPagination({
+          page: res.page,
+          pageSize: res.pageSize,
+          total: res.total,
+          onChange: (next) => {
+            page = next;
+            restoreY = 0;
+            persist();
+            void load();
+            win.root.scrollIntoView({ behavior: "auto", block: "start" });
+          }
+        });
+        if (pager) pagerHost.replaceChildren(pager);
+        persist();
+        if (restoreY > 0) {
+          const targetY = restoreY;
+          restoreY = 0;
+          requestAnimationFrame(() => window.scrollTo(0, targetY));
+        }
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        const errBox = el("div", "as-empty");
+        errBox.append(el("p", "", error instanceof Error ? error.message : "\u52A0\u8F7D\u6295\u7A3F\u5931\u8D25"));
+        errBox.append(xpButton("\u91CD\u8BD5", () => void load()));
+        body2.replaceChildren(errBox);
+      }
+    };
+    void load();
+    return () => {
+      persist();
+      activeController?.abort();
+    };
+  }
+  function mountSearchView(options) {
+    const { uid, keyword, api: api5, host } = options;
+    let subTab = "video";
+    let page = 1;
+    let order = "pubdate";
+    let viewMode = readUploadViewMode();
+    let videoController;
+    let disposeDyn;
+    const win = spaceWindow({
+      className: "as-search-win",
+      icon: iconImg5(folder_default),
+      title: keyword ? `\u641C\u7D22\u7ED3\u679C\uFF1A\u201C${keyword}\u201D` : "\u7A7A\u95F4\u641C\u7D22"
+    });
+    if (!keyword.trim()) {
+      win.body.append(el("div", "as-empty", "\u8BF7\u5728\u4E0A\u65B9\u641C\u7D22\u6846\u8F93\u5165\u5173\u952E\u8BCD\uFF0C\u641C\u7D22\u8BE5 UP \u7684\u89C6\u9891\u6216\u52A8\u6001"));
+      host.replaceChildren(win.root);
+      return () => {
+      };
+    }
+    const tabBar = win.body.appendChild(el("div", "xp-tabs as-sub-tabs"));
+    tabBar.setAttribute("role", "tablist");
+    const videoTabBtn = el("button", "xp-tab", "\u89C6\u9891");
+    videoTabBtn.type = "button";
+    videoTabBtn.setAttribute("role", "tab");
+    const dynTabBtn = el("button", "xp-tab", "\u52A8\u6001");
+    dynTabBtn.type = "button";
+    dynTabBtn.setAttribute("role", "tab");
+    tabBar.append(videoTabBtn, dynTabBtn);
+    const toolbar = win.body.appendChild(el("div", "xp-toolbar as-search-toolbar"));
+    const sortSelect = toolbar.appendChild(el("select", "xp-field as-sort"));
+    sortSelect.setAttribute("aria-label", "\u641C\u7D22\u6392\u5E8F");
+    for (const [value2, label] of orderChoices) {
+      const opt = el("option", "", label);
+      opt.value = value2;
+      sortSelect.append(opt);
+    }
+    sortSelect.value = order;
+    sortSelect.addEventListener("change", () => {
+      sound("click");
+      order = sortSelect.value;
+      page = 1;
+      void loadVideos();
+    });
+    toolbar.append(el("span", "xp-tool-separator"));
+    const gridBtn = el("button", "xp-tool", "\u7F51\u683C");
+    gridBtn.type = "button";
+    const listBtn = el("button", "xp-tool", "\u5217\u8868");
+    listBtn.type = "button";
+    toolbar.append(gridBtn, listBtn);
+    const videoPanel = win.body.appendChild(el("div", "as-search-panel"));
+    const videoBody = videoPanel.appendChild(el("div", "as-uploads-body"));
+    const videoPager = videoPanel.appendChild(el("div", "as-pager-host"));
+    const dynPanel = win.body.appendChild(el("div", "as-search-panel"));
+    dynPanel.hidden = true;
+    const paintViewBtns = () => {
+      gridBtn.setAttribute("aria-pressed", String(viewMode === "grid"));
+      listBtn.setAttribute("aria-pressed", String(viewMode === "list"));
+      videoBody.dataset.view = viewMode;
+    };
+    gridBtn.addEventListener("click", () => {
+      if (viewMode === "grid") return;
+      sound("click");
+      viewMode = "grid";
+      writeUploadViewMode(viewMode);
+      paintViewBtns();
+    });
+    listBtn.addEventListener("click", () => {
+      if (viewMode === "list") return;
+      sound("click");
+      viewMode = "list";
+      writeUploadViewMode(viewMode);
+      paintViewBtns();
+    });
+    paintViewBtns();
+    let dynMounted = false;
+    const paintSubTabs = () => {
+      videoTabBtn.setAttribute("aria-selected", String(subTab === "video"));
+      dynTabBtn.setAttribute("aria-selected", String(subTab === "dynamic"));
+      toolbar.hidden = subTab !== "video";
+      videoPanel.hidden = subTab !== "video";
+      dynPanel.hidden = subTab !== "dynamic";
+      if (subTab === "dynamic" && !dynMounted) {
+        dynMounted = true;
+        disposeDyn = mountDynamicSearchList({
+          uid,
+          keyword,
+          api: api5,
+          host: dynPanel,
+          onTotal: (total) => {
+            if (total !== void 0) dynTabBtn.textContent = `\u52A8\u6001 (${total})`;
+          }
+        });
+      }
+    };
+    videoTabBtn.addEventListener("click", () => {
+      if (subTab === "video") return;
+      sound("click");
+      subTab = "video";
+      paintSubTabs();
+    });
+    dynTabBtn.addEventListener("click", () => {
+      if (subTab === "dynamic") return;
+      sound("click");
+      subTab = "dynamic";
+      paintSubTabs();
+    });
+    const loadVideos = async () => {
+      videoController?.abort();
+      const controller = new AbortController();
+      videoController = controller;
+      videoBody.replaceChildren(el("div", "as-loading", "\u6B63\u5728\u641C\u7D22\u89C6\u9891\u2026"));
+      videoPager.replaceChildren();
+      try {
+        const res = await api5.archives({ uid, page, pageSize: 24, order, keyword }, controller.signal);
+        if (controller.signal.aborted) return;
+        videoTabBtn.textContent = `\u89C6\u9891 (${res.total})`;
+        if (res.videos.length === 0) {
+          videoBody.replaceChildren(el("div", "as-empty", `\u6CA1\u6709\u627E\u5230\u5305\u542B\u300C${keyword}\u300D\u7684\u89C6\u9891`));
+        } else {
+          const container = el("div", "as-grid as-uploads-list");
+          for (const video2 of res.videos) container.append(renderSpaceVideoCard(video2, { api: api5 }));
+          videoBody.replaceChildren(container);
+        }
+        const pager = renderPagination({
+          page: res.page,
+          pageSize: res.pageSize,
+          total: res.total,
+          onChange: (next) => {
+            page = next;
+            void loadVideos();
+            win.root.scrollIntoView({ behavior: "auto", block: "start" });
+          }
+        });
+        if (pager) videoPager.replaceChildren(pager);
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        const errBox = el("div", "as-empty");
+        errBox.append(el("p", "", error instanceof Error ? error.message : "\u641C\u7D22\u89C6\u9891\u5931\u8D25"));
+        errBox.append(xpButton("\u91CD\u8BD5", () => void loadVideos()));
+        videoBody.replaceChildren(errBox);
+      }
+    };
+    paintSubTabs();
+    host.replaceChildren(win.root);
+    void loadVideos();
+    return () => {
+      videoController?.abort();
+      disposeDyn?.();
+    };
+  }
+
+  // src/modules/space-luna/runtime.ts
+  var mounted = false;
+  function registerSpacePageMode() {
+    if (!spaceRoute()) return;
+    registerPageMode({
+      native: () => document.documentElement.getAttribute(spaceAttribute) !== "drawn",
+      setNative: (native2) => {
+        setSpaceLunaEnabled(!native2);
+        location.reload();
+      }
+    });
   }
   function startSpaceLuna() {
     if (location.hostname !== "space.bilibili.com") return;
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", startSpaceLuna, { once: true });
-      return;
+    registerSpacePageMode();
+    if (mounted) return;
+    const initialRoute = spaceRoute();
+    if (!initialRoute || !spaceLunaEnabled()) return;
+    if (document.documentElement.getAttribute(spaceAttribute) !== "drawn" && !prepareSpaceLuna()) return;
+    mounted = true;
+    ensureAppearance();
+    mountLunaHeader("space");
+    if (!document.getElementById("atelier-space-style")) {
+      const style = el("style");
+      style.id = "atelier-space-style";
+      setZoomedCss(style, spaceCss);
+      (document.head || document.documentElement).append(style);
     }
-    const root = document.documentElement;
-    const mode2 = { native: () => !root.hasAttribute(attr2), setNative: (native2) => {
-      setSpaceLunaEnabled(!native2);
+    const me = document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1] ?? "";
+    const relay = startPageRelay("space", endpoints.space);
+    const api5 = new SpaceApi(relay.read, relay.write, me);
+    const layout2 = startSpaceLayout();
+    const root = el("main", "as-root");
+    root.id = "atelier-space";
+    root.setAttribute("data-bili-blocker-ui", "true");
+    root.style.setProperty("--as-cols", String(readSpaceMaxCols()));
+    document.body.prepend(root);
+    let currentUid = "";
+    let currentTab = initialRoute.tab;
+    let currentKeyword = new URLSearchParams(location.search).get("keyword") ?? "";
+    let currentRelationKind = initialRoute.relationKind ?? "follow";
+    let profileAbort;
+    let disposeTab;
+    let disposeAside;
+    let currentProfile = null;
+    let currentNotice = "";
+    const headerHost = root.appendChild(el("div", "as-header-host"));
+    const navHost = root.appendChild(el("div", "as-nav-host"));
+    const columns3 = root.appendChild(el("div", "as-columns"));
+    const mainCol = columns3.appendChild(el("div", "as-main-col"));
+    const asideHost = columns3.appendChild(el("div", "as-aside-host"));
+    const textReleases = [headerHost, navHost, mainCol, asideHost].map((region) => observeCrispText(region));
+    const headerAttrObserver = new MutationObserver(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+    headerAttrObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["style"] });
+    const releaseText = () => {
+      headerAttrObserver.disconnect();
+      for (const fn of textReleases) fn();
+    };
+    let nav2;
+    const switchNative = () => {
+      setSpaceLunaEnabled(false);
       location.reload();
-    } };
-    const restoreHistory = watchSpaceHistory(), search = createSpaceSearch();
-    let registered = false, active2 = false, frame2 = 0, dynamics;
-    let layout2;
-    const textRegions = /* @__PURE__ */ new Map();
-    let navbar = null;
-    const measure = () => {
-      if (navbar) root.style.setProperty("--as-tabs-measured", `${navbar.offsetHeight}px`);
     };
-    const sizes = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null;
-    const reset = () => {
-      if (!active2) return;
-      for (const release of textRegions.values()) release();
-      textRegions.clear();
-      search.clear();
-      active2 = false;
-      layout2?.(null, null);
-      root.removeAttribute(attr2);
-      dynamics?.reset();
-      sizes?.disconnect();
-      navbar = null;
-      root.style.removeProperty("--as-tabs-measured");
+    const teardown = () => {
+      disposeTab?.();
+      disposeTab = void 0;
+      disposeAside?.();
+      disposeAside = void 0;
+      profileAbort?.abort();
+      releaseText();
+      layout2(null, null, null);
       unmountLunaHeader();
-      document.querySelector("#app")?.removeAttribute("data-as-self");
-      document.querySelectorAll(".as-stats,.as-search,.as-fold,.as-block,.as-caption").forEach((node4) => node4.remove());
-      document.querySelectorAll("[data-as-folded],[data-as-empty-aside],[data-as-plain]").forEach((node4) => {
-        node4.removeAttribute("data-as-folded");
-        node4.removeAttribute("data-as-empty-aside");
-        node4.removeAttribute("data-as-plain");
-      });
+      showNativeSpace();
+      mounted = false;
     };
-    const sync = () => {
-      const route = spaceRoute();
-      if (registered !== !!route) {
-        registered = !!route;
-        registerPageMode(registered ? mode2 : null);
-      }
-      const app2 = document.querySelector("#app[data-v-app]");
-      const header = app2?.querySelector(".space-header"), nav2 = app2?.querySelector(".space-navbar");
-      const main = app2?.querySelector(".space-main");
-      if (!route || !spaceLunaEnabled() || !header || !nav2 || !main) {
-        reset();
+    const syncAside = () => {
+      disposeAside?.();
+      disposeAside = void 0;
+      asideHost.replaceChildren();
+      if (!currentProfile) {
+        columns3.setAttribute("data-as-empty-aside", "");
+        layout2(root, columns3, null);
+        compactBar()?.remove();
         return;
       }
-      if (!active2) {
-        if (!document.getElementById("atelier-space-style")) {
-          const style = el("style");
-          style.id = "atelier-space-style";
-          setZoomedCss(style, spaceCss);
-          document.head.append(style);
-        }
-        mountLunaHeader("space");
-        if (!compactBar()) return;
-        active2 = true;
-      }
-      if (root.getAttribute(attr2) !== route.tab) root.setAttribute(attr2, route.tab);
-      app2.toggleAttribute("data-as-self", document.cookie.match(/(?:^|;\s*)DedeUserID=(\d+)/)?.[1] === route.uid);
-      if (navbar !== nav2) {
-        sizes?.disconnect();
-        navbar = nav2;
-        sizes?.observe(nav2);
-        measure();
-      }
-      header.toggleAttribute("data-as-plain", !hasSpaceBanner(app2, header, route.uid));
-      syncStatistics(header);
-      syncBlockMenu(header);
-      enableSectionFolds(main);
-      const aside = main.querySelector(".space-home>.aside,.space-dynamic__right,.space-upload>.aside,.space-search>.aside");
-      const twoColumns = main.querySelector(".space-home,.space-dynamic,.space-upload,.space-search");
-      const hasAside = !!aside && !aside.hidden && getComputedStyle(aside).display !== "none" && [...aside.children].some((node4) => !node4.matches(".lh-compact,.as-divider,[hidden]") && getComputedStyle(node4).display !== "none" && (node4.children.length ? [...node4.children].some((child) => !child.hasAttribute("hidden") && getComputedStyle(child).display !== "none") : !!node4.textContent?.trim()));
-      twoColumns?.toggleAttribute("data-as-empty-aside", !hasAside);
-      layout2 ??= startSpaceLayout();
-      layout2(main, hasAside ? aside : null);
-      if (hasAside) dockCompactBar(aside);
+      const { root: asideEl, hasContent, dispose } = buildAsideColumn(currentProfile, currentNotice, !!api5.me);
+      disposeAside = dispose;
+      asideHost.append(asideEl);
+      columns3.toggleAttribute("data-as-empty-aside", !hasContent);
+      layout2(root, columns3, hasContent ? asideHost : null);
+      if (hasContent) dockCompactBar(asideHost);
       else compactBar()?.remove();
-      const list = route.tab === "dynamic" && main.querySelector(".bili-dyn-list__items");
-      if (list) {
-        const column = main.querySelector(".space-dynamic__content");
-        if (column && !column.querySelector(":scope > .as-caption")) column.prepend(el("h2", "as-caption", "\u52A8\u6001"));
-        dynamics ??= createSpaceDynamics();
-        dynamics.sync(list);
-      } else dynamics?.reset();
-      if (route.tab === "uploads" || route.tab === "search") restoreHistory();
-      search.sync(route.uid, route.tab, main);
-      for (const [region, release] of textRegions) if (!app2.contains(region)) {
-        release();
-        textRegions.delete(region);
-      }
-      for (const region of app2.querySelectorAll(".header-upinfo,.nav-bar__main-left,.space-home>.content,.space-home>.aside,.space-dynamic__left,.space-dynamic__right,.as-caption,.upload-sidenav,.upload-content,.search-sidebar,.as-results-title,.as-upload-nav,.search-content,.space-upload>.aside,.space-search>.aside")) {
-        if (!textRegions.has(region)) textRegions.set(region, observeCrispText(region, void 0, true));
+    };
+    const mountTab = () => {
+      disposeTab?.();
+      disposeTab = void 0;
+      nav2?.sync(currentTab, currentKeyword);
+      syncAside();
+      if (currentTab === "home") {
+        disposeTab = mountHomeView({
+          uid: currentUid,
+          api: api5,
+          host: mainCol,
+          onMoreUploads: () => navigate("uploads")
+        });
+      } else if (currentTab === "dynamic") {
+        disposeTab = mountSpaceDynamicView({
+          uid: currentUid,
+          api: api5,
+          host: mainCol
+        });
+      } else if (currentTab === "uploads") {
+        disposeTab = mountUploadsView({
+          uid: currentUid,
+          api: api5,
+          host: mainCol
+        });
+      } else if (currentTab === "search") {
+        disposeTab = mountSearchView({
+          uid: currentUid,
+          keyword: currentKeyword,
+          api: api5,
+          host: mainCol
+        });
+      } else if (currentTab === "relation") {
+        disposeTab = mountRelationView({
+          uid: currentUid,
+          kind: currentRelationKind,
+          api: api5,
+          host: mainCol,
+          onKindChange: (kind) => {
+            currentRelationKind = kind;
+            const nextUrl = spacePath(currentUid, "relation", kind);
+            if (location.pathname !== nextUrl) history.replaceState({ atelierSpaceTab: "relation", kind }, "", nextUrl);
+          }
+        });
       }
     };
-    const schedule2 = () => {
-      if (!frame2) frame2 = requestAnimationFrame(() => {
-        frame2 = 0;
-        sync();
+    const navigate = (tab, extra = "") => {
+      const nextUrl = spacePath(currentUid, tab, extra);
+      if (location.pathname + location.search !== nextUrl) {
+        history.pushState({ atelierSpaceTab: tab, extra }, "", nextUrl);
+      }
+      currentTab = tab;
+      currentKeyword = tab === "search" ? extra : "";
+      if (tab === "relation") currentRelationKind = extra === "fans" ? "fans" : "follow";
+      mountTab();
+    };
+    const loadUid = async (uid) => {
+      profileAbort?.abort();
+      const controller = new AbortController();
+      profileAbort = controller;
+      currentUid = uid;
+      currentProfile = null;
+      currentNotice = "";
+      headerHost.replaceChildren(el("div", "as-loading", "\u6B63\u5728\u52A0\u8F7D UP \u4E3B\u8D44\u6599\u2026"));
+      nav2 = buildNavBar({
+        uid,
+        activeTab: currentTab,
+        keyword: currentKeyword,
+        onTab: (tab) => navigate(tab, tab === "search" ? currentKeyword : tab === "relation" ? currentRelationKind : ""),
+        onSearch: (kw) => {
+          if (!kw) navigate("uploads");
+          else navigate("search", kw);
+        }
       });
+      navHost.replaceChildren(nav2.root);
+      mountTab();
+      try {
+        const [profile, notice] = await Promise.all([
+          api5.profile(uid, controller.signal),
+          api5.notice(uid, controller.signal)
+        ]);
+        if (controller.signal.aborted) return;
+        currentProfile = profile;
+        currentNotice = notice;
+        document.title = `${profile.name}\u7684\u4E2A\u4EBA\u7A7A\u95F4 - \u54D4\u54E9\u54D4\u54E9`;
+        headerHost.replaceChildren(buildProfileWindow({
+          profile,
+          api: api5,
+          onRelation: (kind) => navigate("relation", kind),
+          onSwitchNative: switchNative
+        }));
+        syncAside();
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        const errBox = el("div", "as-error-bar");
+        errBox.append(
+          el("span", "", error instanceof Error ? error.message : "\u52A0\u8F7D UP \u4E3B\u8D44\u6599\u5931\u8D25"),
+          xpButton("\u91CD\u8BD5", () => void loadUid(uid)),
+          xpButton("\u5207\u6362\u539F\u751F\u9875\u9762", switchNative)
+        );
+        headerHost.replaceChildren(errBox);
+      }
     };
-    const observer = new MutationObserver((records2) => {
-      if (records2.some((record) => {
-        const node4 = record.target;
-        if (record.type === "characterData") return !!node4.parentElement?.closest(".video-order-filter");
-        if (!(node4 instanceof Element)) return false;
-        if (record.type === "attributes") return record.attributeName === "data-v-app" || node4.matches(".formal-toutu,.space-home>.aside,.space-dynamic__right,.space-upload>.aside,.space-search>.aside,.home-aside-section,.dynamic-aside-section,.home-aside-section>*,.dynamic-aside-section>*,.video-pagination button,.video-order-filter,.video-order-filter .radio-filter__item,.search-sidebar .side-nav__item");
-        return !node4.closest(".lh,.lh-compact,.as-dyn-card,.adc-comments,#atelier-launcher,#bili-atelier-blocker-panel");
-      })) schedule2();
-    });
-    const observe = () => {
-      observer.observe(root, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["style", "class", "hidden", "disabled", "aria-disabled", "aria-hidden", "data-v-app"] });
-      schedule2();
+    const onRouteChange = () => {
+      const route = spaceRoute();
+      if (!route) {
+        teardown();
+        return;
+      }
+      const kw = new URLSearchParams(location.search).get("keyword") ?? "";
+      currentTab = route.tab;
+      currentKeyword = route.tab === "search" ? kw : "";
+      if (route.relationKind) currentRelationKind = route.relationKind;
+      if (route.uid !== currentUid) {
+        void loadUid(route.uid);
+      } else {
+        mountTab();
+      }
     };
-    window.addEventListener("popstate", schedule2);
-    window.addEventListener("pageshow", observe);
-    window.addEventListener("pagehide", (event) => {
-      observer.disconnect();
-      cancelAnimationFrame(frame2);
-      frame2 = 0;
-      if (!event.persisted) reset();
-    });
-    observe();
+    window.addEventListener("popstate", onRouteChange);
+    void loadUid(initialRoute.uid);
   }
 
   // src/modules/sync/panel.ts
@@ -19000,10 +20925,10 @@ ${app} :is(.section-wrap__header,.video-list__header,.video-header__top){flex-wr
     }
     const render2 = () => {
       if (disposed) return;
-      const s = status();
-      root.querySelector('[role="status"]').textContent = `${paused() ? "\u5DF2\u6682\u505C" : "\u5DF2\u542F\u7528"} \xB7 ${s.busy ? "\u540C\u6B65\u4E2D" : `\u5F85\u4E0A\u4F20 ${s.pending} \u6761\u64CD\u4F5C`}
-\u6700\u8FD1\u6210\u529F\uFF1A${s.lastSuccess ? new Date(s.lastSuccess).toLocaleString() : "\u5C1A\u672A\u540C\u6B65"}${s.error ? `
-${s.error}` : ""}${message ? `
+      const s2 = status();
+      root.querySelector('[role="status"]').textContent = `${paused() ? "\u5DF2\u6682\u505C" : "\u5DF2\u542F\u7528"} \xB7 ${s2.busy ? "\u540C\u6B65\u4E2D" : `\u5F85\u4E0A\u4F20 ${s2.pending} \u6761\u64CD\u4F5C`}
+\u6700\u8FD1\u6210\u529F\uFF1A${s2.lastSuccess ? new Date(s2.lastSuccess).toLocaleString() : "\u5C1A\u672A\u540C\u6B65"}${s2.error ? `
+${s2.error}` : ""}${message ? `
 ${message}` : ""}`;
     };
     const config2 = () => parseConfig({ schema: "bili-atelier-b2-config", version: 1, ...fieldValues() });
@@ -19255,7 +21180,7 @@ ${message}` : ""}`;
   // src/modules/video-luna/bridge.ts
   function videoPageWorld(channel2) {
     const post = (message) => window.postMessage({ channel: channel2, ...message }, location.origin);
-    const app2 = () => document.getElementById("app")?.__vue__;
+    const app = () => document.getElementById("app")?.__vue__;
     const actionList = () => document.querySelector(".action-list-container")?.__vue__;
     const clone = (value2) => {
       try {
@@ -19304,7 +21229,7 @@ ${message}` : ""}`;
     let signature = "", timer2 = 0;
     const snapshot = () => {
       timer2 = 0;
-      const state2 = app2()?.$store?.state;
+      const state2 = app()?.$store?.state;
       if (!state2?.bvid || !state2.videoData) return;
       const video2 = state2.videoData, list = state2.playlist ? playList() : null;
       const up = state2.upData ?? state2.upInfo, staff = state2.staffData ?? state2.staffInfo;
@@ -19412,7 +21337,7 @@ ${message}` : ""}`;
         window.setInterval(schedule2, 1e3);
         return;
       }
-      const store = app2()?.$store;
+      const store = app()?.$store;
       if (!store) {
         window.setTimeout(watch, 200);
         return;
@@ -19456,7 +21381,7 @@ ${message}` : ""}`;
         signature = "";
         schedule2();
       } else if (data.kind === "switch") {
-        const vm = app2(), list = actionList(), target = data.target ?? {};
+        const vm = app(), list = actionList(), target = data.target ?? {};
         const router = window.next?.router;
         if (bangumi) {
           const ok4 = typeof router?.push === "function" && /^\/bangumi\/play\/(?:ep|ss)\d+$/.test(String(target.path ?? ""));
@@ -19512,7 +21437,7 @@ ${message}` : ""}`;
           done(false);
         }
       } else if (data.kind === "seek") {
-        const vm = app2();
+        const vm = app();
         if (typeof vm?.handleVideoSeek === "function") vm.handleVideoSeek({ time: Number(data.time) || 0 });
       } else if (data.kind === "player") {
         const player = window.player, value2 = Number(data.value);
@@ -19534,7 +21459,7 @@ ${message}` : ""}`;
   }
   function startVideoBridge(onState) {
     const relay = startPageRelay("video", endpoints.video), channel2 = relay.channel;
-    const commands2 = /* @__PURE__ */ new Map();
+    const commands = /* @__PURE__ */ new Map();
     const playbacks = /* @__PURE__ */ new Set();
     window.addEventListener("message", (event) => {
       const data = event.data;
@@ -19542,18 +21467,18 @@ ${message}` : ""}`;
       if (data.kind === "state" && data.state) onState(data.state);
       else if (data.kind === "playback" && data.state) for (const listener of playbacks) listener(data.state);
       else if (data.kind === "command-result") {
-        commands2.get(data.id)?.(!!data.ok);
-        commands2.delete(data.id);
+        commands.get(data.id)?.(!!data.ok);
+        commands.delete(data.id);
       }
     });
     injectPageScript(`(${videoPageWorld.toString()})(${JSON.stringify(channel2)});`);
     const send = (message) => window.postMessage({ channel: channel2, ...message }, location.origin);
     const command = (message, ms) => new Promise((resolve) => {
       const id = crypto.randomUUID();
-      commands2.set(id, resolve);
+      commands.set(id, resolve);
       send({ ...message, id });
       window.setTimeout(() => {
-        if (commands2.delete(id)) resolve(false);
+        if (commands.delete(id)) resolve(false);
       }, ms);
     });
     return {
@@ -20682,7 +22607,7 @@ ${message}` : ""}`;
   // src/modules/video-luna/episode-window.ts
   var rangeSize = 100;
   var blockSize = 1e3;
-  var columns3 = [
+  var columns2 = [
     { key: "duration", label: "\u65F6\u957F", width: "46px", shown: true },
     { key: "date", label: "\u66F4\u65B0\u65E5\u671F", width: "70px", shown: true },
     { key: "view", label: "\u64AD\u653E", width: "50px", shown: false, stat: "play" },
@@ -20729,7 +22654,7 @@ ${message}` : ""}`;
     const counted = /* @__PURE__ */ new Map();
     let data = null;
     function pickColumns() {
-      visible = columns3.filter((column) => readFolded(columnKey(column), column.shown));
+      visible = columns2.filter((column) => readFolded(columnKey(column), column.shown));
       head.replaceChildren(sort, el("span", "vl-lv-col", "\u6807\u9898"), ...visible.map((column) => el("span", "vl-lv-col", column.label)));
       list.style.setProperty("--vl-ep-cols", ["34px", `minmax(${titleWidth}px,1fr)`, ...visible.map((column) => column.width)].join(" "));
       list.style.setProperty("--vl-ep-min", `${34 + titleWidth + visible.reduce((sum, column) => sum + parseInt(column.width, 10), 0)}px`);
@@ -20740,7 +22665,7 @@ ${message}` : ""}`;
       event.preventDefault();
       openMenu([
         { label: "\u6807\u9898", checked: true, disabled: true },
-        ...columns3.map((column) => ({ label: column.label, checked: visible.includes(column), action: () => {
+        ...columns2.map((column) => ({ label: column.label, checked: visible.includes(column), action: () => {
           writeFolded(columnKey(column), !visible.includes(column));
           pickColumns();
           draw();
@@ -21073,9 +22998,9 @@ ${message}` : ""}`;
     const [r, g, b] = [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16) / 255);
     const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min;
     if (!d) return [0, 0, l];
-    const s = d / (1 - Math.abs(2 * l - 1));
+    const s2 = d / (1 - Math.abs(2 * l - 1));
     const h = max === r ? ((g - b) / d + 6) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
-    return [h / 6, s, l];
+    return [h / 6, s2, l];
   }
   var channel = (p2, q, t) => {
     t = (t + 1) % 1;
@@ -21107,15 +23032,15 @@ ${message}` : ""}`;
         if (!data[at + 3]) continue;
         let r = data[at] / 255, g = data[at + 1] / 255, b = data[at + 2] / 255;
         const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min;
-        let h = 0, s = 0;
+        let h = 0, s2 = 0;
         if (d) {
-          s = d / (1 - Math.abs(2 * l - 1));
+          s2 = d / (1 - Math.abs(2 * l - 1));
           h = (max === r ? ((g - b) / d + 6) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4) / 6;
         }
         if (d && h >= 0.47 && h <= 0.75) {
           h = (h + shift + 1) % 1;
-          s = Math.min(1, s * scale);
-          const q = l < 0.5 ? l * (1 + s) : l + s - l * s, p2 = 2 * l - q;
+          s2 = Math.min(1, s2 * scale);
+          const q = l < 0.5 ? l * (1 + s2) : l + s2 - l * s2, p2 = 2 * l - q;
           [r, g, b] = [channel(p2, q, h + 1 / 3), channel(p2, q, h), channel(p2, q, h - 1 / 3)];
         }
         data[at] = Math.round(r * bright * 255);
@@ -22199,10 +24124,10 @@ ${message}` : ""}`;
 
   // src/modules/video-luna/up-window.ts
   function createUpWindow(context) {
-    const face2 = el("img", "vl-caption-face");
-    face2.alt = "";
-    face2.referrerPolicy = "no-referrer";
-    const win = xpWindow({ className: "vl-small vl-up-window", icon: face2, title: "", label: "UP \u4E3B" });
+    const face = el("img", "vl-caption-face");
+    face.alt = "";
+    face.referrerPolicy = "no-referrer";
+    const win = xpWindow({ className: "vl-small vl-up-window", icon: face, title: "", label: "UP \u4E3B" });
     foldable(win, "up");
     let people2 = [], key6 = "", generation = 0;
     const follow = { api: context.actions, me: context.me, failure };
@@ -22210,7 +24135,7 @@ ${message}` : ""}`;
       win.body.replaceChildren();
       if (people2.length > 1) {
         win.title.textContent = `\u521B\u4F5C\u56E2\u961F\uFF08${people2.length}\uFF09`;
-        face2.src = thumb(people2[0].face, "32w_32h_1c");
+        face.src = thumb(people2[0].face, "32w_32h_1c");
         const list = win.body.appendChild(el("div", "vl-team"));
         for (const person2 of people2) {
           const row = list.appendChild(el("div", "vl-member"));
@@ -22227,7 +24152,7 @@ ${message}` : ""}`;
       const person = people2[0];
       if (!person) return;
       win.title.textContent = person.name;
-      face2.src = thumb(person.face, "32w_32h_1c");
+      face.src = thumb(person.face, "32w_32h_1c");
       const top = win.body.appendChild(el("div", "vl-up"));
       const avatar = top.appendChild(link("vl-up-face", "", `https://space.bilibili.com/${person.mid}`)).appendChild(el("img"));
       avatar.src = thumb(person.face, "96w_96h_1c");
@@ -22274,7 +24199,7 @@ ${message}` : ""}`;
 
   // src/modules/video-luna/runtime.ts
   var giveUpMs2 = 1e4;
-  var mounted = false;
+  var mounted2 = false;
   function registerVideoPageMode() {
     if (!isLunaVideoLocation()) return;
     registerPageMode({
@@ -22292,9 +24217,9 @@ ${message}` : ""}`;
     });
   }
   function mountVideoLuna() {
-    if (mounted || !isLunaVideoLocation() || !videoLunaEnabled()) return;
+    if (mounted2 || !isLunaVideoLocation() || !videoLunaEnabled()) return;
     if (document.documentElement.getAttribute(videoAttribute) !== "luna" && !prepareVideoLuna()) return;
-    mounted = true;
+    mounted2 = true;
     ensureAppearance();
     mountLunaHeader("video");
     if (isLunaListPath(location.pathname) && !document.getElementById("playerWrap") && document.querySelector(".error-page")) {
@@ -22375,8 +24300,8 @@ ${message}` : ""}`;
     const pod = bangumi ? createEpisodeWindow(context) : createPodWindow(context);
     const rec = recommendations2 ?? createSeasonRecWindow(context);
     const list = isLunaListPath(location.pathname) ? createListWindow(context) : null;
-    const windows2 = [["head", player], ["info", info], ["up", up], ["pod", pod], ...list ? [["list", list]] : [], ["rec", rec]];
-    for (const [, pane] of windows2) {
+    const windows = [["head", player], ["info", info], ["up", up], ["pod", pod], ...list ? [["list", list]] : [], ["rec", rec]];
+    for (const [, pane] of windows) {
       pane.element.setAttribute("data-bili-blocker-ui", "true");
       observeCrispText(pane.element);
     }
@@ -22420,7 +24345,7 @@ ${message}` : ""}`;
     const failed = /* @__PURE__ */ new Set();
     function render2() {
       if (!latest) return;
-      for (const [area, pane] of windows2) {
+      for (const [area, pane] of windows) {
         if (failed.has(area)) continue;
         try {
           pane.render(latest);
@@ -22477,7 +24402,7 @@ ${message}` : ""}`;
       return true;
     }
     let queued = 0;
-    const columns4 = new MutationObserver(() => {
+    const columns3 = new MutationObserver(() => {
       if (!queued) queued = requestAnimationFrame(() => {
         queued = 0;
         if (latest) place3();
@@ -22488,7 +24413,7 @@ ${message}` : ""}`;
       for (const column of document.querySelectorAll(".left-container,.right-container-inner,.playlist-container--left,.playlist-container--right,.plp-player,.plp-l .player-left-components,.plp-r")) {
         if (watched.has(column)) continue;
         watched.add(column);
-        columns4.observe(column, { childList: true });
+        columns3.observe(column, { childList: true });
       }
     };
     window.setInterval(() => {
@@ -22577,13 +24502,13 @@ ${message}` : ""}`;
         wrap.addEventListener("click", (event) => {
           if (!event.isTrusted) return;
           const arrow = wrap.querySelector(".bui-collapse-arrow"), head = wrap.querySelector(".bui-collapse-header")?.getBoundingClientRect();
-          const caption3 = event.target === wrap && !!head && event.clientY >= head.top && event.clientY < head.bottom;
-          if (!caption3 && !arrow?.contains(event.target)) return;
+          const caption2 = event.target === wrap && !!head && event.clientY >= head.top && event.clientY < head.bottom;
+          if (!caption2 && !arrow?.contains(event.target)) return;
           const task = click = soundTask();
           window.setTimeout(() => {
             if (click === task) click = null;
           }, 0);
-          if (caption3) arrow?.click();
+          if (caption2) arrow?.click();
         }, true);
         new MutationObserver(() => {
           const now = wrap.classList.contains("bui-collapse-wrap-folded");
@@ -22620,7 +24545,7 @@ ${message}` : ""}`;
     window.addEventListener("atelier-sync-applied", () => window.dispatchEvent(new Event(viewedMarksChanged)));
     window.setTimeout(() => {
       if (latest && placed) return;
-      for (const [, pane] of windows2) pane.element.remove();
+      for (const [, pane] of windows) pane.element.remove();
       showNativePage();
       syncDanmakuFont();
       warnLog("Luna \u89C6\u9891\u9875\u6CA1\u80FD\u753B\u51FA\u6765\uFF0C\u5DF2\u6062\u590D B \u7AD9\u539F\u6765\u7684\u9875\u9762");
@@ -22885,9 +24810,9 @@ ${page.css ?? ""}`;
   var text3 = (value2) => typeof value2 === "string" ? value2.trim() : "";
   var https2 = (value2) => text3(value2).replace(/^\/\//, "https://").replace(/^http:/, "https:");
   function clock(seconds2) {
-    const total = Math.max(0, Math.floor(seconds2)), h = Math.floor(total / 3600), m = Math.floor(total % 3600 / 60), s = total % 60;
+    const total = Math.max(0, Math.floor(seconds2)), h = Math.floor(total / 3600), m = Math.floor(total % 3600 / 60), s2 = total % 60;
     const two2 = (value2) => String(value2).padStart(2, "0");
-    return h ? `${h}:${two2(m)}:${two2(s)}` : `${two2(m)}:${two2(s)}`;
+    return h ? `${h}:${two2(m)}:${two2(s2)}` : `${two2(m)}:${two2(s2)}`;
   }
   var withSpm = (href, extra = {}) => {
     try {
@@ -23037,7 +24962,7 @@ ${page.css ?? ""}`;
   function setHistoryLunaEnabled(enabled) {
     if (typeof GM_setValue === "function") GM_setValue(key5, { enabled });
   }
-  var hideCss = `html[${historyAttribute}=drawn] #app{display:none!important}`;
+  var hideCss2 = `html[${historyAttribute}=drawn] #app{display:none!important}`;
   function prepareWatchHistory() {
     if (typeof GM_getValue !== "function" || !isHistoryLocation() || !historyLunaEnabled()) return false;
     document.documentElement.setAttribute(historyAttribute, "drawn");
@@ -23045,7 +24970,7 @@ ${page.css ?? ""}`;
     if (!document.getElementById("atelier-history-hide")) {
       const style = document.createElement("style");
       style.id = "atelier-history-hide";
-      style.textContent = hideCss;
+      style.textContent = hideCss2;
       (document.head || document.documentElement).append(style);
     }
     return true;
@@ -23135,7 +25060,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
   };
   var ok3 = (body2) => Number(body2?.code) === 0;
   var failure3 = (body2, fallback2) => typeof body2?.message === "string" && body2.message && body2.message !== "0" ? body2.message : fallback2;
-  var mounted2 = false;
+  var mounted3 = false;
   function registerWatchHistoryMode() {
     if (!isHistoryLocation()) return;
     registerPageMode({
@@ -23147,9 +25072,9 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     });
   }
   function mountWatchHistory() {
-    if (mounted2 || !isHistoryLocation() || !historyLunaEnabled()) return;
+    if (mounted3 || !isHistoryLocation() || !historyLunaEnabled()) return;
     if (document.documentElement.getAttribute(historyAttribute) !== "drawn" && !prepareWatchHistory()) return;
-    mounted2 = true;
+    mounted3 = true;
     ensureAppearance();
     mountLunaHeader("history");
     if (!document.getElementById("atelier-watch-history")) {
@@ -23165,9 +25090,9 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     root.id = "atelier-history";
     root.setAttribute("aria-label", "\u5386\u53F2\u8BB0\u5F55");
     root.setAttribute("data-bili-blocker-ui", "true");
-    const caption3 = root.appendChild(el("header", "xp-caption"));
-    caption3.append(image5(ie_history_16_default));
-    const title = caption3.appendChild(el("h2", "xp-caption-title", "\u5386\u53F2\u8BB0\u5F55"));
+    const caption2 = root.appendChild(el("header", "xp-caption"));
+    caption2.append(image5(ie_history_16_default));
+    const title = caption2.appendChild(el("h2", "xp-caption-title", "\u5386\u53F2\u8BB0\u5F55"));
     const toolbar = root.appendChild(el("div", "xp-toolbar ahp-toolbar"));
     toolbar.setAttribute("role", "toolbar");
     toolbar.setAttribute("aria-label", "\u5386\u53F2\u8BB0\u5F55\u5DE5\u5177\u680F");
@@ -23632,8 +25557,8 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
         window.setTimeout(attach, 50);
         return;
       }
-      const app2 = document.getElementById("app");
-      if (app2?.parentElement) app2.before(root);
+      const app = document.getElementById("app");
+      if (app?.parentElement) app.before(root);
       else document.body.append(root);
       observeCrispText(root);
     };
@@ -23955,16 +25880,16 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     const sample = (className, title, inactive, kinds2, body2) => {
       const frame2 = element("div", "xp-window " + className);
       if (inactive) frame2.dataset.inactive = "";
-      const caption3 = element("div", "xp-caption");
-      caption3.append(element("span", "xp-caption-title", title));
+      const caption2 = element("div", "xp-caption");
+      caption2.append(element("span", "xp-caption-title", title));
       for (const kind of kinds2) {
         const control = element("span", "xp-caption-button");
         control.dataset.kind = kind;
-        caption3.append(control);
+        caption2.append(control);
       }
       const content = element("div", "preview-body");
       content.append(...body2);
-      frame2.append(caption3, content);
+      frame2.append(caption2, content);
       return frame2;
     };
     preview.append(
@@ -24551,6 +26476,8 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     { name: "Luna \u89C6\u9891\u9875\u9884\u5907", phase: "start", gm: {}, start: prepareVideoLuna },
     // The same for 观看历史: Bilibili's page is hidden before it renders.
     { name: "\u89C2\u770B\u5386\u53F2\u9884\u5907", phase: "start", gm: {}, start: prepareWatchHistory },
+    // The same for UP 空间: Bilibili's page is hidden before it renders.
+    { name: "Luna UP \u7A7A\u95F4\u9884\u5907", phase: "start", gm: {}, start: prepareSpaceLuna },
     { name: "Atelier \u7A97\u53E3", phase: "start", gm: {}, start: startAtelierWindow },
     {
       name: "\u97F3\u6548",
@@ -24577,7 +26504,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       registerWatchHistoryMode();
       mountWatchHistory();
     }, recover: showNativeHistory },
-    { name: "Luna UP \u7A7A\u95F4", phase: "page", gm: {}, start: startSpaceLuna },
+    { name: "Luna UP \u7A7A\u95F4", phase: "page", gm: {}, start: startSpaceLuna, recover: showNativeSpace },
     { name: "\u7535\u89C6\u5165\u53E3", phase: "page", gm: {}, start: startAtelierLauncher },
     { name: "\u672C\u5730\u5173\u6CE8", phase: "page", gm: {}, start: () => whenHeadExists("\u672C\u5730\u5173\u6CE8", startLocalFollowing) },
     { name: "\u5DF2\u770B\u6A21\u5757", phase: "page", gm: { missing: "\u5DF2\u770B\u6A21\u5757\u9700\u8981 GM_* \u5B58\u50A8\u6743\u9650\uFF0C\u5F53\u524D\u73AF\u5883\u4E0D\u53EF\u7528\u3002" }, enabled: config.viewedMarker.enabled, start: () => whenHeadExists("\u5DF2\u770B\u6A21\u5757", startViewedMarker) },
