@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.11.4
+// @version      0.11.5
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -4572,9 +4572,9 @@ ${pseudo(`button:${axis2}:${edge}:${direction}:hover`)}{background-image:var(--x
 ${pseudo("button")}{display:none}
 ${button6("vertical", "start", "decrement", 0)}${button6("vertical", "end", "increment", 4)}${button6("horizontal", "start", "decrement", 8)}${button6("horizontal", "end", "increment", 12)}
 ${pseudo("track:vertical")}{${image("shaft-v", 0)}}${pseudo("track:horizontal")}{${image("shaft-h", 0)}}
-${pseudo("thumb:vertical")}{${image("thumb-v", 0)};background:var(--xp-gripper-v-0) center/var(--xp-gripper-v-w) var(--xp-gripper-v-h) no-repeat}
+${pseudo("thumb:vertical")}{min-height:30px;${image("thumb-v", 0)};background:var(--xp-gripper-v-0) center/var(--xp-gripper-v-w) var(--xp-gripper-v-h) no-repeat}
 ${pseudo("thumb:vertical:hover")}{border-image-source:var(--xp-thumb-v-1);background-image:var(--xp-gripper-v-1)}${pseudo("thumb:vertical:active")}{border-image-source:var(--xp-thumb-v-2);background-image:var(--xp-gripper-v-2)}
-${pseudo("thumb:horizontal")}{${image("thumb-h", 0)};background:var(--xp-gripper-h-0) center/var(--xp-gripper-h-w) var(--xp-gripper-h-h) no-repeat}
+${pseudo("thumb:horizontal")}{min-width:30px;${image("thumb-h", 0)};background:var(--xp-gripper-h-0) center/var(--xp-gripper-h-w) var(--xp-gripper-h-h) no-repeat}
 ${pseudo("thumb:horizontal:hover")}{border-image-source:var(--xp-thumb-h-1);background-image:var(--xp-gripper-h-1)}${pseudo("thumb:horizontal:active")}{border-image-source:var(--xp-thumb-h-2);background-image:var(--xp-gripper-h-2)}
 ${pseudo("corner")}{background:var(--xp-face)}`;
   }
@@ -7965,6 +7965,9 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
   function createCommentUserBlockButton(item, rescan, className) {
     return commentUserButton(item, rescan, className, { hideCurrent: false });
   }
+  function blockCommentUser(item, rescan) {
+    blockWith(item, rescan, getUserBlockChoices(item), "\u624B\u52A8\u5C4F\u853D\u8BC4\u8BBA\u533A\u7528\u6237", "\u5F53\u524D\u8BC4\u8BBA\u6CA1\u6709\u53EF\u63D0\u53D6\u7684\u7528\u6237\u5B57\u6BB5", { hideCurrent: false });
+  }
   var insertAfterLinkOrAppend = (target, button6) => {
     if (target.tagName === "A") target.insertAdjacentElement("afterend", button6);
     else target.appendChild(button6);
@@ -8928,7 +8931,9 @@ ${foldCss}
       installHistoryShortcut(scan);
       installCommentExpandFastScan(scanComments);
       observer = new MutationObserver((records2) => {
-        for (const root of commentMutationRoots(records2)) scanComments(root);
+        const relevant = records2.filter((record) => !(record.target instanceof Element && record.target.closest("#danmukuBox")));
+        if (!relevant.length) return;
+        for (const root of commentMutationRoots(relevant)) scanComments(root);
         scheduleScan();
       });
       observer.observe(document.body, { childList: true, subtree: true });
@@ -11986,11 +11991,14 @@ ${root} .btnView{z-index:3}
       element2.title = `Bili Atelier \u5DF2\u5C4F\u853D\uFF1A${decision.type} ${decision.matching}`;
       element2.hidden = !isShowingBlocked();
       blocked.add(element2);
-      const control = element2.querySelector(":scope > .acm-main > .acm-top > .acm-block");
-      if (control && isUserBlockDecision(decision)) {
-        delete control.dataset.confirmBlock;
-        control.textContent = "\u5DF2\u5C4F\u853D";
-        control.disabled = true;
+      const control = element2.querySelector(":scope > .acm-side .acm-block");
+      if (isUserBlockDecision(decision)) {
+        element2.dataset.userBlocked = "true";
+        if (control) {
+          delete control.dataset.confirmBlock;
+          control.textContent = "\u5DF2\u5C4F\u853D";
+          control.disabled = true;
+        }
       }
       return element2;
     }
@@ -12005,7 +12013,8 @@ ${root} .btnView{z-index:3}
       const rpid = String(reply?.rpid_str ?? reply?.rpid ?? ""), mid = String(reply?.mid_str ?? reply?.mid ?? reply?.member?.mid ?? "");
       element2.dataset.rpid = rpid;
       const space = /^\d+$/.test(mid) ? `https://space.bilibili.com/${mid}` : "";
-      const face = element2.appendChild(node2("a", "acm-face"));
+      const side = sub ? null : element2.appendChild(node2("div", "acm-side"));
+      const face = (side ?? element2).appendChild(node2("a", "acm-face"));
       if (space) {
         face.href = space;
         face.target = "_blank";
@@ -12028,10 +12037,48 @@ ${root} .btnView{z-index:3}
       if (space) for (const anchor of [face, who]) markUserCard(anchor, { mid, name: String(reply?.member?.uname ?? ""), face: String(reply?.member?.avatar ?? ""), level });
       const target = { kind: "comment", el: element2, insertionEl: element2, uid: Number(mid) || void 0, name: reply?.member?.uname, content: reply?.content?.message };
       targets2.set(element2, target);
-      if (context.blocking && !(context.me && mid === context.me)) top.append(createCommentUserBlockButton(target, rescan, "acm-block"));
+      const canBlock = context.blocking && !(context.me && mid === context.me);
       if (mid && mid === context.owner) top.append(node2("span", "acm-badge", "UP"));
       if (Number.isFinite(level) && level > 0) top.append(node2("span", "acm-level", `Lv${level}`));
       if (pinned) top.append(node2("span", "acm-badge", "\u7F6E\u9876"));
+      if (side) {
+        const sideActions = side.appendChild(node2("div", "acm-side-actions"));
+        if (canBlock) sideActions.append(createCommentUserBlockButton(target, rescan, "acm-block"));
+        const reportBtn = button2("\u4E3E\u62A5", "acm-report", () => void report());
+        if (!context.me) {
+          reportBtn.disabled = true;
+          reportBtn.title = "\u767B\u5F55\u540E\u53EF\u7528";
+        }
+        sideActions.append(reportBtn);
+      } else {
+        const subMore = button2("\u22EF", "acm-sub-more", () => {
+          const items = [];
+          if (canBlock) {
+            if (element2.dataset.userBlocked === "true") {
+              items.push({ label: "\u5DF2\u5C4F\u853D\u8BE5\u7528\u6237", disabled: true });
+            } else {
+              items.push({
+                label: "\u5C4F\u853D\u8BE5\u7528\u6237",
+                action: async () => {
+                  if (!await atelierConfirm(`\u786E\u5B9A\u5C4F\u853D\u8BC4\u8BBA\u533A\u7528\u6237\u300C${who.textContent}\u300D\u5417\uFF1F`, "\u5C4F\u853D\u8BC4\u8BBA\u533A\u7528\u6237")) return;
+                  blockCommentUser(target, rescan);
+                }
+              });
+            }
+            items.push("separator");
+          }
+          items.push({
+            label: context.me ? "\u4E3E\u62A5\u8BC4\u8BBA" : "\u4E3E\u62A5\u8BC4\u8BBA\uFF08\u767B\u5F55\u540E\u53EF\u7528\uFF09",
+            disabled: !context.me,
+            action: () => void report()
+          });
+          openMenu(items, subMore);
+        });
+        subMore.title = "\u66F4\u591A\u64CD\u4F5C\uFF08\u5C4F\u853D / \u4E3E\u62A5\uFF09";
+        subMore.setAttribute("aria-label", "\u66F4\u591A\u64CD\u4F5C");
+        subMore.setAttribute("aria-haspopup", "menu");
+        top.append(subMore);
+      }
       main.append(commentMessage(reply?.content, context.seek));
       main.querySelector(":scope > .acm-text > .acm-pics")?.setAttribute("data-picture-title", `\u8BC4\u8BBA\u56FE\u7247 - ${reply?.member?.uname || mid || "\u672A\u77E5\u7528\u6237"}`);
       const meta = main.appendChild(node2("div", "acm-meta"));
@@ -12064,7 +12111,6 @@ ${root} .btnView{z-index:3}
       paint2();
       actions.append(like, hate, button2("\u56DE\u590D", "acm-reply", () => openReply()));
       if (context.me && (mid === context.me || context.owner === context.me)) actions.append(button2("\u5220\u9664", "acm-delete", () => void remove()));
-      actions.append(button2("\u4E3E\u62A5", "acm-report", () => void report()));
       if (!context.me) for (const control of actions.querySelectorAll("button")) {
         control.disabled = true;
         control.title = "\u767B\u5F55\u540E\u53EF\u7528";
@@ -12227,12 +12273,15 @@ ${root} .acm-thumb-remove{position:absolute;top:-6px;right:-6px;min-height:16px!
 ${root} .acm-list{display:flex;flex-direction:column}
 ${root} .acm-item{display:flex;gap:8px;padding:6px 0;border-top:1px solid var(--xp-line)}
 ${root} .acm-list>.acm-item:first-child{border-top:0}
+${root} .acm-side{flex:none;width:40px;display:flex;flex-direction:column;align-items:center;gap:3px}
+${root} .acm-side-actions{display:flex;flex-direction:column;gap:2px;width:100%}
+${root} .acm-side-actions .atelier-control{width:100%;min-width:0!important;min-height:19px!important;padding:0 2px!important}
 ${root} .acm-face{flex:none}${root} .acm-face img{display:block;width:32px;height:32px;object-fit:cover;image-rendering:auto}
 ${root} .acm-sub-item .acm-face img{width:16px;height:16px}
 ${root} .acm-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 ${root} .acm-top{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 ${root} .acm-name{font-weight:bold;color:var(--xp-ink)!important;text-decoration:none}
-${root} .acm-top .acm-block{min-width:0}
+${root} .acm-sub-more{margin-left:auto;min-width:0!important;min-height:18px!important;padding:0 5px!important}
 ${root} .acm-badge{padding:0 3px;color:var(--xp-caption-ink);background:var(--xp-caption)}
 ${root} .acm-level{color:var(--xp-group-text)}
 ${root} .acm-text{overflow-wrap:anywhere}${root} .acm-link{color:var(--xp-task-link)}
@@ -13689,26 +13738,8 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
   // src/ui/assets/xp-icons/ie-favorites-16.png
   var ie_favorites_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB+ElEQVR42q2RW0jTcRTHP2sby60NpwmxFs0L5S0cSUQiYQ+9JfgiFETs6R8+hEYvEUF7jJIW0YVfL92gRj1oYReIaFkjMVfipTKnjiJnIf3H1NFydXqpcJGLpPN4vt/z4Zzzhb/UwAVEaeQvpi/LNRw8XNZmr2rHusIUWBJgTbEj4ClbicttaVgSAICZexQ55zxKw/NPAKXhBSBxB5fbAvDHLQwAnUe3BGxOt9dqGssy1e08Da/rwV7BlXOjodLq6iw9bajqNACEVdlEXeNuD44qsBVDxgGZWfh4FvQgODfBqkNgLodUL8xFQb4RunkLE8BQJLrta8p/pLISX2H5Vli+GmZeQXIY8txgWwumEZh/Bp8eEB98wuNH6f5Egv2/393Qc4YX6admkcFCkecWkVi9yOxBEVGSHN8j908U6EqjLefjuy826/K2TWTYJfJhl0jmpMiX49J3tUJ+PXexFJRGk3fHsXySt8HqgbwNYKyB1DvWrQegKSegpLa51U4IJEFs/DM32lUo/gYwb8duek9JqbGVHNl7JkceirzcKAPXikRp+H/0fWN913XRO2QyVCNKw7cYwJ8cOyXdAXSlZa+qNLzh4L4JmY/J5QPWjp9940JTYy39Q+G76elpWvaep2eh1hVhanNB76V4tD+tx0dVV4Qp/kd9B558zOMZgZROAAAAAElFTkSuQmCC";
 
-  // src/ui/assets/xp-icons/ie-home-16.png
-  var ie_home_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAChklEQVR42o2TzUtUURjGf3OnZrKZexsZwjArqRBxUSPVqsLpY9NAUbhp4UJo0dZlm9L+gqI2UQsxwkWLPugDWjnSBxGpE2URaZbal9F458u55557z2lxTZqM6N28cM75Pe9zDs8J8x/VB80t0LMDmkcg9/te6G+AvrrnHLFYCssapr7+1uWdlxPAUKZrOxuuvQj9U0AP7O4nHu/GNME0wTBwP//g85P31JXCrLs0VsMYNfBguh/T7MaywLKCxfl5IrLMppZVhDdHed3bkVrmQA+mE0A/sdhRTBPicfA8KBTAtvFLFfSeMxSqYUYHztul6op9nVfu5QDCejCdIBQaIh5PY1kBLATYNhQKeIUK/t5ejNYMbmIjKtawam7q0/FjB488uPEw+zWk7x7RQHDfujpwnKXJoiSg4wzh1gxFx0VIRdX1+fLqFe8fjdje6nX7QgCjty+MtTe+TFEuB3CxiFMUkO4j0nYIu+ri+ZqK8BCeZkEqZsc/8m2qlDUAnrodqZu6B8d2YX6esu3itHYRbctQcuQyWPgKa+t6nufGh1f8es1I0xauc5GmynXy5ho693cHtj3F49FpJscmyOfL7DqQon59kgWpAFgScKUmkljDzLYTSKkpOi7S1ywIn8mxCd69mQVAKkXVU7i+qs2BEAohFFLqoC/alkrVBM31NcILRJYEwnnZXpmcs6W7CEsVwL6m7C4eNAyi0Sg+xnIHJ0/uzNnjH9rLb2dyUiqEo/CUpiKDDpBMJmloaKBaEsy+mOLN/WdZIFuT676+OwnDNIdCW1tTh3fU4fqKL7M2c5N5it9L2UgkMmzbdvb06Uz2n7/x1Nl7/WuTK5snxqeHGxsba4A/6ydoemL8GnAskQAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/xp-icons/ie-media-16.png
-  var ie_media_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACj0lEQVR42sWTO2gTcRzHP5fc9dIr1rT2LcVCq25SaAfBwYqDXZS6KSLVxcknooMWoouTQkWqWAQzqJtEEB+4VBxErdWItNCHmtqmNrnY/u8uuUcuDwcJCOom+J2+y+/Dly+/L/xvSRXztlzunv1+P+IU9IGk+Y2EEMyt2mL+65Wr61pqh7vuxAaqqszB6enxq2/ejDyo3AUAnmRnDz2aHXqfzU8N1Ic0GjWVNepHsvnH4cRSLjL5Pjn2pSi2b9zY3Fdb2x7bv//hyQog+LZc7hsZPxCrUdK01HTRoHVQp3YyJ+IsmDIr2Ubc3K0WyXrdvbW1H9NUCYXq+ru6dhlTU/dfydeeTp+IGzZKMIumzCE8h6pAK7n8dfRcK/mq8xCKEgr2o6qNVFd7wjAS4UxmJgIMy/NJbeBr+jha9VGE+5yQLFMsRUnlWlkySpTcd2CDpjVSKkkYxvyOTGZmzLb1MIC8lLLJiw0k9DZ0u0BAWovlNWNZHkXjKeRfggeSL5HNrhKLDcZ7eo6cAgYB5OL3VUpCQkzeRdS/gLVnwNsH1hVwLMCELJTtEqapV7pLAHsBZIlyglS6A88DuxfMHlDGaMsfY1voHqr9gVTgGTkrhd9QAGBiYvR5hSSr65svBuOJ20XHAUWBmp3s7NjK5YNDNDVpxOOg61t4WXiC6+Z+e6TA5OnOaP3mTdG2YBDFsmgqOOzZcBbL0kgmwffB90uoqsri4qffADKAfqP3cPulzHz38nKk3d2E4xT4/PlnINeFdHoBIb7huqb4IwBg4VzDhYULyeFxvdgXnnkXMYzmbkVRcRyDlZUlhFjG973oX7fwq3bvvhlWVTUmSYU+37exrAyelxt2HOvixMSo+Kdz/AEJzzxOgI4ZHAAAAABJRU5ErkJggg==";
-
-  // src/ui/assets/xp-icons/ie-mail-16.png
-  var ie_mail_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACNklEQVR42oWTy04TcRSHPzq9CKQITMS0AVttbUIMxjDdWDeNuO3KBxAXpq+hT+C6q/oKxJ0LKYm3RUmIRqFIBEOhVDq9zXSmc3fBJUBBz+oszvfl/P75nyGuqEKhnAWeAXFgCXiTz6fbF+eGroAXRVErZuZ3EUc1KpVJPq/H1oDn+Xx67Z+CQqG8KE5qxdyTCkHbBt2DnofcHKb0K4Gsjb7K59MvLxUUCuVFcUIr5hYqBC3rCNY8MDxwPUzVZvXgFt868dLxNjv+s7AkbhalTAq3MY6Ni63WweizXfdTN++imtcwbAEgSyCwDQz5Tx4sFHReR+/FICLhi0j4gCO7wSw607WvBOwO79/JiNEM8mEfAB8AgcCyYQrjrmGeCeQCCqABOuGbN/jyI4yTyBKTIqdTpxEWcik+fqqSsMrMzSUI+rvI9Qb7NRVTN5FbAlr4DslsnHZNGRSMRMI8ejrL+mqNpbcVrodUfOEkU9E4w6LA3tYOycwUugt9i0FBD7CBiBTBAgTT5v7DGUzAAh7kUnz/UGUynUA/8518J41yLGnKGq2dNtNSlAbQBFqAPTHCRFJkf2WTVsO6ZAMd+j2HveXfJB/H6PoFHAssC0wTTAPsMZHQDOhb1UHBnzqoG/uMxUX6wgjdw2PQAsMAy/Rwuj3cjgmOA4JwXiBvNREUHSc1w8HBEWArOm5HAUUBVQXHKQErQCn/Yr50TuDtVnFvx2lu1E+A9jngwhENRMCy2u7mz/8CF+svLp4XvdlCNHgAAAAASUVORK5CYII=";
-
-  // src/ui/assets/xp-icons/ie-history-16.png
-  var ie_history_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACtElEQVR42q2TW2gTCRiFv8mMSTtTx0mr46WNnYLQYtk6RHfdIgrig0i7iggi+lKLKL55eelLUakv4oOL6ELqZfGKRCRRkC3u0ktcswhV25dIxV4UbWJtbLrTRjuTTnxYKl765p7Hw38O/zn8P3wnhNnIUChk6Lo++DXf19fnb2pqynzOiV8PRSKRvKIoBwLLA1i5KYrnV4DzHr/fj+u6O0zT7Oro6EjNukFbW9vvvW5vw9XEBSaltzgT0zjZQtZV7afe2IbndQLnQzYzMDCwvqWlpQdAmhGHw+GGC4PnG2LTf7CwtIjKzCq2/7QTo8SgP5shnRnGXx7ETsQ0VVUjQMUXEeQf5cif3NF+riljsHeM7kMJqgImcomBVynl2tHjZCfzBMwg0+lhrbq6+kU8Hu/xzJT2l9Vm1JplPPk7yem6S4wCb4ARy+Lkvn0U6ZXUNexl2YoggiSjaQu2fIpg27bxeReyrGEB/3R28uTePVKvkvwWCvH4aZK68YckhDy6XqEBCKXNC/MzwvqtS8m7c7h7u59li2qolTby6n4PvoCJPHcuAMdX61x/msInl3Y2Nm5eL62tWEdWTzBf91KkKKiqyi9bC8i9XEP9xsOMbvrPPJeDJYWQLQF1PMZw/zMAPDcabwryyHJGR2wURUEUvTzuEtlWe4TMGIgiODlwc/BDMQyl03inC0ml+m8DeABuNN4U2tufRx1H4PLFRxzZHkZwYcqGySxoEmwogwkBetsf4LpkLOtd9JMBwMTE1O5zZx4M7Zq3h7GXSdQCWFmYYfPl3Zg6JJ0s0VtRyotr6O6+c6y1tXXom0tsbm42VVWN+Hw+A3keRYsXgwckV0K0RJSCErq6rvx66tSJg7P+QiwWSwWDwUu2bU9JedHwOpJW4PiYHP0XazwdjcfD+8+ePR3i/8RHHNYIneXTQyAAAAAASUVORK5CYII=";
-
-  // src/ui/assets/xp-icons/ie-notes-16.png
-  var ie_notes_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAt0lEQVR42q2SOwrCQBRFzxg3oCtQrA0ILsI9mEIrl6QL0N7CJbgCAxZWgoWFMKbJkN8kFmJQAkZ9XhiY9+AezsCAMApgt2wXv5RdT6vmY+iPT4D9uOyvOgCUAAoNKvva4glwBZVIABfACAD5GZxQALApOLkAkESQRwJAbO4WMgMrNMjef0h/u6jsGuUtMmBqDtAbzbGZDVxPq1eDNAalapUPm2kwmJhW5QmH/bq2nIT6OJzR5Z+5AbhrTYfB1LaWAAAAAElFTkSuQmCC";
-
   // src/ui/assets/xp-icons/views.png
   var views_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABuElEQVR42u2VsUscQRjFf7fZFTQW9smBjY2FCLGKWBxcIWEDpgtoYTXWKWzSSBqLNOmvskwVSdjY2QTS5Zr8B3JF4NCgeMux485NitmdmT2S3F64dD5Y+PaxfO+b973dhXtMQAPxbR04BZZn2PcaeEVn4yQAjmbcHGAJeAcQEkU7LMxDFM1W4vJqyQgA+u3KP/XIcshHkClQ2tyXaB5eARD87yWH40Sn07W1EE9s/fCoZ+vBmyZgpl88aVi+91JPFqgDWViRqSqvRsxGIC8aqbGBpaoh4NviIy1s+TmsTt7fMyr9FGSdEyRJYus4jm398VNCOfBmO7ZWfT1P0Bo0sLoZTxbwm/pxbG/HNo7lDoZ3sLYVI5WxrZZFvPYEjt3Ui087lr44F2YXGtIPLkX5sylTpAsb8tHvUzQ+sZw2RdJ7Uysp0tU0TRfTY7PkVALeZ6D/xdjy49ZNLhVQ2HKTAarWm+y8frEn7Ek+v3f8xnNh6+9njn/UEn8X0MDuviBTJiGl17fSNZXKnUBpeNwSSAXaS5ePYHyhJeZC1yRswEIEYQBzDxw/kO75kTZceVVO0Djo3v/b/4hfZb7EzJo6c74AAAAASUVORK5CYII=";
-
-  // src/ui/assets/xp-icons/views-16.png
-  var views_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABQUlEQVR42sWSv07CUBTGf63gnyAR0rpoTNwd1LiQ6IKLS5+D+ABOLCQaH8IORjc2SXTxHWyIo3FkcJAO2NDKvb2tQ6EiAkocPMu5X3K+c873nQt/DA2AysOOkZ9vzkp2PVHOAKDrTddXs4/X9ZukQRSBaczeoO0WMoN3fL75Y30MdAWEMfgC1k9c9NEi23awbSfFuVqLXK0FgFSQv9IoXmuEUV/Fb7cVCoLwE3dFkjOjhSvmyxd8uf0IQBBuIBXUzVsgkTF8xji+2Bs7OQih3YXFLLzLPvZhToPSmTNdwvDKA3IqKZoggaqVkE/vEAoK+zYAT/cVhIJeQ2MBeD2Mp5soFHi+mGjiwINvGzRKxwCUJHTePOrVtVSOVPBcTExcGneFnoLykUUgIYwgu2ywdWClZF/C6q6FL0j/QXoF/is+ANIkhLsM1FQLAAAAAElFTkSuQmCC";
 
   // src/ui/page-layout.ts
   var pageLayoutChanged = "atelier-page-layout-changed";
@@ -14018,7 +14049,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       return button7;
     };
     const brand = bar.appendChild(el2("div", "lh-brand"));
-    const fold = bar.insertBefore(el2("button", "lh-fold"), brand);
+    const fold = bar.appendChild(el2("button", "lh-fold"));
     fold.type = "button";
     const compact = el2("div", "lh-compact");
     compact.setAttribute("role", "toolbar");
@@ -14184,7 +14215,9 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     resets.push([separator(), button6(views_default, "\u91CD\u7F6E\u5E03\u5C40", resetLayout)]);
     const mini = (control, icon2, text4) => {
       control.classList.add("xp-tool", "lh-tool", "lh-mini");
-      control.append(image3(icon2, 16));
+      const head = control.appendChild(el2("span", "lh-mini-head"));
+      head.append(image3(icon2, 24));
+      control.append(el2("span", "lh-mini-label", text4));
       control.title = text4;
       control.setAttribute("aria-label", text4);
       return compact.appendChild(control);
@@ -14202,14 +14235,14 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       control.addEventListener("click", action);
       return control;
     };
-    miniLink(ie_home_16_default, "\u9996\u9875", "https://www.bilibili.com/");
-    const miniDynamic = miniLink(ie_media_16_default, "\u52A8\u6001", "https://t.bilibili.com/");
-    const miniMessages = miniButton(ie_mail_16_default, "\u6D88\u606F", () => openMessages(miniMessages));
+    miniLink(ie_home_default, "\u9996\u9875", "https://www.bilibili.com/");
+    const miniDynamic = miniLink(ie_media_default, "\u52A8\u6001", "https://t.bilibili.com/");
+    const miniMessages = miniButton(ie_mail_default, "\u6D88\u606F", () => openMessages(miniMessages));
     miniMessages.setAttribute("data-menu-anchor", "");
     miniMessages.setAttribute("aria-haspopup", "menu");
-    split(miniLink(ie_history_16_default, "\u5386\u53F2", "https://www.bilibili.com/history"), "\u5386\u53F2", historyItems, compact);
-    split(miniLink(ie_notes_16_default, "\u7A0D\u540E\u518D\u770B", "https://www.bilibili.com/watchlater/#/list"), "\u7A0D\u540E\u518D\u770B", laterItems, compact);
-    resets.push([separator(compact), miniButton(views_16_default, "\u91CD\u7F6E\u5E03\u5C40", resetLayout)]);
+    split(miniLink(ie_history_default, "\u5386\u53F2", "https://www.bilibili.com/history"), "\u5386\u53F2", historyItems, compact);
+    split(miniLink(ie_notes_default, "\u7A0D\u540E\u518D\u770B", "https://www.bilibili.com/watchlater/#/list"), "\u7A0D\u540E\u518D\u770B", laterItems, compact);
+    resets.push([separator(compact), miniButton(views_default, "\u91CD\u7F6E\u5E03\u5C40", resetLayout)]);
     const paintReset = () => {
       const layout2 = currentPageLayout();
       for (const [line, reset] of resets) {
@@ -14266,7 +14299,8 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     const paintMini = (control, text4, count2, dot, unit, some) => {
       control.querySelector(".lh-count")?.remove();
       const news = dot ? "\u2022" : count2 > 0 ? count2 > 99 ? "99+" : String(count2) : "";
-      if (news) control.append(el2("span", "lh-count", news));
+      if (news) (control.querySelector(".lh-mini-head") ?? control).append(el2("span", "lh-count", news));
+      control.querySelector(".lh-mini-label")?.classList.toggle("lh-bold", count2 > 0 || dot);
       const tip = dot ? `${text4}\uFF08${some}\uFF09` : count2 > 0 ? `${text4}\uFF08${count2} ${unit}\uFF09` : text4;
       control.title = tip;
       control.setAttribute("aria-label", tip);
@@ -14490,15 +14524,22 @@ html:is([data-atelier-screen=web],[data-atelier-screen=full]) .lh[data-folded] .
 /* Menus opened from the compact bar show though the folded header does not. */
 .lh[data-folded] .lh-pop{visibility:visible}
 /* The compact bar (header.ts, part 4) at the top of the page's right column:
-   a band of the header in small, sticky, so the column scrolls under it as
-   the page does under the header. */
-.lh-compact{position:sticky;top:0;z-index:3;box-sizing:border-box;display:flex;flex-wrap:nowrap;align-items:center;gap:1px;min-width:0;margin:0 0 8px;padding:2px 2px 2px 3px;overflow:hidden;${xpFont};color:var(--xp-ink);text-align:left;letter-spacing:normal;background:var(--xp-face);border:1px solid;border-color:var(--xp-light3d) var(--xp-shadow3d) var(--xp-shadow3d) var(--xp-light3d);border-radius:0;box-shadow:none;pointer-events:auto;user-select:none}
+   a left-aligned XP toolbar band, sticky at the column's top. Shows 24px icons
+   with full labels stacked underneath when wide enough, and falls back to spacious
+   icon-only buttons in narrow sidebars via container queries. */
+.lh-compact{position:sticky;top:0;z-index:3;container-type:inline-size;box-sizing:border-box;display:flex;flex-wrap:nowrap;align-items:stretch;gap:6px;min-width:0;margin:0 0 8px;padding:3px 5px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;${xpFont};color:var(--xp-ink);text-align:left;letter-spacing:normal;background:var(--xp-face);border:1px solid;border-color:var(--xp-light3d) var(--xp-shadow3d) var(--xp-shadow3d) var(--xp-light3d);border-radius:0;box-shadow:none;pointer-events:auto;user-select:none}
+.lh-compact::-webkit-scrollbar{display:none}
 .lh-compact *{box-sizing:border-box}
 .lh-compact [hidden],.lh-compact[hidden],html:is([data-atelier-screen=web],[data-atelier-screen=full]) .lh-compact{display:none!important}
-.lh-compact .lh-mini{flex:none;gap:2px;min-height:22px;padding:2px 3px}
-.lh-compact .lh-split{flex:none;min-height:22px;padding:0 3px}
-.lh-compact .lh-split-main{padding-right:2px}
-.lh-brand{flex:none;align-self:stretch;display:flex;align-items:center;justify-content:center;width:42px;border-left:1px solid var(--xp-shadow3d);box-shadow:inset 1px 0 var(--xp-light3d);background:var(--xp-window)}
+.lh-compact .lh-mini{flex:none;flex-direction:column;justify-content:center;gap:2px;min-height:42px;padding:3px 5px}
+.lh-compact .lh-mini-head{display:inline-flex;align-items:center;justify-content:center;gap:2px}
+.lh-compact .lh-mini-label{white-space:nowrap}
+.lh-compact .lh-split{flex:none;align-self:stretch;min-height:28px;padding:0 3px;margin-left:-7px}
+.lh-compact .lh-split-main{padding-right:3px}
+.lh-compact .xp-tool-separator{margin:2px 0}
+@container (max-width:344px){.lh-compact .lh-mini{min-height:30px;padding:2px 5px}.lh-compact .lh-mini-label{display:none}}
+@container (max-width:260px){.lh-compact .lh-mini{padding:2px 3px}}
+.lh-brand{flex:none;align-self:stretch;display:flex;align-items:center;justify-content:center;width:42px;border-left:1px solid var(--xp-shadow3d);border-right:1px solid var(--xp-light3d);box-shadow:inset 1px 0 var(--xp-light3d),inset -1px 0 var(--xp-shadow3d);background:var(--xp-window)}
 .lh-brand-guest{width:auto;padding:0 3px;background:var(--xp-face)}
 .lh-face-button{display:flex;align-items:center;justify-content:center;width:100%;height:100%;padding:0;margin:0;border:0;background:transparent;cursor:default}
 .lh-face-button[data-open]{background:var(--xp-highlight)}
@@ -14916,6 +14957,16 @@ html[${attribute}=drag] *{user-select:none!important}
     if (typeof GM_setValue === "function") GM_setValue(coverKey, { enabled });
     window.dispatchEvent(new Event(videoCoverChanged));
   }
+  var infoRightKey = "BiliAtelier_VideoInfoRight";
+  var infoRightChanged = "atelier-video-info-right-changed";
+  function videoInfoRightEnabled() {
+    const stored = typeof GM_getValue === "function" ? GM_getValue(infoRightKey, null) : null;
+    return stored?.enabled === true;
+  }
+  function setVideoInfoRightEnabled(enabled) {
+    if (typeof GM_setValue === "function") GM_setValue(infoRightKey, { enabled });
+    window.dispatchEvent(new Event(infoRightChanged));
+  }
   var isLunaVideoLocation = (where = location) => where.hostname === "www.bilibili.com" && (/^\/video\/(?:BV|av)/i.test(where.pathname) || isLunaListPath(where.pathname) || isLunaBangumiPath(where.pathname));
   var isLunaListPath = (pathname) => /^\/list\/(?:ml\d+|watchlater|\d+)\/?$/i.test(pathname);
   var isLunaBangumiPath = (pathname) => /^\/bangumi\/play\/(?:ep|ss)\d+\/?$/i.test(pathname);
@@ -15022,7 +15073,8 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
     const place3 = () => {
       if (!column?.parentElement) return;
       const header = document.getElementById("biliMainHeader")?.clientHeight || headerHeight();
-      column.parentElement.style.setProperty("--vl-stick", `${Math.min(header, innerHeight / zoomOf(column) - column.offsetHeight - bottomGaps[kind])}px`);
+      const gap = document.documentElement.hasAttribute("data-vl-info-right") ? 0 : bottomGaps[kind];
+      column.parentElement.style.setProperty("--vl-stick", `${Math.min(header, innerHeight / zoomOf(column) - column.offsetHeight - gap)}px`);
     };
     const free = (element2) => {
       const held = hold;
@@ -15060,6 +15112,10 @@ ${on3} :is(.left-container>.ad-report,.video-pod-above-modules__inner>:not(#danm
       if (next === null || next !== at) set(next);
     }, { passive: true });
     window.addEventListener("resize", () => {
+      set(null);
+      place3();
+    });
+    window.addEventListener(infoRightChanged, () => {
       set(null);
       place3();
     });
@@ -15438,31 +15494,40 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
         add({ box: frame2, edges, drag, reset: resetLine });
         if (grip) add({ box: () => grip, edges, drag, reset: resetLine, whole: "bottom-right" });
       },
-      /** A window along the line between the columns, on its `side`. */
+      /** A window along the line between the columns, on its `side` (static or dynamic). */
       line(box2, side) {
-        add({ box: () => box2, edges: () => lineEdges() ?? [side], drag: () => lineDrag((dx, _dy, left) => left + dx), reset: resetLine });
+        const sideOf = typeof side === "function" ? side : () => side;
+        add({ box: () => box2, edges: () => lineEdges() ?? [sideOf()], drag: () => lineDrag((dx, _dy, left) => left + dx), reset: resetLine });
       },
       /** A list window in the right column: its bottom edge sets how tall its
        * list may grow (three rows of 22 px at least, with the header if the
-       * header scrolls with them), its left edge is the line. */
-      list(name, box2, rows) {
-        lists.set(name, rows);
+       * header scrolls with them), its left edge is the line. When `active` is
+       * provided and returns false, height dragging is skipped and `fallbackSide`
+       * handles the column divider instead. */
+      list(name, box2, rows, options) {
+        const isActive = options?.active ?? (() => true);
+        lists.set(name, () => isActive() ? rows() : null);
         paint2();
         const height = () => {
+          if (!isActive()) return null;
           const element2 = rows();
           if (!element2) return null;
           const head = element2.querySelector(":scope > .vl-lv-head")?.offsetHeight ?? 0;
-          return heightDrag(name, box2, element2.getBoundingClientRect().height / zoom(), head + 66);
+          return heightDrag(name, box2, element2.getBoundingClientRect().height / zoom(), options?.minHeight ?? head + 66);
         };
         add({
           box: () => box2,
-          edges: () => lineEdges() ?? ["left", "bottom", "bottom-left"],
+          edges: () => {
+            const line = lineEdges();
+            if (!isActive()) return line ?? (options?.fallbackSide ? [options.fallbackSide] : []);
+            return line ?? ["left", "bottom", "bottom-left"];
+          },
           drag: (edge) => {
-            const line = edge === "bottom" ? null : lineDrag((dx, _dy, left) => left + dx), list = edge === "left" ? null : height();
+            const line = edge === "bottom" ? null : lineDrag((dx, _dy, left) => left + dx), list = edge === "left" || edge === "right" ? null : height();
             return list ? both(line, list) : line;
           },
           reset: (edge) => {
-            if (edge !== "left") {
+            if (edge !== "left" && edge !== "right" && isActive()) {
               setHeight(name);
               paint2();
               save();
@@ -15471,6 +15536,8 @@ ${on4} [style*="--vl-stick:"]>:is(${stickyColumns.video},${stickyColumns.list}).
           }
         });
       },
+      /** Re-apply list height variables (e.g. after swapping a window between columns). */
+      syncLists: () => paint2(),
       /** Bilibili's 弹幕 window: the same, on the player's tab page; its
        * virtual list draws rows for a new height on the next resize. */
       danmaku() {
@@ -16416,6 +16483,7 @@ ${full2} .bpx-player-container:not([data-ctrl-hidden=true]) .vl-pbp,${full2} .bp
   var sidePlayer = `${full} .bpx-player-container:has(${sides})`;
   var skin = `${on7}:not([${nativeAttribute}~=skin])`;
   var image4 = (part, state2, fill = true) => `border-image-source:var(--xp-${part}-${state2});border-image-slice:var(--xp-${part}-slice)${fill ? " fill" : ""};border-image-width:var(--xp-${part}-edge);border-image-repeat:stretch`;
+  var imageImportant = (part, state2, fill = true) => `border-image-source:var(--xp-${part}-${state2})!important;border-image-slice:var(--xp-${part}-slice)${fill ? " fill" : ""}!important;border-image-width:var(--xp-${part}-edge)!important;border-image-repeat:stretch!important`;
   var frame = `border:0 solid var(--xp-caption);border-width:var(--xp-frame-edge,0 4px 4px 4px);${image4("frame", 0, false)};border-image-width:var(--xp-caption-h,29px) var(--xp-frame-r,4px) var(--xp-frame-b,4px) var(--xp-frame-l,4px);image-rendering:pixelated`;
   var caption = `box-sizing:border-box;display:flex;align-items:center;gap:3px;min-height:var(--xp-caption-h,29px);margin:0 calc(-1 * var(--xp-frame-r,4px)) 0 calc(-1 * var(--xp-frame-l,4px));padding:3px 5px 2px 6px;color:var(--xp-caption-ink);background:var(--xp-fallback-caption,var(--xp-caption));${image4("caption", 0)};image-rendering:pixelated;user-select:none`;
   var sunken = "border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d)";
@@ -16474,9 +16542,9 @@ ${on7}{--vl-status-h:24px}
 ${wide} .vl-player-status{width:var(--vl-player-w)}
 .vl-player-status>.xp-status-pane{flex:none}
 .vl-player-status>.vl-status-spring{flex:1 1 auto}
-/* \u5DE5\u5177 \u25BE (player-window.ts): a flat button filling its pane. */
-.vl-player-status>.vl-status-tools{padding:0}
-.vl-status-tools>.xp-tool{height:100%;min-height:0;padding-top:0;padding-bottom:0}
+/* \u5DE5\u5177 \u25BE and \u8BC4\u8BBA\u53F3\u680F in the player status bar: flat buttons filling their panes. */
+.vl-player-status>:is(.vl-status-tools,.vl-status-swap){padding:0}
+:is(.vl-status-tools,.vl-status-swap)>.xp-tool{height:100%;min-height:0;padding-top:0;padding-bottom:0}
 /* The cover over the picture until the page first plays (cover.ts); the
    pointer on the picture shows the first frame instead. */
 .bpx-player-video-area>.vl-cover{position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0;background:#000;pointer-events:none}
@@ -16627,6 +16695,25 @@ ${sidePlayer} .bpx-player-video-inputbar{display:flex!important;grid-column:1 / 
 .vl-desc{margin:12px 0 0;min-width:0}
 .vl-desc>legend{float:none;width:auto;font-size:inherit;line-height:inherit}
 .vl-desc-text{white-space:pre-wrap;overflow-wrap:anywhere;margin:0 0 8px}
+
+/* Swapped layout (\u8BC4\u8BBA\u53F3\u680F): \u7B80\u4ECB\u4E0E\u8BC4\u8BBA moves to the right column with its own
+   XP scrollbar aligned 4px above the viewport bottom (capped to one viewport and
+   never stretched past actual content), while \u76F8\u5173\u63A8\u8350 moves under the player. */
+${on7}[data-vl-info-right] :is(.right-container-inner,.playlist-container--right,.plp-r){padding-bottom:4px!important}
+${on7}[data-vl-info-right] .vl-info-window{margin:0}
+${on7}[data-vl-info-right] .vl-info-window .vl-toolbar{padding:2px 3px}
+${on7}[data-vl-info-right] .vl-info-window .vl-toolbar .xp-tool{min-height:24px;padding:2px 6px}
+${on7}[data-vl-info-right] .vl-info-window .vl-info{max-height:max(180px,calc(100vh - ${headerBottomCss} - 120px));overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:2px 6px 10px}
+${on7}[data-vl-info-right] :is(.vl-rec-window,.vl-season-rec-window){margin:12px -4px 0}
+${on7}[data-vl-info-right] :is(.vl-rec-window,.vl-season-rec-window) .vl-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:4px 8px;padding:6px 8px 0}
+${on7}[data-vl-info-right] :is(.vl-rec-window,.vl-season-rec-window) .vl-next .vl-tile{max-width:420px}
+
+/* In-page mini-player (\u753B\u4E2D\u753B, data-screen="mini") XP Luna window frame */
+.vl-mini-caption{display:none}
+${on7}[data-atelier-screen=mini] .bpx-player-container[data-screen=mini]{overflow:visible!important;border-radius:0!important;box-sizing:content-box!important;box-shadow:2px 3px 10px #0006!important;border:0 solid var(--xp-caption)!important;border-width:0 var(--xp-frame-r,4px) var(--xp-frame-b,4px) var(--xp-frame-l,4px)!important;border-image-source:var(--xp-frame-0)!important;border-image-slice:var(--xp-frame-slice)!important;border-image-width:0 var(--xp-frame-r,4px) var(--xp-frame-b,4px) var(--xp-frame-l,4px)!important;border-image-repeat:stretch!important;image-rendering:pixelated}
+${on7}[data-atelier-screen=mini] .bpx-player-container[data-screen=mini]>.vl-mini-caption{display:flex;position:absolute;bottom:100%;left:calc(-1 * var(--xp-frame-l,4px));right:calc(-1 * var(--xp-frame-r,4px));z-index:20;margin:0;pointer-events:auto}
+${on7}[data-atelier-screen=mini] .bpx-player-container[data-screen=mini] :is(.bpx-player-primary-area,.bpx-player-video-area,.bpx-player-mini-warp){border-radius:0!important}
+${on7}[data-atelier-screen=mini] .bpx-player-container[data-screen=mini] .bpx-player-mini-close{opacity:0!important;pointer-events:none!important}
 .vl-tags{display:flex;flex-wrap:wrap;gap:4px 14px}
 .vl-tag{color:var(--xp-task-link)!important;text-decoration:none}.vl-tag::before{content:"#"}.vl-tag:hover{text-decoration:underline}
 ${commentAreaStyles("#atelier-video-comments")}
@@ -16779,6 +16866,8 @@ ${dm}{margin:0 0 8px!important}
 /* Bilibili's placeholder around the player's box is 44 px of gray: folded,
    it would show under our caption. */
 ${dm} :is(.danmaku-wrap,.bpx-docker){min-height:0!important;background:none!important;border-radius:0!important}
+/* Fold and unfold instantly, matching our other XP windows instead of Bilibili's slide transition. */
+${dm} :is(.danmaku-wrap,.bpx-docker,.bui-collapse-wrap,.bui-collapse-header,.bui-collapse-arrow,.bui-collapse-body,.bpx-player-wraplist,.bpx-player-filter-wrap,.bpx-player-dm,.bpx-player-dm-wrap){transition:none!important;animation:none!important}
 ${dm} .bui-collapse-wrap{position:relative;box-sizing:border-box;width:100%;${frame};background:linear-gradient(var(--xp-face),var(--xp-face)) 0 var(--xp-caption-h,29px)/100% 100% no-repeat;border-radius:0;box-shadow:none;${xpFont};color:var(--xp-ink)}
 /* The caption is the player's collapse header. It lets the pointer through,
    so its tabs stay apart from it; runtime.ts folds the window from a click on
@@ -16815,13 +16904,54 @@ ${dm} .bui-dropdown-item.bui-hide:first-child{margin-left:0!important;border-ima
    the body and the page; our tabs and margins go around them (the page's
    bottom border lands in the body's padding, which nothing clips). */
 ${dm} .bui-collapse-body{box-sizing:content-box!important;width:auto!important;padding:25px 6px 6px;background:var(--xp-face)}
-${dm} .bui-collapse-wrap-folded .bui-collapse-body{padding:0!important}
+${dm} .bui-collapse-wrap:not(.bui-collapse-wrap-folded) .bui-collapse-body{height:auto!important}
+${dm} .bui-collapse-wrap-folded .bui-collapse-body{height:0!important;padding:0!important;overflow:hidden!important}
 ${dm} .bpx-player-wraplist{box-sizing:content-box!important;width:auto!important;background:var(--xp-tab-body-0) left top/100% var(--xp-tab-body-h) no-repeat,var(--xp-window);border:0 solid var(--xp-edge);${image4("tab-pane", 0, false)};border-width:1px;image-rendering:pixelated}
+${dm}[style*="--vl-dm-cap-h:"] .bpx-player-wraplist{max-height:var(--vl-dm-cap-h)!important}
+${dm}[style*="--vl-dm-cap-list:"] :is(.bpx-player-dm-wrap,.bpx-player-dm-load-status){max-height:var(--vl-dm-cap-list)!important}
 ${dm} .bpx-player-filter-wrap{background:transparent!important;color:var(--xp-ink)}
 ${dm} .bui-collapse-body :is(span,div,label,p,li,button){font-family:var(--xp-font)}
 ${dm} .bui-collapse-body :is(input[type=text],input[type=number],input:not([type]),textarea){${xpFont};color:var(--xp-ink);background:var(--xp-window);border:1px solid var(--xp-edge);border-radius:0;box-shadow:none;outline:none}
 ${dm} .bui-collapse-body :is(input,textarea)::placeholder{color:var(--xp-graytext);opacity:1}
-${dm} .bscroll-indicator{background:var(--xp-shadow3d)!important;border:0!important;border-radius:0!important}
+${xpScrollbarCss(dm)}
+/* Permanent 17px XP Luna scrollbars for BetterScroll panels inside #danmukuBox
+   (\u5F39\u5E55\u5217\u8868, \u5C4F\u853D\u8BBE\u5B9A, \u9AD8\u7EA7\u5F39\u5E55), with 17px right reservation, 30px min thumb
+   height, and up/down arrow buttons. Attributes are toggled in danmaku-scrollbar.ts
+   so scrolling never triggers expensive :has([style*=...]) recalculations. */
+${dm} [data-vl-dm-sb]:not([data-vl-dm-sb-hidden]) .bui-long-list-list{box-sizing:border-box;padding-right:var(--xp-arrow-w,17px)!important}
+${dm} .bpx-player-dm-function[data-vl-dm-sb-pad]{padding-right:var(--xp-arrow-w,17px)!important}
+${dm} :is(.bpx-player-block,.bpx-player-block-list,.bpx-player-adv-danmaku-panel)[data-vl-dm-sb]:not([data-vl-dm-sb-hidden])>:first-child{box-sizing:border-box;padding-right:var(--xp-arrow-w,17px)!important}
+${dm} .bscroll-vertical-scrollbar{position:absolute!important;top:var(--xp-arrow-h,17px)!important;bottom:var(--xp-arrow-h,17px)!important;right:0!important;width:var(--xp-arrow-w,17px)!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;z-index:10!important;box-sizing:border-box!important;border-width:0!important;border-style:solid!important;border-color:transparent!important;border-radius:0!important;${imageImportant("shaft-v", 0)};image-rendering:pixelated;transition:none!important}
+${dm} .bscroll-indicator{left:0!important;right:0!important;width:100%!important;min-height:30px!important;box-sizing:border-box!important;border-width:0!important;border-style:solid!important;border-color:transparent!important;border-radius:0!important;${imageImportant("thumb-v", 0)};background:var(--xp-gripper-v-0) center/var(--xp-gripper-v-w) var(--xp-gripper-v-h) no-repeat!important;image-rendering:pixelated;cursor:default}
+${dm} .bscroll-indicator:hover{border-image-source:var(--xp-thumb-v-1)!important;background-image:var(--xp-gripper-v-1)!important}
+${dm} .bscroll-indicator:active,${dm} .bscroll-indicator[data-drag]{border-image-source:var(--xp-thumb-v-2)!important;background-image:var(--xp-gripper-v-2)!important}
+${dm} .vl-dm-sb-btn{position:absolute;right:0;z-index:11;width:var(--xp-arrow-w,17px);height:var(--xp-arrow-h,17px);margin:0;padding:0;border:0;border-radius:0;background:var(--xp-arrow-0) center/100% 100% no-repeat;image-rendering:pixelated;cursor:default;pointer-events:auto}
+${dm} .vl-dm-sb-btn[data-dir=up]{top:0}
+${dm} .vl-dm-sb-btn[data-dir=up]:hover{background-image:var(--xp-arrow-1)}
+${dm} .vl-dm-sb-btn[data-dir=up]:active{background-image:var(--xp-arrow-2)}
+${dm} .vl-dm-sb-btn[data-dir=down]{bottom:0;background-image:var(--xp-arrow-4)}
+${dm} .vl-dm-sb-btn[data-dir=down]:hover{background-image:var(--xp-arrow-5)}
+${dm} .vl-dm-sb-btn[data-dir=down]:active{background-image:var(--xp-arrow-6)}
+${dm} [data-vl-dm-sb-hidden]>.vl-dm-sb-btn{display:none}
+/* Custom 17px XP Luna scrollbars for native scrollable lists inside #danmukuBox
+   (\u5F39\u5E55\u5217\u8868, \u5C4F\u853D\u8BBE\u5B9A) \u2014 Chromium ignores min-height on ::-webkit-scrollbar-thumb,
+   so long virtual lists replace the native bar with a real 30px-min XP rail. */
+${dm} [data-vl-dm-sb-host]{position:relative!important}
+${dm} [data-vl-dm-native-sb]{scrollbar-width:none!important}
+${dm} [data-vl-dm-native-sb]::-webkit-scrollbar{display:none!important}
+${dm} [data-vl-dm-native-sb-active]{box-sizing:border-box!important;padding-right:var(--xp-arrow-w,17px)!important}
+${dm} .vl-dm-sb{position:absolute;z-index:12;display:flex;flex-direction:column;width:var(--xp-arrow-w,17px);box-sizing:border-box;pointer-events:auto;user-select:none}
+${dm} .vl-dm-sb[hidden]{display:none!important}
+${dm} .vl-dm-sb .vl-dm-sb-btn{position:static;flex:none}
+${dm} .vl-dm-sb-track{position:relative;flex:1 1 auto;min-height:0;width:100%;overflow:hidden;box-sizing:border-box;border-width:0;border-style:solid;border-color:transparent;${image4("shaft-v", 0)};image-rendering:pixelated}
+${dm} .vl-dm-sb-thumb{position:absolute;top:0;left:0;right:0;min-height:30px;box-sizing:border-box;border-width:0;border-style:solid;border-color:transparent;${image4("thumb-v", 0)};background:var(--xp-gripper-v-0) center/var(--xp-gripper-v-w) var(--xp-gripper-v-h) no-repeat;image-rendering:pixelated;will-change:transform;cursor:default}
+${dm} .vl-dm-sb-thumb:hover{border-image-source:var(--xp-thumb-v-1);background-image:var(--xp-gripper-v-1)}
+${dm} .vl-dm-sb-thumb:active,${dm} .vl-dm-sb-thumb[data-drag]{border-image-source:var(--xp-thumb-v-2);background-image:var(--xp-gripper-v-2)}
+/* While actively scrolling or dragging the scrollbar thumb, suspend per-row SVG
+   crisp filters so virtual-list DOM recycling stays smooth; crisp pixels return
+   once scrolling settles. */
+${dm}:is([data-vl-dm-dragging],[data-vl-dm-scrolling]) :is(.dm-info-row,.dm-info-row *,.bpx-player-block-list-content){filter:none!important}
+${dm}[data-vl-dm-dragging] :is(.bui-long-list-list,.bpx-player-block-list-wrap){pointer-events:none!important}
 
 /* \u5F39\u5E55\u5217\u8868: a details view over a status bar. The player sizes the list and
    keeps 32 px above it and 39 px below; ours fill exactly those. */
@@ -16833,9 +16963,9 @@ ${dm} .bpx-player-dm-function>div:hover{border-image-source:var(--xp-header-1)}
 ${dm} .bpx-player-dm-function>div:active{border-image-source:var(--xp-header-2)}
 ${dm} .bpx-player-dm-function span{${crisp}}
 ${dm} .bpx-player-dm-btn-icon{fill:var(--xp-ink)!important;color:var(--xp-ink)!important}
-${dm} .bpx-player-dm-wrap{box-sizing:border-box;margin:0 8px!important;background:var(--xp-window)!important;border:1px solid var(--xp-edge);border-top:0}
+${dm} .bpx-player-dm-wrap{box-sizing:border-box;margin:0 8px!important;background:var(--xp-window)!important;border:1px solid var(--xp-edge);border-top:0;contain:layout style}
 ${dm} :is(.bpx-player-dm-load-status,.bpx-player-no-dm){background:var(--xp-window)!important;${xpFont};color:var(--xp-graytext)!important}
-${dm} .dm-info-row{${xpFont};color:var(--xp-ink)}
+${dm} .dm-info-row{${xpFont};color:var(--xp-ink);contain:layout style}
 ${dm} .dm-info-row:hover{background:color-mix(in srgb,var(--xp-highlight) 12%,var(--xp-window))}
 ${dm} .dm-info-row :is(.dm-info-time,.dm-info-dm,.dm-info-date){${xpFont};color:inherit;${crisp}}
 ${dm} .dm-info-date{color:var(--xp-muted)}
@@ -18530,6 +18660,9 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     }
   };
 
+  // src/ui/assets/xp-icons/ie-notes-16.png
+  var ie_notes_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAt0lEQVR42q2SOwrCQBRFzxg3oCtQrA0ILsI9mEIrl6QL0N7CJbgCAxZWgoWFMKbJkN8kFmJQAkZ9XhiY9+AezsCAMApgt2wXv5RdT6vmY+iPT4D9uOyvOgCUAAoNKvva4glwBZVIABfACAD5GZxQALApOLkAkESQRwJAbO4WMgMrNMjef0h/u6jsGuUtMmBqDtAbzbGZDVxPq1eDNAalapUPm2kwmJhW5QmH/bq2nIT6OJzR5Z+5AbhrTYfB1LaWAAAAAElFTkSuQmCC";
+
   // src/modules/space-luna/dynamics.ts
   var iconImg = (src) => {
     const img = el("img");
@@ -18942,6 +19075,9 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     window.addEventListener(spaceMaxColsChanged, sync);
     return select;
   }
+
+  // src/ui/assets/xp-icons/ie-media-16.png
+  var ie_media_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACj0lEQVR42sWTO2gTcRzHP5fc9dIr1rT2LcVCq25SaAfBwYqDXZS6KSLVxcknooMWoouTQkWqWAQzqJtEEB+4VBxErdWItNCHmtqmNrnY/u8uuUcuDwcJCOom+J2+y+/Dly+/L/xvSRXztlzunv1+P+IU9IGk+Y2EEMyt2mL+65Wr61pqh7vuxAaqqszB6enxq2/ejDyo3AUAnmRnDz2aHXqfzU8N1Ic0GjWVNepHsvnH4cRSLjL5Pjn2pSi2b9zY3Fdb2x7bv//hyQog+LZc7hsZPxCrUdK01HTRoHVQp3YyJ+IsmDIr2Ubc3K0WyXrdvbW1H9NUCYXq+ru6dhlTU/dfydeeTp+IGzZKMIumzCE8h6pAK7n8dfRcK/mq8xCKEgr2o6qNVFd7wjAS4UxmJgIMy/NJbeBr+jha9VGE+5yQLFMsRUnlWlkySpTcd2CDpjVSKkkYxvyOTGZmzLb1MIC8lLLJiw0k9DZ0u0BAWovlNWNZHkXjKeRfggeSL5HNrhKLDcZ7eo6cAgYB5OL3VUpCQkzeRdS/gLVnwNsH1hVwLMCELJTtEqapV7pLAHsBZIlyglS6A88DuxfMHlDGaMsfY1voHqr9gVTgGTkrhd9QAGBiYvR5hSSr65svBuOJ20XHAUWBmp3s7NjK5YNDNDVpxOOg61t4WXiC6+Z+e6TA5OnOaP3mTdG2YBDFsmgqOOzZcBbL0kgmwffB90uoqsri4qffADKAfqP3cPulzHz38nKk3d2E4xT4/PlnINeFdHoBIb7huqb4IwBg4VzDhYULyeFxvdgXnnkXMYzmbkVRcRyDlZUlhFjG973oX7fwq3bvvhlWVTUmSYU+37exrAyelxt2HOvixMSo+Kdz/AEJzzxOgI4ZHAAAAABJRU5ErkJggg==";
 
   // src/modules/space-luna/home.ts
   var iconImg2 = (src) => {
@@ -19702,7 +19838,7 @@ ${s} .as-info-list :is(dt,dd){${xpFont};font-weight:normal;letter-spacing:normal
 ${s} .as-info-list dt{color:var(--xp-muted);white-space:nowrap}
 ${s} .as-info-list dd{margin:0;color:var(--xp-ink);overflow-wrap:anywhere}
 ${s} .as-tools-win{position:sticky;top:calc(${headerBottomCss} + 40px)}
-${s} .as-aside-host:has(>.lh-compact:not([hidden])) .as-tools-win{top:calc(${headerBottomCss} + 72px)}
+${s} .as-aside-host:has(>.lh-compact:not([hidden])) .as-tools-win{top:calc(${headerBottomCss} + 78px)}
 ${s} .as-tools-body{display:flex;flex-direction:column;gap:6px;background:var(--xp-face)}
 ${s} .as-tools-row{display:flex;align-items:center;justify-content:space-between;gap:8px;${xpFont};color:var(--xp-ink)}
 ${s} .as-tools-label{white-space:nowrap}
@@ -22604,6 +22740,420 @@ ${message}` : ""}`;
     return sync;
   }
 
+  // src/modules/video-luna/danmaku-scrollbar.ts
+  var wheelStep = 100;
+  var nativeArrowStep = 72;
+  var holdDelayMs = 300;
+  var holdIntervalMs = 65;
+  var scrollIdleMs = 150;
+  var minThumbHeight = 30;
+  var scrollbarWidth = 17;
+  function dispatchWheel(target, deltaY) {
+    const Wheel = typeof WheelEvent === "function" ? WheelEvent : Event;
+    const event = Wheel === WheelEvent ? new WheelEvent("wheel", { deltaY, deltaMode: 0, bubbles: true, cancelable: true }) : Object.assign(new Event("wheel", { bubbles: true, cancelable: true }), { deltaY, deltaMode: 0 });
+    target.dispatchEvent(event);
+  }
+  function parseTranslateY(transform) {
+    const ty = transform.match(/translateY\(\s*([-\d.]+)px/i);
+    if (ty) return parseFloat(ty[1]) || 0;
+    const t2 = transform.match(/translate(?:3d)?\(\s*[-\d.]+(?:px)?\s*,\s*([-\d.]+)px/i);
+    return t2 ? parseFloat(t2[1]) || 0 : 0;
+  }
+  function makeArrowButton(dir, label, onStep) {
+    const btn = el("button", "vl-dm-sb-btn");
+    btn.type = "button";
+    btn.tabIndex = -1;
+    btn.dataset.dir = dir;
+    btn.setAttribute("aria-label", label);
+    let holdTimer = 0;
+    let repeatTimer = 0;
+    const stop = () => {
+      if (holdTimer) {
+        window.clearTimeout(holdTimer);
+        holdTimer = 0;
+      }
+      if (repeatTimer) {
+        window.clearInterval(repeatTimer);
+        repeatTimer = 0;
+      }
+      window.removeEventListener("pointerup", stop);
+      window.removeEventListener("pointercancel", stop);
+      window.removeEventListener("blur", stop);
+    };
+    btn.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
+      event.preventDefault();
+      event.stopPropagation();
+      onStep();
+      stop();
+      window.addEventListener("pointerup", stop);
+      window.addEventListener("pointercancel", stop);
+      window.addEventListener("blur", stop);
+      holdTimer = window.setTimeout(() => {
+        holdTimer = 0;
+        repeatTimer = window.setInterval(onStep, holdIntervalMs);
+      }, holdDelayMs);
+    });
+    return btn;
+  }
+  function createDanmakuScrollbars() {
+    const enhancedBetterScroll = /* @__PURE__ */ new WeakSet();
+    const enhancedNative = /* @__PURE__ */ new WeakSet();
+    const nativeSyncers = /* @__PURE__ */ new Set();
+    let observedBox = null;
+    let observer = null;
+    let scanFrame = 0;
+    let resizeFrame = 0;
+    let scrollIdleTimer = 0;
+    const markScrolling = (box2) => {
+      if (!box2.hasAttribute("data-vl-dm-scrolling")) box2.setAttribute("data-vl-dm-scrolling", "");
+      if (scrollIdleTimer) window.clearTimeout(scrollIdleTimer);
+      scrollIdleTimer = window.setTimeout(() => {
+        scrollIdleTimer = 0;
+        box2.removeAttribute("data-vl-dm-scrolling");
+      }, scrollIdleMs);
+    };
+    const requestRefresh = () => {
+      if (resizeFrame) return;
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = 0;
+        window.dispatchEvent(new Event("resize"));
+      });
+    };
+    const attachNative = (box2, scroller) => {
+      if (enhancedNative.has(scroller)) return;
+      const parent = scroller.parentElement;
+      if (!parent) return;
+      enhancedNative.add(scroller);
+      scroller.setAttribute("data-vl-dm-native-sb", "");
+      parent.setAttribute("data-vl-dm-sb-host", "");
+      const dmWrapHeader = scroller.classList.contains("bpx-player-dm-wrap") || !!scroller.closest(".bpx-player-dm-wrap") ? scroller.closest(".bpx-player-dm")?.querySelector(".bpx-player-dm-function") ?? null : null;
+      const rail = el("div", "vl-dm-sb");
+      rail.setAttribute("aria-hidden", "true");
+      const up = makeArrowButton("up", "\u5411\u4E0A\u6EDA\u52A8", () => {
+        markScrolling(box2);
+        scroller.scrollTop = Math.max(0, scroller.scrollTop - nativeArrowStep);
+      });
+      const track = el("div", "vl-dm-sb-track");
+      const thumb2 = track.appendChild(el("div", "vl-dm-sb-thumb"));
+      const down = makeArrowButton("down", "\u5411\u4E0B\u6EDA\u52A8", () => {
+        markScrolling(box2);
+        scroller.scrollTop = Math.min(scroller.scrollHeight - scroller.clientHeight, scroller.scrollTop + nativeArrowStep);
+      });
+      rail.append(up, track, down);
+      parent.append(rail);
+      let thumbH = minThumbHeight;
+      let thumbTop = 0;
+      let trackH = 0;
+      let syncFrame = 0;
+      let lastActive = null;
+      const sync = () => {
+        syncFrame = 0;
+        if (!scroller.isConnected || !rail.isConnected) {
+          nativeSyncers.delete(sync);
+          return;
+        }
+        if (scroller.querySelector(":scope > .bscroll-vertical-scrollbar")) {
+          rail.hidden = true;
+          scroller.removeAttribute("data-vl-dm-native-sb");
+          scroller.removeAttribute("data-vl-dm-native-sb-active");
+          return;
+        }
+        const clientH = scroller.clientHeight;
+        const scrollH = scroller.scrollHeight;
+        const maxScroll = scrollH - clientH;
+        const active2 = clientH > 0 && maxScroll > 1;
+        if (active2 !== lastActive) {
+          lastActive = active2;
+          rail.hidden = !active2;
+          scroller.toggleAttribute("data-vl-dm-native-sb-active", active2);
+          dmWrapHeader?.toggleAttribute("data-vl-dm-sb-pad", active2);
+        }
+        if (!active2) return;
+        let topPx;
+        let leftPx;
+        if (scroller.offsetParent === parent) {
+          topPx = scroller.offsetTop + scroller.clientTop;
+          leftPx = scroller.offsetLeft + scroller.clientLeft + scroller.clientWidth - scrollbarWidth;
+        } else {
+          const z = zoomOf(parent);
+          const sRect = scroller.getBoundingClientRect();
+          const pRect = parent.getBoundingClientRect();
+          topPx = Math.round((sRect.top - pRect.top) / z) + scroller.clientTop;
+          leftPx = Math.round((sRect.left - pRect.left) / z) + scroller.clientLeft + scroller.clientWidth - scrollbarWidth;
+        }
+        const topStr = `${topPx}px`, leftStr = `${leftPx}px`, heightStr = `${clientH}px`;
+        if (rail.style.top !== topStr) rail.style.top = topStr;
+        if (rail.style.left !== leftStr) rail.style.left = leftStr;
+        if (rail.style.height !== heightStr) rail.style.height = heightStr;
+        trackH = Math.max(minThumbHeight, clientH - scrollbarWidth * 2);
+        thumbH = Math.min(trackH, Math.max(minThumbHeight, Math.round(trackH * (clientH / scrollH))));
+        const maxTop = Math.max(0, trackH - thumbH);
+        const ratio = maxScroll > 0 ? Math.max(0, Math.min(1, scroller.scrollTop / maxScroll)) : 0;
+        thumbTop = Math.round(maxTop * ratio);
+        const thumbHStr = `${thumbH}px`;
+        const transformStr = `translateY(${thumbTop}px)`;
+        if (thumb2.style.height !== thumbHStr) thumb2.style.height = thumbHStr;
+        if (thumb2.style.transform !== transformStr) thumb2.style.transform = transformStr;
+      };
+      const scheduleSync = () => {
+        if (!syncFrame) syncFrame = requestAnimationFrame(sync);
+      };
+      nativeSyncers.add(sync);
+      scroller.addEventListener("scroll", () => {
+        markScrolling(box2);
+        scheduleSync();
+      }, { passive: true });
+      rail.addEventListener("wheel", (event) => {
+        event.preventDefault();
+        markScrolling(box2);
+        scroller.scrollTop += event.deltaY;
+      }, { passive: false });
+      track.addEventListener("pointerdown", (event) => {
+        if (event.button !== 0 || event.target !== track) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const rect = track.getBoundingClientRect();
+        const z = zoomOf(track);
+        const y = (event.clientY - rect.top) / z;
+        const page = Math.max(48, Math.round(scroller.clientHeight * 0.85));
+        markScrolling(box2);
+        scroller.scrollTop += y < thumbTop ? -page : page;
+        scheduleSync();
+      });
+      thumb2.addEventListener("pointerdown", (event) => {
+        if (event.button !== 0) return;
+        event.preventDefault();
+        event.stopPropagation();
+        sync();
+        const startY = event.clientY;
+        const startTop = thumbTop;
+        const z = zoomOf(track);
+        const maxTop = Math.max(1, trackH - thumbH);
+        let latestY = startY;
+        let dragFrame = 0;
+        thumb2.setAttribute("data-drag", "");
+        box2.setAttribute("data-vl-dm-dragging", "");
+        const applyDrag = () => {
+          dragFrame = 0;
+          const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+          const nextTop = Math.max(0, Math.min(maxTop, startTop + (latestY - startY) / z));
+          thumbTop = Math.round(nextTop);
+          thumb2.style.transform = `translateY(${thumbTop}px)`;
+          scroller.scrollTop = Math.round(nextTop / maxTop * maxScroll);
+        };
+        const onMove = (moveEvent) => {
+          latestY = moveEvent.clientY;
+          if (!dragFrame) dragFrame = requestAnimationFrame(applyDrag);
+        };
+        const onEnd = () => {
+          if (dragFrame) {
+            cancelAnimationFrame(dragFrame);
+            applyDrag();
+          }
+          thumb2.removeAttribute("data-drag");
+          box2.removeAttribute("data-vl-dm-dragging");
+          window.removeEventListener("pointermove", onMove);
+          window.removeEventListener("pointerup", onEnd);
+          window.removeEventListener("pointercancel", onEnd);
+          window.removeEventListener("blur", onEnd);
+          scheduleSync();
+        };
+        window.addEventListener("pointermove", onMove, { passive: true });
+        window.addEventListener("pointerup", onEnd);
+        window.addEventListener("pointercancel", onEnd);
+        window.addEventListener("blur", onEnd);
+      });
+      if (typeof ResizeObserver === "function") {
+        const ro = new ResizeObserver(scheduleSync);
+        ro.observe(scroller);
+        if (scroller.firstElementChild) ro.observe(scroller.firstElementChild);
+      }
+      sync();
+    };
+    const attachBetterScroll = (box2, host, track) => {
+      if (enhancedBetterScroll.has(host)) return;
+      enhancedBetterScroll.add(host);
+      host.setAttribute("data-vl-dm-sb", "");
+      const dmWrapHeader = host.closest(".bpx-player-dm-wrap") ? host.closest(".bpx-player-dm")?.querySelector(".bpx-player-dm-function") ?? null : null;
+      let lastHidden = null;
+      const syncVisibility = () => {
+        const hidden = track.style.display === "none";
+        if (hidden === lastHidden) return;
+        lastHidden = hidden;
+        host.toggleAttribute("data-vl-dm-sb-hidden", hidden);
+        dmWrapHeader?.toggleAttribute("data-vl-dm-sb-pad", !hidden);
+      };
+      syncVisibility();
+      let thumbFrame = 0;
+      const syncThumb = () => {
+        thumbFrame = 0;
+        const indicator = track.querySelector(".bscroll-indicator");
+        if (!indicator) return;
+        const rawH = parseFloat(indicator.style.height) || 0;
+        if (rawH > 0 && rawH < minThumbHeight) {
+          const trackH = track.clientHeight || 0;
+          const maxY = Math.max(1, trackH - rawH);
+          const y = parseTranslateY(indicator.style.transform);
+          const progress2 = Math.max(0, Math.min(1, y / maxY));
+          const offset = -Math.round((minThumbHeight - rawH) * progress2);
+          const next = offset ? `${offset}px` : "";
+          if (indicator.style.marginTop !== next) indicator.style.marginTop = next;
+        } else if (indicator.style.marginTop) {
+          indicator.style.marginTop = "";
+        }
+      };
+      const scheduleThumb = () => {
+        if (!thumbFrame) thumbFrame = requestAnimationFrame(syncThumb);
+      };
+      const trackObserver = new MutationObserver((records2) => {
+        for (const record of records2) {
+          if (record.target === track) syncVisibility();
+          scheduleThumb();
+        }
+      });
+      trackObserver.observe(track, { attributes: true, attributeFilter: ["style"], subtree: true, childList: true });
+      syncThumb();
+      host.append(
+        makeArrowButton("up", "\u5411\u4E0A\u6EDA\u52A8", () => {
+          markScrolling(box2);
+          dispatchWheel(host, -wheelStep);
+        }),
+        makeArrowButton("down", "\u5411\u4E0B\u6EDA\u52A8", () => {
+          markScrolling(box2);
+          dispatchWheel(host, wheelStep);
+        })
+      );
+      track.addEventListener("pointerdown", (event) => {
+        if (event.button !== 0) return;
+        const indicator = event.target?.closest(".bscroll-indicator");
+        if (!indicator) return;
+        indicator.setAttribute("data-drag", "");
+        box2.setAttribute("data-vl-dm-dragging", "");
+        const startY = event.clientY;
+        let lastY = startY;
+        const startTransform = indicator.style.transform;
+        let nativeHandled = false;
+        let fallbackActive = false;
+        let moveFrame = 0;
+        let replaying = false;
+        let pendingMove = null;
+        const dispatchPending = () => {
+          if (!pendingMove) return;
+          const next = pendingMove;
+          pendingMove = null;
+          replaying = true;
+          try {
+            window.dispatchEvent(new MouseEvent("mousemove", { bubbles: true, cancelable: true, ...next }));
+          } finally {
+            replaying = false;
+          }
+        };
+        const throttleMouseMove = (moveEvent) => {
+          if (replaying) return;
+          if (!moveFrame) {
+            moveFrame = requestAnimationFrame(() => {
+              moveFrame = 0;
+              dispatchPending();
+            });
+            return;
+          }
+          pendingMove = {
+            clientX: moveEvent.clientX,
+            clientY: moveEvent.clientY,
+            screenX: moveEvent.screenX,
+            screenY: moveEvent.screenY,
+            buttons: moveEvent.buttons
+          };
+          moveEvent.stopImmediatePropagation();
+        };
+        const onPointerMove = (moveEvent) => {
+          if (!nativeHandled && !fallbackActive) {
+            if (indicator.style.transform !== startTransform) {
+              nativeHandled = true;
+            } else if (Math.abs(moveEvent.clientY - startY) >= 4) {
+              fallbackActive = true;
+            }
+          }
+          if (fallbackActive) {
+            const dy = moveEvent.clientY - lastY;
+            if (Math.abs(dy) >= 2) {
+              const trackH = track.clientHeight || 200;
+              const indH = Math.max(16, parseFloat(indicator.style.height) || indicator.clientHeight || 40);
+              const ratio = Math.max(1, trackH / indH);
+              dispatchWheel(host, Math.round(dy * ratio * 2));
+              lastY = moveEvent.clientY;
+            }
+          }
+        };
+        const onEnd = () => {
+          if (moveFrame) {
+            cancelAnimationFrame(moveFrame);
+            moveFrame = 0;
+          }
+          dispatchPending();
+          indicator.removeAttribute("data-drag");
+          box2.removeAttribute("data-vl-dm-dragging");
+          window.removeEventListener("mousemove", throttleMouseMove, true);
+          window.removeEventListener("mouseup", onEnd, true);
+          window.removeEventListener("pointermove", onPointerMove);
+          window.removeEventListener("pointerup", onEnd);
+          window.removeEventListener("pointercancel", onEnd);
+          window.removeEventListener("blur", onEnd);
+          syncThumb();
+        };
+        window.addEventListener("mousemove", throttleMouseMove, true);
+        window.addEventListener("mouseup", onEnd, true);
+        window.addEventListener("pointermove", onPointerMove, { passive: true });
+        window.addEventListener("pointerup", onEnd);
+        window.addEventListener("pointercancel", onEnd);
+        window.addEventListener("blur", onEnd);
+      });
+      requestRefresh();
+    };
+    const scanNow = () => {
+      scanFrame = 0;
+      const box2 = document.getElementById("danmukuBox");
+      if (!box2) return;
+      if (box2 !== observedBox) {
+        observer?.disconnect();
+        observedBox = box2;
+        box2.addEventListener("scroll", () => markScrolling(box2), { capture: true, passive: true });
+        box2.addEventListener("wheel", () => markScrolling(box2), { capture: true, passive: true });
+        observer = new MutationObserver((records2) => {
+          for (const record of records2) {
+            if (!record.addedNodes.length) continue;
+            const target = record.target;
+            if (target?.closest?.(".bui-long-list-list,.bpx-player-block-list-wrap,.vl-dm-sb")) continue;
+            if (!scanFrame) scanFrame = requestAnimationFrame(scanNow);
+            return;
+          }
+        });
+        observer.observe(box2, { childList: true, subtree: true });
+      }
+      for (const track of box2.querySelectorAll(".bscroll-vertical-scrollbar")) {
+        const host = track.parentElement;
+        if (host) attachBetterScroll(box2, host, track);
+      }
+      const wraplist = box2.querySelector(".bpx-player-wraplist");
+      if (wraplist) {
+        for (const candidate of wraplist.querySelectorAll(".bpx-player-dm-wrap,.bui-long-list,.bpx-player-block-list-wrap,.bpx-player-block-list,.bpx-player-adv-danmaku-panel,div,ul")) {
+          if (enhancedNative.has(candidate) || enhancedBetterScroll.has(candidate)) continue;
+          if (candidate.classList.contains("bui-long-list-list") || candidate.closest(".dm-info-row,.bpx-player-block-list-item,.vl-dm-sb")) continue;
+          if (candidate.querySelector(":scope > .bscroll-vertical-scrollbar")) continue;
+          if (candidate.clientHeight > 0 && candidate.scrollHeight > candidate.clientHeight + 1) {
+            const overflowY = getComputedStyle(candidate).overflowY;
+            if (overflowY === "auto" || overflowY === "scroll" || overflowY === "overlay") {
+              attachNative(box2, candidate);
+            }
+          }
+        }
+      }
+      for (const sync of nativeSyncers) sync();
+    };
+    return { scan: scanNow };
+  }
+
   // src/modules/video-luna/episode-window.ts
   var rangeSize = 100;
   var blockSize = 1e3;
@@ -23542,6 +24092,101 @@ ${message}` : ""}`;
     };
   }
 
+  // src/modules/video-luna/mini-frame.ts
+  function createMiniFrame() {
+    const caption2 = el("header", "xp-caption vl-mini-caption");
+    caption2.setAttribute("data-bili-blocker-ui", "true");
+    caption2.setAttribute("aria-label", "\u5C0F\u7A97\u64AD\u653E\u5668");
+    const icon2 = caption2.appendChild(el("span", "vl-caption-icon"));
+    icon2.append(shellIcon(224, 16));
+    const title = caption2.appendChild(el("h2", "xp-caption-title", "\u5C0F\u7A97\u64AD\u653E"));
+    const close2 = caption2.appendChild(el("button", "xp-caption-button"));
+    close2.type = "button";
+    close2.dataset.kind = "close";
+    close2.title = "\u5173\u95ED\u5C0F\u7A97";
+    close2.setAttribute("aria-label", "\u5173\u95ED\u5C0F\u7A97");
+    observeCrispText(caption2);
+    let host = null;
+    let movedMini = false;
+    const clearDragStyles = (target) => {
+      if (!target || !movedMini) return;
+      movedMini = false;
+      target.style.removeProperty("left");
+      target.style.removeProperty("top");
+      target.style.removeProperty("right");
+      target.style.removeProperty("bottom");
+      target.style.removeProperty("transform");
+    };
+    close2.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      sound("close");
+      const nativeClose = host?.querySelector(".bpx-player-mini-close") ?? document.querySelector(".bpx-player-mini-close");
+      if (nativeClose) {
+        nativeClose.click();
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
+    caption2.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || event.target.closest(".xp-caption-button")) return;
+      const target = host;
+      if (!target || target.getAttribute("data-screen") !== "mini") return;
+      event.preventDefault();
+      event.stopPropagation();
+      const rect = target.getBoundingClientRect();
+      const capRect = caption2.getBoundingClientRect();
+      const dx = event.clientX - rect.left;
+      const dy = event.clientY - rect.top;
+      const capH = capRect.height || 29 * zoomOf(caption2);
+      caption2.setPointerCapture?.(event.pointerId);
+      const move = (next) => {
+        const z = zoomOf(target);
+        const minLeft = Math.round(40 * z - rect.width);
+        const maxLeft = Math.round(innerWidth - 40 * z);
+        const minTop = Math.round(capH);
+        const maxTop = Math.round(innerHeight - 30 * z);
+        const left = Math.round(Math.min(Math.max(next.clientX - dx, minLeft), maxLeft));
+        const top = Math.round(Math.min(Math.max(next.clientY - dy, minTop), maxTop));
+        movedMini = true;
+        target.style.right = "auto";
+        target.style.bottom = "auto";
+        target.style.transform = "none";
+        placeFixed(target, { left, top });
+      };
+      const done = () => {
+        caption2.removeEventListener("pointermove", move);
+        caption2.removeEventListener("pointerup", done);
+        caption2.removeEventListener("pointercancel", done);
+      };
+      caption2.addEventListener("pointermove", move);
+      caption2.addEventListener("pointerup", done);
+      caption2.addEventListener("pointercancel", done);
+    });
+    return {
+      element: caption2,
+      place() {
+        const container = document.querySelector("#bilibili-player .bpx-player-container") ?? document.querySelector(".bpx-player-container");
+        if (!container) return;
+        if (host !== container) {
+          clearDragStyles(host);
+          host = container;
+        }
+        if (caption2.parentElement !== container) container.prepend(caption2);
+      },
+      render(text4) {
+        const next = text4.trim() || "\u5C0F\u7A97\u64AD\u653E";
+        if (title.textContent !== next) {
+          title.textContent = next;
+          caption2.title = next;
+        }
+      },
+      setScreen(mode2) {
+        if (mode2 !== "mini") clearDragStyles(host);
+      }
+    };
+  }
+
   // src/modules/video-luna/ending-clicks.ts
   var endingClickDelay = 200;
   function startEndingClicks() {
@@ -24307,14 +24952,16 @@ ${message}` : ""}`;
     }
     const layout2 = startLayout(bangumi ? "bangumi" : list ? "list" : "video");
     layout2.player(() => player.element.querySelector(".vl-player-frame"), player.grip);
-    layout2.line(info.element, "right");
-    for (const pane of [up, rec]) layout2.line(pane.element, "left");
+    layout2.line(info.element, () => videoInfoRightEnabled() ? "left" : "right");
+    layout2.line(up.element, "left");
+    layout2.line(rec.element, () => videoInfoRightEnabled() ? "right" : "left");
     for (const [name, pane] of [[bangumi ? "episodes" : "pod", pod], ["list", list]]) {
       if (pane) layout2.list(name, pane.element, () => pane.element.querySelector(".vl-lv-rows"));
     }
     layout2.danmaku();
     let bar = createMediaBar(context), fullBar = createMediaBar(context, { status: false });
     let fullscreen = createFullScreenBars(fullBar);
+    const miniFrame = createMiniFrame();
     observeCrispText(bar.element);
     observeCrispText(fullscreen.element);
     startEndingClicks();
@@ -24323,6 +24970,97 @@ ${message}` : ""}`;
       return (full2 ? fullBar : bar)?.seek ?? null;
     });
     player.status.insertBefore(pbp.toggle, player.status.querySelector(".vl-status-tools"));
+    const swapPane = el("span", "xp-status-pane vl-status-swap");
+    const swapButton = swapPane.appendChild(tool("\u8BC4\u8BBA\u53F3\u680F", void 0, "\u5C06\u300C\u7B80\u4ECB\u4E0E\u8BC4\u8BBA\u300D\u79FB\u5230\u53F3\u680F\u5E76\u4E0E\u300C\u76F8\u5173\u63A8\u8350\u300D\u5BF9\u8C03"));
+    observeCrispText(swapPane);
+    const dmScrollbars = createDanmakuScrollbars();
+    const infoBottomMargin = 4;
+    let fitInfoFrame = 0;
+    const rightColumnTopInset = () => {
+      const compact = compactBar();
+      const compactHeight = compact && !compact.hidden && compact.isConnected ? compact.offsetHeight : 0;
+      const header = headerHeight();
+      return header > 0 ? header + 4 : compactHeight > 0 ? compactHeight + 4 : 4;
+    };
+    const danmakuChrome = () => {
+      const page = document.querySelector("#danmukuBox .bpx-player-wraplist");
+      const list2 = document.querySelector("#danmukuBox .bpx-player-dm-wrap");
+      const chrome = parseFloat(page?.style.height ?? "") - parseFloat(list2?.style.height ?? "");
+      return chrome > 0 && chrome < 200 ? chrome : 71;
+    };
+    const fitDanmaku = () => {
+      const box2 = document.getElementById("danmukuBox");
+      const wrap = box2?.querySelector(".bui-collapse-wrap");
+      const page = box2?.querySelector(".bpx-player-wraplist");
+      if (!box2 || !wrap || !page || wrap.classList.contains("bui-collapse-wrap-folded")) {
+        box2?.style.removeProperty("--vl-dm-cap-h");
+        box2?.style.removeProperty("--vl-dm-cap-list");
+        return;
+      }
+      const pageRect = page.getBoundingClientRect();
+      if (!pageRect.width && !pageRect.height) return;
+      const z = zoomOf(page);
+      const wrapRect = wrap.getBoundingClientRect();
+      const body2 = wrap.querySelector(".bui-collapse-body");
+      const chromeAbove = wrapRect.height ? Math.max(0, (pageRect.top - wrapRect.top) / z) : 54;
+      const borderBottom = parseFloat(getComputedStyle(wrap).borderBottomWidth) || 4;
+      const bodyPadBottom = body2 ? parseFloat(getComputedStyle(body2).paddingBottom) || 6 : 6;
+      const wraplistBorder = 2;
+      const effectiveTop = Math.max(rightColumnTopInset() + chromeAbove, pageRect.top / z);
+      const chrome = danmakuChrome();
+      const capH = Math.max(chrome + 72, Math.floor(window.innerHeight / z - effectiveTop - wraplistBorder - bodyPadBottom - borderBottom - infoBottomMargin));
+      const capList = Math.max(72, capH - chrome);
+      const hPx = `${capH}px`, lPx = `${capList}px`;
+      if (box2.style.getPropertyValue("--vl-dm-cap-h") !== hPx) box2.style.setProperty("--vl-dm-cap-h", hPx);
+      if (box2.style.getPropertyValue("--vl-dm-cap-list") !== lPx) box2.style.setProperty("--vl-dm-cap-list", lPx);
+      dmScrollbars.scan();
+    };
+    const fitRightInfo = () => {
+      fitInfoFrame = 0;
+      fitDanmaku();
+      const scroll = info.element.querySelector(".vl-info");
+      if (!scroll) return;
+      if (!videoInfoRightEnabled() || !scroll.isConnected) {
+        scroll.style.removeProperty("height");
+        scroll.style.removeProperty("max-height");
+        return;
+      }
+      const rect = scroll.getBoundingClientRect();
+      if (!rect.width && !rect.height) return;
+      const z = zoomOf(scroll);
+      const winRect = info.element.getBoundingClientRect();
+      const chromeAbove = winRect.height ? Math.max(0, (rect.top - winRect.top) / z) : 0;
+      const borderBottom = parseFloat(getComputedStyle(info.element).borderBottomWidth) || 4;
+      const effectiveTop = Math.max(rightColumnTopInset() + chromeAbove, rect.top / z);
+      const target = Math.max(180, Math.floor(window.innerHeight / z - effectiveTop - borderBottom - infoBottomMargin));
+      const px2 = `${target}px`;
+      scroll.style.removeProperty("height");
+      if (scroll.style.maxHeight !== px2) scroll.style.maxHeight = px2;
+    };
+    const scheduleFitRightInfo = () => {
+      if (!fitInfoFrame) fitInfoFrame = requestAnimationFrame(fitRightInfo);
+    };
+    window.addEventListener("scroll", scheduleFitRightInfo, { passive: true });
+    window.addEventListener("resize", scheduleFitRightInfo);
+    window.addEventListener(zoomChanged, scheduleFitRightInfo);
+    const rightInfoSizes = typeof ResizeObserver === "function" ? new ResizeObserver(scheduleFitRightInfo) : null;
+    let watchedRightCol = null;
+    const applySwap = () => {
+      const swapped = videoInfoRightEnabled();
+      document.documentElement.toggleAttribute("data-vl-info-right", swapped);
+      swapButton.setAttribute("aria-pressed", String(swapped));
+      swapButton.title = swapped ? "\u5C06\u300C\u7B80\u4ECB\u4E0E\u8BC4\u8BBA\u300D\u79FB\u56DE\u5DE6\u680F" : "\u5C06\u300C\u7B80\u4ECB\u4E0E\u8BC4\u8BBA\u300D\u79FB\u5230\u53F3\u680F\u5E76\u4E0E\u300C\u76F8\u5173\u63A8\u8350\u300D\u5BF9\u8C03";
+      if (latest) place3();
+      layout2.measure();
+      fitRightInfo();
+    };
+    swapButton.addEventListener("click", () => {
+      sound("click");
+      setVideoInfoRightEnabled(!videoInfoRightEnabled());
+    });
+    window.addEventListener(infoRightChanged, applySwap);
+    player.status.insertBefore(swapPane, player.status.querySelector(".vl-status-tools"));
+    applySwap();
     const barFailed = (error) => {
       bar?.element.remove();
       fullscreen?.element.remove();
@@ -24359,9 +25097,11 @@ ${message}` : ""}`;
       cover.render(latest);
       pbp.render(latest);
       try {
+        const titleText = player.element.querySelector(".xp-caption-title")?.textContent ?? "";
         bar?.render(latest);
         fullBar?.render(latest);
-        fullscreen?.render(player.element.querySelector(".xp-caption-title")?.textContent ?? "");
+        fullscreen?.render(titleText);
+        miniFrame.render(titleText);
       } catch (error) {
         barFailed(error);
       }
@@ -24384,7 +25124,11 @@ ${message}` : ""}`;
       const area = wrap.querySelector(".bpx-player-video-area");
       if (fullscreen && area && fullscreen.element.parentElement !== area) area.append(fullscreen.element);
       if (area && pbp.element.parentElement !== area) area.append(pbp.element);
-      if (!failed.has("info") && infoAfter && info.element.previousElementSibling !== infoAfter) infoAfter.after(info.element);
+      miniFrame.place();
+      const swapped = videoInfoRightEnabled();
+      const leftArea = swapped ? "rec" : "info";
+      const leftPane = swapped ? rec : info;
+      if (!failed.has(leftArea) && infoAfter && leftPane.element.previousElementSibling !== infoAfter) infoAfter.after(leftPane.element);
       const above = inner.querySelector(":scope > .video-pod-above-modules") ?? inner.querySelector(":scope > #danmukuBox");
       if (!failed.has("up")) {
         if (above) {
@@ -24392,12 +25136,20 @@ ${message}` : ""}`;
         } else if (up.element.parentElement !== inner) inner.prepend(up.element);
       }
       let after = above ?? (failed.has("up") ? null : up.element);
-      for (const [area2, pane] of [["pod", pod], ["list", list], ["rec", rec]]) {
+      const rightTail = swapped ? ["info", info] : ["rec", rec];
+      for (const [area2, pane] of [["pod", pod], ["list", list], rightTail]) {
         if (!pane || failed.has(area2)) continue;
         if (after?.isConnected && pane.element.previousElementSibling !== after) after.after(pane.element);
         after = pane.element;
       }
       dockCompactBar(inner);
+      if (rightInfoSizes && inner !== watchedRightCol) {
+        if (watchedRightCol) rightInfoSizes.unobserve(watchedRightCol);
+        watchedRightCol = inner;
+        rightInfoSizes.observe(inner);
+        rightInfoSizes.observe(info.element);
+      }
+      scheduleFitRightInfo();
       placed = true;
       return true;
     }
@@ -24421,6 +25173,7 @@ ${message}` : ""}`;
       trackPlayer();
       dmFold();
       dmCount();
+      dmScrollbars.scan();
       if (latest) place3();
     }, 1e3);
     watchColumns();
@@ -24467,6 +25220,8 @@ ${message}` : ""}`;
       const mode2 = document.querySelector(".bpx-player-container")?.getAttribute("data-screen") || "normal";
       if (root.getAttribute("data-atelier-screen") !== mode2) root.setAttribute("data-atelier-screen", mode2);
       fullscreen?.setScreen(mode2);
+      miniFrame.place();
+      miniFrame.setScreen(mode2);
       player.setWide(mode2 === "wide");
       measure();
       layout2.measure();
@@ -24517,11 +25272,28 @@ ${message}` : ""}`;
             writeFolded("danmaku", now);
             click?.finish(now ? "minimize" : "restore");
             click = null;
+            fitRightInfo();
+            const body2 = wrap.querySelector(".bui-collapse-body");
+            if (body2) queueMicrotask(() => {
+              const ev = typeof TransitionEvent === "function" ? new TransitionEvent("transitionend", { propertyName: "height", bubbles: true }) : new Event("transitionend", { bubbles: true });
+              body2.dispatchEvent(ev);
+            });
+            if (!now) {
+              dmCount();
+              dmScrollbars.scan();
+              requestAnimationFrame(() => {
+                fitRightInfo();
+                dmCount();
+                dmScrollbars.scan();
+                window.dispatchEvent(new Event("resize"));
+              });
+            }
           }
         }).observe(wrap, { attributes: true, attributeFilter: ["class"] });
       }
     }
     dmFold();
+    dmScrollbars.scan();
     function dmCount() {
       const list2 = document.querySelector("#danmukuBox .bpx-player-dm .bui-long-list-list");
       const footer = document.querySelector("#danmukuBox .bpx-player-dm-btn-footer");
@@ -24802,6 +25574,9 @@ ${page.css ?? ""}`;
     window.addEventListener("atelier-sync-applied", repaintAll);
     scan();
   }
+
+  // src/ui/assets/xp-icons/ie-history-16.png
+  var ie_history_16_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACtElEQVR42q2TW2gTCRiFv8mMSTtTx0mr46WNnYLQYtk6RHfdIgrig0i7iggi+lKLKL55eelLUakv4oOL6ELqZfGKRCRRkC3u0ktcswhV25dIxV4UbWJtbLrTRjuTTnxYKl765p7Hw38O/zn8P3wnhNnIUChk6Lo++DXf19fnb2pqynzOiV8PRSKRvKIoBwLLA1i5KYrnV4DzHr/fj+u6O0zT7Oro6EjNukFbW9vvvW5vw9XEBSaltzgT0zjZQtZV7afe2IbndQLnQzYzMDCwvqWlpQdAmhGHw+GGC4PnG2LTf7CwtIjKzCq2/7QTo8SgP5shnRnGXx7ETsQ0VVUjQMUXEeQf5cif3NF+riljsHeM7kMJqgImcomBVynl2tHjZCfzBMwg0+lhrbq6+kU8Hu/xzJT2l9Vm1JplPPk7yem6S4wCb4ARy+Lkvn0U6ZXUNexl2YoggiSjaQu2fIpg27bxeReyrGEB/3R28uTePVKvkvwWCvH4aZK68YckhDy6XqEBCKXNC/MzwvqtS8m7c7h7u59li2qolTby6n4PvoCJPHcuAMdX61x/msInl3Y2Nm5eL62tWEdWTzBf91KkKKiqyi9bC8i9XEP9xsOMbvrPPJeDJYWQLQF1PMZw/zMAPDcabwryyHJGR2wURUEUvTzuEtlWe4TMGIgiODlwc/BDMQyl03inC0ml+m8DeABuNN4U2tufRx1H4PLFRxzZHkZwYcqGySxoEmwogwkBetsf4LpkLOtd9JMBwMTE1O5zZx4M7Zq3h7GXSdQCWFmYYfPl3Zg6JJ0s0VtRyotr6O6+c6y1tXXom0tsbm42VVWN+Hw+A3keRYsXgwckV0K0RJSCErq6rvx66tSJg7P+QiwWSwWDwUu2bU9JedHwOpJW4PiYHP0XazwdjcfD+8+ePR3i/8RHHNYIneXTQyAAAAAASUVORK5CYII=";
 
   // src/modules/watch-history/model.ts
   var historyTypes = [["all", "\u5168\u90E8"], ["archive", "\u89C6\u9891"], ["live", "\u76F4\u64AD"], ["article", "\u4E13\u680F"]];
