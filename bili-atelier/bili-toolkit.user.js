@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.11.5
+// @version      0.12.0
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -4501,7 +4501,7 @@ ${unzoomedScope}{zoom:${back}}`;
       nodes.forEach(wrap);
       resnap();
     };
-    const schedule2 = () => {
+    const schedule = () => {
       if (!queued && !disposed) {
         queued = true;
         queueMicrotask(scan);
@@ -4513,7 +4513,7 @@ ${unzoomedScope}{zoom:${back}}`;
       return !selector || !!element2.closest(selector) || node4 instanceof Element && !!node4.querySelector(selector);
     };
     const observer = new MutationObserver((records2) => {
-      if (records2.some((record) => record.type === "characterData" ? relevant(record.target) : [...record.addedNodes, ...record.removedNodes].some((node4) => node4.nodeType === Node.TEXT_NODE ? relevant(record.target) : relevant(node4) || relevant(record.target)))) schedule2();
+      if (records2.some((record) => record.type === "characterData" ? relevant(record.target) : [...record.addedNodes, ...record.removedNodes].some((node4) => node4.nodeType === Node.TEXT_NODE ? relevant(record.target) : relevant(node4) || relevant(record.target)))) schedule();
     });
     observer.observe(root, { childList: true, subtree: true, characterData: true });
     watchAncestors();
@@ -6190,10 +6190,10 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
     };
     const done = () => {
       target.removeEventListener("click", swallow, true);
-      window.clearTimeout(timer2);
+      window.clearTimeout(timer);
     };
     target.addEventListener("click", swallow, true);
-    const timer2 = window.setTimeout(done, 600);
+    const timer = window.setTimeout(done, 600);
   }
   function openMenu(items, at) {
     closeMenu();
@@ -7863,16 +7863,16 @@ html[data-atelier-show-blocked] .atelier-rule-toggle{display:none!important}
   function twoClicks(button6, act, paint2 = (confirming) => {
     button6.textContent = confirming ? "\u786E\u8BA4\uFF1F" : "\u5C4F\u853D";
   }) {
-    let timer2;
+    let timer;
     button6.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
-      if (timer2 !== void 0) window.clearTimeout(timer2);
+      if (timer !== void 0) window.clearTimeout(timer);
       if (button6.dataset.confirmBlock !== "true") {
         button6.dataset.confirmBlock = "true";
         paint2(true);
         sound("select");
-        timer2 = window.setTimeout(() => {
+        timer = window.setTimeout(() => {
           if (button6.dataset.confirmBlock === "true") {
             button6.dataset.confirmBlock = "";
             paint2(false);
@@ -8826,12 +8826,12 @@ ${foldCss}
     }, true);
   }
   function debounce(callback, waitMs) {
-    let timer2;
+    let timer;
     return () => {
-      if (timer2 !== void 0) {
-        window.clearTimeout(timer2);
+      if (timer !== void 0) {
+        window.clearTimeout(timer);
       }
-      timer2 = window.setTimeout(callback, waitMs);
+      timer = window.setTimeout(callback, waitMs);
     };
   }
   function observeElementShadowRoot(el3, observer, observed) {
@@ -9326,6 +9326,7 @@ ${foldCss}
 
   // src/modules/local-following/store.ts
   var prefix = "AtelierLocalFollow_";
+  var outboxKey = `${prefix}outbox`;
   var localFollowChangedEvent = "atelier-local-following-changed";
   var listeners = /* @__PURE__ */ new Set();
   var uuid = () => crypto.randomUUID();
@@ -9541,6 +9542,109 @@ ${foldCss}
   }
   var readLocalFollowPreferences = () => GM_getValue(prefix + "preferences", null);
   var writeLocalFollowPreferences = (value2) => GM_setValue(prefix + "preferences", value2);
+  function restoreLocalFollowSnapshot(target) {
+    const known2 = localFollowKnown();
+    const current4 = materializeLocalFollow(known2);
+    const heads = localFollowFrontier(known2);
+    const operations = [];
+    const pushOp = (key6, value2) => {
+      const operation = { id: uuid(), key: key6, value: value2, parents: (heads.get(key6) ?? []).map((h) => h.id).sort() };
+      operations.push(operation);
+      heads.set(key6, [operation]);
+      return operation;
+    };
+    const currentGroups = new Map(current4.groups.map((g) => [g.id, g]));
+    const targetGroupIds = [];
+    const targetGroupSet = /* @__PURE__ */ new Set();
+    for (const g of target.groups) {
+      const name = String(g.name ?? "").trim();
+      if (!name || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(g.id) || targetGroupSet.has(g.id)) continue;
+      targetGroupSet.add(g.id);
+      targetGroupIds.push(g.id);
+      const existing = currentGroups.get(g.id);
+      if (!existing || existing.name !== name) pushOp(`group:${g.id}`, name);
+      if (typeof g.icon === "number" && Number.isInteger(g.icon) && g.icon > 0 && g.icon <= 65535 && existing?.icon !== g.icon) {
+        pushOp(`group-icon:${g.id}`, g.icon);
+      }
+    }
+    for (const oldGroup of current4.groups) {
+      if (!targetGroupSet.has(oldGroup.id)) pushOp(`group:${oldGroup.id}`, null);
+    }
+    const currentOrder = current4.groups.map((g) => g.id).filter((id) => targetGroupSet.has(id));
+    if (targetGroupIds.length !== currentOrder.length || targetGroupIds.some((id, idx) => currentOrder[idx] !== id)) {
+      if (targetGroupIds.length) pushOp("group-order", targetGroupIds);
+    }
+    const currentAccounts = new Map(current4.accounts.map((a) => [a.uid, a]));
+    const targetAccountSet = /* @__PURE__ */ new Set();
+    for (const a of target.accounts) {
+      const uid = normalizeLocalUid(a.uid);
+      if (!uid || targetAccountSet.has(uid)) continue;
+      targetAccountSet.add(uid);
+      const existing = currentAccounts.get(uid);
+      const desiredGroups = new Set((a.groupIds ?? []).filter((id) => targetGroupSet.has(id)));
+      if (!existing) {
+        const addedAt = Number.isSafeInteger(a.addedAt) && a.addedAt >= 0 ? a.addedAt : Date.now();
+        const followOp = pushOp(`follow:${uid}`, { name: String(a.name ?? "").trim(), face: safeLocalFace(a.face), addedAt });
+        for (const gid of targetGroupIds) if (desiredGroups.has(gid)) pushOp(`member:${uid}:${followOp.id}:${gid}`, true);
+      } else {
+        for (const gid of targetGroupIds) {
+          const want = desiredGroups.has(gid);
+          if (existing.groupIds.includes(gid) !== want) {
+            for (const generation of existing.generations) pushOp(`member:${uid}:${generation}:${gid}`, want);
+          }
+        }
+      }
+    }
+    for (const oldAccount of current4.accounts) {
+      if (!targetAccountSet.has(oldAccount.uid)) pushOp(`follow:${oldAccount.uid}`, null);
+    }
+    if (!operations.length) return;
+    mergeLocalFollowOperations(known2, operations);
+    if (operations.length <= 1e4) GM_setValue(prefix + "record_" + uuid(), localFollowBatch(operations));
+    else {
+      const transaction = {};
+      for (let index = 0; index < operations.length; index += 1e4) transaction[uuid()] = localFollowBatch(operations.slice(index, index + 1e4));
+      GM_setValue(prefix + "pull_" + uuid(), transaction);
+    }
+    pulse();
+    notify(true);
+  }
+  function readLocalFollowOutbox() {
+    const raw = GM_getValue(outboxKey, null);
+    if (!Array.isArray(raw)) return [];
+    return raw.filter((e) => e && typeof e.id === "string" && e.batch && Array.isArray(e.sources)).map((e) => ({ id: e.id, batch: parseLocalFollowBatch(e.batch), sources: e.sources.filter((s2) => typeof s2 === "string") }));
+  }
+  function writeLocalFollowOutbox(entries) {
+    if (entries.length) GM_setValue(outboxKey, entries);
+    else if (typeof GM_deleteValue === "function") GM_deleteValue(outboxKey);
+    else GM_setValue(outboxKey, []);
+  }
+  function storeConsolidatedLocalFollowBatch(id, batch2, sources = []) {
+    GM_setValue(prefix + "pull_" + uuid(), { [id]: batch2 });
+    markLocalFollowSent(id);
+    for (const source of sources) markLocalFollowSent(source);
+  }
+  function pruneHiddenLocalFollowKeys(hiddenIds) {
+    if (!hiddenIds.size || typeof GM_deleteValue !== "function") return;
+    for (const key6 of GM_listValues()) {
+      if (key6.startsWith(prefix + "record_")) {
+        const id = key6.slice((prefix + "record_").length);
+        if (hiddenIds.has(id) && localFollowIsSent(id)) {
+          GM_deleteValue(key6);
+          GM_deleteValue(prefix + "sent_" + id);
+        }
+      } else if (key6.startsWith(prefix + "pull_")) {
+        const value2 = GM_getValue(key6);
+        if (!value2 || typeof value2 !== "object") continue;
+        const entries = Object.entries(value2);
+        if (!entries.some(([id]) => hiddenIds.has(id))) continue;
+        const remaining = entries.filter(([id]) => !hiddenIds.has(id));
+        if (remaining.length) GM_setValue(key6, Object.fromEntries(remaining));
+        else GM_deleteValue(key6);
+        for (const [id] of entries) if (hiddenIds.has(id)) GM_deleteValue(prefix + "sent_" + id);
+      }
+    }
+  }
 
   // src/modules/local-following/api.ts
   var localFollowApiUrl = (value2) => allowedRead(endpoints.gm, value2, "\u65E0\u6548\u7684\u672C\u5730\u5173\u6CE8\u53EA\u8BFB\u63A5\u53E3");
@@ -12648,7 +12752,7 @@ ${userCardCss}
         const key6 = queue.shift(), controller = new AbortController();
         active2.add(controller);
         let timedOut = false;
-        const timer2 = setTimeout(() => {
+        const timer = setTimeout(() => {
           timedOut = true;
           controller.abort();
         }, timeout);
@@ -12661,7 +12765,7 @@ ${userCardCss}
             if (options.onError(key6, new LocalReadTimeout(timeout))) stopAll();
           } else if (!stopped && !controller.signal.aborted && options.onError(key6, error)) stopAll();
         } finally {
-          clearTimeout(timer2);
+          clearTimeout(timer);
           active2.delete(controller);
         }
       }
@@ -13659,25 +13763,25 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       toTop.disabled = !current4();
       pageTop.disabled = window.scrollY < 1;
     };
-    const schedule2 = () => {
+    const schedule = () => {
       frame2 ||= requestAnimationFrame(update);
     };
-    window.addEventListener("scroll", schedule2, { passive: true });
-    window.addEventListener("resize", schedule2);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
     document.addEventListener("biliThemeChange", paintNight);
-    const resize = typeof ResizeObserver === "function" ? new ResizeObserver(schedule2) : null;
+    const resize = typeof ResizeObserver === "function" ? new ResizeObserver(schedule) : null;
     resize?.observe(options.feedWindow);
-    const cards2 = new MutationObserver(schedule2);
+    const cards2 = new MutationObserver(schedule);
     cards2.observe(options.list, { childList: true });
-    schedule2();
+    schedule();
     return {
       element: win,
       dispose: () => {
         cancelAnimationFrame(frame2);
         cards2.disconnect();
         resize?.disconnect();
-        window.removeEventListener("scroll", schedule2);
-        window.removeEventListener("resize", schedule2);
+        window.removeEventListener("scroll", schedule);
+        window.removeEventListener("resize", schedule);
         document.removeEventListener("biliThemeChange", paintNight);
         win.remove();
       }
@@ -13695,7 +13799,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
   function startHeaderBridge() {
     const relay = startPageRelay("header", endpoints.header);
     return async (url) => {
-      const stop = new AbortController(), timer2 = window.setTimeout(() => stop.abort(), 1e4);
+      const stop = new AbortController(), timer = window.setTimeout(() => stop.abort(), 1e4);
       try {
         const body2 = await relay.read(url, stop.signal);
         if (body2?.code !== 0) throw new Error(typeof body2?.message === "string" && body2.message ? body2.message : "\u8BFB\u53D6\u5931\u8D25");
@@ -13703,7 +13807,7 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       } catch (error) {
         throw stop.signal.aborted ? new Error("\u8BFB\u53D6\u8D85\u65F6") : error;
       } finally {
-        window.clearTimeout(timer2);
+        window.clearTimeout(timer);
       }
     };
   }
@@ -14614,7 +14718,7 @@ a.lh-item{color:var(--xp-ink)}
       root.style.removeProperty(headerHeightVar);
       warnLog("Luna \u9876\u680F\u6CA1\u80FD\u753B\u51FA\u6765\uFF0C\u5DF2\u6062\u590D B \u7AD9\u539F\u6765\u7684\u9876\u680F", error);
     };
-    const timer2 = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       if (!current2?.element.isConnected) fail();
     }, giveUpMs);
     const attach = () => {
@@ -14634,7 +14738,7 @@ a.lh-item{color:var(--xp-ink)}
         current2 = createLunaHeader({ page, read: read2 });
         document.body.append(current2.element);
         const releaseHeader = observeCrispText(current2.element), releaseCompact = observeCrispText(current2.compact);
-        window.clearTimeout(timer2);
+        window.clearTimeout(timer);
         const measure = () => {
           const element2 = current2?.element;
           if (!element2) return;
@@ -14657,7 +14761,7 @@ a.lh-item{color:var(--xp-ink)}
         });
         if (page === "feed") followStickyPanels();
       } catch (error) {
-        window.clearTimeout(timer2);
+        window.clearTimeout(timer);
         fail(error);
       }
     };
@@ -18143,9 +18247,9 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     const roots2 = /* @__PURE__ */ new WeakSet();
     const observer = new MutationObserver((records2) => {
       if (records2.every((record) => record.target instanceof Element && record.target.closest("[data-atelier-local-ui]"))) return;
-      schedule2();
+      schedule();
     });
-    function schedule2() {
+    function schedule() {
       if (!queued) {
         queued = true;
         window.setTimeout(() => {
@@ -18189,7 +18293,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
             feedback.finish("error");
           } finally {
             node4.disabled = false;
-            schedule2();
+            schedule();
           }
         });
         if (target.matches("#action,.user") || target === root) target.appendChild(node4);
@@ -18241,15 +18345,15 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       }
     }
     observer.observe(document.documentElement || document, { childList: true, subtree: true });
-    document.addEventListener("DOMContentLoaded", schedule2, { once: true });
-    window.addEventListener(localFollowChangedEvent, schedule2);
-    window.addEventListener("popstate", schedule2);
+    document.addEventListener("DOMContentLoaded", schedule, { once: true });
+    window.addEventListener(localFollowChangedEvent, schedule);
+    window.addEventListener("popstate", schedule);
     window.addEventListener("pagehide", () => observer.disconnect(), { once: true });
     window.addEventListener("pageshow", () => {
       observer.observe(document.documentElement || document, { childList: true, subtree: true });
-      schedule2();
+      schedule();
     });
-    schedule2();
+    schedule();
   }
 
   // src/modules/space-luna/prefs.ts
@@ -20531,7 +20635,223 @@ ${lunaDialogCss}
   // src/modules/sync/panel.ts
   var import_qrcode = __toESM(require_browser(), 1);
 
+  // src/modules/sync/backup.ts
+  var backupSchema = "bili-atelier-backup";
+  var backupVersion = 1;
+  var DAILY_BACKUP_RETENTION = 30;
+  var MANUAL_BACKUP_RETENTION = 10;
+  var backupFilePattern = /^(pc|android)-(?:(\d{4}-\d{2}-\d{2})|(manual|pre-restore)-(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}Z)-[0-9a-f]{8})\.json$/;
+  function parseBackupFilename(name) {
+    const m = backupFilePattern.exec(name);
+    if (!m) return null;
+    const platform = m[1];
+    if (m[2]) return { platform, kind: "daily", stamp: m[2] };
+    return { platform, kind: m[3], stamp: m[4] };
+  }
+  function formatUtcDate(date2 = /* @__PURE__ */ new Date()) {
+    return date2.toISOString().slice(0, 10);
+  }
+  function formatBackupFilename(platform, kind, now = /* @__PURE__ */ new Date(), randomHex) {
+    if (kind === "daily") return `${platform}-${formatUtcDate(now)}.json`;
+    const stamp = now.toISOString().slice(0, 19).replace(/:/g, "-") + "Z";
+    const suffix = (randomHex || crypto.randomUUID().replace(/-/g, "").slice(0, 8)).toLowerCase();
+    return `${platform}-${kind}-${stamp}-${suffix}.json`;
+  }
+  function canonicalJson(value2) {
+    if (value2 === null || typeof value2 !== "object") return JSON.stringify(value2);
+    if (Array.isArray(value2)) return `[${value2.map(canonicalJson).join(",")}]`;
+    const keys = Object.keys(value2).filter((k) => value2[k] !== void 0).sort();
+    return `{${keys.map((k) => `${JSON.stringify(k)}:${canonicalJson(value2[k])}`).join(",")}}`;
+  }
+  async function sha256Hex(text4) {
+    const bytes = new TextEncoder().encode(text4);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+  function readPcPreferences() {
+    if (typeof GM_getValue !== "function") return {};
+    const prefs = {};
+    const ui2 = GM_getValue("BiliAtelier_UI", null);
+    if (ui2 && typeof ui2 === "object" && !Array.isArray(ui2)) prefs.ui = ui2;
+    const iface = GM_getValue("BiliAtelier_Interface", null);
+    if (iface && typeof iface === "object" && !Array.isArray(iface)) prefs.interface = iface;
+    const sounds = GM_getValue("AtelierSounds_preferences", null);
+    if (sounds && typeof sounds === "object" && !Array.isArray(sounds)) prefs.sounds = sounds;
+    const videoLuna = GM_getValue("BiliAtelier_VideoLuna", null);
+    if (videoLuna && typeof videoLuna === "object" && typeof videoLuna.enabled === "boolean") prefs.videoLuna = videoLuna.enabled;
+    const videoCover = GM_getValue("BiliAtelier_VideoCover", null);
+    if (videoCover && typeof videoCover === "object" && typeof videoCover.enabled === "boolean") prefs.videoCover = videoCover.enabled;
+    const videoInfoRight = GM_getValue("BiliAtelier_VideoInfoRight", null);
+    if (videoInfoRight && typeof videoInfoRight === "object" && typeof videoInfoRight.enabled === "boolean") prefs.videoInfoRight = videoInfoRight.enabled;
+    const spaceLuna = GM_getValue("BiliAtelier_SpaceLuna", null);
+    if (typeof spaceLuna === "boolean") prefs.spaceLuna = spaceLuna;
+    const spaceView = GM_getValue("BiliAtelier_SpaceUploadView", null);
+    if (spaceView === "grid" || spaceView === "list") prefs.spaceUploadView = spaceView;
+    const spaceCols = GM_getValue("BiliAtelier_SpaceMaxCols", null);
+    if (typeof spaceCols === "number" && Number.isInteger(spaceCols) && spaceCols >= 2 && spaceCols <= 8) prefs.spaceMaxCols = spaceCols;
+    const historyLuna = GM_getValue("BiliAtelier_HistoryLuna", null);
+    if (historyLuna && typeof historyLuna === "object" && typeof historyLuna.enabled === "boolean") prefs.historyLuna = historyLuna.enabled;
+    const pixelScale = GM_getValue("BiliAtelier_PixelScale", null);
+    if (pixelScale && typeof pixelScale === "object" && !Array.isArray(pixelScale)) prefs.pixelScale = pixelScale;
+    return prefs;
+  }
+  function applyPcPreferences(prefs) {
+    if (!prefs || typeof GM_setValue !== "function") return;
+    const emit = (name) => {
+      try {
+        window.dispatchEvent(new Event(name));
+      } catch {
+      }
+    };
+    if (prefs.ui && typeof prefs.ui === "object" && !Array.isArray(prefs.ui)) {
+      GM_setValue("BiliAtelier_UI", prefs.ui);
+      emit("atelier-appearance-changed");
+    }
+    if (prefs.interface && typeof prefs.interface === "object" && !Array.isArray(prefs.interface)) {
+      GM_setValue("BiliAtelier_Interface", prefs.interface);
+      emit("atelier-interface-changed");
+    }
+    if (prefs.sounds && typeof prefs.sounds === "object" && !Array.isArray(prefs.sounds)) {
+      GM_setValue("AtelierSounds_preferences", prefs.sounds);
+      emit("atelier-sound-preferences-changed");
+    }
+    if (typeof prefs.videoLuna === "boolean") GM_setValue("BiliAtelier_VideoLuna", { enabled: prefs.videoLuna });
+    if (typeof prefs.videoCover === "boolean") {
+      GM_setValue("BiliAtelier_VideoCover", { enabled: prefs.videoCover });
+      emit("atelier-video-cover-changed");
+    }
+    if (typeof prefs.videoInfoRight === "boolean") {
+      GM_setValue("BiliAtelier_VideoInfoRight", { enabled: prefs.videoInfoRight });
+      emit("atelier-video-info-right-changed");
+    }
+    if (typeof prefs.spaceLuna === "boolean") GM_setValue("BiliAtelier_SpaceLuna", prefs.spaceLuna);
+    if (prefs.spaceUploadView === "grid" || prefs.spaceUploadView === "list") GM_setValue("BiliAtelier_SpaceUploadView", prefs.spaceUploadView);
+    if (typeof prefs.spaceMaxCols === "number" && Number.isInteger(prefs.spaceMaxCols) && prefs.spaceMaxCols >= 2 && prefs.spaceMaxCols <= 8) {
+      GM_setValue("BiliAtelier_SpaceMaxCols", prefs.spaceMaxCols);
+    }
+    if (typeof prefs.historyLuna === "boolean") GM_setValue("BiliAtelier_HistoryLuna", { enabled: prefs.historyLuna });
+    if (prefs.pixelScale && typeof prefs.pixelScale === "object" && !Array.isArray(prefs.pixelScale)) {
+      GM_setValue("BiliAtelier_PixelScale", prefs.pixelScale);
+      emit("atelier-pixel-scale-changed");
+    }
+  }
+  async function buildPcBackupSnapshot(kind, now = /* @__PURE__ */ new Date()) {
+    const lf = localFollowSnapshot();
+    const data = {
+      viewed: readViewedStorage(),
+      blocker: { rules: exportNonEmptyRuleSnapshot() },
+      localFollowing: {
+        accounts: lf.accounts.map(({ uid, name, face, addedAt, groupIds }) => ({ uid, name, face, addedAt, groupIds: [...groupIds] })),
+        groups: lf.groups.map((g) => g.icon !== void 0 ? { id: g.id, name: g.name, icon: g.icon } : { id: g.id, name: g.name })
+      },
+      pcPreferences: readPcPreferences()
+    };
+    const contentHash = await sha256Hex(canonicalJson(data));
+    return {
+      schema: backupSchema,
+      version: backupVersion,
+      platform: "pc",
+      kind,
+      createdAt: now.toISOString(),
+      contentHash,
+      data
+    };
+  }
+  function parseBackupSnapshot(input) {
+    const raw = input;
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("\u5907\u4EFD\u5185\u5BB9\u5FC5\u987B\u662F JSON \u5BF9\u8C61");
+    if (raw.schema !== backupSchema || raw.version !== backupVersion) throw new Error("\u4E0D\u652F\u6301\u7684\u4E91\u7AEF\u5907\u4EFD\u683C\u5F0F\u6216\u7248\u672C");
+    if (raw.platform !== "pc" && raw.platform !== "android") throw new Error("\u5907\u4EFD\u5E73\u53F0\u5B57\u6BB5\u65E0\u6548");
+    if (raw.kind !== "daily" && raw.kind !== "manual" && raw.kind !== "pre-restore") throw new Error("\u5907\u4EFD\u7C7B\u578B\u5B57\u6BB5\u65E0\u6548");
+    if (typeof raw.createdAt !== "string" || !raw.createdAt) throw new Error("\u5907\u4EFD\u65F6\u95F4\u5B57\u6BB5\u65E0\u6548");
+    if (typeof raw.contentHash !== "string" || !/^[0-9a-f]{64}$/i.test(raw.contentHash)) throw new Error("\u5907\u4EFD\u6821\u9A8C\u54C8\u5E0C\u65E0\u6548");
+    const data = raw.data;
+    if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("\u5907\u4EFD\u7F3A\u5C11 data \u5B57\u6BB5");
+    const viewedRaw = data.viewed && typeof data.viewed === "object" ? data.viewed : {};
+    const items = Array.isArray(viewedRaw.items) ? viewedRaw.items.filter((v) => typeof v === "string") : [];
+    const groups = viewedRaw.groups && typeof viewedRaw.groups === "object" && !Array.isArray(viewedRaw.groups) ? viewedRaw.groups : {};
+    const blockerRaw = data.blocker && typeof data.blocker === "object" ? data.blocker : {};
+    const rules = blockerRaw.rules && typeof blockerRaw.rules === "object" && !Array.isArray(blockerRaw.rules) ? blockerRaw.rules : {};
+    const lfRaw = data.localFollowing && typeof data.localFollowing === "object" ? data.localFollowing : {};
+    const accounts = Array.isArray(lfRaw.accounts) ? lfRaw.accounts.filter((a) => !!a && typeof a === "object").map((a) => ({
+      uid: String(a.uid ?? "").trim(),
+      name: String(a.name ?? ""),
+      face: String(a.face ?? ""),
+      addedAt: typeof a.addedAt === "number" && Number.isSafeInteger(a.addedAt) ? a.addedAt : 0,
+      groupIds: Array.isArray(a.groupIds) ? a.groupIds.filter((g) => typeof g === "string") : []
+    })) : [];
+    const lfGroups = Array.isArray(lfRaw.groups) ? lfRaw.groups.filter((g) => !!g && typeof g === "object").map((g) => {
+      const base = { id: String(g.id ?? ""), name: String(g.name ?? "") };
+      return typeof g.icon === "number" && Number.isInteger(g.icon) ? { ...base, icon: g.icon } : base;
+    }) : [];
+    const pcPreferences = data.pcPreferences && typeof data.pcPreferences === "object" && !Array.isArray(data.pcPreferences) ? data.pcPreferences : void 0;
+    return {
+      schema: backupSchema,
+      version: backupVersion,
+      platform: raw.platform,
+      kind: raw.kind,
+      createdAt: raw.createdAt,
+      contentHash: raw.contentHash.toLowerCase(),
+      data: {
+        viewed: { items, groups },
+        blocker: { rules },
+        localFollowing: { accounts, groups: lfGroups },
+        ...pcPreferences ? { pcPreferences } : {}
+      }
+    };
+  }
+  function listRemoteBackups(entries, prefix4) {
+    const base = `${prefix4}backups/`;
+    const list = [];
+    for (const entry of entries) {
+      if (!entry.fileName.startsWith(base)) continue;
+      const shortName = entry.fileName.slice(base.length);
+      const parsed = parseBackupFilename(shortName);
+      if (!parsed) continue;
+      list.push({
+        ...parsed,
+        fileName: entry.fileName,
+        fileId: entry.fileId,
+        shortName,
+        size: entry.contentLength ?? 0,
+        uploadTimestamp: entry.uploadTimestamp ?? 0
+      });
+    }
+    return list.sort((a, b) => b.stamp.localeCompare(a.stamp) || b.shortName.localeCompare(a.shortName));
+  }
+  function expiredBackupFileNames(backups, platform) {
+    const daily = backups.filter((b) => b.platform === platform && b.kind === "daily").sort((a, b) => b.stamp.localeCompare(a.stamp));
+    const manual = backups.filter((b) => b.platform === platform && b.kind !== "daily").sort((a, b) => b.stamp.localeCompare(a.stamp) || b.shortName.localeCompare(a.shortName));
+    return [
+      ...daily.slice(DAILY_BACKUP_RETENTION).map((b) => b.fileName),
+      ...manual.slice(MANUAL_BACKUP_RETENTION).map((b) => b.fileName)
+    ];
+  }
+  function applyBackupSnapshotToPc(snapshot) {
+    writeViewedStorage(snapshot.data.viewed, "overwrite");
+    if (snapshot.platform === "pc") {
+      importRuleSnapshot(snapshot.data.blocker.rules, "overwrite");
+      applyPcPreferences(snapshot.data.pcPreferences);
+    } else {
+      const syncedOnly = {
+        precise_uid: snapshot.data.blocker.rules.precise_uid ?? [],
+        precise_name: snapshot.data.blocker.rules.precise_name ?? []
+      };
+      importRuleSnapshot(syncedOnly, "overwrite");
+    }
+    restoreLocalFollowSnapshot(snapshot.data.localFollowing);
+  }
+
   // src/modules/sync/b2.ts
+  var B2_AUTH_TTL_MS = 22 * 60 * 60 * 1e3;
+  var B2HttpError = class extends Error {
+    constructor(status2, message, code) {
+      super(message);
+      this.status = status2;
+      this.code = code;
+      this.name = "B2HttpError";
+    }
+  };
   function parseConfig(input) {
     const c = input;
     if (!c || c.schema !== "bili-atelier-b2-config" || c.version !== 1 || ![c.keyId, c.applicationKey, c.bucketId].every((v) => typeof v === "string" && /^[A-Za-z0-9]+$/.test(v)) || typeof c.prefix !== "string" || !/^[A-Za-z0-9_-]+\/$/.test(c.prefix)) throw new Error("\u8BF7\u586B\u5199\u6709\u6548\u7684 Key ID\u3001\u5E94\u7528\u5BC6\u94A5\u3001Bucket ID \u548C\u76EE\u5F55\uFF08\u4F8B\u5982 atelier/\uFF09");
@@ -20564,7 +20884,13 @@ ${lunaDialogCss}
           }
         }
         if (r.status < 200 || r.status >= 300) {
-          reject(new Error(`B2 HTTP ${r.status}\uFF1A${r.status === 401 ? "\u5BC6\u94A5\u65E0\u6548\u6216\u5DF2\u8FC7\u671F" : r.status === 403 ? "\u6743\u9650\u4E0D\u8DB3\u6216\u8FBE\u5230\u7528\u91CF\u4E0A\u9650" : "\u8BF7\u6C42\u5931\u8D25\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5"}`));
+          let code;
+          try {
+            const body2 = JSON.parse(r.responseText);
+            if (typeof body2?.code === "string") code = body2.code;
+          } catch {
+          }
+          reject(new B2HttpError(r.status, `B2 HTTP ${r.status}\uFF1A${r.status === 401 ? "\u5BC6\u94A5\u65E0\u6548\u6216\u5DF2\u8FC7\u671F" : r.status === 403 ? "\u6743\u9650\u4E0D\u8DB3\u6216\u8FBE\u5230\u7528\u91CF\u4E0A\u9650" : "\u8BF7\u6C42\u5931\u8D25\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5"}`, code));
           return;
         }
         try {
@@ -20577,77 +20903,199 @@ ${lunaDialogCss}
       ontimeout: () => reject(new Error("B2 \u8FDE\u63A5\u8D85\u65F6"))
     });
   });
+  function validCachedAuth(cached, config2, now) {
+    if (!cached || cached.keyId !== config2.keyId || cached.bucketId !== config2.bucketId || cached.prefix !== config2.prefix) return null;
+    if (typeof cached.authorizationToken !== "string" || !cached.authorizationToken) return null;
+    if (typeof cached.obtainedAt !== "number" || !Number.isFinite(cached.obtainedAt) || now - cached.obtainedAt >= B2_AUTH_TTL_MS || cached.obtainedAt > now + 6e4) return null;
+    try {
+      b2Url(cached.apiUrl);
+      b2Url(cached.downloadUrl);
+      return cached;
+    } catch {
+      return null;
+    }
+  }
   var B2 = class {
-    constructor(config2, request2 = gmRequest) {
+    constructor(config2, request2 = gmRequest, options = {}) {
       this.config = config2;
       this.request = request2;
+      this.options = options;
+      this.auth = null;
+      this.uploadTarget = null;
+      this.now = options.now ?? (() => Date.now());
+    }
+    meter(cls) {
+      this.options.onUsage?.(cls);
+    }
+    invalidateAuth() {
+      this.auth = null;
+      this.uploadTarget = null;
+      this.options.authCache?.write(null);
+    }
+    async ensureAuthorized(force = false) {
+      if (!force) {
+        const current4 = validCachedAuth(this.auth, this.config, this.now());
+        if (current4) {
+          this.auth = current4;
+          return;
+        }
+        const cached = validCachedAuth(this.options.authCache?.read(), this.config, this.now());
+        if (cached) {
+          this.auth = cached;
+          return;
+        }
+      }
+      await this.authorize();
     }
     async authorize() {
-      this.auth = await this.request("https://api.backblazeb2.com/b2api/v4/b2_authorize_account", "GET", { Authorization: `Basic ${btoa(`${this.config.keyId}:${this.config.applicationKey}`)}` });
-      const api5 = this.auth.apiInfo.storageApi;
+      this.meter("C");
+      const raw = await this.request("https://api.backblazeb2.com/b2api/v4/b2_authorize_account", "GET", { Authorization: `Basic ${btoa(`${this.config.keyId}:${this.config.applicationKey}`)}` });
+      const api5 = raw.apiInfo.storageApi;
       b2Url(api5.apiUrl);
       b2Url(api5.downloadUrl);
       const allowed = api5.allowed;
       if (!["listFiles", "readFiles", "writeFiles"].every((p2) => allowed.capabilities.includes(p2)) || allowed.buckets && !allowed.buckets.some((b) => b.id === this.config.bucketId) || allowed.namePrefix && !this.config.prefix.startsWith(allowed.namePrefix)) throw new Error("\u5E94\u7528\u5BC6\u94A5\u9700\u8981\u76EE\u6807\u76EE\u5F55\u7684 listFiles\u3001readFiles\u3001writeFiles \u6743\u9650");
+      this.auth = {
+        keyId: this.config.keyId,
+        bucketId: this.config.bucketId,
+        prefix: this.config.prefix,
+        authorizationToken: raw.authorizationToken,
+        apiUrl: api5.apiUrl,
+        downloadUrl: api5.downloadUrl,
+        obtainedAt: this.now()
+      };
+      this.uploadTarget = null;
+      this.options.authCache?.write(this.auth);
     }
-    call(name, body2) {
-      return this.request(`${this.auth.apiInfo.storageApi.apiUrl}/b2api/v3/${name}`, "POST", { Authorization: this.auth.authorizationToken, "Content-Type": "application/json" }, JSON.stringify(body2));
+    async withAuth(run) {
+      await this.ensureAuthorized(false);
+      try {
+        return await run();
+      } catch (error) {
+        if (error instanceof B2HttpError && error.status === 401) {
+          this.invalidateAuth();
+          await this.ensureAuthorized(true);
+          return await run();
+        }
+        throw error;
+      }
     }
-    /** Every file under `<prefix><directory>/`, all pages. */
-    async listDirectory(directory) {
+    call(name, body2, cls) {
+      return this.withAuth(() => {
+        this.meter(cls);
+        return this.request(`${this.auth.apiUrl}/b2api/v3/${name}`, "POST", { Authorization: this.auth.authorizationToken, "Content-Type": "application/json" }, JSON.stringify(body2));
+      });
+    }
+    /** Every active file under `<prefix><subPrefix>`, all pages (1 Class C per 1000 files). */
+    async listPrefix(subPrefix = "") {
       const files = [];
       let startFileName;
+      const prefix4 = `${this.config.prefix}${subPrefix}`;
       do {
-        const r = await this.call("b2_list_file_names", { bucketId: this.config.bucketId, prefix: `${this.config.prefix}${directory}/`, maxFileCount: 1e3, startFileName });
-        files.push(...r.files);
+        const r = await this.call("b2_list_file_names", { bucketId: this.config.bucketId, prefix: prefix4, maxFileCount: 1e3, startFileName }, "C");
+        for (const file of r.files) {
+          files.push({ fileName: file.fileName, fileId: file.fileId, contentLength: file.contentLength, uploadTimestamp: file.uploadTimestamp });
+        }
         if (r.nextFileName && r.nextFileName === startFileName) throw new Error("B2 \u5206\u9875\u672A\u524D\u8FDB");
         startFileName = r.nextFileName || void 0;
       } while (startFileName);
       return files;
     }
+    /** Every file under `<prefix><directory>/`, all pages. */
+    async listDirectory(directory) {
+      return this.listPrefix(`${directory}/`);
+    }
     download(fileId) {
-      return this.request(`${this.auth.apiInfo.storageApi.downloadUrl}/b2api/v3/b2_download_file_by_id?fileId=${encodeURIComponent(fileId)}`, "GET", { Authorization: this.auth.authorizationToken });
+      return this.withAuth(() => {
+        this.meter("B");
+        return this.request(`${this.auth.downloadUrl}/b2api/v3/b2_download_file_by_id?fileId=${encodeURIComponent(fileId)}`, "GET", { Authorization: this.auth.authorizationToken });
+      });
+    }
+    async getUploadTarget(force = false) {
+      if (!force && this.uploadTarget) return this.uploadTarget;
+      const upload = await this.call("b2_get_upload_url", { bucketId: this.config.bucketId }, "A");
+      this.uploadTarget = { uploadUrl: b2Url(upload.uploadUrl), authorizationToken: upload.authorizationToken };
+      return this.uploadTarget;
     }
     async upload(name, value2) {
-      const upload = await this.call("b2_get_upload_url", { bucketId: this.config.bucketId });
       const bytes = new TextEncoder().encode(JSON.stringify(value2));
       const hash = [...new Uint8Array(await crypto.subtle.digest("SHA-1", bytes))].map((b) => b.toString(16).padStart(2, "0")).join("");
-      return this.request(b2Url(upload.uploadUrl), "POST", {
-        Authorization: upload.authorizationToken,
-        "X-Bz-File-Name": encodeURIComponent(name),
-        "Content-Type": "application/json",
-        "X-Bz-Content-Sha1": hash
-      }, bytes.buffer);
+      const send = async (forceTarget) => {
+        const target = await this.getUploadTarget(forceTarget);
+        this.meter("A");
+        return this.request(target.uploadUrl, "POST", {
+          Authorization: target.authorizationToken,
+          "X-Bz-File-Name": encodeURIComponent(name),
+          "Content-Type": "application/json",
+          "X-Bz-Content-Sha1": hash
+        }, bytes.buffer);
+      };
+      try {
+        return await send(false);
+      } catch (error) {
+        if (error instanceof B2HttpError && (error.status === 401 || error.status === 500 || error.status === 503)) {
+          this.uploadTarget = null;
+          return await send(true);
+        }
+        throw error;
+      }
+    }
+    /** Hides an active file name (Class A, requires only writeFiles; prior versions stay in B2 history). */
+    async hideFile(fileName2) {
+      try {
+        await this.call("b2_hide_file", { bucketId: this.config.bucketId, fileName: fileName2 }, "A");
+      } catch (error) {
+        if (error instanceof B2HttpError && error.status === 400 && error.code === "already_hidden") return;
+        throw error;
+      }
     }
   };
 
   // src/modules/sync/journal.ts
   var fileName = /^([0-9a-f-]{36})\.json$/;
   var RemoteDirectory = class {
-    constructor(b2, prefix4, directory, messages2) {
+    constructor(b2, prefix4, directory, messages2, prelisted) {
       this.b2 = b2;
       this.directory = directory;
       this.messages = messages2;
+      this.prelisted = prelisted;
+      this.listedIds = [];
       this.base = `${prefix4}${directory}/`;
+    }
+    /** Active UUIDs seen during the latest `newFiles` call. */
+    activeIds() {
+      return [...this.listedIds];
     }
     /** The files whose IDs `known` lacks, parsed; null when `stopped`. */
     async newFiles(known2, parse4, stopped) {
       const files = [];
-      for (const file of await this.b2.listDirectory(this.directory)) {
+      const entries = this.prelisted ?? await this.b2.listDirectory(this.directory);
+      const seenIds = [];
+      for (const file of entries) {
         if (stopped()) return null;
         if (!file.fileName.startsWith(this.base)) throw new Error(this.messages.mismatch);
         const match = file.fileName.slice(this.base.length).match(fileName);
         if (!match) throw new Error(this.messages.unknown);
+        seenIds.push(match[1]);
         if (!known2.has(match[1])) files.push([match[1], parse4(await this.b2.download(file.fileId))]);
       }
+      this.listedIds = seenIds;
       return files;
     }
     upload(id, value2) {
       return this.b2.upload(`${this.base}${id}.json`, value2);
     }
+    hide(id) {
+      return this.b2.hideFile(`${this.base}${id}.json`);
+    }
   };
 
   // src/modules/sync/local-follow-journal.ts
+  var dedupeFollowOps = (groups) => {
+    const map = /* @__PURE__ */ new Map();
+    for (const ops of groups) for (const op of ops) map.set(op.id, op);
+    return [...map.values()];
+  };
   var localFollowJournal = {
     directory: "local-following-ops",
     async pull(remote, stopped) {
@@ -20657,14 +21105,87 @@ ${lunaDialogCss}
     },
     apply(files) {
       mergeRemoteLocalFollow(files);
+      const receivedIds = new Set(files.map(([id]) => id));
+      const outbox = readLocalFollowOutbox();
+      if (outbox.length && receivedIds.size) {
+        const remaining = [];
+        for (const entry of outbox) {
+          if (receivedIds.has(entry.id)) {
+            for (const source of entry.sources) markLocalFollowSent(source);
+          } else remaining.push(entry);
+        }
+        if (remaining.length !== outbox.length) writeLocalFollowOutbox(remaining);
+      }
     },
     async upload(remote, stopped) {
-      for (const [id, b] of localFollowRecords()) {
+      const outbox = readLocalFollowOutbox();
+      while (outbox.length) {
         if (stopped()) return;
-        if (localFollowIsSent(id)) continue;
+        const entry = outbox[0];
+        await remote.upload(entry.id, entry.batch);
+        storeConsolidatedLocalFollowBatch(entry.id, entry.batch, entry.sources);
+        outbox.shift();
+        writeLocalFollowOutbox(outbox);
+      }
+      const unsent = localFollowRecords().filter(([id]) => !localFollowIsSent(id));
+      if (!unsent.length) return;
+      if (unsent.length === 1) {
+        if (stopped()) return;
+        const [id, b] = unsent[0];
         await remote.upload(id, b);
         markLocalFollowSent(id);
+        return;
       }
+      const merged = dedupeFollowOps(unsent.map(([, b]) => b.operations));
+      const sources = unsent.map(([id]) => id);
+      const staged = [];
+      for (let i = 0; i < merged.length; i += 1e4) {
+        staged.push({
+          id: crypto.randomUUID(),
+          batch: localFollowBatch(merged.slice(i, i + 1e4)),
+          sources: i + 1e4 >= merged.length ? sources : []
+        });
+      }
+      writeLocalFollowOutbox(staged);
+      while (staged.length) {
+        if (stopped()) return;
+        const entry = staged[0];
+        await remote.upload(entry.id, entry.batch);
+        storeConsolidatedLocalFollowBatch(entry.id, entry.batch, entry.sources);
+        staged.shift();
+        writeLocalFollowOutbox(staged);
+      }
+    },
+    async consolidate(remote, activeIds, stopped, options) {
+      const threshold = Math.max(4, options.threshold);
+      const maxBatchOps = Math.min(1e4, Math.max(100, options.maxBatchOps));
+      if (activeIds.length < threshold) return 0;
+      const localMap = new Map(localFollowRecords());
+      const candidates = [];
+      for (const id of activeIds) {
+        const b = localMap.get(id);
+        if (b && b.operations.length < maxBatchOps) candidates.push([id, b]);
+      }
+      if (candidates.length < 2) return 0;
+      const merged = dedupeFollowOps(candidates.map(([, b]) => b.operations));
+      const packed = [];
+      for (let i = 0; i < merged.length; i += maxBatchOps) {
+        packed.push([crypto.randomUUID(), localFollowBatch(merged.slice(i, i + maxBatchOps))]);
+      }
+      if (packed.length >= candidates.length) return 0;
+      for (const [id, b] of packed) {
+        if (stopped()) return 0;
+        await remote.upload(id, b);
+        storeConsolidatedLocalFollowBatch(id, b);
+      }
+      const hidden = /* @__PURE__ */ new Set();
+      for (const [oldId] of candidates) {
+        if (stopped()) break;
+        await remote.hide(oldId);
+        hidden.add(oldId);
+      }
+      pruneHiddenLocalFollowKeys(hidden);
+      return hidden.size;
     },
     pending: localFollowPending
   };
@@ -20812,7 +21333,18 @@ ${lunaDialogCss}
   // src/modules/sync/viewed-journal.ts
   var prefix2 = "AtelierSync_";
   var recordsPrefix = `${prefix2}record_`;
+  var outboxKey2 = `${prefix2}outbox`;
   var stores = [viewedSyncStore, blockedUserSyncStore];
+  function readOutbox() {
+    const raw = GM_getValue(outboxKey2, null);
+    if (!Array.isArray(raw)) return [];
+    return raw.filter((e) => e && typeof e.id === "string" && e.batch && Array.isArray(e.sources)).map((e) => ({ id: e.id, batch: parseBatch(e.batch), sources: e.sources.filter((s2) => typeof s2 === "string") }));
+  }
+  function writeOutbox(entries) {
+    if (entries.length) GM_setValue(outboxKey2, entries);
+    else if (typeof GM_deleteValue === "function") GM_deleteValue(outboxKey2);
+    else GM_setValue(outboxKey2, []);
+  }
   function records() {
     const keys = GM_listValues();
     const local = keys.filter((k) => k.startsWith(recordsPrefix)).map((k) => [k.slice(recordsPrefix.length), parseBatch(GM_getValue(k))]);
@@ -20820,6 +21352,11 @@ ${lunaDialogCss}
     return [...new Map([...local, ...pulls]).entries()];
   }
   var known = () => mergeOperations(...records().map(([, b]) => b.operations));
+  var dedupeOps = (groups) => {
+    const map = /* @__PURE__ */ new Map();
+    for (const ops of groups) for (const op of ops) map.set(op.id, op);
+    return [...map.values()];
+  };
   var isSent = (id) => GM_getValue(`${prefix2}sent_${id}`, false) === true;
   function saveOperations(ops) {
     for (let i = 0; i < ops.length; i += 1e3) GM_setValue(recordsPrefix + crypto.randomUUID(), batch(ops.slice(i, i + 1e3)));
@@ -20848,6 +21385,28 @@ ${lunaDialogCss}
       onChange();
     });
   }
+  function pruneHiddenLocalKeys(hiddenIds) {
+    if (!hiddenIds.size || typeof GM_deleteValue !== "function") return;
+    const keys = GM_listValues();
+    for (const key6 of keys) {
+      if (key6.startsWith(recordsPrefix)) {
+        const id = key6.slice(recordsPrefix.length);
+        if (hiddenIds.has(id) && isSent(id)) {
+          GM_deleteValue(key6);
+          GM_deleteValue(`${prefix2}sent_${id}`);
+        }
+      } else if (key6.startsWith(prefix2 + "pull_")) {
+        const value2 = GM_getValue(key6);
+        if (!value2 || typeof value2 !== "object") continue;
+        const entries = Object.entries(value2);
+        if (!entries.some(([id]) => hiddenIds.has(id))) continue;
+        const remaining = entries.filter(([id]) => !hiddenIds.has(id));
+        if (remaining.length) GM_setValue(key6, Object.fromEntries(remaining));
+        else GM_deleteValue(key6);
+        for (const [id] of entries) if (hiddenIds.has(id)) GM_deleteValue(`${prefix2}sent_${id}`);
+      }
+    }
+  }
   var viewedJournal = {
     directory: "ops",
     async pull(remote, stopped) {
@@ -20861,16 +21420,94 @@ ${lunaDialogCss}
         GM_setValue(prefix2 + "merged", true);
       }
       if (files.length) GM_setValue(prefix2 + "pull_" + crypto.randomUUID(), Object.fromEntries(files));
+      const receivedIds = new Set(files.map(([id]) => id));
       for (const [id] of files) GM_setValue(prefix2 + "sent_" + id, true);
+      const outbox = readOutbox();
+      if (outbox.length && receivedIds.size) {
+        const remaining = [];
+        for (const entry of outbox) {
+          if (receivedIds.has(entry.id)) {
+            for (const source of entry.sources) GM_setValue(`${prefix2}sent_${source}`, true);
+          } else remaining.push(entry);
+        }
+        if (remaining.length !== outbox.length) writeOutbox(remaining);
+      }
       applyViewedJournal();
     },
     async upload(remote, stopped) {
-      for (const [id, b] of records()) {
+      const outbox = readOutbox();
+      while (outbox.length) {
         if (stopped()) return;
-        if (isSent(id)) continue;
+        const entry = outbox[0];
+        await remote.upload(entry.id, entry.batch);
+        GM_setValue(prefix2 + "pull_" + crypto.randomUUID(), { [entry.id]: entry.batch });
+        GM_setValue(`${prefix2}sent_${entry.id}`, true);
+        for (const source of entry.sources) GM_setValue(`${prefix2}sent_${source}`, true);
+        outbox.shift();
+        writeOutbox(outbox);
+      }
+      const unsent = records().filter(([id]) => !isSent(id));
+      if (!unsent.length) return;
+      if (unsent.length === 1) {
+        if (stopped()) return;
+        const [id, b] = unsent[0];
         await remote.upload(id, b);
         GM_setValue(`${prefix2}sent_${id}`, true);
+        return;
       }
+      const merged = dedupeOps(unsent.map(([, b]) => b.operations));
+      const sources = unsent.map(([id]) => id);
+      const staged = [];
+      for (let i = 0; i < merged.length; i += 1e4) {
+        staged.push({
+          id: crypto.randomUUID(),
+          batch: batch(merged.slice(i, i + 1e4)),
+          sources: i + 1e4 >= merged.length ? sources : []
+        });
+      }
+      writeOutbox(staged);
+      while (staged.length) {
+        if (stopped()) return;
+        const entry = staged[0];
+        await remote.upload(entry.id, entry.batch);
+        GM_setValue(prefix2 + "pull_" + crypto.randomUUID(), { [entry.id]: entry.batch });
+        GM_setValue(`${prefix2}sent_${entry.id}`, true);
+        for (const source of entry.sources) GM_setValue(`${prefix2}sent_${source}`, true);
+        staged.shift();
+        writeOutbox(staged);
+      }
+    },
+    async consolidate(remote, activeIds, stopped, options) {
+      const threshold = Math.max(4, options.threshold);
+      const maxBatchOps = Math.min(1e4, Math.max(100, options.maxBatchOps));
+      if (activeIds.length < threshold) return 0;
+      const localMap = new Map(records());
+      const candidates = [];
+      for (const id of activeIds) {
+        const b = localMap.get(id);
+        if (b && b.operations.length < maxBatchOps) candidates.push([id, b]);
+      }
+      if (candidates.length < 2) return 0;
+      const merged = dedupeOps(candidates.map(([, b]) => b.operations));
+      const packed = [];
+      for (let i = 0; i < merged.length; i += maxBatchOps) {
+        packed.push([crypto.randomUUID(), batch(merged.slice(i, i + maxBatchOps))]);
+      }
+      if (packed.length >= candidates.length) return 0;
+      for (const [id, b] of packed) {
+        if (stopped()) return 0;
+        await remote.upload(id, b);
+        GM_setValue(prefix2 + "pull_" + crypto.randomUUID(), { [id]: b });
+        GM_setValue(`${prefix2}sent_${id}`, true);
+      }
+      const hidden = /* @__PURE__ */ new Set();
+      for (const [oldId] of candidates) {
+        if (stopped()) break;
+        await remote.hide(oldId);
+        hidden.add(oldId);
+      }
+      pruneHiddenLocalKeys(hidden);
+      return hidden.size;
     },
     pending: () => records().filter(([id]) => !isSent(id)).reduce((n, [, b]) => n + b.operations.length, 0)
   };
@@ -20882,18 +21519,85 @@ ${lunaDialogCss}
     "local-following-ops": { mismatch: "\u672C\u5730\u5173\u6CE8\u540C\u6B65\u6587\u4EF6\u76EE\u5F55\u4E0D\u5339\u914D", unknown: "\u672C\u5730\u5173\u6CE8\u540C\u6B65\u76EE\u5F55\u542B\u672A\u77E5\u6587\u4EF6\uFF0C\u672A\u5E94\u7528" }
   };
   var prefix3 = "AtelierSync_";
+  var SYNC_POLICY = {
+    pushDebounceMs: 25e3,
+    pullCooldownMs: 20 * 6e4,
+    checkIntervalMs: 5 * 6e4,
+    leaseMs: 45e3,
+    dailyAutoClassCLimit: 200,
+    compactThreshold: 120,
+    compactMaxBatchOps: 8e3,
+    compactCooldownMs: 6 * 60 * 6e4
+  };
+  var tabId = crypto.randomUUID();
+  var authCacheKey = `${prefix3}authCache`;
+  var usageKey = `${prefix3}usage`;
+  var lastPullAtKey = `${prefix3}lastPullAt`;
+  var leaseKey = `${prefix3}lease`;
+  var lastCompactAtKey = `${prefix3}lastCompactAt`;
+  var lastBackupHashKey = `${prefix3}lastBackupHash`;
+  var lastBackupDateKey = `${prefix3}lastBackupDate`;
+  var cachedBackupsKey = `${prefix3}cachedBackups`;
+  var authCache = {
+    read: () => GM_getValue(authCacheKey, null),
+    write: (auth) => {
+      if (auth) GM_setValue(authCacheKey, auth);
+      else if (typeof GM_deleteValue === "function") GM_deleteValue(authCacheKey);
+      else GM_setValue(authCacheKey, null);
+    }
+  };
+  function getUsage(now = /* @__PURE__ */ new Date()) {
+    const today = formatUtcDate(now);
+    const raw = GM_getValue(usageKey, null);
+    if (!raw || raw.date !== today) return { date: today, classA: 0, classB: 0, classC: 0 };
+    return {
+      date: today,
+      classA: typeof raw.classA === "number" ? raw.classA : 0,
+      classB: typeof raw.classB === "number" ? raw.classB : 0,
+      classC: typeof raw.classC === "number" ? raw.classC : 0
+    };
+  }
+  function recordUsage(cls) {
+    const current4 = getUsage();
+    if (cls === "A") current4.classA++;
+    else if (cls === "B") current4.classB++;
+    else current4.classC++;
+    GM_setValue(usageKey, current4);
+  }
+  function autoSyncBudgetExceeded(now = /* @__PURE__ */ new Date()) {
+    return getUsage(now).classC >= SYNC_POLICY.dailyAutoClassCLimit;
+  }
+  function createB2(config2) {
+    return new B2(parseConfig(config2), void 0, { authCache, onUsage: recordUsage });
+  }
+  function acquireLease(now = Date.now()) {
+    const current4 = GM_getValue(leaseKey, null);
+    if (current4 && current4.owner && current4.owner !== tabId && typeof current4.until === "number" && current4.until > now) {
+      return false;
+    }
+    GM_setValue(leaseKey, { owner: tabId, until: now + SYNC_POLICY.leaseMs });
+    return true;
+  }
+  function releaseLease() {
+    const current4 = GM_getValue(leaseKey, null);
+    if (current4?.owner === tabId) {
+      if (typeof GM_deleteValue === "function") GM_deleteValue(leaseKey);
+      else GM_setValue(leaseKey, null);
+    }
+  }
   var getConfig = () => GM_getValue(`${prefix3}config`, null);
   var paused = () => GM_getValue(`${prefix3}paused`, true);
   function setPaused(value2) {
     GM_setValue(`${prefix3}paused`, value2);
     notify2();
-    if (!value2) schedule();
+    if (!value2) scheduleAuto();
   }
   function saveConfig(value2) {
     if (busy) throw new Error("\u540C\u6B65\u6B63\u5728\u8FDB\u884C\uFF0C\u8BF7\u5B8C\u6210\u540E\u518D\u4FEE\u6539\u8FDE\u63A5\u914D\u7F6E");
     const c = parseConfig(value2), old = getConfig();
     if (old && viewedJournalMerged() && (old.bucketId !== c.bucketId || old.prefix !== c.prefix)) throw new Error("\u5DF2\u6709\u540C\u6B65\u5386\u53F2\uFF0C\u4E0D\u80FD\u76F4\u63A5\u5207\u6362\u5B58\u50A8\u6876\u6216\u76EE\u5F55\uFF1B\u8BF7\u7EE7\u7EED\u4F7F\u7528\u539F\u540C\u6B65\u7A7A\u95F4");
     GM_setValue(`${prefix3}config`, c);
+    authCache.write(null);
     retryAfter = 0;
     notify2();
   }
@@ -20902,43 +21606,173 @@ ${lunaDialogCss}
   }
   function status() {
     const followingPending = localFollowJournal.pending();
-    return { pending: viewedJournal.pending() + followingPending, followingPending, busy, lastSuccess: GM_getValue(`${prefix3}success`, ""), error: GM_getValue(`${prefix3}error`, "") };
+    const usage = getUsage();
+    const lastPullAt = Number(GM_getValue(lastPullAtKey, 0)) || 0;
+    return {
+      pending: viewedJournal.pending() + followingPending,
+      followingPending,
+      busy,
+      lastSuccess: GM_getValue(`${prefix3}success`, ""),
+      lastPullAt,
+      lastBackupDate: GM_getValue(lastBackupDateKey, ""),
+      error: GM_getValue(`${prefix3}error`, ""),
+      usage,
+      dailyAutoClassCLimit: SYNC_POLICY.dailyAutoClassCLimit,
+      budgetExceeded: usage.classC >= SYNC_POLICY.dailyAutoClassCLimit
+    };
   }
-  var timer = 0;
+  var pushTimer = 0;
+  var pullTimer = 0;
   var busy = false;
   var failures = 0;
   var retryAfter = 0;
-  function schedule() {
-    window.clearTimeout(timer);
-    timer = window.setTimeout(() => {
-      if (!document.hidden) void synchronize();
-    }, 3e3);
+  function totalPending() {
+    return viewedJournal.pending() + localFollowJournal.pending();
+  }
+  function pullDue(now = Date.now()) {
+    if (!viewedJournalMerged()) return true;
+    const lastPullAt = Number(GM_getValue(lastPullAtKey, 0)) || 0;
+    return now - lastPullAt >= SYNC_POLICY.pullCooldownMs;
+  }
+  function schedulePush(delayMs = SYNC_POLICY.pushDebounceMs) {
+    window.clearTimeout(pushTimer);
+    pushTimer = window.setTimeout(() => {
+      if (paused() || !getConfig()) return;
+      if (!viewedJournalMerged()) void synchronize(false);
+      else void pushPending();
+    }, delayMs);
+  }
+  function scheduleAuto(delayMs = 3e3) {
+    window.clearTimeout(pullTimer);
+    pullTimer = window.setTimeout(() => {
+      if (document.hidden || paused() || !getConfig()) return;
+      if (pullDue()) void synchronize(false);
+      else if (totalPending() > 0) void pushPending();
+    }, delayMs);
   }
   async function testConnection(config2) {
-    const b2 = new B2(parseConfig(config2));
+    const b2 = createB2(config2);
     await b2.authorize();
-    for (const journal3 of journals) await b2.listDirectory(journal3.directory);
+    await b2.listPrefix();
+  }
+  function partitionPrefixEntries(entries, basePrefix) {
+    const byDir = /* @__PURE__ */ new Map([["ops", []], ["local-following-ops", []]]);
+    for (const entry of entries) {
+      if (!entry.fileName.startsWith(basePrefix)) continue;
+      const rest = entry.fileName.slice(basePrefix.length);
+      if (rest.startsWith("ops/")) byDir.get("ops").push(entry);
+      else if (rest.startsWith("local-following-ops/")) byDir.get("local-following-ops").push(entry);
+    }
+    return { byDir, backups: listRemoteBackups(entries, basePrefix) };
+  }
+  async function runDailyBackupIfNeeded(b2, config2, existingBackups, force = false, kind = "daily") {
+    const now = /* @__PURE__ */ new Date();
+    const today = formatUtcDate(now);
+    const snapshot = await buildPcBackupSnapshot(kind, now);
+    const lastHash = GM_getValue(lastBackupHashKey, "");
+    const lastDate = GM_getValue(lastBackupDateKey, "");
+    if (!force && kind === "daily") {
+      if (lastHash === snapshot.contentHash && lastDate === today) return null;
+      if (lastHash === snapshot.contentHash && existingBackups.some((b) => b.platform === "pc" && b.kind === "daily")) return null;
+    }
+    const shortName = formatBackupFilename("pc", kind, now);
+    const fullName = `${config2.prefix}backups/${shortName}`;
+    await b2.upload(fullName, snapshot);
+    if (kind === "daily") {
+      GM_setValue(lastBackupHashKey, snapshot.contentHash);
+      GM_setValue(lastBackupDateKey, today);
+    }
+    const updatedList = [
+      { platform: "pc", kind, stamp: kind === "daily" ? today : shortName.slice(shortName.indexOf(kind) + kind.length + 1, shortName.lastIndexOf("-")), fileName: fullName, fileId: "", shortName, size: 0, uploadTimestamp: now.getTime() },
+      ...existingBackups.filter((b) => b.fileName !== fullName)
+    ];
+    for (const expired of expiredBackupFileNames(updatedList, "pc")) {
+      if (paused()) break;
+      await b2.hideFile(expired);
+    }
+    GM_setValue(cachedBackupsKey, updatedList.filter((b) => !expiredBackupFileNames(updatedList, "pc").includes(b.fileName)));
+    return fullName;
+  }
+  async function pushPending() {
+    const config2 = getConfig();
+    if (!config2 || paused() || busy || !viewedJournalMerged() || totalPending() === 0 || Date.now() < retryAfter) return "skipped";
+    if (!acquireLease()) return "skipped";
+    busy = true;
+    notify2();
+    try {
+      const b2 = createB2(config2);
+      await b2.ensureAuthorized(false);
+      for (const journal3 of journals) {
+        if (paused()) return "cancelled";
+        const remote = new RemoteDirectory(b2, config2.prefix, journal3.directory, messages[journal3.directory]);
+        await journal3.upload(remote, paused);
+      }
+      if (paused()) return "cancelled";
+      GM_setValue(`${prefix3}success`, (/* @__PURE__ */ new Date()).toISOString());
+      GM_setValue(`${prefix3}error`, "");
+      failures = 0;
+      retryAfter = 0;
+      pulseViewedJournal();
+      return "success";
+    } catch (e) {
+      GM_setValue(`${prefix3}error`, e instanceof Error ? e.message : "\u4E0A\u4F20\u540C\u6B65\u5931\u8D25");
+      retryAfter = Date.now() + Math.min(15 * 6e4, 3e4 * 2 ** Math.min(failures++, 5));
+      return "error";
+    } finally {
+      busy = false;
+      releaseLease();
+      notify2();
+    }
   }
   async function synchronize(manual = false) {
     const config2 = getConfig();
     if (!config2 || paused() || busy || !manual && Date.now() < retryAfter) return "skipped";
+    if (!manual && autoSyncBudgetExceeded()) {
+      GM_setValue(`${prefix3}error`, `\u4ECA\u65E5\u81EA\u52A8\u540C\u6B65\u5DF2\u6682\u505C\uFF1A\u672C\u673A B2 Class C \u8C03\u7528\u5DF2\u8FBE ${SYNC_POLICY.dailyAutoClassCLimit} \u6B21\u5B89\u5168\u4E0A\u9650\uFF0CUTC \u660E\u65E5\u81EA\u52A8\u6062\u590D\uFF08\u4ECD\u53EF\u624B\u52A8\u540C\u6B65\uFF09`);
+      notify2();
+      return "skipped";
+    }
+    if (!manual && !pullDue()) return totalPending() > 0 ? pushPending() : "skipped";
+    if (!acquireLease()) return "skipped";
     busy = true;
     notify2();
     try {
-      const b2 = new B2(parseConfig(config2));
-      await b2.authorize();
-      const remote = (journal3) => new RemoteDirectory(b2, config2.prefix, journal3.directory, messages[journal3.directory]);
+      const b2 = createB2(config2);
+      await b2.ensureAuthorized(false);
+      const allEntries = await b2.listPrefix();
+      const { byDir, backups } = partitionPrefixEntries(allEntries, config2.prefix);
+      GM_setValue(cachedBackupsKey, backups);
+      const remotes = journals.map((journal3) => new RemoteDirectory(b2, config2.prefix, journal3.directory, messages[journal3.directory], byDir.get(journal3.directory) ?? []));
       const pulled = [];
-      for (const journal3 of journals) {
-        const result = await journal3.pull(remote(journal3), paused);
+      for (let i = 0; i < journals.length; i++) {
+        const result = await journals[i].pull(remotes[i], paused);
         if (result === null) return "cancelled";
         pulled.push(result);
       }
       if (paused()) return "cancelled";
       journals.forEach((journal3, index) => journal3.apply(pulled[index]));
-      for (const journal3 of journals) {
+      GM_setValue(lastPullAtKey, Date.now());
+      for (let i = 0; i < journals.length; i++) {
         if (paused()) break;
-        await journal3.upload(remote(journal3), paused);
+        await journals[i].upload(remotes[i], paused);
+      }
+      if (paused()) return "cancelled";
+      const lastCompactAt = Number(GM_getValue(lastCompactAtKey, 0)) || 0;
+      if (Date.now() - lastCompactAt >= SYNC_POLICY.compactCooldownMs) {
+        const compactOptions = { threshold: SYNC_POLICY.compactThreshold, maxBatchOps: SYNC_POLICY.compactMaxBatchOps };
+        let hiddenTotal = 0;
+        for (let i = 0; i < journals.length; i++) {
+          if (paused()) break;
+          const j = journals[i];
+          if (j.consolidate) hiddenTotal += await j.consolidate(remotes[i], remotes[i].activeIds(), paused, compactOptions);
+        }
+        if (hiddenTotal > 0) GM_setValue(lastCompactAtKey, Date.now());
+      }
+      if (!paused()) {
+        try {
+          await runDailyBackupIfNeeded(b2, config2, backups, false, "daily");
+        } catch {
+        }
       }
       if (paused()) return "cancelled";
       GM_setValue(`${prefix3}success`, (/* @__PURE__ */ new Date()).toISOString());
@@ -20951,6 +21785,83 @@ ${lunaDialogCss}
       GM_setValue(`${prefix3}error`, e instanceof Error ? e.message : "\u540C\u6B65\u5931\u8D25");
       retryAfter = Date.now() + Math.min(15 * 6e4, 3e4 * 2 ** Math.min(failures++, 5));
       return "error";
+    } finally {
+      busy = false;
+      releaseLease();
+      notify2();
+    }
+  }
+  async function createCloudBackupNow() {
+    const config2 = getConfig();
+    if (!config2) throw new Error("\u8BF7\u5148\u4FDD\u5B58 Backblaze B2 \u8FDE\u63A5\u8BBE\u7F6E");
+    if (busy) throw new Error("\u540C\u6B65\u6B63\u5728\u8FDB\u884C\uFF0C\u8BF7\u7A0D\u540E\u518D\u8BD5");
+    busy = true;
+    notify2();
+    try {
+      const b2 = createB2(config2);
+      await b2.ensureAuthorized(false);
+      const existing = listRemoteBackups(await b2.listPrefix("backups/"), config2.prefix);
+      const uploaded = await runDailyBackupIfNeeded(b2, config2, existing, true, "manual");
+      if (!uploaded) throw new Error("\u521B\u5EFA\u4E91\u7AEF\u5907\u4EFD\u5931\u8D25");
+      return uploaded;
+    } finally {
+      busy = false;
+      notify2();
+    }
+  }
+  async function fetchCloudBackups(refresh = true) {
+    if (!refresh) {
+      const cached = GM_getValue(cachedBackupsKey, null);
+      if (Array.isArray(cached) && cached.length) return cached;
+    }
+    const config2 = getConfig();
+    if (!config2) throw new Error("\u8BF7\u5148\u4FDD\u5B58 Backblaze B2 \u8FDE\u63A5\u8BBE\u7F6E");
+    const b2 = createB2(config2);
+    const entries = await b2.listPrefix("backups/");
+    const backups = listRemoteBackups(entries, config2.prefix);
+    GM_setValue(cachedBackupsKey, backups);
+    notify2();
+    return backups;
+  }
+  async function downloadCloudBackup(fileId) {
+    const config2 = getConfig();
+    if (!config2) throw new Error("\u8BF7\u5148\u4FDD\u5B58 Backblaze B2 \u8FDE\u63A5\u8BBE\u7F6E");
+    const b2 = createB2(config2);
+    const raw = await b2.download(fileId);
+    return parseBackupSnapshot(raw);
+  }
+  async function restoreFromCloudBackup(fileId, mode2 = "sync-all") {
+    const config2 = getConfig();
+    if (!config2) throw new Error("\u8BF7\u5148\u4FDD\u5B58 Backblaze B2 \u8FDE\u63A5\u8BBE\u7F6E");
+    if (busy) throw new Error("\u540C\u6B65\u6B63\u5728\u8FDB\u884C\uFF0C\u8BF7\u7A0D\u540E\u518D\u8BD5");
+    busy = true;
+    notify2();
+    try {
+      const b2 = createB2(config2);
+      await b2.ensureAuthorized(false);
+      const target = parseBackupSnapshot(await b2.download(fileId));
+      const preRestore = await buildPcBackupSnapshot("pre-restore");
+      GM_setValue(`${prefix3}preRestoreBackup`, preRestore);
+      try {
+        const existing = listRemoteBackups(GM_getValue(cachedBackupsKey, []) ?? [], config2.prefix);
+        await runDailyBackupIfNeeded(b2, config2, existing, true, "pre-restore");
+      } catch {
+      }
+      if (mode2 === "local-pause") {
+        GM_setValue(`${prefix3}paused`, true);
+      }
+      applyBackupSnapshotToPc(target);
+      pulseViewedJournal();
+      if (mode2 === "sync-all" && !paused()) {
+        for (const journal3 of journals) {
+          if (paused()) break;
+          const remote = new RemoteDirectory(b2, config2.prefix, journal3.directory, messages[journal3.directory]);
+          await journal3.upload(remote, paused);
+        }
+        GM_setValue(`${prefix3}success`, (/* @__PURE__ */ new Date()).toISOString());
+        GM_setValue(`${prefix3}error`, "");
+      }
+      return target;
     } finally {
       busy = false;
       notify2();
@@ -20972,14 +21883,18 @@ ${lunaDialogCss}
     if (value2 == null) throw new Error("\u672C\u5730\u5173\u6CE8\u5C1A\u672A\u9996\u6B21\u5408\u5E76\uFF0C\u5907\u4EFD\u5C06\u5728\u9996\u6B21\u5408\u5E76\u524D\u4FDD\u5B58");
     saveJson(value2, "atelier-local-following-before-sync.json");
   }
+  async function downloadFullLocalBackup() {
+    const snapshot = await buildPcBackupSnapshot("manual");
+    saveJson(snapshot, `bili-atelier-backup-${formatUtcDate()}.json`);
+  }
   function startSync() {
     startViewedJournal(() => {
       notify2();
-      schedule();
+      schedulePush();
     });
     onLocalFollowMutation(() => {
       notify2();
-      schedule();
+      schedulePush();
     });
     if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(viewedJournalPulseKey, (_, __, ___, remote) => {
       if (remote) {
@@ -20987,17 +21902,24 @@ ${lunaDialogCss}
         notify2();
       }
     });
-    window.addEventListener("online", schedule);
+    window.addEventListener("online", () => scheduleAuto(2e3));
+    window.addEventListener("pagehide", () => {
+      if (!paused() && totalPending() > 0 && viewedJournalMerged()) void pushPending();
+    });
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) {
+      if (document.hidden) {
+        if (!paused() && totalPending() > 0 && viewedJournalMerged()) void pushPending();
+      } else {
         applyViewedJournal();
-        schedule();
+        scheduleAuto(3e3);
       }
     });
     window.setInterval(() => {
-      if (!document.hidden) void synchronize();
-    }, 6e4);
-    schedule();
+      if (document.hidden || paused() || !getConfig()) return;
+      if (pullDue()) void synchronize(false);
+      else if (totalPending() > 0) void pushPending();
+    }, SYNC_POLICY.checkIntervalMs);
+    scheduleAuto(3e3);
   }
 
   // src/modules/sync/panel.ts
@@ -21021,18 +21943,24 @@ ${lunaDialogCss}
     [role=status] { white-space:pre-wrap; overflow-wrap:anywhere; background:var(--xp-window); border:1px solid var(--xp-edge); padding:6px 8px; margin:12px 0; }
     .actions { display:flex; gap:6px; flex-wrap:wrap; }
     .actions .atelier-control { min-width:75px; }
-    .qr:not(:empty) { border:1px solid var(--xp-edge); padding:14px; margin-top:16px; background:var(--xp-window); }
+    .qr:not(:empty), .backups:not(:empty) { border:1px solid var(--xp-edge); padding:10px 12px; margin-top:12px; background:var(--xp-window); }
+    .backup-row { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 0; border-top:1px solid var(--xp-line); flex-wrap:wrap; }
+    .backup-row:first-child { border-top:none; padding-top:0; }
+    .backup-meta { flex:1 1 200px; min-width:0; }
+    .backup-mode { margin:0 0 8px; display:flex; gap:14px; flex-wrap:wrap; }
+    .backup-mode label { display:inline-flex; align-items:center; gap:4px; }
+    .backup-mode input { width:auto; margin:0; }
     canvas { display:block; max-width:100%; height:auto!important; margin-bottom:12px; }
     @media(max-width:850px) { .fields { grid-template-columns:minmax(0,1fr); } h2 { font-size:1.4em; } }
   </style>
   <h2>PC / Android \u540C\u6B65</h2>
-  <p class="hint">\u901A\u8FC7 Backblaze B2 \u540C\u6B65\u5DF2\u770B\u6807\u8BB0\u3001UID\uFF0F\u7CBE\u786E\u7528\u6237\u540D\u9ED1\u540D\u5355\uFF0C\u4EE5\u53CA\u672C\u5730\u5173\u6CE8\u548C\u5206\u7EC4\uFF0C\u5305\u62EC\u65B0\u589E\u4E0E\u79FB\u9664\u3002</p>
+  <p class="hint">\u901A\u8FC7 Backblaze B2 \u540C\u6B65\u5DF2\u770B\u6807\u8BB0\u3001UID\uFF0F\u7CBE\u786E\u7528\u6237\u540D\u9ED1\u540D\u5355\uFF0C\u4EE5\u53CA\u672C\u5730\u5173\u6CE8\u548C\u5206\u7EC4\u3002\u91C7\u7528 22h \u4EE4\u724C\u7F13\u5B58\u3001\u8BFB\u5199\u5206\u79BB\u4E0E\u8DE8\u6807\u7B7E\u9875\u51B7\u5374\uFF0C\u5E76\u6BCF\u65E5\u81EA\u52A8\u4FDD\u5B58\u4E91\u7AEF\u5FEB\u7167\u3002</p>
   <section><h3>\u8FDE\u63A5\u8BBE\u7F6E</h3><div class="fields"></div>
-  <p class="hint" style="margin-top:12px">\u4E24\u7AEF\u4F7F\u7528\u540C\u4E00 Bucket \u548C\u540C\u6B65\u76EE\u5F55\u3002\u9996\u6B21\u5408\u5E76\u540E\u4E0D\u80FD\u66F4\u6362\u8FD9\u4E24\u9879\uFF1B\u540C\u4E00\u7A7A\u95F4\u5185\u53EF\u66F4\u65B0\u5BC6\u94A5\u3002\u5176\u4ED6\u5C4F\u853D\u89C4\u5219\u548C\u5386\u53F2\u8BB0\u5F55\u4E0D\u53C2\u4E0E\u4E91\u540C\u6B65\u3002</p>
+  <p class="hint" style="margin-top:12px">\u4E24\u7AEF\u4F7F\u7528\u540C\u4E00 Bucket \u548C\u540C\u6B65\u76EE\u5F55\u3002\u9996\u6B21\u5408\u5E76\u540E\u4E0D\u80FD\u66F4\u6362\u8FD9\u4E24\u9879\uFF1B\u540C\u4E00\u7A7A\u95F4\u5185\u53EF\u66F4\u65B0\u5BC6\u94A5\u3002\u53EA\u9700 listFiles\u3001readFiles\u3001writeFiles \u6743\u9650\u3002</p>
   <div class="actions settings"></div></section>
-  <section><h3>\u540C\u6B65\u72B6\u6001</h3><p role="status" aria-live="polite"></p><div class="actions controls"></div>
-  <p class="hint" style="margin-top:12px">\u542F\u7528\u540E\u81EA\u52A8\u540C\u6B65\uFF1B\u6682\u505C\u671F\u95F4\u4ECD\u4FDD\u7559\u672C\u5730\u6539\u52A8\uFF0C\u91CD\u65B0\u542F\u7528\u540E\u7EE7\u7EED\u4E0A\u4F20\u3002\u9996\u6B21\u4E91\u7AEF\u5408\u5E76\u524D\u4F1A\u4FDD\u7559\u672C\u5730\u5907\u4EFD\u3002</p></section>
-  <section><h3>\u624B\u673A\u914D\u7F6E\u4E0E\u5907\u4EFD</h3><div class="actions transfer"></div><div class="qr"></div></section>`;
+  <section><h3>\u540C\u6B65\u72B6\u6001\u4E0E\u7528\u91CF</h3><p role="status" aria-live="polite"></p><div class="actions controls"></div>
+  <p class="hint" style="margin-top:12px">\u672C\u5730\u6539\u52A8\u805A\u5408\u9632\u6296\u540E\u76F4\u63A5\u63A8\u9001\uFF080 Class C\uFF09\uFF1B\u8FDC\u7AEF\u62C9\u53D6\u6309\u591A\u6807\u7B7E\u5171\u4EAB\u51B7\u5374\u6267\u884C\u3002\u968F\u65F6\u53EF\u70B9\u201C\u7ACB\u5373\u540C\u6B65\u201D\u5F3A\u5236\u62C9\u53D6\u3002</p></section>
+  <section><h3>\u4E91\u7AEF\u5FEB\u7167\u4E0E\u624B\u673A\u914D\u7F6E</h3><div class="actions transfer"></div><div class="backups"></div><div class="qr"></div></section>`;
     const fields2 = /* @__PURE__ */ new Map();
     const cleanupPixels = observeCrispText(root);
     const c = getConfig();
@@ -21055,6 +21983,7 @@ ${lunaDialogCss}
     let message = "";
     let disposed = false;
     let qrGeneration = 0;
+    let restoreMode = "sync-all";
     function hideSecrets() {
       qrGeneration++;
       root.querySelector(".qr").replaceChildren();
@@ -21062,8 +21991,12 @@ ${lunaDialogCss}
     const render2 = () => {
       if (disposed) return;
       const s2 = status();
+      const pullText = s2.lastPullAt ? new Date(s2.lastPullAt).toLocaleString() : "\u5C1A\u672A\u62C9\u53D6";
+      const usageText = `\u4ECA\u65E5 B2 \u8C03\u7528\uFF08UTC ${s2.usage.date}\uFF09\uFF1AClass C ${s2.usage.classC}/${s2.dailyAutoClassCLimit} \xB7 Class B ${s2.usage.classB} \xB7 Class A ${s2.usage.classA}${s2.budgetExceeded ? "\uFF08\u5DF2\u89E6\u53D1\u81EA\u52A8\u540C\u6B65\u4FDD\u62A4\uFF09" : ""}`;
+      const backupText = s2.lastBackupDate ? ` \xB7 \u6700\u8FD1\u6BCF\u65E5\u5FEB\u7167\uFF1A${s2.lastBackupDate}` : "";
       root.querySelector('[role="status"]').textContent = `${paused() ? "\u5DF2\u6682\u505C" : "\u5DF2\u542F\u7528"} \xB7 ${s2.busy ? "\u540C\u6B65\u4E2D" : `\u5F85\u4E0A\u4F20 ${s2.pending} \u6761\u64CD\u4F5C`}
-\u6700\u8FD1\u6210\u529F\uFF1A${s2.lastSuccess ? new Date(s2.lastSuccess).toLocaleString() : "\u5C1A\u672A\u540C\u6B65"}${s2.error ? `
+\u6700\u8FD1\u6210\u529F\uFF1A${s2.lastSuccess ? new Date(s2.lastSuccess).toLocaleString() : "\u5C1A\u672A\u540C\u6B65"} \xB7 \u6700\u8FD1\u62C9\u53D6\uFF1A${pullText}${backupText}
+${usageText}${s2.error ? `
 ${s2.error}` : ""}${message ? `
 ${message}` : ""}`;
     };
@@ -21094,6 +22027,91 @@ ${message}` : ""}`;
       };
       root.querySelector("." + group).append(button6);
     };
+    const kindLabel2 = (kind) => kind === "daily" ? "\u6BCF\u65E5\u5FEB\u7167" : kind === "manual" ? "\u624B\u52A8\u5907\u4EFD" : "\u6062\u590D\u524D\u5FEB\u7167";
+    function renderBackups(list) {
+      const box2 = root.querySelector(".backups");
+      box2.replaceChildren();
+      if (!list.length) {
+        const empty = document.createElement("p");
+        empty.className = "hint";
+        empty.style.margin = "0";
+        empty.textContent = "\u4E91\u7AEF\u6682\u65E0\u5FEB\u7167\u5907\u4EFD\u3002\u70B9\u51FB\u201C\u7ACB\u5373\u5907\u4EFD\u5230 B2\u201D\u53EF\u7ACB\u5373\u521B\u5EFA\u3002";
+        box2.append(empty);
+        return;
+      }
+      const modeRow = document.createElement("div");
+      modeRow.className = "backup-mode";
+      for (const [val, label] of [["sync-all", "\u6062\u590D\u5E76\u540C\u6B65\u5230\u6240\u6709\u8BBE\u5907\uFF08\u63A8\u8350\uFF09"], ["local-pause", "\u4EC5\u6062\u590D\u672C\u673A\u5E76\u6682\u505C\u540C\u6B65"]]) {
+        const item = document.createElement("label");
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "atelier-restore-mode";
+        radio.value = val;
+        radio.checked = restoreMode === val;
+        radio.onchange = () => {
+          if (radio.checked) restoreMode = val;
+        };
+        item.append(radio, document.createTextNode(label));
+        modeRow.append(item);
+      }
+      box2.append(modeRow);
+      for (const item of list.slice(0, 30)) {
+        const row = document.createElement("div");
+        row.className = "backup-row";
+        const meta = document.createElement("span");
+        meta.className = "backup-meta";
+        const sizeKb = item.size > 0 ? ` \xB7 ${(item.size / 1024).toFixed(1)} KB` : "";
+        meta.textContent = `[${item.platform.toUpperCase()}] ${kindLabel2(item.kind)} \xB7 ${item.stamp}${sizeKb}`;
+        const buttons2 = document.createElement("span");
+        buttons2.className = "actions";
+        const restoreBtn = document.createElement("button");
+        restoreBtn.type = "button";
+        restoreBtn.className = "atelier-control";
+        restoreBtn.textContent = "\u6062\u590D";
+        restoreBtn.onclick = async () => {
+          const modeHint = restoreMode === "sync-all" ? "\u6062\u590D\u540E\u5C06\u4F5C\u4E3A\u65B0\u64CD\u4F5C\u540C\u6B65\u5230\u6240\u6709\u8BBE\u5907" : "\u6062\u590D\u524D\u4F1A\u6682\u505C\u540C\u6B65\uFF0C\u4EC5\u4F5C\u7528\u4E8E\u672C\u673A";
+          if (!await atelierConfirm(`\u786E\u5B9A\u6062\u590D ${item.shortName}\uFF1F
+\u7CFB\u7EDF\u4F1A\u5148\u81EA\u52A8\u4FDD\u5B58\u4E00\u4EFD\u201C\u6062\u590D\u524D\u5FEB\u7167\u201D\u3002${modeHint}\u3002`)) return;
+          restoreBtn.disabled = true;
+          message = "";
+          try {
+            await restoreFromCloudBackup(item.fileId, restoreMode);
+            message = restoreMode === "sync-all" ? `\u5DF2\u6062\u590D ${item.shortName} \u5E76\u63A8\u9001\u540C\u6B65\u3002` : `\u5DF2\u5728\u672C\u5730\u6062\u590D ${item.shortName}\uFF0C\u540C\u6B65\u5DF2\u6682\u505C\u3002`;
+          } catch (e) {
+            message = e instanceof Error ? e.message : "\u6062\u590D\u5931\u8D25";
+          } finally {
+            restoreBtn.disabled = false;
+            render2();
+          }
+        };
+        const downloadBtn = document.createElement("button");
+        downloadBtn.type = "button";
+        downloadBtn.className = "atelier-control";
+        downloadBtn.textContent = "\u4E0B\u8F7D JSON";
+        downloadBtn.onclick = async () => {
+          downloadBtn.disabled = true;
+          message = "";
+          try {
+            const snapshot = await downloadCloudBackup(item.fileId);
+            const url = URL.createObjectURL(new Blob([JSON.stringify(snapshot, null, 2)], { type: "application/json" }));
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = item.shortName;
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1e3);
+            message = `\u5DF2\u4E0B\u8F7D ${item.shortName}`;
+          } catch (e) {
+            message = e instanceof Error ? e.message : "\u4E0B\u8F7D\u5931\u8D25";
+          } finally {
+            downloadBtn.disabled = false;
+            render2();
+          }
+        };
+        buttons2.append(restoreBtn, downloadBtn);
+        row.append(meta, buttons2);
+        box2.append(row);
+      }
+    }
     action("settings", "\u6D4B\u8BD5\u8FDE\u63A5", async () => {
       await testConnection(config2());
       message = "\u8BA4\u8BC1\u3001\u76EE\u5F55\u8BFB\u53D6\u53CA\u6743\u9650\u68C0\u67E5\u901A\u8FC7\uFF1B\u9996\u6B21\u540C\u6B65\u5C06\u9A8C\u8BC1\u4E0A\u4F20\u3002";
@@ -21108,6 +22126,20 @@ ${message}` : ""}`;
       if (paused()) throw new Error("\u8BF7\u5148\u4FDD\u5B58\u5E76\u542F\u7528\u540C\u6B65");
       return synchronize(true);
     }, false, "complete", true);
+    action("transfer", "\u7ACB\u5373\u5907\u4EFD\u5230 B2", async () => {
+      const path = await createCloudBackupNow();
+      message = `\u5DF2\u4E0A\u4F20\u4E91\u7AEF\u5FEB\u7167\uFF1A${path}`;
+    }, false, "complete", true);
+    action("transfer", "\u67E5\u770B\u4E91\u7AEF\u5907\u4EFD", async () => {
+      const box2 = root.querySelector(".backups");
+      if (box2.childNodes.length) {
+        box2.replaceChildren();
+        return;
+      }
+      const list = await fetchCloudBackups(true);
+      if (!disposed) renderBackups(list);
+    }, false, "menu", true);
+    action("transfer", "\u4E0B\u8F7D\u5B8C\u6574\u672C\u5730\u5907\u4EFD", downloadFullLocalBackup);
     action("transfer", "\u4E0B\u8F7D\u9996\u6B21\u5907\u4EFD", downloadBackup);
     action("transfer", "\u4E0B\u8F7D\u672C\u5730\u5173\u6CE8\u9996\u6B21\u5907\u4EFD", downloadLocalFollowBackup);
     action("transfer", "\u663E\u793A\u914D\u7F6E\u4E8C\u7EF4\u7801", async () => {
@@ -21362,9 +22394,9 @@ ${message}` : ""}`;
         items
       };
     };
-    let signature = "", timer2 = 0;
+    let signature = "", timer = 0;
     const snapshot = () => {
-      timer2 = 0;
+      timer = 0;
       const state2 = app()?.$store?.state;
       if (!state2?.bvid || !state2.videoData) return;
       const video2 = state2.videoData, list = state2.playlist ? playList() : null;
@@ -21454,9 +22486,9 @@ ${message}` : ""}`;
       signature = text4;
       post({ kind: "state", state: next });
     };
-    const schedule2 = () => {
-      if (!timer2) timer2 = window.setTimeout(bangumi ? () => {
-        timer2 = 0;
+    const schedule = () => {
+      if (!timer) timer = window.setTimeout(bangumi ? () => {
+        timer = 0;
         bangumiSnapshot();
       } : snapshot, 60);
     };
@@ -21467,10 +22499,10 @@ ${message}` : ""}`;
           window.setTimeout(watch, 200);
           return;
         }
-        cache.subscribe(schedule2);
-        window.next?.router?.events?.on?.("routeChangeComplete", schedule2);
-        schedule2();
-        window.setInterval(schedule2, 1e3);
+        cache.subscribe(schedule);
+        window.next?.router?.events?.on?.("routeChangeComplete", schedule);
+        schedule();
+        window.setInterval(schedule, 1e3);
         return;
       }
       const store = app()?.$store;
@@ -21478,9 +22510,9 @@ ${message}` : ""}`;
         window.setTimeout(watch, 200);
         return;
       }
-      store.subscribe(schedule2);
-      schedule2();
-      if (store.state.playlist) window.setInterval(schedule2, 1e3);
+      store.subscribe(schedule);
+      schedule();
+      if (store.state.playlist) window.setInterval(schedule, 1e3);
     };
     watch();
     let playback = "";
@@ -21515,7 +22547,7 @@ ${message}` : ""}`;
       if (event.origin !== location.origin || data?.channel !== channel2) return;
       if (data.kind === "refresh") {
         signature = "";
-        schedule2();
+        schedule();
       } else if (data.kind === "switch") {
         const vm = app(), list = actionList(), target = data.target ?? {};
         const router = window.next?.router;
@@ -24190,7 +25222,7 @@ ${message}` : ""}`;
   // src/modules/video-luna/ending-clicks.ts
   var endingClickDelay = 200;
   function startEndingClicks() {
-    let timer2 = 0;
+    let timer = 0;
     const passed = /* @__PURE__ */ new WeakSet();
     const blank = (event) => {
       const target = event.target instanceof Element ? event.target : null;
@@ -24203,10 +25235,10 @@ ${message}` : ""}`;
       const panel = blank(event);
       if (!panel) return;
       event.stopImmediatePropagation();
-      window.clearTimeout(timer2);
+      window.clearTimeout(timer);
       if (event.detail > 1) return;
       const target = event.target, at = { clientX: event.clientX, clientY: event.clientY };
-      timer2 = window.setTimeout(() => {
+      timer = window.setTimeout(() => {
         if (!target.isConnected) return;
         const click = new MouseEvent("click", { bubbles: true, cancelable: true, ...at });
         passed.add(click);
@@ -24217,7 +25249,7 @@ ${message}` : ""}`;
       const panel = blank(event);
       if (!panel) return;
       event.stopImmediatePropagation();
-      window.clearTimeout(timer2);
+      window.clearTimeout(timer);
       const perch = panel.closest(".bpx-player-video-area")?.querySelector(".bpx-player-video-perch");
       perch?.dispatchEvent(new MouseEvent("dblclick", { bubbles: true, cancelable: true, clientX: event.clientX, clientY: event.clientY }));
     }, true);
@@ -24914,9 +25946,9 @@ ${message}` : ""}`;
       };
       const done = () => {
         waiters.delete(check2);
-        window.clearTimeout(timer2);
+        window.clearTimeout(timer);
       };
-      const timer2 = window.setTimeout(() => {
+      const timer = window.setTimeout(() => {
         done();
         resolve(false);
       }, ms);
@@ -25562,11 +26594,11 @@ ${page.css ?? ""}`;
     };
     const bringsHost = (node4) => node4 instanceof Element && !node4.matches(".btnView") && !!(node4.closest(watched) || node4.querySelector(watched));
     const matters = (record) => record.type !== "childList" ? inHost(record.target) : [...record.addedNodes].some(bringsHost) || record.removedNodes.length > 0 && inHost(record.target);
-    let timer2 = 0;
+    let timer = 0;
     new MutationObserver((records2) => {
-      if (timer2 || !records2.some(matters)) return;
-      timer2 = window.setTimeout(() => {
-        timer2 = 0;
+      if (timer || !records2.some(matters)) return;
+      timer = window.setTimeout(() => {
+        timer = 0;
         scan();
       }, 80);
     }).observe(document.documentElement, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["href", "data-key", "data-bvid", "class"] });
@@ -26166,13 +27198,13 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       paintCount();
     }
     async function read3(url, mine) {
-      const stop = new AbortController(), timer2 = window.setTimeout(() => stop.abort(), 15e3);
+      const stop = new AbortController(), timer = window.setTimeout(() => stop.abort(), 15e3);
       try {
         const body2 = await relay.read(url, stop.signal);
         if (mine !== generation) return null;
         return body2;
       } finally {
-        window.clearTimeout(timer2);
+        window.clearTimeout(timer);
       }
     }
     async function more() {
@@ -26749,11 +27781,21 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       if (win.isDirty() && !await atelierConfirm("\u5BFC\u5165\u4F1A\u91CD\u65B0\u8F7D\u5165\u89C4\u5219\u5E76\u653E\u5F03\u5C1A\u672A\u4FDD\u5B58\u7684\u4FEE\u6539\u3002\u7EE7\u7EED\u5417\uFF1F")) return false;
       if (mode2 === "overwrite" && !await atelierConfirm("\u8986\u76D6\u5BFC\u5165\u4F1A\u66FF\u6362\u5DF2\u770B\u8BB0\u5F55\u548C\u5BF9\u5E94\u5C4F\u853D\u89C4\u5219\u3002\u786E\u5B9A\u7EE7\u7EED\u5417\uFF1F")) return false;
       if (!win.element.isConnected) return false;
-      const result = importAtelierDataInput(JSON.parse(text4), mode2);
+      const parsed = JSON.parse(text4);
+      let summary = "";
+      if (parsed && typeof parsed === "object" && parsed.schema === backupSchema) {
+        if (mode2 === "append") throw new Error("\u5B8C\u6574\u5FEB\u7167\u5907\u4EFD\uFF08bili-atelier-backup\uFF09\u8BF7\u4F7F\u7528\u201C\u8986\u76D6\u5BFC\u5165\u201D\u6062\u590D");
+        const snapshot = parseBackupSnapshot(parsed);
+        applyBackupSnapshotToPc(snapshot);
+        summary = `\u5DF2\u6062\u590D\u5B8C\u6574\u5907\u4EFD\uFF08${snapshot.platform.toUpperCase()} \xB7 ${snapshot.createdAt.slice(0, 10)}\uFF09\uFF1A\u5DF2\u770B ${snapshot.data.viewed.items.length} \u6761\u3001\u672C\u5730\u5173\u6CE8 ${snapshot.data.localFollowing.accounts.length} \u4EBA`;
+      } else {
+        const result = importAtelierDataInput(parsed, mode2);
+        summary = result.res;
+      }
       win.reload();
       notifyAtelierDataChanged();
-      win.updateStatus(result.res);
-      showInfoLog(result.res + "\uFF1B\u5DF2\u770B\u72B6\u6001\u53EF\u80FD\u9700\u8981\u5237\u65B0\u9875\u9762\u540E\u5B8C\u5168\u751F\u6548\u3002", "success", 5200);
+      win.updateStatus(summary);
+      showInfoLog(summary + "\uFF1B\u5DF2\u770B\u72B6\u6001\u53EF\u80FD\u9700\u8981\u5237\u65B0\u9875\u9762\u540E\u5B8C\u5168\u751F\u6548\u3002", "success", 5200);
       return true;
     }
     async function pasteImport(mode2) {
@@ -26821,6 +27863,12 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
             content.append(element("h2", "", "\u6570\u636E\u7BA1\u7406"), element("p", "luna-description", "\u5907\u4EFD\u4F60\u7684\u5DF2\u770B\u8BB0\u5F55\u548C\u5C4F\u853D\u89C4\u5219\uFF0C\u4E5F\u53EF\u5BFC\u5165\u5230\u624B\u673A\u3002"));
             content.append(dataGroup("\u5BFC\u51FA\u4E0E\u624B\u673A\u5BFC\u5165", "\u5BFC\u51FA\u5F53\u524D\u5DF2\u4FDD\u5B58\u7684\u6570\u636E\uFF1B\u4FEE\u6539\u89C4\u5219\u540E\u8BF7\u5148\u4FDD\u5B58\u3002", [
               button("\u4E0B\u8F7D\u5DF2\u770B JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", downloadViewed),
+              button("\u4E0B\u8F7D\u5B8C\u6574\u5FEB\u7167 JSON\uFF08\u542B\u672C\u5730\u5173\u6CE8\u4E0E\u8BBE\u7F6E\uFF09", async () => {
+                const snapshot = await buildPcBackupSnapshot("manual");
+                downloadJson(snapshot, dated("bili-atelier-backup"));
+                showInfoLog("\u5DF2\u4E0B\u8F7D\u5B8C\u6574\u5FEB\u7167 JSON\uFF08\u542B\u5DF2\u770B\u3001\u5C4F\u853D\u89C4\u5219\u3001\u672C\u5730\u5173\u6CE8\u548C\u754C\u9762\u8BBE\u7F6E\uFF09", "success");
+                sound("success");
+              }),
               button("\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u624B\u673A\u5BFC\u5165\uFF09", () => {
                 downloadJson(exportAtelierDataPackage(), dated("bili-atelier-data"));
                 showInfoLog("\u5DF2\u4E0B\u8F7D\u7EDF\u4E00 JSON\uFF08\u542B\u5DF2\u770B\u548C\u5C4F\u853D\u89C4\u5219\uFF09", "success");
