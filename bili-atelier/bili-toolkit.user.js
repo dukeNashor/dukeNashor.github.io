@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.12.0
+// @version      0.12.1
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -21159,12 +21159,16 @@ ${lunaDialogCss}
     async consolidate(remote, activeIds, stopped, options) {
       const threshold = Math.max(4, options.threshold);
       const maxBatchOps = Math.min(1e4, Math.max(100, options.maxBatchOps));
+      const maxFiles = Math.max(2, options.maxFilesPerRound ?? 80);
       if (activeIds.length < threshold) return 0;
       const localMap = new Map(localFollowRecords());
       const candidates = [];
       for (const id of activeIds) {
         const b = localMap.get(id);
-        if (b && b.operations.length < maxBatchOps) candidates.push([id, b]);
+        if (b && b.operations.length < maxBatchOps) {
+          candidates.push([id, b]);
+          if (candidates.length >= maxFiles) break;
+        }
       }
       if (candidates.length < 2) return 0;
       const merged = dedupeFollowOps(candidates.map(([, b]) => b.operations));
@@ -21179,11 +21183,19 @@ ${lunaDialogCss}
         storeConsolidatedLocalFollowBatch(id, b);
       }
       const hidden = /* @__PURE__ */ new Set();
-      for (const [oldId] of candidates) {
-        if (stopped()) break;
-        await remote.hide(oldId);
-        hidden.add(oldId);
-      }
+      let cursor = 0;
+      const worker = async () => {
+        while (!stopped()) {
+          if (cursor >= candidates.length) return;
+          const [oldId] = candidates[cursor++];
+          try {
+            await remote.hide(oldId);
+            hidden.add(oldId);
+          } catch {
+          }
+        }
+      };
+      await Promise.all(Array.from({ length: Math.min(4, candidates.length) }, worker));
       pruneHiddenLocalFollowKeys(hidden);
       return hidden.size;
     },
@@ -21480,12 +21492,16 @@ ${lunaDialogCss}
     async consolidate(remote, activeIds, stopped, options) {
       const threshold = Math.max(4, options.threshold);
       const maxBatchOps = Math.min(1e4, Math.max(100, options.maxBatchOps));
+      const maxFiles = Math.max(2, options.maxFilesPerRound ?? 80);
       if (activeIds.length < threshold) return 0;
       const localMap = new Map(records());
       const candidates = [];
       for (const id of activeIds) {
         const b = localMap.get(id);
-        if (b && b.operations.length < maxBatchOps) candidates.push([id, b]);
+        if (b && b.operations.length < maxBatchOps) {
+          candidates.push([id, b]);
+          if (candidates.length >= maxFiles) break;
+        }
       }
       if (candidates.length < 2) return 0;
       const merged = dedupeOps(candidates.map(([, b]) => b.operations));
@@ -21501,11 +21517,19 @@ ${lunaDialogCss}
         GM_setValue(`${prefix2}sent_${id}`, true);
       }
       const hidden = /* @__PURE__ */ new Set();
-      for (const [oldId] of candidates) {
-        if (stopped()) break;
-        await remote.hide(oldId);
-        hidden.add(oldId);
-      }
+      let cursor = 0;
+      const worker = async () => {
+        while (!stopped()) {
+          if (cursor >= candidates.length) return;
+          const [oldId] = candidates[cursor++];
+          try {
+            await remote.hide(oldId);
+            hidden.add(oldId);
+          } catch {
+          }
+        }
+      };
+      await Promise.all(Array.from({ length: Math.min(4, candidates.length) }, worker));
       pruneHiddenLocalKeys(hidden);
       return hidden.size;
     },
@@ -21527,6 +21551,7 @@ ${lunaDialogCss}
     dailyAutoClassCLimit: 200,
     compactThreshold: 120,
     compactMaxBatchOps: 8e3,
+    compactMaxFilesPerRound: 80,
     compactCooldownMs: 6 * 60 * 6e4
   };
   var tabId = crypto.randomUUID();
@@ -21759,14 +21784,25 @@ ${lunaDialogCss}
       if (paused()) return "cancelled";
       const lastCompactAt = Number(GM_getValue(lastCompactAtKey, 0)) || 0;
       if (Date.now() - lastCompactAt >= SYNC_POLICY.compactCooldownMs) {
-        const compactOptions = { threshold: SYNC_POLICY.compactThreshold, maxBatchOps: SYNC_POLICY.compactMaxBatchOps };
-        let hiddenTotal = 0;
-        for (let i = 0; i < journals.length; i++) {
-          if (paused()) break;
-          const j = journals[i];
-          if (j.consolidate) hiddenTotal += await j.consolidate(remotes[i], remotes[i].activeIds(), paused, compactOptions);
+        try {
+          const compactOptions = {
+            threshold: SYNC_POLICY.compactThreshold,
+            maxBatchOps: SYNC_POLICY.compactMaxBatchOps,
+            maxFilesPerRound: SYNC_POLICY.compactMaxFilesPerRound
+          };
+          let hiddenTotal = 0;
+          let allBelowThreshold = true;
+          for (let i = 0; i < journals.length; i++) {
+            if (paused()) break;
+            const j = journals[i];
+            const active2 = remotes[i].activeIds();
+            const hidden = j.consolidate ? await j.consolidate(remotes[i], active2, paused, compactOptions) : 0;
+            hiddenTotal += hidden;
+            if (active2.length - hidden >= SYNC_POLICY.compactThreshold) allBelowThreshold = false;
+          }
+          if (hiddenTotal > 0 && allBelowThreshold) GM_setValue(lastCompactAtKey, Date.now());
+        } catch {
         }
-        if (hiddenTotal > 0) GM_setValue(lastCompactAtKey, Date.now());
       }
       if (!paused()) {
         try {
