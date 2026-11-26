@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.12.1
+// @version      0.12.2
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -20693,6 +20693,10 @@ ${lunaDialogCss}
     if (historyLuna && typeof historyLuna === "object" && typeof historyLuna.enabled === "boolean") prefs.historyLuna = historyLuna.enabled;
     const pixelScale = GM_getValue("BiliAtelier_PixelScale", null);
     if (pixelScale && typeof pixelScale === "object" && !Array.isArray(pixelScale)) prefs.pixelScale = pixelScale;
+    const pullInterval = GM_getValue("AtelierSync_pullIntervalMinutes", null);
+    if (typeof pullInterval === "number" && Number.isInteger(pullInterval) && pullInterval >= 1 && pullInterval <= 1440) {
+      prefs.syncPullIntervalMinutes = pullInterval;
+    }
     return prefs;
   }
   function applyPcPreferences(prefs) {
@@ -20733,6 +20737,10 @@ ${lunaDialogCss}
     if (prefs.pixelScale && typeof prefs.pixelScale === "object" && !Array.isArray(prefs.pixelScale)) {
       GM_setValue("BiliAtelier_PixelScale", prefs.pixelScale);
       emit("atelier-pixel-scale-changed");
+    }
+    if (typeof prefs.syncPullIntervalMinutes === "number" && Number.isInteger(prefs.syncPullIntervalMinutes) && prefs.syncPullIntervalMinutes >= 1 && prefs.syncPullIntervalMinutes <= 1440) {
+      GM_setValue("AtelierSync_pullIntervalMinutes", prefs.syncPullIntervalMinutes);
+      emit("atelier-sync-status");
     }
   }
   async function buildPcBackupSnapshot(kind, now = /* @__PURE__ */ new Date()) {
@@ -21543,12 +21551,14 @@ ${lunaDialogCss}
     "local-following-ops": { mismatch: "\u672C\u5730\u5173\u6CE8\u540C\u6B65\u6587\u4EF6\u76EE\u5F55\u4E0D\u5339\u914D", unknown: "\u672C\u5730\u5173\u6CE8\u540C\u6B65\u76EE\u5F55\u542B\u672A\u77E5\u6587\u4EF6\uFF0C\u672A\u5E94\u7528" }
   };
   var prefix3 = "AtelierSync_";
+  var DEFAULT_PULL_INTERVAL_MINUTES = 2;
+  var PULL_INTERVAL_OPTIONS = [1, 2, 5, 10, 15, 30, 60];
   var SYNC_POLICY = {
     pushDebounceMs: 25e3,
-    pullCooldownMs: 20 * 6e4,
-    checkIntervalMs: 5 * 6e4,
+    pullCooldownMs: DEFAULT_PULL_INTERVAL_MINUTES * 6e4,
+    checkIntervalMs: 3e4,
     leaseMs: 45e3,
-    dailyAutoClassCLimit: 200,
+    dailyAutoClassCLimit: 600,
     compactThreshold: 120,
     compactMaxBatchOps: 8e3,
     compactMaxFilesPerRound: 80,
@@ -21558,11 +21568,29 @@ ${lunaDialogCss}
   var authCacheKey = `${prefix3}authCache`;
   var usageKey = `${prefix3}usage`;
   var lastPullAtKey = `${prefix3}lastPullAt`;
+  var pullIntervalKey = `${prefix3}pullIntervalMinutes`;
   var leaseKey = `${prefix3}lease`;
   var lastCompactAtKey = `${prefix3}lastCompactAt`;
   var lastBackupHashKey = `${prefix3}lastBackupHash`;
   var lastBackupDateKey = `${prefix3}lastBackupDate`;
   var cachedBackupsKey = `${prefix3}cachedBackups`;
+  function normalizePullIntervalMinutes(value2, fallback2 = DEFAULT_PULL_INTERVAL_MINUTES) {
+    const num = typeof value2 === "number" ? value2 : typeof value2 === "string" && value2.trim() ? Number(value2) : NaN;
+    if (!Number.isFinite(num) || num < 1) return Math.min(1440, Math.max(1, Math.round(fallback2)));
+    return Math.min(1440, Math.max(1, Math.round(num)));
+  }
+  function getPullIntervalMinutes() {
+    const raw = GM_getValue(pullIntervalKey, null);
+    if (raw == null) return DEFAULT_PULL_INTERVAL_MINUTES;
+    return normalizePullIntervalMinutes(raw, DEFAULT_PULL_INTERVAL_MINUTES);
+  }
+  function setPullIntervalMinutes(minutes) {
+    const normalized = Number.isFinite(minutes) ? Math.min(1440, Math.max(1, Math.round(minutes))) : DEFAULT_PULL_INTERVAL_MINUTES;
+    GM_setValue(pullIntervalKey, normalized);
+    notify2();
+    if (!paused() && getConfig()) scheduleAuto(1e3);
+    return normalized;
+  }
   var authCache = {
     read: () => GM_getValue(authCacheKey, null),
     write: (auth) => {
@@ -21642,6 +21670,7 @@ ${lunaDialogCss}
       lastBackupDate: GM_getValue(lastBackupDateKey, ""),
       error: GM_getValue(`${prefix3}error`, ""),
       usage,
+      pullIntervalMinutes: getPullIntervalMinutes(),
       dailyAutoClassCLimit: SYNC_POLICY.dailyAutoClassCLimit,
       budgetExceeded: usage.classC >= SYNC_POLICY.dailyAutoClassCLimit
     };
@@ -21657,7 +21686,7 @@ ${lunaDialogCss}
   function pullDue(now = Date.now()) {
     if (!viewedJournalMerged()) return true;
     const lastPullAt = Number(GM_getValue(lastPullAtKey, 0)) || 0;
-    return now - lastPullAt >= SYNC_POLICY.pullCooldownMs;
+    return now - lastPullAt >= getPullIntervalMinutes() * 6e4;
   }
   function schedulePush(delayMs = SYNC_POLICY.pushDebounceMs) {
     window.clearTimeout(pushTimer);
@@ -21932,12 +21961,17 @@ ${lunaDialogCss}
       notify2();
       schedulePush();
     });
-    if (typeof GM_addValueChangeListener === "function") GM_addValueChangeListener(viewedJournalPulseKey, (_, __, ___, remote) => {
-      if (remote) {
-        applyViewedJournal();
-        notify2();
-      }
-    });
+    if (typeof GM_addValueChangeListener === "function") {
+      GM_addValueChangeListener(viewedJournalPulseKey, (_, __, ___, remote) => {
+        if (remote) {
+          applyViewedJournal();
+          notify2();
+        }
+      });
+      GM_addValueChangeListener(pullIntervalKey, (_, __, ___, remote) => {
+        if (remote) notify2();
+      });
+    }
     window.addEventListener("online", () => scheduleAuto(2e3));
     window.addEventListener("pagehide", () => {
       if (!paused() && totalPending() > 0 && viewedJournalMerged()) void pushPending();
@@ -21965,7 +21999,8 @@ ${lunaDialogCss}
     const root = host.attachShadow({ mode: "closed" });
     root.innerHTML = `<style>
     ${sharedControlCss}
-    ${xpFieldCss("input")}
+    ${xpFieldCss("input,select")}
+    ${xpSelectCss("select")}
     :host { display:block; color:var(--xp-ink); ${xpFont}; }
     * { box-sizing:border-box; }
     h2 { font:inherit; font-weight:bold; margin:0 0 12px; }
@@ -21976,6 +22011,9 @@ ${lunaDialogCss}
     .fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 18px; }
     label { display:block; min-width:0; }
     input { display:block; width:100%; margin:4px 0 0; }
+    .interval-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:0 0 12px; }
+    .interval-row label { display:inline-flex; align-items:center; gap:6px; margin:0; }
+    .interval-row select { min-width:116px; }
     [role=status] { white-space:pre-wrap; overflow-wrap:anywhere; background:var(--xp-window); border:1px solid var(--xp-edge); padding:6px 8px; margin:12px 0; }
     .actions { display:flex; gap:6px; flex-wrap:wrap; }
     .actions .atelier-control { min-width:75px; }
@@ -21994,8 +22032,10 @@ ${lunaDialogCss}
   <section><h3>\u8FDE\u63A5\u8BBE\u7F6E</h3><div class="fields"></div>
   <p class="hint" style="margin-top:12px">\u4E24\u7AEF\u4F7F\u7528\u540C\u4E00 Bucket \u548C\u540C\u6B65\u76EE\u5F55\u3002\u9996\u6B21\u5408\u5E76\u540E\u4E0D\u80FD\u66F4\u6362\u8FD9\u4E24\u9879\uFF1B\u540C\u4E00\u7A7A\u95F4\u5185\u53EF\u66F4\u65B0\u5BC6\u94A5\u3002\u53EA\u9700 listFiles\u3001readFiles\u3001writeFiles \u6743\u9650\u3002</p>
   <div class="actions settings"></div></section>
-  <section><h3>\u540C\u6B65\u72B6\u6001\u4E0E\u7528\u91CF</h3><p role="status" aria-live="polite"></p><div class="actions controls"></div>
-  <p class="hint" style="margin-top:12px">\u672C\u5730\u6539\u52A8\u805A\u5408\u9632\u6296\u540E\u76F4\u63A5\u63A8\u9001\uFF080 Class C\uFF09\uFF1B\u8FDC\u7AEF\u62C9\u53D6\u6309\u591A\u6807\u7B7E\u5171\u4EAB\u51B7\u5374\u6267\u884C\u3002\u968F\u65F6\u53EF\u70B9\u201C\u7ACB\u5373\u540C\u6B65\u201D\u5F3A\u5236\u62C9\u53D6\u3002</p></section>
+  <section><h3>\u540C\u6B65\u72B6\u6001\u4E0E\u7528\u91CF</h3>
+  <div class="interval-row"><label>\u81EA\u52A8\u62C9\u53D6\u95F4\u9694<select class="pull-interval"></select></label><span class="hint">\u7ACB\u5373\u751F\u6548\uFF0C\u8DE8\u6807\u7B7E\u9875\u5171\u4EAB\u51B7\u5374\uFF08\u9ED8\u8BA4 ${DEFAULT_PULL_INTERVAL_MINUTES} \u5206\u949F\uFF09</span></div>
+  <p role="status" aria-live="polite"></p><div class="actions controls"></div>
+  <p class="hint" style="margin-top:12px">\u672C\u5730\u6539\u52A8\u805A\u5408\u9632\u6296\u540E\u76F4\u63A5\u63A8\u9001\uFF080 Class C\uFF09\uFF1B\u8FDC\u7AEF\u62C9\u53D6\u6309\u4E0A\u65B9\u8BBE\u5B9A\u95F4\u9694\u4E0E\u8DE8\u6807\u7B7E\u9875\u5171\u4EAB\u51B7\u5374\u6267\u884C\u3002\u968F\u65F6\u53EF\u70B9\u201C\u7ACB\u5373\u540C\u6B65\u201D\u5F3A\u5236\u62C9\u53D6\u3002</p></section>
   <section><h3>\u4E91\u7AEF\u5FEB\u7167\u4E0E\u624B\u673A\u914D\u7F6E</h3><div class="actions transfer"></div><div class="backups"></div><div class="qr"></div></section>`;
     const fields2 = /* @__PURE__ */ new Map();
     const cleanupPixels = observeCrispText(root);
@@ -22024,13 +22064,36 @@ ${lunaDialogCss}
       qrGeneration++;
       root.querySelector(".qr").replaceChildren();
     }
+    const pullSelect = root.querySelector(".pull-interval");
+    const syncPullOptions = (current4) => {
+      const values = PULL_INTERVAL_OPTIONS.includes(current4) ? [...PULL_INTERVAL_OPTIONS] : [...PULL_INTERVAL_OPTIONS, current4].sort((a, b) => a - b);
+      const existing = [...pullSelect.options].map((o) => Number(o.value));
+      if (existing.length !== values.length || existing.some((v, i) => v !== values[i])) {
+        pullSelect.replaceChildren(...values.map((minutes) => {
+          const option = document.createElement("option");
+          option.value = String(minutes);
+          option.textContent = minutes === DEFAULT_PULL_INTERVAL_MINUTES ? `${minutes} \u5206\u949F\uFF08\u9ED8\u8BA4\uFF09` : `${minutes} \u5206\u949F`;
+          return option;
+        }));
+      }
+      pullSelect.value = String(current4);
+    };
+    syncPullOptions(getPullIntervalMinutes());
+    pullSelect.addEventListener("change", () => {
+      const feedback = soundTask(void 0, () => !disposed && host.isConnected && !host.closest('[data-minimized="true"]'));
+      const next = setPullIntervalMinutes(Number(pullSelect.value));
+      message = `\u81EA\u52A8\u62C9\u53D6\u95F4\u9694\u5DF2\u8BBE\u4E3A ${next} \u5206\u949F`;
+      feedback.finish("select");
+      render2();
+    });
     const render2 = () => {
       if (disposed) return;
       const s2 = status();
+      syncPullOptions(s2.pullIntervalMinutes);
       const pullText = s2.lastPullAt ? new Date(s2.lastPullAt).toLocaleString() : "\u5C1A\u672A\u62C9\u53D6";
       const usageText = `\u4ECA\u65E5 B2 \u8C03\u7528\uFF08UTC ${s2.usage.date}\uFF09\uFF1AClass C ${s2.usage.classC}/${s2.dailyAutoClassCLimit} \xB7 Class B ${s2.usage.classB} \xB7 Class A ${s2.usage.classA}${s2.budgetExceeded ? "\uFF08\u5DF2\u89E6\u53D1\u81EA\u52A8\u540C\u6B65\u4FDD\u62A4\uFF09" : ""}`;
       const backupText = s2.lastBackupDate ? ` \xB7 \u6700\u8FD1\u6BCF\u65E5\u5FEB\u7167\uFF1A${s2.lastBackupDate}` : "";
-      root.querySelector('[role="status"]').textContent = `${paused() ? "\u5DF2\u6682\u505C" : "\u5DF2\u542F\u7528"} \xB7 ${s2.busy ? "\u540C\u6B65\u4E2D" : `\u5F85\u4E0A\u4F20 ${s2.pending} \u6761\u64CD\u4F5C`}
+      root.querySelector('[role="status"]').textContent = `${paused() ? "\u5DF2\u6682\u505C" : "\u5DF2\u542F\u7528"} \xB7 ${s2.busy ? "\u540C\u6B65\u4E2D" : `\u5F85\u4E0A\u4F20 ${s2.pending} \u6761\u64CD\u4F5C`} \xB7 \u81EA\u52A8\u62C9\u53D6\u6BCF ${s2.pullIntervalMinutes} \u5206\u949F
 \u6700\u8FD1\u6210\u529F\uFF1A${s2.lastSuccess ? new Date(s2.lastSuccess).toLocaleString() : "\u5C1A\u672A\u540C\u6B65"} \xB7 \u6700\u8FD1\u62C9\u53D6\uFF1A${pullText}${backupText}
 ${usageText}${s2.error ? `
 ${s2.error}` : ""}${message ? `
