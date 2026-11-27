@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.12.2
+// @version      0.12.3
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -20,6 +20,8 @@
 // @connect      backblazeb2.com
 // @connect      backblaze.com
 // @connect      api.bilibili.com
+// @connect      app.bilibili.com
+// @connect      passport.bilibili.com
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addValueChangeListener
 // @grant        GM_listValues

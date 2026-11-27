@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.12.2
+// @version      0.12.3
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -20,6 +20,8 @@
 // @connect      backblazeb2.com
 // @connect      backblaze.com
 // @connect      api.bilibili.com
+// @connect      app.bilibili.com
+// @connect      passport.bilibili.com
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addValueChangeListener
 // @grant        GM_listValues
@@ -2143,7 +2145,7 @@
   var require_browser = __commonJS({
     "node_modules/qrcode/lib/browser.js"(exports) {
       var canPromise = require_can_promise();
-      var QRCode2 = require_qrcode();
+      var QRCode3 = require_qrcode();
       var CanvasRenderer = require_canvas();
       var SvgRenderer = require_svg_tag();
       function renderCanvas(renderFunc, canvas, text4, opts, cb) {
@@ -2186,7 +2188,7 @@
           }
           return new Promise(function(resolve, reject) {
             try {
-              const data = QRCode2.create(text4, opts);
+              const data = QRCode3.create(text4, opts);
               resolve(renderFunc(data, canvas, opts));
             } catch (e) {
               reject(e);
@@ -2194,13 +2196,13 @@
           });
         }
         try {
-          const data = QRCode2.create(text4, opts);
+          const data = QRCode3.create(text4, opts);
           cb(null, renderFunc(data, canvas, opts));
         } catch (e) {
           cb(e);
         }
       }
-      exports.create = QRCode2.create;
+      exports.create = QRCode3.create;
       exports.toCanvas = renderCanvas.bind(null, CanvasRenderer.render);
       exports.toDataURL = renderCanvas.bind(null, CanvasRenderer.renderToDataURL);
       exports.toString = renderCanvas.bind(null, function(data, _, opts) {
@@ -2377,7 +2379,7 @@
     });
   }
   function interfaceCss(prefs = readInterfacePrefs()) {
-    return `:root{--atelier-pbp-opacity:${prefs.pbpOpacity};--atelier-viewed-opacity:${prefs.viewedDim ? prefs.viewedOpacity : 1}}` + (prefs.ipLocation ? "" : "\n.acm-where{display:none!important}");
+    return `:root{--atelier-pbp-opacity:${prefs.pbpOpacity};--atelier-viewed-opacity:${prefs.viewedDim ? prefs.viewedOpacity : 1}}` + (prefs.ipLocation ? "" : "\n.acm-where{display:none!important}\n.atelier-ip-location{display:none!important}");
   }
   var started = false;
   function startInterfacePrefs() {
@@ -6145,6 +6147,10 @@ ${id} .atelier-interface-slider{display:flex;align-items:center;gap:8px;padding-
 ${id} .atelier-interface-slider>input{width:clamp(100px,25vw,200px);margin:0;accent-color:var(--atelier-accent)}
 ${id} .atelier-interface-slider>output{min-width:4ch;font-variant-numeric:tabular-nums}
 ${id} .atelier-interface-slider[data-disabled]{color:var(--xp-graytext)}
+${id} .atelier-ip-auth{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 10px;padding-left:19px}
+${id} .atelier-ip-auth[data-disabled] .atelier-ip-auth-status{color:var(--xp-graytext)}
+${id} .atelier-ip-auth-actions{display:flex;align-items:center;gap:6px}
+${id} .atelier-ip-auth-actions [hidden]{display:none}
 ${id}[data-maximized=true]{inset:0;width:auto;height:auto;box-shadow:none}
 ${id}[data-maximized=true] .luna-rules-content{display:flex;flex-direction:column}${id}[data-maximized=true] .luna-rules-content>*{flex-shrink:0}${id}[data-maximized=true] .luna-editor-host{flex:1 0 auto;display:flex;flex-direction:column}${id}[data-maximized=true] .luna-editor{flex:1 0 auto;resize:none}
 ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw - 24px));height:auto;margin:0}${id}[data-minimized=true] :is(.luna-layout,.xp-status){display:none}
@@ -6164,6 +6170,11 @@ body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!
 .atelier-dialog textarea{height:220px;resize:vertical}
 .atelier-dialog-actions{display:flex;justify-content:center;gap:6px;padding:6px 12px 12px}.atelier-dialog-actions .atelier-control{min-width:75px}
 .atelier-dialog-choices{display:flex;flex-direction:column;gap:6px}.atelier-dialog-choices button{justify-content:flex-start;white-space:normal}
+.atelier-ip-auth-body{display:flex;flex-direction:column;align-items:center;text-align:center}
+.atelier-ip-auth-body>p:first-child{text-align:left}
+.atelier-ip-qr-box{display:grid;place-items:center;width:180px;height:180px;margin:2px 0 8px;background:#fff;border:1px solid var(--xp-edge)}
+.atelier-ip-qr-img{display:block;width:164px;height:164px;image-rendering:pixelated}.atelier-ip-qr-img[hidden]{display:none}
+.atelier-ip-qr-status{margin:0 0 4px!important;color:var(--xp-muted)}
 @media(max-width:640px){${id}{inset:6px;width:calc(100vw - 12px);height:calc(100vh - 12px)}${id} .luna-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}${id} .luna-sidebar{flex-direction:row;padding:6px;overflow:auto}${id} .luna-sidebar .xp-task-group{min-width:100%}${id} .luna-sidebar .xp-task-body{flex-direction:row;flex-wrap:wrap;gap:4px 12px}${id} .luna-sidebar .xp-task-link{width:auto}${id} .luna-content{padding:9px}}
 `);
     (document.head || document.documentElement).appendChild(style);
@@ -11221,6 +11232,366 @@ ${root} .btnView{z-index:3}
   }
   var dynamicCardCss = dynamicCardStyles("#atelier-feed");
 
+  // src/modules/ip-location/service.ts
+  var appKey = "dfca71928277209b";
+  var appSec = "b5475a8825547a4fc26c7d518eaaa02e";
+  var authStorageKey = "BiliAtelier_AppAuth";
+  var cacheStorageKey = "BiliAtelier_IpCache";
+  var USER_IP_CACHE_TTL_MS = 30 * 60 * 1e3;
+  var maxUserCacheEntries = 200;
+  var maxVideoCacheEntries = 200;
+  var appAuthChanged = "atelier-app-auth-changed";
+  var userAgentApp = "Mozilla/5.0 BiliDroid/8.43.0 (bbcallen@gmail.com) os/android model/android mobi_app/android build/8430300 channel/master innerVer/8430300 osVer/15 network/2";
+  var userAgentHd = "Mozilla/5.0 BiliDroid/2.0.1 (bbcallen@gmail.com) os/android model/android_hd mobi_app/android_hd build/2001100 channel/master innerVer/2001100 osVer/15 network/2";
+  var statisticsApp = '{"appId":1,"platform":3,"version":"8.43.0","abtest":""}';
+  var allowedEndpoints = {
+    "https://app.bilibili.com/x/v2/view": "GET",
+    "https://app.bilibili.com/x/v2/space": "GET",
+    "https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code": "POST",
+    "https://passport.bilibili.com/x/passport-tv-login/qrcode/poll": "POST"
+  };
+  function stripIpPrefix(value2) {
+    if (typeof value2 !== "string") return "";
+    return value2.replace(/^[\s·•]*IP\s*属地\s*[：:]\s*/i, "").trim();
+  }
+  function appSignQuery(params, now = Date.now()) {
+    const all = { ...params, appkey: appKey, ts: String(Math.floor(now / 1e3)) };
+    const query = Object.keys(all).sort().map((key6) => {
+      const val = all[key6] ?? "";
+      return val ? `${encodeURIComponent(key6)}=${encodeURIComponent(val)}` : encodeURIComponent(key6);
+    }).join("&");
+    return `${query}&sign=${localFollowMd5(query + appSec)}`;
+  }
+  function assertAllowedAppUrl(method, rawUrl) {
+    let parsed;
+    try {
+      parsed = new URL(rawUrl);
+    } catch {
+      throw new Error("\u65E0\u6548\u7684\u5C5E\u5730\u63A5\u53E3\u5730\u5740");
+    }
+    const base = `${parsed.origin}${parsed.pathname}`;
+    if (parsed.protocol !== "https:" || parsed.port || parsed.username || parsed.password || allowedEndpoints[base] !== method) {
+      throw new Error("\u672A\u6388\u6743\u7684\u5C5E\u5730\u63A5\u53E3\u5730\u5740");
+    }
+    return parsed.href;
+  }
+  function readRawAuth() {
+    startAppAuthRelay();
+    const raw = typeof GM_getValue === "function" ? GM_getValue(authStorageKey, null) : null;
+    return raw && typeof raw === "object" ? raw : {};
+  }
+  var relayStarted = false;
+  function startAppAuthRelay() {
+    if (relayStarted) return;
+    relayStarted = true;
+    relayRemoteChanges(authStorageKey, appAuthChanged);
+  }
+  function readAppAuth() {
+    const stored = readRawAuth();
+    const key6 = typeof stored.accessKey === "string" ? stored.accessKey.trim() : "";
+    const mid = typeof stored.mid === "string" && /^\d+$/.test(stored.mid) ? stored.mid : "";
+    const authorizedAt = typeof stored.authorizedAt === "number" && Number.isFinite(stored.authorizedAt) ? stored.authorizedAt : 0;
+    if (!key6) return { status: "none", mid: "", authorizedAt: 0 };
+    if (stored.expired) return { status: "expired", mid, authorizedAt };
+    return { status: "active", mid, authorizedAt };
+  }
+  function writeAppAuth(next) {
+    if (typeof GM_setValue === "function") GM_setValue(authStorageKey, next);
+    window.dispatchEvent(new Event(appAuthChanged));
+  }
+  function clearAppAuth() {
+    if (typeof GM_deleteValue === "function") GM_deleteValue(authStorageKey);
+    else if (typeof GM_setValue === "function") GM_setValue(authStorageKey, {});
+    window.dispatchEvent(new Event(appAuthChanged));
+  }
+  function markAuthExpired() {
+    const current4 = readRawAuth();
+    if (!current4.accessKey || current4.expired) return;
+    writeAppAuth({ ...current4, expired: true });
+  }
+  function hasAppRequestSupport() {
+    return typeof GM_xmlhttpRequest === "function";
+  }
+  function appRequest(method, rawUrl, headers, signal) {
+    if (typeof GM_xmlhttpRequest !== "function") {
+      return Promise.reject(new Error("\u5F53\u524D\u73AF\u5883\u4E0D\u652F\u6301 GM_xmlhttpRequest \u8DE8\u57DF\u8BF7\u6C42"));
+    }
+    const url = assertAllowedAppUrl(method, rawUrl);
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      let handle;
+      const finish = (err, data) => {
+        if (settled) return;
+        settled = true;
+        signal?.removeEventListener("abort", onAbort);
+        if (err) reject(err);
+        else resolve(data);
+      };
+      const onAbort = () => {
+        if (settled) return;
+        finish(new DOMException("\u8BF7\u6C42\u5DF2\u53D6\u6D88", "AbortError"));
+        handle?.abort?.();
+      };
+      if (signal?.aborted) {
+        onAbort();
+        return;
+      }
+      signal?.addEventListener("abort", onAbort, { once: true });
+      try {
+        handle = GM_xmlhttpRequest({
+          method,
+          url,
+          anonymous: true,
+          timeout: 15e3,
+          headers: { Accept: "application/json", ...headers },
+          onload: (res) => {
+            try {
+              if (res.finalUrl) assertAllowedAppUrl(method, res.finalUrl);
+              if (res.status < 200 || res.status >= 300) throw new Error(`HTTP ${res.status}`);
+              finish(void 0, JSON.parse(res.responseText));
+            } catch (err) {
+              finish(err);
+            }
+          },
+          onerror: () => finish(new Error("\u7F51\u7EDC\u8BF7\u6C42\u5931\u8D25")),
+          ontimeout: () => finish(new Error("\u7F51\u7EDC\u8BF7\u6C42\u8D85\u65F6")),
+          onabort: onAbort
+        });
+      } catch (err) {
+        finish(err);
+      }
+    });
+  }
+  async function requestTvQrCode(signal) {
+    const query = appSignQuery({
+      local_id: "0",
+      mobi_app: "android_hd",
+      platform: "android"
+    });
+    const raw = await appRequest(
+      "POST",
+      `https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code?${query}`,
+      {
+        "User-Agent": userAgentHd,
+        "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+        "app-key": "android_hd",
+        env: "prod"
+      },
+      signal
+    );
+    const authCode = typeof raw?.data?.auth_code === "string" ? raw.data.auth_code.trim() : "";
+    const url = typeof raw?.data?.url === "string" ? raw.data.url.trim() : "";
+    if (Number(raw?.code) !== 0 || !authCode || !url) {
+      throw new Error(typeof raw?.message === "string" && raw.message ? raw.message : "\u83B7\u53D6\u6388\u6743\u4E8C\u7EF4\u7801\u5931\u8D25");
+    }
+    return { authCode, url };
+  }
+  async function pollTvQrCode(authCode, signal) {
+    const query = appSignQuery({
+      auth_code: authCode,
+      local_id: "0"
+    });
+    const raw = await appRequest(
+      "POST",
+      `https://passport.bilibili.com/x/passport-tv-login/qrcode/poll?${query}`,
+      {
+        "User-Agent": userAgentHd,
+        "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+        "app-key": "android_hd",
+        env: "prod"
+      },
+      signal
+    );
+    const code = Number(raw?.code);
+    if (code === 0 && raw?.data) {
+      const data = raw.data;
+      const tokenInfo = data.token_info ?? data;
+      const accessKey = typeof tokenInfo?.access_token === "string" ? tokenInfo.access_token.trim() : "";
+      const refreshToken = typeof tokenInfo?.refresh_token === "string" ? tokenInfo.refresh_token.trim() : "";
+      if (!accessKey) throw new Error("\u6388\u6743\u54CD\u5E94\u7F3A\u5C11\u51ED\u8BC1");
+      let mid = String(tokenInfo?.mid ?? data.mid ?? "").trim();
+      if (!/^\d+$/.test(mid) && Array.isArray(data.cookie_info?.cookies)) {
+        const dede = data.cookie_info.cookies.find((c) => c?.name === "DedeUserID");
+        if (dede && /^\d+$/.test(String(dede.value ?? ""))) mid = String(dede.value);
+      }
+      if (!/^\d+$/.test(mid)) mid = "";
+      writeAppAuth({
+        accessKey,
+        refreshToken: refreshToken || void 0,
+        mid: mid || void 0,
+        authorizedAt: Date.now(),
+        expired: false
+      });
+      return { done: true, mid };
+    }
+    if (code === 86038) {
+      return { done: false, expired: true, scanned: false, message: "\u4E8C\u7EF4\u7801\u5DF2\u8FC7\u671F\uFF0C\u8BF7\u70B9\u51FB\u5237\u65B0" };
+    }
+    if (code === 86090) {
+      return { done: false, expired: false, scanned: true, message: "\u5DF2\u626B\u7801\uFF0C\u8BF7\u5728\u624B\u673A\u7AEF\u70B9\u51FB\u786E\u8BA4" };
+    }
+    if (code === 86039) {
+      return { done: false, expired: false, scanned: false, message: "\u8BF7\u4F7F\u7528\u624B\u673A\u54D4\u54E9\u54D4\u54E9 App \u626B\u7801" };
+    }
+    return {
+      done: false,
+      expired: false,
+      scanned: false,
+      message: typeof raw?.message === "string" && raw.message ? raw.message : "\u7B49\u5F85\u626B\u7801\u786E\u8BA4\u2026"
+    };
+  }
+  var videoLocationCache = /* @__PURE__ */ new Map();
+  var inFlightVideos = /* @__PURE__ */ new Map();
+  var userMemoryCache = /* @__PURE__ */ new Map();
+  var inFlightUsers = /* @__PURE__ */ new Map();
+  var storageHydrated = false;
+  function hydrateUserCache(now = Date.now()) {
+    if (storageHydrated) return;
+    storageHydrated = true;
+    const raw = typeof GM_getValue === "function" ? GM_getValue(cacheStorageKey, null) : null;
+    if (!raw || typeof raw !== "object") return;
+    for (const [uid, entry] of Object.entries(raw)) {
+      if (!/^\d+$/.test(uid) || !entry || typeof entry.location !== "string" || typeof entry.expiresAt !== "number") continue;
+      if (entry.expiresAt > now) {
+        userMemoryCache.set(uid, { location: stripIpPrefix(entry.location), expiresAt: entry.expiresAt });
+      }
+    }
+  }
+  function persistUserCache(now = Date.now()) {
+    if (typeof GM_setValue !== "function") return;
+    const valid = [];
+    for (const [uid, entry] of userMemoryCache) {
+      if (entry.expiresAt > now) valid.push([uid, entry]);
+      else userMemoryCache.delete(uid);
+    }
+    if (valid.length > maxUserCacheEntries) {
+      valid.sort((a, b) => a[1].expiresAt - b[1].expiresAt);
+      const drop = valid.splice(0, valid.length - maxUserCacheEntries);
+      for (const [uid] of drop) userMemoryCache.delete(uid);
+    }
+    const out = {};
+    for (const [uid, entry] of valid) out[uid] = entry;
+    GM_setValue(cacheStorageKey, out);
+  }
+  function cachedUserIpLocation(uid, now = Date.now()) {
+    if (!/^\d+$/.test(uid)) return void 0;
+    hydrateUserCache(now);
+    const hit = userMemoryCache.get(uid);
+    if (!hit) return void 0;
+    if (hit.expiresAt <= now) {
+      userMemoryCache.delete(uid);
+      return void 0;
+    }
+    return hit.location;
+  }
+  async function readVideoIpLocation(bvid, signal) {
+    const cleanBvid = typeof bvid === "string" ? bvid.trim() : "";
+    if (!cleanBvid || !/^BV[0-9A-Za-z]+$/.test(cleanBvid)) return "";
+    if (!readInterfacePrefs().ipLocation) return "";
+    const cached = videoLocationCache.get(cleanBvid);
+    if (cached !== void 0) return cached;
+    if (!hasAppRequestSupport()) return "";
+    let pending3 = inFlightVideos.get(cleanBvid);
+    if (!pending3) {
+      const query = appSignQuery({
+        build: "8430300",
+        bvid: cleanBvid,
+        mobi_app: "android",
+        platform: "android"
+      });
+      pending3 = appRequest(
+        "GET",
+        `https://app.bilibili.com/x/v2/view?${query}`,
+        {
+          "User-Agent": userAgentApp,
+          "app-key": "android64",
+          env: "prod",
+          "x-bili-aurora-zone": "sh001"
+        }
+      ).then((raw) => {
+        if (Number(raw?.code) !== 0 || !raw?.data) return "";
+        const loc = stripIpPrefix(raw.data.pub_location);
+        if (videoLocationCache.size >= maxVideoCacheEntries) {
+          const oldest = videoLocationCache.keys().next().value;
+          if (oldest !== void 0) videoLocationCache.delete(oldest);
+        }
+        videoLocationCache.set(cleanBvid, loc);
+        return loc;
+      }, () => "").finally(() => {
+        inFlightVideos.delete(cleanBvid);
+      });
+      inFlightVideos.set(cleanBvid, pending3);
+    }
+    if (!signal) return pending3;
+    return Promise.race([
+      pending3,
+      new Promise((resolve) => {
+        if (signal.aborted) resolve("");
+        else signal.addEventListener("abort", () => resolve(""), { once: true });
+      })
+    ]);
+  }
+  async function readUserIpLocation(uid, signal) {
+    const cleanUid = typeof uid === "string" ? uid.trim() : "";
+    if (!/^\d+$/.test(cleanUid)) return "";
+    if (!readInterfacePrefs().ipLocation) return "";
+    const cached = cachedUserIpLocation(cleanUid);
+    if (cached !== void 0) return cached;
+    const stored = readRawAuth();
+    const accessKey = typeof stored.accessKey === "string" && !stored.expired ? stored.accessKey.trim() : "";
+    if (!accessKey || !hasAppRequestSupport()) return "";
+    let pending3 = inFlightUsers.get(cleanUid);
+    if (!pending3) {
+      const query = appSignQuery({
+        access_key: accessKey,
+        build: "8430300",
+        c_locale: "zh_CN",
+        channel: "master",
+        mobi_app: "android",
+        platform: "android",
+        s_locale: "zh_CN",
+        statistics: statisticsApp,
+        version: "8.43.0",
+        vmid: cleanUid
+      });
+      pending3 = appRequest(
+        "GET",
+        `https://app.bilibili.com/x/v2/space?${query}`,
+        {
+          "User-Agent": userAgentApp,
+          "app-key": "android64",
+          env: "prod",
+          "x-bili-aurora-zone": "sh001"
+        }
+      ).then((raw) => {
+        const code = Number(raw?.code);
+        if (code === -101) {
+          markAuthExpired();
+          return "";
+        }
+        if (code !== 0 || !raw?.data) return "";
+        const tags = Array.isArray(raw.data.card?.space_tag) ? raw.data.card.space_tag : [];
+        const tag = tags.find((item) => item?.type === "location" && typeof item?.title === "string");
+        const loc = stripIpPrefix(tag?.title);
+        const now = Date.now();
+        userMemoryCache.set(cleanUid, { location: loc, expiresAt: now + USER_IP_CACHE_TTL_MS });
+        persistUserCache(now);
+        return loc;
+      }, () => "").finally(() => {
+        inFlightUsers.delete(cleanUid);
+      });
+      inFlightUsers.set(cleanUid, pending3);
+    }
+    if (!signal) return pending3;
+    return Promise.race([
+      pending3,
+      new Promise((resolve) => {
+        if (signal.aborted) resolve("");
+        else signal.addEventListener("abort", () => resolve(""), { once: true });
+      })
+    ]);
+  }
+
   // src/modules/video-luna/dialog.ts
   function videoDialog(options) {
     return new Promise((resolve) => {
@@ -11554,6 +11925,8 @@ ${root} .btnView{z-index:3}
     anchor.dataset.userName = seed.name;
     anchor.dataset.userFace = seed.face;
     anchor.dataset.userLevel = String(seed.level || "");
+    if (seed.location) anchor.dataset.userLocation = seed.location;
+    else delete anchor.dataset.userLocation;
   }
   function enableUserCards(area, host) {
     hosts.set(area, host);
@@ -11662,7 +12035,12 @@ ${root} .btnView{z-index:3}
     const host = hostOf(anchor), mid = anchor.dataset.userCard ?? "";
     if (!host || !/^\d+$/.test(mid)) return;
     close();
-    const seed = { name: anchor.dataset.userName ?? "", face: anchor.dataset.userFace ?? "", level: Number(anchor.dataset.userLevel) || 0 };
+    const seed = {
+      name: anchor.dataset.userName ?? "",
+      face: anchor.dataset.userFace ?? "",
+      level: Number(anchor.dataset.userLevel) || 0,
+      location: stripIpPrefix(anchor.dataset.userLocation ?? "")
+    };
     const space = `https://space.bilibili.com/${mid}`;
     const root = el("div", "acm-card xp-menu");
     root.setAttribute("data-bili-blocker-ui", "");
@@ -11675,16 +12053,24 @@ ${root} .btnView{z-index:3}
     avatar.referrerPolicy = "no-referrer";
     const info = top.appendChild(el("div", "acm-card-info"));
     const head = info.appendChild(el("div", "acm-card-head"));
-    const name = head.appendChild(link("acm-card-name", "", space)), level = head.appendChild(el("span", "acm-card-level"));
+    const name = head.appendChild(link("acm-card-name", "", space));
+    const level = head.appendChild(el("span", "acm-card-level"));
+    const where = head.appendChild(el("span", "acm-card-where atelier-ip-location"));
     const official = info.appendChild(el("div", "acm-card-official"));
     official.hidden = true;
     const sign = info.appendChild(el("p", "acm-card-sign"));
     sign.hidden = true;
     const stats = info.appendChild(el("div", "acm-card-stats", "\u6B63\u5728\u8BFB\u53D6\u2026"));
+    let currentWhere = (readInterfacePrefs().ipLocation ? cachedUserIpLocation(mid) : void 0) || seed.location;
+    const paintWhere = () => {
+      where.textContent = currentWhere ? `${level.textContent ? "\xB7 " : ""}${currentWhere}` : "";
+      where.hidden = !currentWhere;
+    };
     const paint2 = (person) => {
       avatar.src = bilibiliThumb(person.face, "96w_96h_1c");
       name.textContent = person.name || mid;
       level.textContent = person.level > 0 ? `Lv${person.level}` : "";
+      paintWhere();
     };
     paint2(seed);
     if (mid !== host.me) {
@@ -11739,6 +12125,12 @@ ${root} .btnView{z-index:3}
         place(root, anchor);
       }
     });
+    void readUserIpLocation(mid).then((loc) => {
+      if (card2 !== root || !loc || loc === currentWhere) return;
+      currentWhere = loc;
+      paintWhere();
+      place(root, anchor);
+    });
   }
   function place(root, anchor) {
     const rect = anchor.getBoundingClientRect(), width = screenWidth(root), height = screenHeight(root);
@@ -11752,12 +12144,13 @@ ${root} .btnView{z-index:3}
 .acm-card-face{flex:none;display:block;width:48px;height:48px;border:1px solid var(--xp-edge)}
 .acm-card-face img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:auto}
 .acm-card-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.acm-card-head{display:flex;align-items:baseline;gap:5px;min-width:0}
-.acm-card-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:bold;color:var(--xp-task-link)!important;text-decoration:none!important}
+.acm-card-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 5px;min-width:0}
+.acm-card-name{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:bold;color:var(--xp-task-link)!important;text-decoration:none!important}
 .acm-card-name:hover{text-decoration:underline!important}
 .acm-card-level{flex:none;color:var(--xp-group-text)}
+.acm-card-where{flex:none;color:var(--xp-muted);white-space:nowrap}
 .acm-card-official{display:flex;align-items:center;gap:3px;min-width:0;color:var(--xp-muted)}
-.acm-card-official[hidden],.acm-card-sign[hidden]{display:none}
+.acm-card-official[hidden],.acm-card-sign[hidden],.acm-card-where[hidden]{display:none}
 .acm-card-official img{flex:none;width:14px;height:14px;image-rendering:auto}
 .acm-card-sign{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 .acm-card-stats{display:flex;flex-wrap:wrap;gap:2px 10px;color:var(--xp-muted)}
@@ -12138,12 +12531,14 @@ ${root} .btnView{z-index:3}
         who.rel = "noopener noreferrer";
       }
       const level = Number(reply?.member?.level_info?.current_level);
-      if (space) for (const anchor of [face, who]) markUserCard(anchor, { mid, name: String(reply?.member?.uname ?? ""), face: String(reply?.member?.avatar ?? ""), level });
+      const where = stripIpPrefix(reply?.reply_control?.location);
+      if (space) for (const anchor of [face, who]) markUserCard(anchor, { mid, name: String(reply?.member?.uname ?? ""), face: String(reply?.member?.avatar ?? ""), level, location: where });
       const target = { kind: "comment", el: element2, insertionEl: element2, uid: Number(mid) || void 0, name: reply?.member?.uname, content: reply?.content?.message };
       targets2.set(element2, target);
       const canBlock = context.blocking && !(context.me && mid === context.me);
       if (mid && mid === context.owner) top.append(node2("span", "acm-badge", "UP"));
       if (Number.isFinite(level) && level > 0) top.append(node2("span", "acm-level", `Lv${level}`));
+      if (where) top.append(node2("span", "acm-where", where));
       if (pinned) top.append(node2("span", "acm-badge", "\u7F6E\u9876"));
       if (side) {
         const sideActions = side.appendChild(node2("div", "acm-side-actions"));
@@ -12187,8 +12582,7 @@ ${root} .btnView{z-index:3}
       main.querySelector(":scope > .acm-text > .acm-pics")?.setAttribute("data-picture-title", `\u8BC4\u8BBA\u56FE\u7247 - ${reply?.member?.uname || mid || "\u672A\u77E5\u7528\u6237"}`);
       const meta = main.appendChild(node2("div", "acm-meta"));
       const when2 = formatTimestamp(reply?.ctime) || String(reply?.reply_control?.time_desc ?? "").replace(/发布$/, "");
-      const stamp = meta.appendChild(node2("span", "acm-when", when2)), where = String(reply?.reply_control?.location ?? "");
-      if (where) stamp.append(node2("span", "acm-where", (when2 ? " \xB7 " : "") + where));
+      meta.appendChild(node2("span", "acm-when", when2));
       const actions = meta.appendChild(node2("span", "acm-actions"));
       let likes = Math.max(0, Number(reply?.like) || 0), action = Number(reply?.action) || 0;
       const like = button2("", "acm-like", () => void toggle(1)), hate = button2("\u8E29", "acm-hate", () => void toggle(2));
@@ -12388,6 +12782,7 @@ ${root} .acm-name{font-weight:bold;color:var(--xp-ink)!important;text-decoration
 ${root} .acm-sub-more{margin-left:auto;min-width:0!important;min-height:18px!important;padding:0 5px!important}
 ${root} .acm-badge{padding:0 3px;color:var(--xp-caption-ink);background:var(--xp-caption)}
 ${root} .acm-level{color:var(--xp-group-text)}
+${root} .acm-where{display:inline-flex;align-items:center;padding:0 5px;min-height:17px;border:0 solid transparent;color:var(--xp-ink);background:var(--xp-fallback,var(--xp-face));${image("button", 0)};image-rendering:pixelated;cursor:default;white-space:nowrap}
 ${root} .acm-text{overflow-wrap:anywhere}${root} .acm-link{color:var(--xp-task-link)}
 ${root} .acm-emote{width:20px;height:20px;vertical-align:text-bottom;image-rendering:auto}${root} .acm-emote-large{width:40px;height:40px}
 ${root} .acm-pics{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}${root} .acm-pic{display:block;width:80px;height:80px;border:1px solid var(--xp-edge)}
@@ -18528,10 +18923,11 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       return this.read(`https://api.bilibili.com${path}?${query}`, signal);
     }
     async profile(uid, signal) {
-      const [infoRes, statRes, upstatRes] = await Promise.allSettled([
+      const [infoRes, statRes, upstatRes, ipRes] = await Promise.allSettled([
         this.wbiGet("/x/space/wbi/acc/info", { mid: uid, platform: "web", web_location: "1550101" }, signal),
         this.read(`https://api.bilibili.com/x/relation/stat?vmid=${encodeURIComponent(uid)}`, signal),
-        this.me ? this.read(`https://api.bilibili.com/x/space/upstat?mid=${encodeURIComponent(uid)}`, signal) : Promise.resolve(null)
+        this.me ? this.read(`https://api.bilibili.com/x/space/upstat?mid=${encodeURIComponent(uid)}`, signal) : Promise.resolve(null),
+        readUserIpLocation(uid, signal)
       ]);
       let info = null;
       let spacePhoto = null;
@@ -18556,6 +18952,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       }
       const stat = statRes.status === "fulfilled" && Number(statRes.value?.code) === 0 ? statRes.value.data : null;
       const upstat = upstatRes.status === "fulfilled" && Number(upstatRes.value?.code) === 0 ? upstatRes.value.data : null;
+      const ipLocation = ipRes.status === "fulfilled" && ipRes.value ? ipRes.value : void 0;
       const topPhoto = pickBanner(info, spacePhoto);
       const live = info.live_room;
       return {
@@ -18566,6 +18963,7 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
         sex: String(info.sex ?? ""),
         level: Number(info.level) || 0,
         birthday: String(info.birthday ?? "").trim(),
+        ipLocation,
         topPhoto,
         hasCustomBanner: !!topPhoto,
         official: {
@@ -19489,6 +19887,9 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       off.title = profile.official.desc || profile.official.title;
       topLine.append(off);
     }
+    if (profile.ipLocation) {
+      topLine.append(el("span", "as-badge as-ip atelier-ip-location", profile.ipLocation));
+    }
     if (profile.sign) {
       const sign = el("p", "as-sign", profile.sign);
       sign.title = profile.sign;
@@ -19700,6 +20101,9 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
       dl.append(el("dt", "", k), el("dd", "", v));
     };
     addRow("UID", profile.uid);
+    if (profile.ipLocation) {
+      dl.append(el("dt", "atelier-ip-location", "IP \u5C5E\u5730"), el("dd", "atelier-ip-location", profile.ipLocation));
+    }
     if (profile.official.title) addRow("\u8BA4\u8BC1", profile.official.title);
     if (profile.sex && profile.sex !== "\u4FDD\u5BC6") addRow("\u6027\u522B", profile.sex);
     if (profile.birthday) addRow("\u751F\u65E5", profile.birthday);
@@ -19896,6 +20300,7 @@ ${s} .as-badge{display:inline-flex;align-items:center;padding:0 5px;height:18px;
 ${s} .as-lv{background:var(--xp-caption);color:var(--xp-caption-ink);border-color:var(--xp-caption)}
 ${s} .as-vip{background:#d94b7a;color:#fff;border-color:#9e2a50}
 ${s} .as-official{background:var(--xp-face);color:var(--xp-task-link);max-width:260px;overflow:hidden;text-overflow:ellipsis}
+${s} .as-ip{background:var(--xp-face);color:var(--xp-ink)}
 ${s} .as-sign{margin:4px 0 0;color:var(--xp-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 ${s} .as-ops{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none}
 ${s} .as-stats{display:flex;align-items:center;gap:14px}
@@ -20481,6 +20886,8 @@ ${lunaDialogCss}
       location.reload();
     };
     const teardown = () => {
+      window.removeEventListener(appAuthChanged, refreshSpaceIp);
+      window.removeEventListener(interfaceChanged, refreshSpaceIp);
       disposeTab?.();
       disposeTab = void 0;
       disposeAside?.();
@@ -20628,6 +21035,23 @@ ${lunaDialogCss}
         mountTab();
       }
     };
+    const refreshSpaceIp = () => {
+      if (!currentProfile || currentProfile.ipLocation) return;
+      const snapshot = currentProfile;
+      void readUserIpLocation(snapshot.uid).then((loc) => {
+        if (!loc || currentProfile !== snapshot || snapshot.ipLocation) return;
+        snapshot.ipLocation = loc;
+        headerHost.replaceChildren(buildProfileWindow({
+          profile: snapshot,
+          api: api5,
+          onRelation: (kind) => navigate("relation", kind),
+          onSwitchNative: switchNative
+        }));
+        syncAside();
+      });
+    };
+    window.addEventListener(appAuthChanged, refreshSpaceIp);
+    window.addEventListener(interfaceChanged, refreshSpaceIp);
     window.addEventListener("popstate", onRouteChange);
     void loadUid(initialRoute.uid);
   }
@@ -23227,7 +23651,26 @@ ${message}` : ""}`;
     }
     const grip = status2.appendChild(el("span", "vl-status-grip"));
     grip.setAttribute("aria-hidden", "true");
-    let viewedId = "";
+    let viewedId = "", videoLocTicket = 0, currentLocBvid = "", currentLoc = "";
+    const paintDate = (pubdate, loc = "") => {
+      date2.replaceChildren();
+      const formatted = formatDate(pubdate);
+      if (formatted) date2.append(formatted);
+      if (loc) date2.append(el("span", "atelier-ip-location", (formatted ? " \xB7 " : "") + loc));
+    };
+    const refreshVideoLocation = () => {
+      if (!latest) return;
+      const video2 = latest.videoData ?? {};
+      const bvid = latest.kind === "bangumi" ? "" : String(latest.bvid ?? video2.bvid ?? "");
+      if (!bvid || currentLoc) return;
+      const ticket = ++videoLocTicket, snapshot = latest;
+      void readVideoIpLocation(bvid).then((loc) => {
+        if (ticket === videoLocTicket && latest === snapshot && loc) {
+          currentLoc = loc;
+          paintDate(video2.pubdate, loc);
+        }
+      });
+    };
     const paintViewed = () => {
       check2.checked = !!viewedId && isViewedVideo(viewedId);
       check2.disabled = !viewedId;
@@ -23240,6 +23683,7 @@ ${message}` : ""}`;
       }
     });
     window.addEventListener(viewedMarksChanged, paintViewed);
+    window.addEventListener(interfaceChanged, refreshVideoLocation);
     return {
       element: win.root,
       status: status2,
@@ -23247,11 +23691,17 @@ ${message}` : ""}`;
       render(state2) {
         latest = state2;
         const video2 = state2.videoData ?? {}, stat = video2.stat ?? {};
+        const nextBvid = state2.kind === "bangumi" ? "" : String(state2.bvid ?? video2.bvid ?? "");
+        if (nextBvid !== currentLocBvid) {
+          currentLocBvid = nextBvid;
+          currentLoc = "";
+        }
         win.title.textContent = String(video2.title ?? "");
         win.root.title = String(video2.title ?? "");
         views2.textContent = `\u64AD\u653E ${formatCount(stat.view) || 0}`;
         danmaku.textContent = `\u5F39\u5E55 ${formatCount(stat.danmaku) || 0}`;
-        date2.textContent = formatDate(video2.pubdate);
+        paintDate(video2.pubdate, currentLoc);
+        refreshVideoLocation();
         rights.textContent = Number(video2.copyright) === 1 ? "\u672A\u7ECF\u4F5C\u8005\u6388\u6743\uFF0C\u7981\u6B62\u8F6C\u8F7D" : "";
         const parts2 = Array.isArray(video2.pages) ? video2.pages.length : 0, p2 = Number(state2.p) || 1;
         viewedId = state2.viewedId ?? viewedIdFromBvid(String(state2.bvid ?? ""), parts2 > 1 ? p2 : void 0) ?? "";
@@ -25906,9 +26356,40 @@ ${message}` : ""}`;
     const win = xpWindow({ className: "vl-small vl-up-window", icon: face, title: "", label: "UP \u4E3B" });
     foldable(win, "up");
     let people2 = [], key6 = "", generation = 0;
+    let upLocTicket = 0, currentUpMid = "", currentUpFans, currentUpLoc = "";
+    let metaHost = null, metaLine = null;
+    const paintUpMeta = () => {
+      if (!metaLine || !metaHost) return;
+      metaLine.replaceChildren();
+      const hasFans = currentUpFans !== void 0;
+      if (hasFans) metaLine.append(`\u7C89\u4E1D ${formatCount(currentUpFans) || 0}`);
+      if (currentUpLoc) metaLine.append(el("span", "atelier-ip-location", (hasFans ? " \xB7 " : "") + currentUpLoc));
+      if (hasFans || currentUpLoc) {
+        if (!metaLine.isConnected) metaHost.append(metaLine);
+      } else {
+        metaLine.remove();
+      }
+    };
+    const refreshUpLocation = () => {
+      if (people2.length !== 1 || !currentUpMid || currentUpLoc) return;
+      const mid = currentUpMid, ticket = ++upLocTicket;
+      void readUserIpLocation(mid).then((loc) => {
+        if (ticket === upLocTicket && currentUpMid === mid && loc && loc !== currentUpLoc) {
+          currentUpLoc = loc;
+          paintUpMeta();
+        }
+      });
+    };
+    window.addEventListener(interfaceChanged, refreshUpLocation);
+    window.addEventListener(appAuthChanged, refreshUpLocation);
     const follow = { api: context.actions, me: context.me, failure };
     function draw() {
       win.body.replaceChildren();
+      metaHost = null;
+      metaLine = null;
+      currentUpMid = "";
+      currentUpFans = void 0;
+      currentUpLoc = "";
       if (people2.length > 1) {
         win.title.textContent = `\u521B\u4F5C\u56E2\u961F\uFF08${people2.length}\uFF09`;
         face.src = thumb(people2[0].face, "32w_32h_1c");
@@ -25937,7 +26418,13 @@ ${message}` : ""}`;
       const info = top.appendChild(el("div", "vl-up-info"));
       info.append(link("vl-up-name", person.name, `https://space.bilibili.com/${person.mid}`));
       if (person.sign) info.append(el("p", "vl-up-sign", person.sign));
-      if (person.fans !== void 0) info.append(el("p", "vl-muted", `\u7C89\u4E1D ${formatCount(person.fans) || 0}`));
+      currentUpMid = person.mid;
+      currentUpFans = person.fans;
+      currentUpLoc = cachedUserIpLocation(person.mid) ?? "";
+      metaHost = info;
+      metaLine = el("p", "vl-muted");
+      paintUpMeta();
+      refreshUpLocation();
       const actions = win.body.appendChild(el("div", "vl-up-actions"));
       actions.append(followButton(person, follow), link("xp-button", "\u79C1\u4FE1", `https://message.bilibili.com/#whisper/mid${person.mid}`));
       const charge = document.querySelector(".up-panel-container .new-charge-btn");
@@ -28003,6 +28490,173 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     };
   }
 
+  // src/modules/ip-location/auth-dialog.ts
+  var import_qrcode2 = __toESM(require_browser(), 1);
+  var QR_LIFETIME_SECONDS = 180;
+  function openAppAuthDialog() {
+    return new Promise((resolve) => {
+      ensureLunaTheme();
+      const before = document.activeElement;
+      const dialog = document.createElement("dialog");
+      dialog.className = "atelier-dialog xp-window atelier-ip-auth-dialog";
+      dialog.setAttribute("data-bili-blocker-ui", "");
+      const caption2 = document.createElement("header");
+      caption2.className = "xp-caption";
+      const heading = document.createElement("h2");
+      heading.id = "atelier-ip-auth-title";
+      heading.textContent = "\u79FB\u52A8\u7AEF\u5C5E\u5730\u6388\u6743";
+      const dismiss = document.createElement("button");
+      dismiss.type = "button";
+      dismiss.className = "xp-caption-button";
+      dismiss.dataset.kind = "close";
+      dismiss.setAttribute("aria-label", "\u5173\u95ED");
+      dismiss.title = "\u5173\u95ED";
+      caption2.append(heading, dismiss);
+      dialog.setAttribute("aria-labelledby", heading.id);
+      const body2 = document.createElement("div");
+      body2.className = "atelier-dialog-body atelier-ip-auth-body";
+      const intro = document.createElement("p");
+      intro.textContent = "\u4F7F\u7528\u624B\u673A\u54D4\u54E9\u54D4\u54E9 App \u626B\u63CF\u4E0B\u65B9\u4E8C\u7EF4\u7801\u786E\u8BA4\u6388\u6743\uFF0C\u4EE5\u83B7\u53D6 UP \u7A7A\u95F4\u4E0E\u7528\u6237\u7684\u5E38\u9A7B IP \u5C5E\u5730\u3002\u51ED\u8BC1\u4EC5\u4FDD\u5B58\u5728\u5F53\u524D\u6D4F\u89C8\u5668\u672C\u5730\u6C99\u7BB1\uFF0C\u4E0D\u53C2\u4E0E\u5BFC\u51FA\u6216\u4E91\u540C\u6B65\u3002";
+      const qrBox = document.createElement("div");
+      qrBox.className = "atelier-ip-qr-box";
+      const qrImg = document.createElement("img");
+      qrImg.className = "atelier-ip-qr-img";
+      qrImg.alt = "\u79FB\u52A8\u7AEF\u5C5E\u5730\u6388\u6743\u4E8C\u7EF4\u7801";
+      qrImg.width = 164;
+      qrImg.height = 164;
+      qrImg.hidden = true;
+      qrBox.append(qrImg);
+      const status2 = document.createElement("p");
+      status2.className = "atelier-ip-qr-status";
+      status2.setAttribute("role", "status");
+      status2.setAttribute("aria-live", "polite");
+      body2.append(intro, qrBox, status2);
+      const actions = document.createElement("div");
+      actions.className = "atelier-dialog-actions";
+      const refreshBtn = document.createElement("button");
+      refreshBtn.type = "button";
+      refreshBtn.className = "atelier-control";
+      refreshBtn.textContent = "\u5237\u65B0\u4E8C\u7EF4\u7801";
+      const cancelBtn = document.createElement("button");
+      cancelBtn.type = "button";
+      cancelBtn.className = "atelier-control";
+      cancelBtn.textContent = "\u53D6\u6D88";
+      actions.append(refreshBtn, cancelBtn);
+      dialog.append(caption2, body2, actions);
+      const cleanupPixels = observeCrispText(dialog);
+      let settled = false;
+      let roundAbort = null;
+      let pollTimer = 0;
+      const stopRound = () => {
+        if (pollTimer) {
+          window.clearInterval(pollTimer);
+          pollTimer = 0;
+        }
+        roundAbort?.abort();
+        roundAbort = null;
+      };
+      const finish = (ok4) => {
+        if (settled) return;
+        settled = true;
+        stopRound();
+        cleanupPixels();
+        dialog.remove();
+        if (before?.isConnected) before.focus();
+        resolve(ok4);
+      };
+      const startRound = async () => {
+        stopRound();
+        if (settled) return;
+        if (!hasAppRequestSupport()) {
+          qrImg.hidden = true;
+          status2.textContent = "\u5F53\u524D\u73AF\u5883\u672A\u63D0\u4F9B GM_xmlhttpRequest\uFF0C\u8BF7\u5728 Tampermonkey \u811A\u672C\u73AF\u5883\u4E2D\u6388\u6743\u3002";
+          return;
+        }
+        const controller = new AbortController();
+        roundAbort = controller;
+        refreshBtn.disabled = true;
+        qrImg.hidden = true;
+        status2.textContent = "\u6B63\u5728\u83B7\u53D6\u6388\u6743\u4E8C\u7EF4\u7801\u2026";
+        try {
+          const { authCode, url } = await requestTvQrCode(controller.signal);
+          if (controller.signal.aborted || settled) return;
+          const svg = await import_qrcode2.default.toString(url, { type: "svg", width: 164, margin: 1, errorCorrectionLevel: "M" });
+          if (controller.signal.aborted || settled) return;
+          qrImg.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+          qrImg.hidden = false;
+          refreshBtn.disabled = false;
+          let left = QR_LIFETIME_SECONDS;
+          let polling = false;
+          let hint = "\u8BF7\u4F7F\u7528\u624B\u673A\u54D4\u54E9\u54D4\u54E9 App \u626B\u7801";
+          status2.textContent = `${hint}\uFF08${left}s\uFF09`;
+          pollTimer = window.setInterval(() => {
+            if (controller.signal.aborted || settled) return;
+            left -= 1;
+            if (left <= 0) {
+              stopRound();
+              status2.textContent = "\u4E8C\u7EF4\u7801\u5DF2\u8FC7\u671F\uFF0C\u8BF7\u70B9\u51FB\u300C\u5237\u65B0\u4E8C\u7EF4\u7801\u300D";
+              return;
+            }
+            status2.textContent = `${hint}\uFF08${left}s\uFF09`;
+            if (polling || left % 2 !== 0) return;
+            polling = true;
+            pollTvQrCode(authCode, controller.signal).then((res) => {
+              polling = false;
+              if (controller.signal.aborted || settled) return;
+              if (res.done) {
+                sound("select");
+                showInfoLog(res.mid ? `\u79FB\u52A8\u7AEF\u5C5E\u5730\u6388\u6743\u6210\u529F\uFF08UID ${res.mid}\uFF09` : "\u79FB\u52A8\u7AEF\u5C5E\u5730\u6388\u6743\u6210\u529F", "success");
+                finish(true);
+                return;
+              }
+              if (res.expired) {
+                stopRound();
+                status2.textContent = res.message || "\u4E8C\u7EF4\u7801\u5DF2\u8FC7\u671F\uFF0C\u8BF7\u70B9\u51FB\u5237\u65B0";
+                return;
+              }
+              hint = res.message || hint;
+              status2.textContent = `${hint}\uFF08${left}s\uFF09`;
+            }, () => {
+              polling = false;
+            });
+          }, 1e3);
+        } catch (error) {
+          if (controller.signal.aborted || settled) return;
+          refreshBtn.disabled = false;
+          status2.textContent = error instanceof Error ? error.message : "\u83B7\u53D6\u6388\u6743\u4E8C\u7EF4\u7801\u5931\u8D25";
+        }
+      };
+      refreshBtn.addEventListener("click", () => {
+        sound("click");
+        void startRound();
+      });
+      dismiss.addEventListener("click", () => {
+        sound("click");
+        finish(false);
+      });
+      cancelBtn.addEventListener("click", () => {
+        sound("click");
+        finish(false);
+      });
+      dialog.addEventListener("cancel", (event) => {
+        event.preventDefault();
+        finish(false);
+      });
+      dialog.addEventListener("keydown", (event) => {
+        event.stopPropagation();
+        if (event.key === "Escape") {
+          event.preventDefault();
+          finish(false);
+        }
+      });
+      document.body.append(dialog);
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+      cancelBtn.focus();
+      void startRound();
+    });
+  }
+
   // src/ui/interface-page.ts
   var pageSwitchChanged = "atelier-page-switch-changed";
   function switchPage(here, luna, remember) {
@@ -28072,6 +28726,31 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     syncs.push(() => {
       font.value = readInterfacePrefs().danmakuFont;
     });
+    const authRow = element("div", "atelier-ip-auth");
+    const authStatus = element("span", "atelier-ip-auth-status");
+    const authActions = element("div", "atelier-ip-auth-actions");
+    const authBtn = button("\u626B\u7801\u6388\u6743\u2026", () => {
+      void openAppAuthDialog().then(() => sync());
+    }, "atelier-control");
+    const clearBtn = button("\u6E05\u9664\u6388\u6743", () => {
+      void atelierConfirm("\u786E\u5B9A\u6E05\u9664\u5F53\u524D\u6D4F\u89C8\u5668\u4FDD\u5B58\u7684\u79FB\u52A8\u7AEF\u5C5E\u5730\u6388\u6743\u5417\uFF1F", "\u6E05\u9664\u5C5E\u5730\u6388\u6743").then((ok4) => {
+        if (ok4) {
+          clearAppAuth();
+          sync();
+        }
+      });
+    }, "atelier-control");
+    authActions.append(authBtn, clearBtn);
+    authRow.append(authStatus, authActions);
+    syncs.push(() => {
+      const auth = readAppAuth();
+      authStatus.textContent = auth.status === "active" ? `\u79FB\u52A8\u7AEF\u5C5E\u5730\u6388\u6743\uFF1A\u5DF2\u6388\u6743${auth.mid ? `\uFF08UID ${auth.mid}\uFF09` : ""}` : auth.status === "expired" ? "\u79FB\u52A8\u7AEF\u5C5E\u5730\u6388\u6743\uFF1A\u5DF2\u8FC7\u671F\uFF0C\u8BF7\u91CD\u65B0\u626B\u7801" : "\u79FB\u52A8\u7AEF\u5C5E\u5730\u6388\u6743\uFF1A\u672A\u6388\u6743\uFF08\u4EC5\u663E\u793A\u8BC4\u8BBA\u4E0E\u89C6\u9891\u53D1\u5E03\u5C5E\u5730\uFF09";
+      authBtn.textContent = auth.status === "none" ? "\u626B\u7801\u6388\u6743\u2026" : "\u91CD\u65B0\u626B\u7801\u2026";
+      clearBtn.hidden = auth.status === "none";
+      const ipOn = readInterfacePrefs().ipLocation;
+      authRow.toggleAttribute("data-disabled", !ipOn);
+      authBtn.disabled = !ipOn;
+    });
     page.append(
       element("h2", "", "\u754C\u9762"),
       group(
@@ -28097,8 +28776,13 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
         "\u8BC4\u8BBA\u533A",
         check2("\u60AC\u505C\u5934\u50CF\u548C\u540D\u5B57\u65F6\u663E\u793A\u7528\u6237\u5361\u7247", () => readInterfacePrefs().userCard, (on9) => saveInterfacePrefs({ userCard: on9 })),
         check2("\u8BC4\u8BBA\u533A\u548C\u52A8\u6001\u7684\u56FE\u7247\u5728\u9875\u5185\u6253\u5F00\uFF08\u5173\u95ED\u540E\u5728\u65B0\u6807\u7B7E\u9875\u6253\u5F00\uFF09", () => readInterfacePrefs().pictureWindow, (on9) => saveInterfacePrefs({ pictureWindow: on9 })),
-        check2("\u56DE\u590D\u6570\u540E\u663E\u793A\u672C\u5730\u9690\u85CF\u6570\uFF08\u5DF2\u52A0\u8F7D\u7684\u8BC4\u8BBA\u4E2D\u88AB\u672C\u5730\u9ED1\u540D\u5355\u9690\u85CF\u4E86\u51E0\u6761\uFF09", () => readUiPreferences().hiddenCount, (on9) => saveUiPreferences({ hiddenCount: on9 })),
-        check2("\u663E\u793A IP \u5C5E\u5730\uFF08B \u7AD9\u539F\u6765\u7684\u8BC4\u8BBA\u533A\u8981\u5237\u65B0\u540E\u751F\u6548\uFF09", () => readInterfacePrefs().ipLocation, (on9) => saveInterfacePrefs({ ipLocation: on9 }))
+        check2("\u56DE\u590D\u6570\u540E\u663E\u793A\u672C\u5730\u9690\u85CF\u6570\uFF08\u5DF2\u52A0\u8F7D\u7684\u8BC4\u8BBA\u4E2D\u88AB\u672C\u5730\u9ED1\u540D\u5355\u9690\u85CF\u4E86\u51E0\u6761\uFF09", () => readUiPreferences().hiddenCount, (on9) => saveUiPreferences({ hiddenCount: on9 }))
+      ),
+      group(
+        "IP \u5C5E\u5730",
+        check2("\u663E\u793A IP \u5C5E\u5730\uFF08\u8BC4\u8BBA\u533A\u3001\u64AD\u653E\u9875\u3001UP \u7A7A\u95F4\u4E0E\u7528\u6237\u5361\u7247\uFF1BB \u7AD9\u539F\u6765\u7684\u8BC4\u8BBA\u533A\u8981\u5237\u65B0\u540E\u751F\u6548\uFF09", () => readInterfacePrefs().ipLocation, (on9) => saveInterfacePrefs({ ipLocation: on9 })),
+        authRow,
+        element("p", "luna-hint", "\u626B\u7801\u6388\u6743\u540E\u53EF\u8BFB\u53D6 UP \u7A7A\u95F4\u4E0E\u7528\u6237\u7684\u5E38\u9A7B\u5C5E\u5730\uFF08\u6309 UID \u7F13\u5B58 30 \u5206\u949F\uFF09\uFF1B\u5173\u95ED\u5F00\u5173\u65F6\u505C\u53D1\u5168\u90E8\u5C5E\u5730\u8BF7\u6C42\u3002")
       ),
       group(
         "\u5DF2\u770B",
@@ -28109,7 +28793,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     );
     paint2();
     for (const key6 of [videoLunaKey, historyLunaKey, spaceLunaKey, localFeedPrefsKey()]) relayRemoteChanges(key6, pageSwitchChanged);
-    for (const event of [interfaceChanged, appearanceChanged, pbpShownChanged, videoCoverChanged, pageModeChanged, pageSwitchChanged]) window.addEventListener(event, sync, { signal });
+    for (const event of [interfaceChanged, appearanceChanged, pbpShownChanged, videoCoverChanged, pageModeChanged, pageSwitchChanged, appAuthChanged]) window.addEventListener(event, sync, { signal });
     return page;
   }
   function interfacePages(win) {
