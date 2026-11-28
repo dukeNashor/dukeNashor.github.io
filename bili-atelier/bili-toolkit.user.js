@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.13.0
+// @version      0.13.1
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -4263,10 +4263,6 @@
   var isIntegerDpr = (dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1) => Math.abs(dpr - Math.round(dpr)) < 1e-3;
   var dpiModeFor = (dpr) => isIntegerDpr(dpr) ? "integer" : "fractional";
   var dpiModeChanged = "atelier-dpi-mode-changed";
-  var skinNames = {
-    xp: "Windows XP (Luna)",
-    aero: "Windows 7 (Aero)"
-  };
   var aeroSchemeNames = {
     sky: "\u5929\u84DD\uFF08\u9ED8\u8BA4\uFF09",
     obsidian: "Vista \u9ED1\u66DC\u77F3",
@@ -4298,6 +4294,18 @@
   }
   var isCrispTextActive = () => active?.usesCrispText ?? true;
   var isPixelScaleActive = () => active?.supportsPixelScale ?? true;
+  function currentSkinId() {
+    if (active) return active.id;
+    if (typeof document !== "undefined" && isSkinId(document.documentElement?.dataset?.atelierSkin)) {
+      return document.documentElement.dataset.atelierSkin;
+    }
+    if (typeof GM_getValue === "function") {
+      const stored = GM_getValue("BiliAtelier_UI", null);
+      if (isSkinId(stored?.skin)) return stored.skin;
+    }
+    return "xp";
+  }
+  var skinStorageKey = (baseKey, skin2 = currentSkinId()) => skin2 === "xp" ? baseKey : `${baseKey}_${skin2}`;
 
   // src/ui/assets/aero/aero.png
   var aero_default = readCachedResourceUrl("atelier_aero_png");
@@ -5169,7 +5177,12 @@ html[data-atelier-skin=aero][data-atelier-brightness=dark] #bili-atelier-blocker
 html[data-atelier-skin=aero][data-atelier-glass=on] #bili-atelier-blocker-panel .atelier-appearance-preview :is(.preview-inactive,.preview-active,.preview-message){backdrop-filter:blur(8px) saturate(1.2);-webkit-backdrop-filter:blur(8px) saturate(1.2)}
 html[data-atelier-skin=aero] #bili-atelier-blocker-panel .luna-address{border-radius:2px}
 html[data-atelier-skin=aero] #bili-atelier-blocker-panel .luna-content{border-radius:3px}
+html[data-atelier-skin=aero] #bili-atelier-blocker-panel .atelier-skin-option{border:1px solid var(--xp-aero-btn-border);border-radius:4px;background:var(--xp-aero-btn-bg);color:var(--xp-ink);box-shadow:inset 0 1px 0 var(--xp-aero-btn-inner);transition:background-color .15s ease,border-color .15s ease,box-shadow .15s ease}
+html[data-atelier-skin=aero] #bili-atelier-blocker-panel .atelier-skin-option:hover{background:var(--xp-aero-nav-hover);border-color:var(--xp-aero-btn-hover-border)}
+html[data-atelier-skin=aero] #bili-atelier-blocker-panel .atelier-skin-option[aria-checked=true]{background:var(--xp-aero-nav-selected);color:var(--xp-ink);border-color:var(--xp-aero-btn-hover-border);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45),0 0 0 1px color-mix(in srgb,var(--xp-highlight) 35%,transparent)}
+html[data-atelier-skin=aero] #bili-atelier-blocker-panel .atelier-skin-option[data-skin=xp] .atelier-skin-option-icon{image-rendering:pixelated}
 html[data-atelier-skin=aero] #atelier-launcher .atelier-quick-menu h2{border-radius:2px;background:var(--xp-aero-glass);color:var(--xp-caption-ink);text-shadow:var(--xp-aero-glass-glow)}
+html[data-atelier-skin=aero] #atelier-launcher img[data-atelier-fixed-skin=xp]{image-rendering:pixelated}
 html[data-atelier-skin=aero] .adc-card:has(.btnIsView){background:var(--xp-aero-glass-inactive);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.2),0 2px 8px rgba(0,0,0,0.14)}
 html[data-atelier-skin=aero] .adc-card:has(.btnIsView)>.xp-caption{color:var(--xp-inactive-caption-ink)}
 `;
@@ -5358,6 +5371,11 @@ ${aeroButtonCss(".atelier-control", true)}
       const target = aero ? resolveAeroUrl(name) : aeroToXp.get(name);
       if (target && img.src !== target) img.src = target;
     }
+    for (const img of document.querySelectorAll("img[data-atelier-fixed-icon][data-atelier-fixed-skin=aero]")) {
+      const name = img.dataset.atelierFixedIcon;
+      const target = resolveAeroUrl(name);
+      if (target && img.src !== target) img.src = target;
+    }
   }
   function paintOrbVars() {
     if (typeof document === "undefined" || !decodedUrls?.nav_back || !decodedUrls?.nav_forward) return;
@@ -5420,6 +5438,19 @@ ${aeroButtonCss(".atelier-control", true)}
     img.dataset.atelierIcon = name;
     primeAeroIcons();
     img.src = isAero() ? resolveAeroUrl(name) ?? xpUrl : xpUrl;
+    return img;
+  }
+  function bindFixedSkinIcon(img, name, skin2) {
+    img.dataset.atelierFixedIcon = name;
+    img.dataset.atelierFixedSkin = skin2;
+    const xpUrl = aeroToXp.get(name) ?? "";
+    if (skin2 === "xp") {
+      if (xpUrl && img.src !== xpUrl) img.src = xpUrl;
+      return img;
+    }
+    ensureDecoded();
+    const target = resolveAeroUrl(name) ?? xpUrl;
+    if (target && img.src !== target) img.src = target;
     return img;
   }
 
@@ -5751,6 +5782,7 @@ ${unzoomedScope}{zoom:${back}}`;
   // src/ui/appearance.ts
   var key3 = "BiliAtelier_UI";
   var appearanceChanged = "atelier-appearance-changed";
+  var defaultLauncherPos = { edge: "right", y: 0.72 };
   function readUiPreferences() {
     const stored = typeof GM_getValue === "function" ? GM_getValue(key3, {}) : {};
     return {
@@ -5761,10 +5793,21 @@ ${unzoomedScope}{zoom:${back}}`;
       aeroScheme: isAeroScheme(stored?.aeroScheme) ? stored.aeroScheme : "sky",
       aeroGlass: stored?.aeroGlass !== false,
       edge: stored?.edge === "left" ? "left" : "right",
-      y: Number.isFinite(stored?.y) ? Math.max(0, Math.min(1, stored.y)) : 0.72,
+      y: Number.isFinite(stored?.y) ? Math.max(0, Math.min(1, stored.y)) : defaultLauncherPos.y,
+      aeroEdge: stored?.aeroEdge === "left" ? "left" : "right",
+      aeroY: Number.isFinite(stored?.aeroY) ? Math.max(0, Math.min(1, stored.aeroY)) : defaultLauncherPos.y,
       // " · 本地隐藏 N" after reply counts; this browser only, on unless turned off.
       hiddenCount: stored?.hiddenCount !== false
     };
+  }
+  function readLauncherPos(skin2) {
+    const prefs = readUiPreferences();
+    const target = skin2 ?? prefs.skin;
+    return target === "aero" ? { edge: prefs.aeroEdge, y: prefs.aeroY } : { edge: prefs.edge, y: prefs.y };
+  }
+  function saveLauncherPos(pos, skin2) {
+    const target = skin2 ?? readUiPreferences().skin;
+    saveUiPreferences(target === "aero" ? { aeroEdge: pos.edge, aeroY: pos.y } : { edge: pos.edge, y: pos.y });
   }
   function saveUiPreferences(change) {
     if (typeof GM_setValue === "function") GM_setValue(key3, { ...readUiPreferences(), ...change });
@@ -6855,6 +6898,18 @@ ${id} .atelier-appearance-layout{display:grid;grid-template-columns:minmax(320px
 ${id} .atelier-appearance-group{display:flex;flex-direction:column;gap:10px}
 ${id} .atelier-appearance-controls{display:flex;flex-direction:column;gap:10px}
 ${id} .atelier-appearance-controls>.luna-hint{margin:0}
+${id} .atelier-skin-toggle{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+${id} .atelier-skin-option{${xpFont};display:flex;align-items:center;gap:8px;min-width:0;padding:6px 8px;margin:0;text-align:left;cursor:default;color:var(--xp-ink);background:var(--xp-window);border:1px solid var(--xp-edge);box-shadow:inset 1px 1px var(--xp-light3d),inset -1px -1px var(--xp-shadow3d)}
+${id} .atelier-skin-option:hover{background:var(--atelier-hover);border-color:var(--xp-highlight)}
+${id} .atelier-skin-option:focus-visible{outline:1px dotted var(--xp-ink);outline-offset:-3px}
+${id} .atelier-skin-option[aria-checked=true]{background:var(--xp-highlight);color:var(--xp-highlight-ink);border-color:var(--xp-highlight);box-shadow:inset 0 0 0 1px var(--xp-light3d)}
+${id} .atelier-skin-option[aria-checked=true]:focus-visible{outline-color:var(--xp-highlight-ink)}
+${id} .atelier-skin-option-icon{width:24px;height:24px;flex:none;object-fit:contain}
+${id} .atelier-skin-option[data-skin=aero] .atelier-skin-option-icon{image-rendering:auto}
+${id} .atelier-skin-option-text{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+${id} .atelier-skin-option-text strong{font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+${id} .atelier-skin-option-sub{color:var(--xp-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+${id} .atelier-skin-option[aria-checked=true] .atelier-skin-option-sub{color:inherit;opacity:.9}
 ${id} .atelier-appearance-preview{position:relative;height:194px;padding:12px;background:var(--xp-window);border:1px solid;border-color:var(--xp-shadow3d) var(--xp-light3d) var(--xp-light3d) var(--xp-shadow3d);box-shadow:inset 1px 1px var(--xp-dark3d);overflow:hidden}
 ${id} .atelier-appearance-preview .xp-window{position:absolute}
 ${id} .atelier-appearance-preview .preview-inactive{left:12px;top:12px;width:236px;height:118px}
@@ -6901,7 +6956,7 @@ ${id}[data-minimized=true]{inset:auto 12px 12px auto;width:min(300px,calc(100vw 
 #atelier-launcher{position:fixed;z-index:2147483500;width:44px;height:44px;isolation:isolate;color:var(--xp-ink);${xpFont}}
 body:has(.bpx-player-container[data-screen=web])>#atelier-launcher{display:none!important}
 #atelier-launcher [hidden]{display:none!important}#atelier-launcher .atelier-launcher-button{width:44px;height:44px;min-width:0;padding:4px;touch-action:none;box-shadow:1px 2px 4px #0004}
-#atelier-launcher img{width:16px;height:16px;object-fit:contain}#atelier-launcher .atelier-launcher-button img{width:32px;height:32px}
+#atelier-launcher img{width:16px;height:16px;object-fit:contain}#atelier-launcher img[data-atelier-fixed-skin=aero]{image-rendering:auto}#atelier-launcher .atelier-launcher-button img{width:32px;height:32px}
 #atelier-launcher .atelier-menu-check{width:16px;height:16px;flex-shrink:0;display:grid;place-items:center}#atelier-launcher .atelier-menu-check.checked::after{content:"\u2713"}
 .atelier-quick-menu{position:absolute;bottom:0;right:50px;width:190px}
 #atelier-launcher[data-edge=left] .atelier-quick-menu{right:auto;left:50px}
@@ -10943,15 +10998,18 @@ html[data-atelier-skin=aero][data-atelier-dpi-mode=fractional] .xp-shell-32{back
     return button6;
   }
   var foldKey = "BiliAtelier_VideoWindows";
+  var perSkinWindowFolds = /* @__PURE__ */ new Set(["episodes", "list", "pod", "rec", "season", "up", "danmaku"]);
+  var foldStorageKey = (name) => perSkinWindowFolds.has(name) ? skinStorageKey(foldKey) : foldKey;
   var readFolded = (name, fallback2 = false) => {
-    const stored = typeof GM_getValue === "function" ? GM_getValue(foldKey, {}) : {};
+    const stored = typeof GM_getValue === "function" ? GM_getValue(foldStorageKey(name), {}) : {};
     return typeof stored?.[name] === "boolean" ? stored[name] : fallback2;
   };
   var writeFolded = (name, folded) => {
     if (typeof GM_setValue !== "function") return;
-    GM_setValue(foldKey, { ...GM_getValue(foldKey, {}) ?? {}, [name]: folded });
+    const key6 = foldStorageKey(name);
+    GM_setValue(key6, { ...GM_getValue(key6, {}) ?? {}, [name]: folded });
   };
-  function foldable(window2, name) {
+  function foldable(win, name) {
     let folded = readFolded(name);
     const toggle = () => {
       folded = !folded;
@@ -10959,19 +11017,34 @@ html[data-atelier-skin=aero][data-atelier-dpi-mode=fractional] .xp-shell-32{back
       writeFolded(name, folded);
       paint2();
     };
-    const button6 = captionButton(window2.caption, "minimize", "\u6700\u5C0F\u5316", toggle);
-    window2.caption.addEventListener("click", (event) => {
+    const button6 = captionButton(win.caption, "minimize", "\u6700\u5C0F\u5316", toggle);
+    win.caption.addEventListener("click", (event) => {
       if (!event.target.closest(".xp-caption-button")) toggle();
     });
     const paint2 = () => {
-      window2.body.hidden = folded;
-      window2.root.toggleAttribute("data-folded", folded);
+      win.body.hidden = folded;
+      win.root.toggleAttribute("data-folded", folded);
       button6.dataset.kind = folded ? "restore" : "minimize";
       button6.title = folded ? "\u8FD8\u539F" : "\u6700\u5C0F\u5316";
       button6.setAttribute("aria-label", button6.title);
       button6.setAttribute("aria-expanded", String(!folded));
     };
     paint2();
+    let mounted4 = win.root.isConnected;
+    const syncSkin = () => {
+      if (win.root.isConnected) mounted4 = true;
+      else if (mounted4) {
+        window.removeEventListener(skinDriverChanged, syncSkin);
+        window.removeEventListener(appearanceChanged, syncSkin);
+        return;
+      }
+      const next = readFolded(name);
+      if (next === folded) return;
+      folded = next;
+      paint2();
+    };
+    window.addEventListener(skinDriverChanged, syncSkin);
+    window.addEventListener(appearanceChanged, syncSkin);
     return button6;
   }
   function tool(label, icon2, title = "") {
@@ -14509,11 +14582,14 @@ ${userCardCss}
   function createFollowPanel(identity, source) {
     const seenKey = `BiliAtelier_FeedSeen_${identity}`, foldKey3 = `BiliAtelier_FeedPanelFolded_${identity}`;
     const liveKey = `BiliAtelier_FeedLiveOpen_${identity}`, dynamicKey = `BiliAtelier_FeedDynamicOpen_${identity}`;
+    const readPanelFolded = () => GM_getValue(skinStorageKey(foldKey3), false) === true;
+    const readLiveOpen = () => GM_getValue(skinStorageKey(liveKey), false) === true;
+    const readDynamicOpen = () => GM_getValue(skinStorageKey(dynamicKey), true) !== false;
     let seen = (() => {
       const raw = GM_getValue(seenKey, {});
       return raw && typeof raw === "object" ? raw : {};
     })();
-    let liveOpen = GM_getValue(liveKey, false) === true, dynamicOpen = GM_getValue(dynamicKey, true) !== false;
+    let liveOpen = readLiveOpen(), dynamicOpen = readDynamicOpen();
     const panel = document.createElement("section");
     panel.className = `${panelClass} xp-window`;
     panel.setAttribute("data-atelier-local-ui", "");
@@ -14534,7 +14610,7 @@ ${userCardCss}
     view.className = "afp-view";
     view.setAttribute("role", "listbox");
     view.setAttribute("aria-label", "\u5173\u6CE8\u7684 UP \u4E3B");
-    let folded = GM_getValue(foldKey3, false) === true;
+    let folded = readPanelFolded();
     const fold = () => {
       body2.hidden = folded;
       toggle.dataset.kind = folded ? "restore" : "minimize";
@@ -14545,7 +14621,7 @@ ${userCardCss}
     toggle.addEventListener("click", () => {
       folded = !folded;
       sound(folded ? "minimize" : "restore");
-      GM_setValue(foldKey3, folded);
+      GM_setValue(skinStorageKey(foldKey3), folded);
       fold();
     });
     fold();
@@ -14735,7 +14811,7 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}${person.local ? "\n\u672C\u5730\u5
             }
             liveOpen = !liveOpen;
             sound(liveOpen ? "restore" : "minimize");
-            GM_setValue(liveKey, liveOpen);
+            GM_setValue(skinStorageKey(liveKey), liveOpen);
             render2();
           },
           live.error
@@ -14745,7 +14821,7 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}${person.local ? "\n\u672C\u5730\u5
       sections.push(group(`${folder?.name ?? "\u52A8\u6001"} (${people2.length})`, dynamicOpen, () => {
         dynamicOpen = !dynamicOpen;
         sound(dynamicOpen ? "restore" : "minimize");
-        GM_setValue(dynamicKey, dynamicOpen);
+        GM_setValue(skinStorageKey(dynamicKey), dynamicOpen);
         render2();
       }));
       if (dynamicOpen) {
@@ -14774,8 +14850,32 @@ ${person.title || "\u6B63\u5728\u76F4\u64AD"}${person.local ? "\n\u672C\u5730\u5
       else left.append(panel);
       place3();
     }
+    const syncSkin = () => {
+      const nextFolded = readPanelFolded(), nextLive = readLiveOpen(), nextDyn = readDynamicOpen();
+      if (nextFolded !== folded) {
+        folded = nextFolded;
+        fold();
+      }
+      if (nextLive !== liveOpen || nextDyn !== dynamicOpen) {
+        liveOpen = nextLive;
+        dynamicOpen = nextDyn;
+        render2();
+      }
+    };
     window.addEventListener("resize", place3);
-    return { panel, render: render2, mount, unmount: () => panel.remove() };
+    window.addEventListener(skinDriverChanged, syncSkin);
+    window.addEventListener(appearanceChanged, syncSkin);
+    return {
+      panel,
+      render: render2,
+      mount,
+      unmount: () => {
+        window.removeEventListener("resize", place3);
+        window.removeEventListener(skinDriverChanged, syncSkin);
+        window.removeEventListener(appearanceChanged, syncSkin);
+        panel.remove();
+      }
+    };
   }
   var p = `.${panelClass}`;
   var followPanelCss = `
@@ -14875,7 +14975,8 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     const toTop = button6("alf-quick-top", "\u56DE\u5230\u5361\u7247\u9876\u7AEF");
     toTop.prepend(bindSkinIcon(Object.assign(document.createElement("img"), { alt: "" }), atelierIcons.up));
     const night = button6("alf-quick-night", "\u591C\u95F4\u6A21\u5F0F");
-    let folded = GM_getValue(foldKey3, false) === true;
+    const readFolded3 = () => GM_getValue(skinStorageKey(foldKey3), false) === true;
+    let folded = readFolded3();
     const fold = () => {
       body2.hidden = folded;
       toggle.dataset.kind = folded ? "restore" : "minimize";
@@ -14886,10 +14987,18 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     toggle.addEventListener("click", () => {
       folded = !folded;
       sound(folded ? "minimize" : "restore");
-      GM_setValue(foldKey3, folded);
+      GM_setValue(skinStorageKey(foldKey3), folded);
       fold();
     });
     fold();
+    const syncFold = () => {
+      const next = readFolded3();
+      if (next === folded) return;
+      folded = next;
+      fold();
+    };
+    window.addEventListener(skinDriverChanged, syncFold);
+    window.addEventListener(appearanceChanged, syncFold);
     const current4 = () => {
       for (const card4 of options.list.children) {
         if (!(card4 instanceof HTMLElement) || !card4.classList.contains("adc-card")) continue;
@@ -14939,6 +15048,8 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
         window.removeEventListener("scroll", schedule);
         window.removeEventListener("resize", schedule);
         document.removeEventListener("biliThemeChange", paintNight);
+        window.removeEventListener(skinDriverChanged, syncFold);
+        window.removeEventListener(appearanceChanged, syncFold);
         win.remove();
       }
     };
@@ -15281,7 +15392,8 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     compact.setAttribute("role", "toolbar");
     compact.setAttribute("aria-label", "\u7D27\u51D1\u5DE5\u5177\u680F");
     compact.setAttribute("data-bili-blocker-ui", "true");
-    let folded = typeof GM_getValue === "function" && GM_getValue(foldKey2, false) === true;
+    const readFolded3 = () => typeof GM_getValue === "function" && GM_getValue(skinStorageKey(foldKey2), false) === true;
+    let folded = readFolded3();
     const paintFold = () => {
       header.toggleAttribute("data-folded", folded);
       fold.title = folded ? "\u5C55\u5F00\u5DE5\u5177\u680F" : "\u6298\u53E0\u5DE5\u5177\u680F";
@@ -15293,13 +15405,22 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
       folded = !folded;
       chain.close();
       sound(folded ? "minimize" : "restore");
-      if (typeof GM_setValue === "function") GM_setValue(foldKey2, folded);
+      if (typeof GM_setValue === "function") GM_setValue(skinStorageKey(foldKey2), folded);
+      paintFold();
+      header.dispatchEvent(new Event(headerFoldEvent));
+    };
+    const syncFold = () => {
+      const next = readFolded3();
+      if (next === folded) return;
+      folded = next;
       paintFold();
       header.dispatchEvent(new Event(headerFoldEvent));
     };
     fold.addEventListener("click", toggleFold);
     paintFold();
     window.addEventListener(interfaceChanged, paintFold, { signal: lifetime.signal });
+    window.addEventListener(skinDriverChanged, syncFold, { signal: lifetime.signal });
+    window.addEventListener(appearanceChanged, syncFold, { signal: lifetime.signal });
     const channels = [
       { label: "\u9996\u9875", href: "https://www.bilibili.com/" },
       "-",
@@ -15340,9 +15461,10 @@ ${p} .afp-tile[aria-selected=true] .afp-name{background:var(--xp-highlight);colo
     menu("favorites", "\u6536\u85CF", "A", () => loggedIn ? favorites2() : [{ label: "\u767B\u5F55\u540E\u67E5\u770B\u6536\u85CF\u5939", action: openBiliLogin }]);
     menu("view", "\u67E5\u770B", "V", () => {
       const mode2 = currentPageMode(), wide2 = document.documentElement.getAttribute("data-atelier-screen") === "wide";
+      const skinLabel = currentSkinId() === "aero" ? "Aero" : "Luna";
       return [
         { label: "\u591C\u95F4\u6A21\u5F0F", checked: loggedIn && biliTheme() === "dark", disabled: !loggedIn, title: loggedIn ? "" : "\u767B\u5F55\u540E\u53EF\u7528", action: toggleBiliNight },
-        ...mode2 ? [{ label: mode2.native() ? "Luna \u9875\u9762" : "\u539F\u751F\u9875\u9762", action: () => mode2.setNative(!mode2.native()) }] : [],
+        ...mode2 ? [{ label: mode2.native() ? `${skinLabel} \u9875\u9762` : "\u539F\u751F\u9875\u9762", action: () => mode2.setNative(!mode2.native()) }] : [],
         ...options.page === "video" ? ["-", { label: "\u5BBD\u5C4F", checked: wide2, action: () => document.querySelector(".bpx-player-ctrl-wide")?.click() }] : []
       ];
     });
@@ -16006,48 +16128,56 @@ ${on2} aside.right>section.sticky:has(>.lh-compact:not([hidden])){top:${headerBo
 `;
 
   // src/ui/screen-records.ts
+  var slotKey = (skin2 = currentSkinId(), ratio = ratioKey(screenRatio())) => skin2 === "xp" ? ratio : `${skin2}:${ratio}`;
   function screenRecords(key6, legacyKey, parse4) {
     const stored = () => typeof GM_getValue === "function" && typeof GM_setValue === "function";
     const all = () => {
       const value2 = stored() ? GM_getValue(key6, {}) : {};
       return value2 && typeof value2 === "object" ? { ...value2 } : {};
     };
-    let screen = ratioKey(screenRatio());
+    let slot = slotKey();
     return {
-      /** The record for the screen the page is on now; save() writes that one. */
+      /** The record for the active skin & screen now; save() writes that one. */
       load() {
-        screen = ratioKey(screenRatio());
+        slot = slotKey();
         const records2 = all();
         const legacy = legacyKey && stored() ? GM_getValue(legacyKey, void 0) : void 0;
         if (legacy !== void 0) {
-          if (!(screen in records2)) records2[screen] = legacy;
+          const xpSlot = ratioKey(screenRatio());
+          if (!(xpSlot in records2)) records2[xpSlot] = legacy;
           GM_setValue(key6, records2);
           if (typeof GM_deleteValue === "function") GM_deleteValue(legacyKey);
         }
-        return parse4(records2[screen]);
+        return parse4(records2[slot]);
       },
-      /** Only this screen's record: another tab on another screen keeps its own. */
+      /** Only this skin & screen's record: another skin or screen keeps its own. */
       save(value2) {
-        if (stored()) GM_setValue(key6, { ...all(), [screen]: value2 });
+        if (stored()) GM_setValue(key6, { ...all(), [slot]: value2 });
       }
     };
   }
   function onScreenChange(change) {
-    let screen = ratioKey(screenRatio()), query;
+    let slot = slotKey(), ratio = ratioKey(screenRatio()), query;
     const watch = () => {
       query?.removeEventListener("change", check2);
       query = window.matchMedia?.(`(resolution: ${screenRatio()}dppx)`);
       query?.addEventListener("change", check2);
     };
     function check2() {
-      if (query && !query.matches) watch();
-      const next = ratioKey(screenRatio());
-      if (next === screen) return;
-      screen = next;
+      const nextRatio = ratioKey(screenRatio());
+      if (nextRatio !== ratio || query && !query.matches) {
+        ratio = nextRatio;
+        watch();
+      }
+      const next = slotKey();
+      if (next === slot) return;
+      slot = next;
       change();
     }
     watch();
     window.addEventListener("resize", check2);
+    window.addEventListener(skinDriverChanged, check2);
+    window.addEventListener("atelier-appearance-changed", check2);
   }
 
   // src/ui/side-bounds.ts
@@ -17097,9 +17227,26 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
     fold.setAttribute("aria-label", fold.title);
     fold.setAttribute("aria-expanded", String(!folded));
   }
-  var readFolded2 = () => typeof GM_getValue === "function" && GM_getValue(publishFoldKey, false) === true;
+  var readFolded2 = () => typeof GM_getValue === "function" && GM_getValue(skinStorageKey(publishFoldKey), false) === true;
   var button3 = null;
+  var skinSynced = false;
+  function ensurePublishSkinSync() {
+    if (skinSynced || typeof window === "undefined") return;
+    skinSynced = true;
+    const sync = () => {
+      if (document.documentElement.getAttribute("data-atelier-feed") !== "drawn") return;
+      const section = document.querySelector(".bili-dyn-home--member main>section.alf-publish");
+      if (!section) return;
+      const prev = section.hasAttribute("data-folded");
+      if (prev === readFolded2()) return;
+      mountFeedPublisher();
+      window.dispatchEvent(new Event("resize"));
+    };
+    window.addEventListener(skinDriverChanged, sync);
+    window.addEventListener(appearanceChanged, sync);
+  }
   function foldButton() {
+    ensurePublishSkinSync();
     if (button3) return button3;
     button3 = document.createElement("button");
     button3.type = "button";
@@ -17107,7 +17254,7 @@ ${on5} .bili-dyn-home--member>main[style*="--alf-main:"]{width:var(--alf-main)!i
     button3.addEventListener("click", () => {
       const folded = !readFolded2();
       sound(folded ? "minimize" : "restore");
-      if (typeof GM_setValue === "function") GM_setValue(publishFoldKey, folded);
+      if (typeof GM_setValue === "function") GM_setValue(skinStorageKey(publishFoldKey), folded);
       mountFeedPublisher();
       window.dispatchEvent(new Event("resize"));
     });
@@ -19684,12 +19831,13 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
     document.getElementById("atelier-space")?.remove();
   }
   function readSpaceFolded(name, fallback2 = false) {
-    const stored = typeof GM_getValue === "function" ? GM_getValue(spaceFoldKey, {}) : {};
+    const stored = typeof GM_getValue === "function" ? GM_getValue(skinStorageKey(spaceFoldKey), {}) : {};
     return typeof stored?.[name] === "boolean" ? stored[name] : fallback2;
   }
   function writeSpaceFolded(name, folded) {
     if (typeof GM_setValue !== "function") return;
-    GM_setValue(spaceFoldKey, { ...GM_getValue(spaceFoldKey, {}) ?? {}, [name]: folded });
+    const key6 = skinStorageKey(spaceFoldKey);
+    GM_setValue(key6, { ...GM_getValue(key6, {}) ?? {}, [name]: folded });
   }
   function readUploadViewMode() {
     const stored = typeof GM_getValue === "function" ? GM_getValue(spaceViewModeKey, "grid") : "grid";
@@ -19733,6 +19881,21 @@ ${id} details{margin-bottom:5px}${id} summary{cursor:pointer;padding:3px}
         button6.setAttribute("aria-expanded", String(!folded));
       };
       paint2();
+      let mounted4 = win.root.isConnected;
+      const syncFold = () => {
+        if (win.root.isConnected) mounted4 = true;
+        else if (mounted4) {
+          window.removeEventListener(skinDriverChanged, syncFold);
+          window.removeEventListener(appearanceChanged, syncFold);
+          return;
+        }
+        const next = readSpaceFolded(options.foldName);
+        if (next === folded) return;
+        folded = next;
+        paint2();
+      };
+      window.addEventListener(skinDriverChanged, syncFold);
+      window.addEventListener(appearanceChanged, syncFold);
     }
     return win;
   }
@@ -24467,9 +24630,9 @@ ${message}` : ""}`;
     const check2 = viewedLabel.appendChild(el("input", "xp-check"));
     check2.type = "checkbox";
     const viewedText = viewedLabel.appendChild(el("span"));
-    const wide2 = captionButton(win.caption, "maximize", "\u5BBD\u5C4F", () => {
-      sound(wide2.dataset.kind === "maximize" ? "maximize" : "restore");
-      document.querySelector(".bpx-player-ctrl-wide")?.click();
+    const webFull = captionButton(win.caption, "maximize", "\u7F51\u9875\u5168\u5C4F", () => {
+      sound(webFull.dataset.kind === "maximize" ? "maximize" : "restore");
+      document.querySelector(".bpx-player-ctrl-web")?.click();
     });
     const frame2 = win.root.appendChild(el("div", "xp-window vl-player-frame"));
     frame2.setAttribute("aria-hidden", "true");
@@ -24581,10 +24744,10 @@ ${message}` : ""}`;
         check2.setAttribute("aria-label", viewedText.textContent);
         paintViewed();
       },
-      setWide(on9) {
-        wide2.dataset.kind = on9 ? "restore" : "maximize";
-        wide2.title = on9 ? "\u9000\u51FA\u5BBD\u5C4F" : "\u5BBD\u5C4F";
-        wide2.setAttribute("aria-label", wide2.title);
+      setWebFull(on9) {
+        webFull.dataset.kind = on9 ? "restore" : "maximize";
+        webFull.title = on9 ? "\u9000\u51FA\u7F51\u9875\u5168\u5C4F" : "\u7F51\u9875\u5168\u5C4F";
+        webFull.setAttribute("aria-label", webFull.title);
       }
     };
   }
@@ -27757,7 +27920,7 @@ ${message}` : ""}`;
       fullscreen?.setScreen(mode2);
       miniFrame.place();
       miniFrame.setScreen(mode2);
-      player.setWide(mode2 === "wide");
+      player.setWebFull(mode2 === "web");
       measure();
       layout2.measure();
     }
@@ -27780,7 +27943,7 @@ ${message}` : ""}`;
       }
     }
     trackPlayer();
-    let dmSeen = null;
+    let dmSeen = null, dmSyncing = false;
     function dmFold() {
       const wrap = document.querySelector("#danmukuBox .bui-collapse-wrap");
       if (!wrap) return;
@@ -27788,6 +27951,18 @@ ${message}` : ""}`;
       if (dmSeen === null) {
         dmSeen = folded;
         if (readFolded("danmaku", true) !== folded) wrap.querySelector(".bui-collapse-header")?.click();
+        const syncDmSkin = () => {
+          if (!wrap.isConnected) return;
+          const cur = wrap.classList.contains("bui-collapse-wrap-folded"), target = readFolded("danmaku", true);
+          if (cur === target) return;
+          dmSyncing = true;
+          wrap.querySelector(".bui-collapse-header")?.click();
+          queueMicrotask(() => {
+            dmSyncing = false;
+          });
+        };
+        window.addEventListener("atelier-skin-driver-changed", syncDmSkin);
+        window.addEventListener("atelier-appearance-changed", syncDmSkin);
         let click = null;
         wrap.addEventListener("click", (event) => {
           if (!event.isTrusted) return;
@@ -27804,7 +27979,7 @@ ${message}` : ""}`;
           const now = wrap.classList.contains("bui-collapse-wrap-folded");
           if (now !== dmSeen) {
             dmSeen = now;
-            writeFolded("danmaku", now);
+            if (!dmSyncing) writeFolded("danmaku", now);
             click?.finish(now ? "minimize" : "restore");
             click = null;
             fitRightInfo();
@@ -29288,14 +29463,55 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       });
       return node4;
     };
+    const skinToggle = element("div", "atelier-skin-toggle");
+    skinToggle.setAttribute("role", "radiogroup");
+    skinToggle.setAttribute("aria-label", "\u4E3B\u9898\u98CE\u683C");
+    const skinChoices = [
+      { id: "xp", title: "Windows XP", subtitle: "(Luna)" },
+      { id: "aero", title: "Windows 7", subtitle: "(Aero)" }
+    ];
+    const skinButtons = {};
+    const chooseSkin = (id, focus = false) => {
+      if (focus) skinButtons[id].focus();
+      if (readUiPreferences().skin === id) return;
+      saveUiPreferences({ skin: id });
+      sound("select");
+    };
+    for (const item of skinChoices) {
+      const btn = element("button", "atelier-skin-option");
+      btn.type = "button";
+      btn.setAttribute("role", "radio");
+      btn.dataset.skin = item.id;
+      const icon2 = bindFixedSkinIcon(element("img", "atelier-skin-option-icon"), "data", item.id);
+      icon2.alt = "";
+      icon2.width = 24;
+      icon2.height = 24;
+      icon2.draggable = false;
+      const text4 = element("span", "atelier-skin-option-text");
+      text4.append(element("strong", "", `${item.title} `), element("span", "atelier-skin-option-sub", item.subtitle));
+      btn.append(icon2, text4);
+      btn.addEventListener("click", () => chooseSkin(item.id));
+      btn.addEventListener("keydown", (event) => {
+        if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+          event.preventDefault();
+          chooseSkin(item.id === "xp" ? "aero" : "xp", true);
+        }
+      });
+      skinButtons[item.id] = btn;
+      skinToggle.append(btn);
+    }
     const controls = element("div", "atelier-appearance-controls");
     const renderControls = () => {
       const prefs = readUiPreferences();
+      for (const id of ["xp", "aero"]) {
+        const selected = prefs.skin === id;
+        skinButtons[id].setAttribute("aria-checked", String(selected));
+        skinButtons[id].tabIndex = selected ? 0 : -1;
+      }
       const schemeOptions = prefs.skin === "aero" ? Object.entries(aeroSchemeNames) : Object.entries(lunaSchemeNames);
       const schemeValue = prefs.skin === "aero" ? prefs.aeroScheme : prefs.scheme;
       const extra = prefs.skin === "aero" ? [aeroGlassRow(prefs.aeroGlass), element("p", "luna-hint", "\u4EC5\u9876\u5C42\u6D6E\u52A8\u7A97\u53E3\u4E0E\u9876\u680F\u542F\u7528\u5B9E\u65F6\u6BDB\u73BB\u7483\uFF0C\u5173\u95ED\u540E\u6539\u4E3A\u4E0D\u900F\u660E\u7740\u8272\u73BB\u7483\u4EE5\u964D\u4F4E\u663E\u5361\u5F00\u9500\u3002")] : [pixelScaleRow(choice), element("p", "luna-hint", "\u6574\u6570\u500D\u65F6\uFF0CXP \u7684\u6BCF\u4E2A\u50CF\u7D20\u90FD\u753B\u6210\u540C\u6837\u5927\u5C0F\u7684\u65B9\u5757\u3002")];
       controls.replaceChildren(
-        row("\u4E3B\u9898\u98CE\u683C(T):", choice(Object.entries(skinNames), prefs.skin, (value2) => saveUiPreferences({ skin: value2 }))),
         row("\u8272\u5F69\u65B9\u6848(C):", choice(schemeOptions, schemeValue, (value2) => saveUiPreferences(prefs.skin === "aero" ? { aeroScheme: value2 } : { scheme: value2 }))),
         row("\u660E\u6697(D):", choice([["page", "\u8DDF\u968F\u7F51\u9875"], ["light", "\u6D45\u8272"], ["dark", "\u6DF1\u8272"]], prefs.theme, (value2) => saveUiPreferences({ theme: value2 }))),
         ...extra
@@ -29315,7 +29531,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     syncControls();
     window.addEventListener(appearanceChanged, syncControls);
     const layout2 = element("div", "atelier-appearance-layout");
-    layout2.append(group("\u7A97\u53E3\u9884\u89C8", preview), group("\u4E3B\u9898\u4E0E\u6E32\u67D3", controls));
+    layout2.append(group("\u7A97\u53E3\u9884\u89C8", preview), group("\u4E3B\u9898\u4E0E\u6E32\u67D3", skinToggle, controls));
     page.append(element("h2", "", "\u5916\u89C2"), layout2);
     return page;
   }
@@ -29744,10 +29960,10 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     const launcherRow = element("div", "atelier-interface-action");
     launcherRow.append(
       button("\u91CD\u7F6E\u7535\u89C6\u5165\u53E3\u4F4D\u7F6E", () => {
-        saveUiPreferences({ edge: "right", y: 0.72 });
+        saveLauncherPos(defaultLauncherPos);
         window.dispatchEvent(new Event("atelier-reset-launcher"));
       }),
-      element("span", "luna-hint", "\u5C06\u60AC\u6D6E\u7535\u89C6\u6309\u94AE\u6062\u590D\u5230\u53F3\u4FA7\u9ED8\u8BA4\u4F4D\u7F6E\u3002")
+      element("span", "luna-hint", "\u5C06\u5F53\u524D\u4E3B\u9898\u4E0B\u7684\u60AC\u6D6E\u7535\u89C6\u6309\u94AE\u6062\u590D\u5230\u53F3\u4FA7\u9ED8\u8BA4\u4F4D\u7F6E\u3002")
     );
     const authRow = element("div", "atelier-ip-auth");
     const authStatus = element("span", "atelier-ip-auth-status");
@@ -29940,6 +30156,21 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       toggleBiliNight();
       updatePageItems();
     });
+    const skinSwitch = document.createElement("button");
+    skinSwitch.type = "button";
+    skinSwitch.className = "xp-menu-item";
+    skinSwitch.setAttribute("role", "menuitem");
+    skinSwitch.dataset.atelierSkinSwitch = "true";
+    const skinSwitchIcon = document.createElement("img");
+    skinSwitchIcon.alt = "";
+    const skinSwitchLabel = document.createElement("span");
+    skinSwitch.append(skinSwitchIcon, skinSwitchLabel);
+    skinSwitch.addEventListener("click", () => {
+      const next = readUiPreferences().skin === "aero" ? "xp" : "aero";
+      toggle(false);
+      saveUiPreferences({ skin: next });
+      sound("select");
+    });
     const pageMode = document.createElement("button");
     pageMode.type = "button";
     pageMode.className = "xp-menu-item";
@@ -29966,15 +30197,21 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       night.item.title = loggedIn ? "" : "\u767B\u5F55\u540E\u53EF\u7528";
       night.item.setAttribute("aria-checked", String(dark));
       night.mark.classList.toggle("checked", dark);
+      const skin2 = readUiPreferences().skin;
+      const targetSkin = skin2 === "aero" ? "xp" : "aero";
+      bindFixedSkinIcon(skinSwitchIcon, "data", targetSkin);
+      skinSwitchLabel.textContent = targetSkin === "aero" ? "\u5207\u6362\u81F3 Win7 Aero" : "\u5207\u6362\u81F3 XP Luna";
+      skinSwitch.title = targetSkin === "aero" ? "\u7ACB\u5373\u5207\u6362\u5230 Windows 7 (Aero) \u76AE\u80A4" : "\u7ACB\u5373\u5207\u6362\u5230 Windows XP (Luna) \u76AE\u80A4";
       const mode2 = currentPageMode();
+      const skinLabel = skin2 === "aero" ? "Aero" : "Luna";
       pageMode.hidden = !mode2;
-      pageModeLabel.textContent = mode2?.native() ? "Luna \u9875\u9762" : "\u539F\u751F\u9875\u9762";
-      pageMode.title = mode2?.native() ? "\u6362\u56DE Atelier \u753B\u7684 Luna \u9875\u9762" : "\u9000\u56DE B \u7AD9\u539F\u6765\u7684\u9875\u9762\uFF08\u4F1A\u5237\u65B0\u4E00\u6B21\uFF09";
+      pageModeLabel.textContent = mode2?.native() ? `${skinLabel} \u9875\u9762` : "\u539F\u751F\u9875\u9762";
+      pageMode.title = mode2?.native() ? `\u6362\u56DE Atelier \u753B\u7684 ${skinLabel} \u9875\u9762` : "\u9000\u56DE B \u7AD9\u539F\u6765\u7684\u9875\u9762\uFF08\u4F1A\u5237\u65B0\u4E00\u6B21\uFF09";
     }
     const pageSeparator = document.createElement("div");
     pageSeparator.className = "xp-menu-separator";
-    menu.append(pageSeparator, night.item, pageMode);
-    entries.push(night.item, pageMode);
+    menu.append(pageSeparator, night.item, skinSwitch, pageMode);
+    entries.push(night.item, skinSwitch, pageMode);
     window.addEventListener(pageModeChanged, updatePageItems);
     document.addEventListener("biliThemeChange", updatePageItems);
     updatePageItems();
@@ -30000,7 +30237,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
     separator.className = "xp-menu-separator";
     menu.append(separator, visibility);
     entries.push(visibility);
-    let edge = readUiPreferences().edge, y = readUiPreferences().y;
+    let { edge, y } = readLauncherPos();
     const unit = () => zoomOf(host);
     const position = () => {
       const z = unit();
@@ -30008,6 +30245,11 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       host.style.left = edge === "left" ? "6px" : "auto";
       host.style.right = edge === "right" ? "6px" : "auto";
       placeFixed(host, { top: Math.max(6 * z, Math.min(innerHeight - 54 * z, y * (innerHeight - 48 * z))) });
+    };
+    const syncLauncherPos = () => {
+      if (drag) return;
+      ({ edge, y } = readLauncherPos());
+      position();
     };
     let drag, suppressClick = false;
     button6.addEventListener("pointerdown", (event) => {
@@ -30030,7 +30272,7 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       if (drag.moved && event.type !== "pointercancel") {
         edge = event.clientX < innerWidth / 2 ? "left" : "right";
         y = Math.max(0, Math.min(1, (drag.top + event.clientY - drag.y) / Math.max(1, innerHeight - 48 * unit())));
-        saveUiPreferences({ edge, y });
+        saveLauncherPos({ edge, y });
       }
       drag = void 0;
       position();
@@ -30073,10 +30315,11 @@ ${w} .ahp-progress{flex:0 0 120px;padding:0 2px}
       toggle(false);
     });
     window.addEventListener("resize", position);
-    window.addEventListener("atelier-reset-launcher", () => {
-      ({ edge, y } = readUiPreferences());
-      position();
+    window.addEventListener(appearanceChanged, () => {
+      updatePageItems();
+      syncLauncherPos();
     });
+    window.addEventListener("atelier-reset-launcher", syncLauncherPos);
     host.append(menu, button6);
     document.body.append(host);
     observeCrispText(menu);
