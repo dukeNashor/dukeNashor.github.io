@@ -2,7 +2,7 @@
 // @name         Bili Atelier
 // @name:zh-CN   Bili Atelier - B站精修工作台
 // @namespace    https://github.com/dukeNashor/bili-atelier
-// @version      0.13.2
+// @version      0.13.3
 // @description  一体化 B 站工具箱：已看标记、屏蔽增强、评论区 IP 属地显示。
 // @author       dukeNashor
 // @match        https://www.bilibili.com/*
@@ -27713,12 +27713,18 @@ ${message}` : ""}`;
       const wrapRect = wrap.getBoundingClientRect();
       const body2 = wrap.querySelector(".bui-collapse-body");
       const chromeAbove = wrapRect.height ? Math.max(0, (pageRect.top - wrapRect.top) / z) : 54;
-      const borderBottom = parseFloat(getComputedStyle(wrap).borderBottomWidth) || 4;
+      const wrapCs = getComputedStyle(wrap);
+      const wrapBottom = (parseFloat(wrapCs.borderBottomWidth) || 0) + (parseFloat(wrapCs.paddingBottom) || 0) || 4;
       const bodyPadBottom = body2 ? parseFloat(getComputedStyle(body2).paddingBottom) || 6 : 6;
       const wraplistBorder = 2;
-      const effectiveTop = Math.max(rightColumnTopInset() + chromeAbove, pageRect.top / z);
+      const col = box2.closest(".right-container-inner,.playlist-container--right,.plp-r");
+      const colRect = col?.getBoundingClientRect();
+      const header = document.getElementById("biliMainHeader")?.clientHeight || headerHeight();
+      const pinnedTop = colRect && colRect.height > 0 ? header + Math.max(chromeAbove, (pageRect.top - colRect.top) / z) : rightColumnTopInset() + chromeAbove;
+      const effectiveTop = Math.max(pinnedTop, pageRect.top / z);
       const chrome = danmakuChrome();
-      const capH = Math.max(chrome + 72, Math.floor(window.innerHeight / z - effectiveTop - wraplistBorder - bodyPadBottom - borderBottom - infoBottomMargin));
+      const colPadBottom = col ? Math.max(infoBottomMargin, Math.ceil(parseFloat(getComputedStyle(col).paddingBottom) || 0)) : infoBottomMargin;
+      const capH = Math.max(chrome + 72, Math.floor(window.innerHeight / z - Math.ceil(effectiveTop) - wraplistBorder - bodyPadBottom - wrapBottom - colPadBottom));
       const capList = Math.max(72, capH - chrome);
       const hPx = `${capH}px`, lPx = `${capList}px`;
       if (box2.style.getPropertyValue("--vl-dm-cap-h") !== hPx) box2.style.setProperty("--vl-dm-cap-h", hPx);
@@ -27740,9 +27746,15 @@ ${message}` : ""}`;
       const z = zoomOf(scroll);
       const winRect = info.element.getBoundingClientRect();
       const chromeAbove = winRect.height ? Math.max(0, (rect.top - winRect.top) / z) : 0;
-      const borderBottom = parseFloat(getComputedStyle(info.element).borderBottomWidth) || 4;
-      const effectiveTop = Math.max(rightColumnTopInset() + chromeAbove, rect.top / z);
-      const target = Math.max(180, Math.floor(window.innerHeight / z - effectiveTop - borderBottom - infoBottomMargin));
+      const infoCs = getComputedStyle(info.element);
+      const winBottom = (parseFloat(infoCs.borderBottomWidth) || 0) + (parseFloat(infoCs.paddingBottom) || 0) || 4;
+      const col = info.element.parentElement;
+      const colRect = col?.getBoundingClientRect();
+      const header = document.getElementById("biliMainHeader")?.clientHeight || headerHeight();
+      const pinnedTop = colRect && colRect.height > 0 ? header + Math.max(chromeAbove, (rect.top - colRect.top) / z) : rightColumnTopInset() + chromeAbove;
+      const effectiveTop = Math.max(pinnedTop, rect.top / z);
+      const colPadBottom = col ? Math.max(infoBottomMargin, Math.ceil(parseFloat(getComputedStyle(col).paddingBottom) || 0)) : infoBottomMargin;
+      const target = Math.max(180, Math.floor(window.innerHeight / z - Math.ceil(effectiveTop) - winBottom - colPadBottom));
       const px3 = `${target}px`;
       scroll.style.removeProperty("height");
       if (scroll.style.maxHeight !== px3) scroll.style.maxHeight = px3;
